@@ -23,7 +23,8 @@ const useCatalog = () => {
     currentPageData,
     setCurrentPageData,
     setMeta,
-  } = useQueryPagination<models.Resource>();
+    sorting,
+  } = useQueryPagination<models.Resource, models.ResourceOrderByInput[]>();
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [propertiesFilter, setPropertiesFilter] =
@@ -41,6 +42,7 @@ const useCatalog = () => {
     error,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
+      //orderBy: sorting.orderBy,
       ...queryPaginationParams,
       where: {
         ...queryFilters,
@@ -147,6 +149,7 @@ const useCatalog = () => {
     setSearchPhrase,
     setFilter,
     pagination,
+    sorting,
   };
 };
 

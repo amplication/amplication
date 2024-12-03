@@ -1306,6 +1306,12 @@ export type GitOrganizationCreateInputGitHub = {
   installationId: Scalars['String']['input'];
 };
 
+export type GitOrganizationOrderByInput = {
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  provider?: InputMaybe<SortOrder>;
+};
+
 export type GitOrganizationWhereInput = {
   id?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1319,6 +1325,15 @@ export type GitRepository = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type GitRepositoryOrderByInput = {
+  baseBranchName?: InputMaybe<SortOrder>;
+  gitOrganization?: InputMaybe<GitOrganizationOrderByInput>;
+  gitOrganizationId?: InputMaybe<SortOrder>;
+  groupName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
 };
 
 export type GitRepositoryUpdateInput = {
@@ -3515,7 +3530,6 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 };
 
 export type RemoteGitRepository = {
-  admin: Scalars['Boolean']['output'];
   defaultBranch: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
   groupName?: Maybe<Scalars['String']['output']>;
@@ -3613,8 +3627,10 @@ export type ResourceCreateWithEntitiesResult = {
 export type ResourceOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
+  gitRepository?: InputMaybe<GitRepositoryOrderByInput>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+  project?: InputMaybe<ProjectOrderByInput>;
   resourceType?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
 };

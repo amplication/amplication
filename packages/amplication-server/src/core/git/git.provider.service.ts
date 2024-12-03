@@ -42,7 +42,7 @@ import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 import { ValidationError } from "../../errors/ValidationError";
 
 const GIT_REPOSITORY_EXIST =
-  "Git Repository already connected to an other Resource";
+  "The resource is already connected to a Git Repository";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -77,6 +77,14 @@ export class GitProviderService {
     const bitbucketClientSecret = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_SECRET
     );
+    const gitLabClientId = this.configService.get<string>(Env.GITLAB_CLIENT_ID);
+    const gitLabClientSecret = this.configService.get<string>(
+      Env.GITLAB_CLIENT_SECRET
+    );
+    const gitLabRedirectUri = this.configService.get<string>(
+      Env.GITLAB_REDIRECT_URI
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -102,6 +110,11 @@ export class GitProviderService {
       bitBucketConfiguration: {
         clientId: bitbucketClientId,
         clientSecret: bitbucketClientSecret,
+      },
+      gitLabConfiguration: {
+        clientId: gitLabClientId,
+        clientSecret: gitLabClientSecret,
+        redirectUri: gitLabRedirectUri,
       },
     };
   }
@@ -151,6 +164,19 @@ export class GitProviderService {
         expiresAt: null,
         scopes: null,
       };
+    } else if (provider === EnumGitProvider.GitLab) {
+      providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
+        links: null,
+        username: null,
+        useGroupingForRepositories: null,
+        uuid: null,
+        displayName: null,
+        accessToken: null,
+        refreshToken: null,
+        tokenType: null,
+        expiresAt: null,
+        scopes: null,
+      };
     }
     return new GitClientService().create(
       { provider, providerOrganizationProperties },
@@ -175,13 +201,18 @@ export class GitProviderService {
       gitRepository.gitOrganization
     );
 
-    return gitClientService.getFolderContent({
-      owner: gitRepository.gitOrganization.name,
-      repositoryName: gitRepository.name,
-      repositoryGroupName: gitRepository.groupName,
-      ref: gitRepository.baseBranchName,
-      path: args.path,
-    });
+    return this.executeAndUpdateGitProviderProperties(
+      () =>
+        gitClientService.getFolderContent({
+          owner: gitRepository.gitOrganization.name,
+          repositoryName: gitRepository.name,
+          repositoryGroupName: gitRepository.groupName,
+          ref: gitRepository.baseBranchName,
+          path: args.path,
+        }),
+      gitRepository.gitOrganization,
+      gitClientService
+    );
   }
 
   async getReposOfOrganization(
@@ -202,7 +233,12 @@ export class GitProviderService {
     };
 
     const gitClientService = await this.createGitClient(organization);
-    return gitClientService.getRepositories(repositoriesArgs);
+
+    return this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.getRepositories(repositoriesArgs),
+      organization,
+      gitClientService
+    );
   }
 
   async connectGitRepository(
@@ -253,8 +289,10 @@ export class GitProviderService {
 
     const gitClientService = await this.createGitClient(organization);
 
-    const remoteRepository = await gitClientService.createRepository(
-      repository
+    const remoteRepository = await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.createRepository(repository),
+      organization,
+      gitClientService
     );
 
     if (!remoteRepository) {
@@ -633,78 +671,107 @@ export class GitProviderService {
     );
   }
 
+  //this function is used to update the provider properties of the git organization
+  //it should wrap each operation, in order to keep the provider properties up to date
+  async executeAndUpdateGitProviderProperties<T>(
+    operation: () => Promise<T>,
+    gitOrganization: GitOrganization,
+    client: GitClientService
+  ): Promise<T> {
+    const result = await operation();
+
+    const { providerProperties } = gitOrganization;
+
+    if (!(await client.isAuthDataRefreshed())) {
+      return result;
+    }
+
+    const updateAuth = await client.getAuthData();
+
+    const updatedProviderProperties = {
+      ...(providerProperties as unknown as GitProviderProperties),
+      ...updateAuth,
+    };
+
+    await this.prisma.gitOrganization.update({
+      where: {
+        id: gitOrganization.id,
+      },
+
+      data: {
+        providerProperties: updatedProviderProperties as any,
+      },
+    });
+
+    return result;
+  }
+
   async completeOAuth2Flow(
     args: CompleteGitOAuth2FlowArgs,
     currentUser: User
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
 
-    const bitbucketEntitlement = this.billingService.isBillingEnabled
-      ? await this.billingService.getBooleanEntitlement(
-          workspaceId,
-          BillingFeature.Bitbucket
-        )
-      : false;
-    if (!bitbucketEntitlement)
-      throw new AmplicationError(
-        "In order to connect Bitbucket service should upgrade its plan"
+    try {
+      const gitClientService = await this.createGitClientWithoutProperties(
+        gitProvider
       );
 
-    const gitClientService = await this.createGitClientWithoutProperties(
-      gitProvider
-    );
+      const oAuthTokens = await gitClientService.getOAuthTokens(code);
 
-    const oAuthTokens = await gitClientService.getOAuthTokens(code);
+      const currentUserData = await gitClientService.getCurrentOAuthUser(
+        oAuthTokens.accessToken
+      );
 
-    const currentUserData = await gitClientService.getCurrentOAuthUser(
-      oAuthTokens.accessToken
-    );
+      const providerOrganizationProperties: OAuthProviderOrganizationProperties =
+        { ...oAuthTokens, ...currentUserData };
 
-    const providerOrganizationProperties: OAuthProviderOrganizationProperties =
-      { ...oAuthTokens, ...currentUserData };
+      this.logger.info("server: completeOAuth2Flow");
 
-    this.logger.info("server: completeOAuth2Flow");
+      await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+        workspaceId
+      );
 
-    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
-      workspaceId
-    );
-
-    const gitOrganization = await this.prisma.gitOrganization.upsert({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        provider_installationId: {
-          provider: gitProvider,
-          installationId: currentUserData.uuid,
-        },
-      },
-      create: {
-        provider: gitProvider,
-        installationId: currentUserData.uuid,
-        name: currentUserData.username,
-        type: EnumGitOrganizationType.Organization,
-        useGroupingForRepositories: currentUserData.useGroupingForRepositories,
-        workspace: {
-          connect: {
-            id: workspaceId,
+      const gitOrganization = await this.prisma.gitOrganization.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          provider_installationId: {
+            provider: gitProvider,
+            installationId: currentUserData.uuid,
           },
         },
-        providerProperties: providerOrganizationProperties as any,
-      },
-      update: {
-        name: currentUserData.username,
-        providerProperties: providerOrganizationProperties as any,
-      },
-    });
+        create: {
+          provider: gitProvider,
+          installationId: currentUserData.uuid,
+          name: currentUserData.username,
+          type: EnumGitOrganizationType.Organization,
+          useGroupingForRepositories:
+            currentUserData.useGroupingForRepositories,
+          workspace: {
+            connect: {
+              id: workspaceId,
+            },
+          },
+          providerProperties: providerOrganizationProperties as any,
+        },
+        update: {
+          name: currentUserData.username,
+          providerProperties: providerOrganizationProperties as any,
+        },
+      });
 
-    await this.analytics.trackWithContext({
-      properties: {
-        provider: gitProvider,
-        gitOrgType: gitOrganization?.type,
-      },
-      event: EnumEventType.GitHubAuthResourceComplete,
-    });
+      await this.analytics.trackWithContext({
+        properties: {
+          provider: gitProvider,
+          gitOrgType: gitOrganization?.type,
+        },
+        event: EnumEventType.GitHubAuthResourceComplete,
+      });
 
-    return gitOrganization;
+      return gitOrganization;
+    } catch (error) {
+      throw new AmplicationError("Failed to complete OAuth2 flow");
+    }
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
@@ -716,7 +783,11 @@ export class GitProviderService {
 
     const gitClientService = await this.createGitClient(organization);
 
-    return await gitClientService.getGitGroups();
+    return await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.getGitGroups(),
+      organization,
+      gitClientService
+    );
   }
 
   async deleteGitOrganization(
@@ -730,7 +801,12 @@ export class GitProviderService {
       },
     });
     const gitClientService = await this.createGitClient(organization);
-    const isDelete = await gitClientService.deleteGitOrganization();
+    const isDelete = await this.executeAndUpdateGitProviderProperties(
+      () => gitClientService.deleteGitOrganization(),
+      organization,
+      gitClientService
+    );
+
     if (isDelete) {
       await this.prisma.gitOrganization.delete({
         where: {

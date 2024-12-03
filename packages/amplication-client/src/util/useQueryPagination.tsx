@@ -5,7 +5,7 @@ type Props = {
   onLoadMore?: () => void;
 };
 
-export function useQueryPagination<T>(props?: Props) {
+export function useQueryPagination<T, R = undefined>(props?: Props) {
   const { onLoadMore } = props || {};
 
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -13,6 +13,8 @@ export function useQueryPagination<T>(props?: Props) {
 
   const [currentPageData, setCurrentPageData] = useState<T[]>([]);
   const [meta, setMeta] = useState<MetaQueryPayload>({ count: 0 });
+
+  const [orderBy, setOrderBy] = useState<R>(undefined);
 
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
@@ -62,6 +64,10 @@ export function useQueryPagination<T>(props?: Props) {
       pageCount,
       recordCount: meta.count,
       triggerLoadMore,
+    },
+    sorting: {
+      orderBy,
+      setOrderBy,
     },
     queryPaginationParams,
     setCurrentPageData: setCurrentPageDataInternal,

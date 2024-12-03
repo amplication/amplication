@@ -5,7 +5,6 @@ import {
   VersionTag,
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { EnumResourceType, Resource } from "../models";
 import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
 import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
@@ -20,6 +19,7 @@ import { ProjectFilter } from "./ProjectFilter";
 import { ResourceTypeFilter } from "./ResourceTypeFilter";
 import { OwnerFilter } from "./OwnerFilter";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
+import ResourceGitOrg from "../Workspaces/ResourceGitOrg";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -78,9 +78,24 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     getValue: (row) =>
       row.resourceType === EnumResourceType.Service ? row.codeGenerator : null,
   },
+
   {
-    key: "git",
-    name: "Repository",
+    key: "gitOrganization",
+    name: "Git Organization",
+    renderCell: (props) => {
+      return (
+        <div style={{ display: "inline-flex" }}>
+          <ResourceGitOrg resource={props.row} />
+        </div>
+      );
+    },
+    resizable: true,
+    sortable: true,
+    getValue: (row) => row.gitRepository?.gitOrganization?.name,
+  },
+  {
+    key: "gitRepository",
+    name: "Git Repository",
     renderCell: (props) => {
       return (
         <div style={{ display: "inline-flex" }}>
@@ -90,8 +105,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     resizable: true,
     sortable: true,
-    getValue: (row) =>
-      row.gitRepository?.gitOrganization?.name && row.gitRepository?.name,
+    getValue: (row) => row.gitRepository?.name,
   },
   {
     key: "description",

@@ -77,6 +77,14 @@ export class GithubService implements GitProvider {
     private readonly logger: ILogger
   ) {}
 
+  getAuthData(): Promise<OAuthTokens | null> {
+    return Promise.resolve(null);
+  }
+
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
   async init(): Promise<void> {
     const {
       appId,
@@ -171,7 +179,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     }));
   }
@@ -195,7 +202,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
     }));
 
     return {
@@ -236,11 +242,10 @@ export class GithubService implements GitProvider {
       url,
     };
     if (!permissions) {
-      return { ...baseRepository, admin: false };
+      return { ...baseRepository };
     }
     const { admin } = permissions;
     return {
-      admin,
       defaultBranch,
       fullName,
       name,
@@ -288,7 +293,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     };
   }

@@ -60,6 +60,7 @@ export class BitBucketService implements GitProvider {
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
   private logger: ILogger;
+  private isTokenRefreshed = false;
 
   constructor(
     providerOrganizationProperties: OAuthProviderOrganizationProperties,
@@ -84,6 +85,13 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+
+  getAuthData(): Promise<OAuthTokens> {
+    return Promise.resolve(this.auth);
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(this.isTokenRefreshed);
   }
 
   async getFolderContent({
@@ -217,6 +225,7 @@ export class BitBucketService implements GitProvider {
 
     this.logger.info("BitBucketService: refreshAccessTokenIfNeeded");
     this.auth.accessToken = newOAuthTokens.access_token;
+    this.isTokenRefreshed = true;
 
     return {
       accessToken: newOAuthTokens.access_token,
@@ -308,7 +317,6 @@ export class BitBucketService implements GitProvider {
       url: links.html.href,
       private: is_private,
       fullName: full_name,
-      admin: !!(accessLevel === "admin"),
       groupName: groupName,
       defaultBranch: mainbranch.name,
     };
@@ -345,7 +353,6 @@ export class BitBucketService implements GitProvider {
           private: is_private,
           fullName: full_name,
           groupName: groupName,
-          admin: !!(accessLevel === "admin"),
           defaultBranch: mainbranch.name,
         };
       }
@@ -390,7 +397,6 @@ export class BitBucketService implements GitProvider {
       url: "https://bitbucket.org/" + newRepository.full_name,
       private: newRepository.is_private,
       fullName: newRepository.full_name,
-      admin: !!(newRepository.accessLevel === "admin"),
       groupName,
       defaultBranch: newRepository.mainbranch.name,
     };

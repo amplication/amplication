@@ -70,6 +70,13 @@ export class GitClientService {
     return this.provider.getOAuthTokens(authorizationCode);
   }
 
+  async getAuthData(): Promise<OAuthTokens | null> {
+    return this.provider.getAuthData();
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return this.provider.isAuthDataRefreshed();
+  }
+
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     return this.provider.getCurrentOAuthUser(accessToken);
   }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
 import {
   EnumGitProvider,
@@ -8,6 +8,9 @@ import { useTracking } from "../../util/analytics";
 
 const AuthResourceWithGitLabCallback = () => {
   const { trackEvent } = useTracking();
+
+  const [loading, setLoading] = useState(false);
+
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const authorizationCode = urlParams.get("code");
@@ -30,15 +33,20 @@ const AuthResourceWithGitLabCallback = () => {
   });
 
   useEffect(() => {
-    if (window.opener) {
-      completeAuthWithGit({
-        variables: {
-          code: authorizationCode,
-          gitProvider: EnumGitProvider.GitLab,
-        },
-      }).catch(console.error);
+    if (window.opener && !loading) {
+      setLoading((loading) => {
+        if (!loading) {
+          completeAuthWithGit({
+            variables: {
+              code: authorizationCode,
+              gitProvider: EnumGitProvider.GitLab,
+            },
+          }).catch(console.error);
+        }
+        return true;
+      });
     }
-  }, [completeAuthWithGit, trackEvent]);
+  }, [authorizationCode, completeAuthWithGit, loading, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
   return <p>Please wait...</p>;

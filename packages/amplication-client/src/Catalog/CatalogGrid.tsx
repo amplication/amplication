@@ -4,6 +4,7 @@ import {
   DataGridColumn,
   DataGridColumnFilter,
   DataGridFilters,
+  //DataGridSortColumn,
   EnumContentAlign,
   EnumFlexDirection,
   EnumGapSize,
@@ -80,14 +81,35 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
     columnsWithAllProps,
     COLUMNS_LOCAL_STORAGE_KEY
   );
-  const { catalog, loading, error, setFilter, setSearchPhrase, pagination } =
-    useCatalog();
+  const {
+    catalog,
+    loading,
+    error,
+    setFilter,
+    setSearchPhrase,
+    pagination,
+    //sorting,
+  } = useCatalog();
 
   const errorMessage = formatError(error);
 
   const handleLoadMore = useCallback(() => {
     pagination.triggerLoadMore();
   }, [pagination]);
+
+  // const onSortColumnsChange = useCallback(
+  //   (sortColumns: DataGridSortColumn[]) => {
+  //     pagination.setPageNumber(1);
+  //     const [sortColumn] = sortColumns;
+  //     if (!sortColumn) {
+  //       sorting.setOrderBy(undefined);
+  //       return;
+  //     }
+
+  //     sorting.setOrderBy([sortColumn]);
+  //   },
+  //   [sorting, pagination]
+  // );
 
   return (
     <div className={`${CLASS_NAME}__wrapper`}>
@@ -146,6 +168,8 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
             rows={catalog}
             onColumnsReorder={onColumnsReorder}
             onScrollToBottom={handleLoadMore}
+            // onSortColumnsChange={onSortColumnsChange}
+            // clientSideSort={false}
           ></DataGrid>
         )}
       </div>

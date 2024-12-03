@@ -63,4 +63,7 @@ export interface GitProvider {
     args: CreatePullRequestCommentArgs
   ) => Promise<void>;
   getAmplicationBotIdentity(): Promise<Bot | null>;
+
+  getAuthData(): Promise<OAuthTokens | null>;
+  isAuthDataRefreshed(): Promise<boolean>;
 }

@@ -1,4 +1,8 @@
-const CLASS_NAME = "item-content";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  FlexItem,
+} from "@amplication/ui/design-system";
 
 type Props = {
   logo: string;
@@ -7,9 +11,12 @@ type Props = {
 
 export const GitSelectMenuItemContent = ({ logo, name }: Props) => {
   return (
-    <div className={CLASS_NAME}>
-      {logo && <img src={logo} alt="" />}
-      <div className={`${CLASS_NAME}__text`}>{name}</div>
-    </div>
+    <FlexItem
+      direction={EnumFlexDirection.Row}
+      itemsAlign={EnumItemsAlign.Center}
+      start={logo && <img src={logo} alt="" />}
+    >
+      {name}
+    </FlexItem>
   );
 };
