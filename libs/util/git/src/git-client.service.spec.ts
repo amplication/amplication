@@ -3,7 +3,13 @@ import { ILogger } from "@amplication/util/logging";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { GitProvider } from "./git-provider.interface";
-import { Bot, EnumGitProvider, OAuthTokens } from "./types";
+import {
+  Bot,
+  CreateRepositoryArgs,
+  EnumGitOrganizationType,
+  EnumGitProvider,
+  OAuthTokens,
+} from "./types";
 
 jest.mock("./providers/git-cli");
 jest.mock("simple-git");
@@ -377,6 +383,209 @@ describe("GitClientService", () => {
       expect(gitGetFirstCommitShaMock).not.toHaveBeenCalled();
       expect(gitProviderMock.createBranch).not.toHaveBeenCalled();
       expect(gitLogMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getGitInstallationUrl", () => {
+    it("should return the Git installation URL", async () => {
+      const amplicationWorkspaceId = "workspace-id";
+      const installationUrl =
+        "https://github.com/apps/amplication/installations/new";
+      getGitInstallationUrlMock.mockResolvedValue(installationUrl);
+
+      const result = await service.getGitInstallationUrl(
+        amplicationWorkspaceId
+      );
+
+      expect(result).toBe(installationUrl);
+      expect(getGitInstallationUrlMock).toHaveBeenCalledWith(
+        amplicationWorkspaceId
+      );
+    });
+  });
+
+  describe("getOAuthTokens", () => {
+    it("should return OAuth tokens", async () => {
+      const authorizationCode = "auth-code";
+      const tokens: OAuthTokens = {
+        accessToken: "access-token",
+        refreshToken: "refresh-token",
+        tokenType: "",
+        expiresAt: 0,
+        scopes: [],
+      };
+      getOAuthTokensMock.mockResolvedValue(tokens);
+
+      const result = await service.getOAuthTokens(authorizationCode);
+
+      expect(result).toBe(tokens);
+      expect(getOAuthTokensMock).toHaveBeenCalledWith(authorizationCode);
+    });
+  });
+
+  describe("getAuthData", () => {
+    it("should return auth data", async () => {
+      const authData: OAuthTokens = {
+        accessToken: "access-token",
+        refreshToken: "refresh-token",
+        tokenType: "",
+        expiresAt: 0,
+        scopes: [],
+      };
+      (gitProviderMock.getAuthData as jest.Mock).mockResolvedValue(authData);
+
+      const result = await service.getAuthData();
+
+      expect(result).toBe(authData);
+      expect(gitProviderMock.getAuthData).toHaveBeenCalled();
+    });
+
+    it("should return null if no auth data is available", async () => {
+      (gitProviderMock.getAuthData as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.getAuthData();
+
+      expect(result).toBeNull();
+      expect(gitProviderMock.getAuthData).toHaveBeenCalled();
+    });
+  });
+
+  describe("isAuthDataRefreshed", () => {
+    it("should return true if auth data is refreshed", async () => {
+      (gitProviderMock.isAuthDataRefreshed as jest.Mock).mockResolvedValue(
+        true
+      );
+
+      const result = await service.isAuthDataRefreshed();
+
+      expect(result).toBe(true);
+      expect(gitProviderMock.isAuthDataRefreshed).toHaveBeenCalled();
+    });
+
+    it("should return false if auth data is not refreshed", async () => {
+      (gitProviderMock.isAuthDataRefreshed as jest.Mock).mockResolvedValue(
+        false
+      );
+
+      const result = await service.isAuthDataRefreshed();
+
+      expect(result).toBe(false);
+      expect(gitProviderMock.isAuthDataRefreshed).toHaveBeenCalled();
+    });
+  });
+
+  describe("getCurrentOAuthUser", () => {
+    it("should return the current OAuth user", async () => {
+      const accessToken = "access-token";
+      const currentUser = { id: "user-id", login: "user-login" };
+      getCurrentOAuthUserMock.mockResolvedValue(currentUser);
+
+      const result = await service.getCurrentOAuthUser(accessToken);
+
+      expect(result).toBe(currentUser);
+      expect(getCurrentOAuthUserMock).toHaveBeenCalledWith(accessToken);
+    });
+  });
+
+  describe("getGitGroups", () => {
+    it("should return git groups", async () => {
+      const gitGroups = { groups: [], total: 0 };
+      getGitGroupsMock.mockResolvedValue(gitGroups);
+
+      const result = await service.getGitGroups();
+
+      expect(result).toBe(gitGroups);
+      expect(getGitGroupsMock).toHaveBeenCalled();
+    });
+  });
+
+  describe("getRepository", () => {
+    it("should return a repository", async () => {
+      const getRepositoryArgs = { owner: "owner", repositoryName: "repo" };
+      const repository = { id: "repo-id", name: "repo" };
+      getRepositoryMock.mockResolvedValue(repository);
+
+      const result = await service.getRepository(getRepositoryArgs);
+
+      expect(result).toBe(repository);
+      expect(getRepositoryMock).toHaveBeenCalledWith(getRepositoryArgs);
+    });
+  });
+
+  describe("getRepositories", () => {
+    it("should return repositories", async () => {
+      const getRepositoriesArgs = {
+        owner: "owner",
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
+      };
+      const repositories = { repos: [], total: 0 };
+      getRepositoriesMock.mockResolvedValue(repositories);
+
+      const result = await service.getRepositories(getRepositoriesArgs);
+
+      expect(result).toBe(repositories);
+      expect(getRepositoriesMock).toHaveBeenCalledWith(getRepositoriesArgs);
+    });
+  });
+
+  describe("getFolderContent", () => {
+    it("should return folder content", async () => {
+      const args = { owner: "owner", repositoryName: "repo", path: "/" };
+      const folderContent = { files: [], total: 0 };
+      getFolderContentMock.mockResolvedValue(folderContent);
+
+      const result = await service.getFolderContent(args);
+
+      expect(result).toBe(folderContent);
+      expect(getFolderContentMock).toHaveBeenCalledWith(args);
+    });
+  });
+
+  describe("createRepository", () => {
+    it("should create a repository", async () => {
+      const createRepositoryArgs: CreateRepositoryArgs = {
+        owner: "owner",
+        repositoryName: "repo",
+        gitOrganization: {
+          name: "",
+          type: EnumGitOrganizationType.Organization,
+          useGroupingForRepositories: false,
+        },
+        isPrivate: false,
+      };
+      const repository = { id: "repo-id", name: "repo" };
+      createRepositoryMock.mockResolvedValue(repository);
+
+      const result = await service.createRepository(createRepositoryArgs);
+
+      expect(result).toBe(repository);
+      expect(createRepositoryMock).toHaveBeenCalledWith(createRepositoryArgs);
+    });
+  });
+
+  describe("deleteGitOrganization", () => {
+    it("should delete a git organization", async () => {
+      deleteGitOrganizationMock.mockResolvedValue(true);
+
+      const result = await service.deleteGitOrganization();
+
+      expect(result).toBe(true);
+      expect(deleteGitOrganizationMock).toHaveBeenCalled();
+    });
+  });
+
+  describe("getOrganization", () => {
+    it("should return an organization", async () => {
+      const organization = { id: "org-id", name: "org" };
+      getOrganizationMock.mockResolvedValue(organization);
+
+      const result = await service.getOrganization();
+
+      expect(result).toBe(organization);
+      expect(getOrganizationMock).toHaveBeenCalled();
     });
   });
 });
