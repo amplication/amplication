@@ -3,6 +3,7 @@ import {
   EnumGitProvider,
   GitHubConfiguration,
   GitHubProviderOrganizationProperties,
+  GitLabConfiguration,
 } from "../../src/types";
 import { GithubService } from "../../src/providers/github/github.service";
 import { GitFactory } from "../../src/git-factory";
@@ -34,6 +35,7 @@ describe.skip("GitFactory", () => {
           {
             bitBucketConfiguration: {} as unknown as BitBucketConfiguration,
             gitHubConfiguration: {} as unknown as GitHubConfiguration,
+            gitLabConfiguration: {} as unknown as GitLabConfiguration,
           },
           logger
         )
