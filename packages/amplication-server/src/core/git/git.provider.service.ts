@@ -767,9 +767,10 @@ export class GitProviderService {
       const gitOrganization = await this.prisma.gitOrganization.upsert({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          provider_installationId: {
+          provider_installationId_workspaceId: {
             provider: gitProvider,
             installationId: currentUserData.uuid,
+            workspaceId,
           },
         },
         create: {
@@ -802,7 +803,10 @@ export class GitProviderService {
 
       return gitOrganization;
     } catch (error) {
-      throw new AmplicationError("Failed to complete OAuth2 flow");
+      this.logger.error("Failed to complete OAuth2 flow", undefined, {
+        message: error.message,
+      });
+      throw new AmplicationError("Failed to complete OAuth2 flow ");
     }
   }
 
