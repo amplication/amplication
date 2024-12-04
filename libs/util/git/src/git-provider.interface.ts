@@ -30,7 +30,10 @@ export interface GitProvider {
   readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
+  getCurrentOAuthUser(
+    accessToken: string,
+    state?: string
+  ): Promise<CurrentUser>;
   getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(

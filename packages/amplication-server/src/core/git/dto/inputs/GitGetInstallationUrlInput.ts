@@ -9,4 +9,7 @@ export class GitGetInstallationUrlInput {
 
   @Field(() => EnumGitProvider, { nullable: false })
   gitProvider!: EnumGitProvider;
+
+  @Field(() => String, { nullable: true })
+  state?: string;
 }

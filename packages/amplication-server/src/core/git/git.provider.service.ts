@@ -640,11 +640,11 @@ export class GitProviderService {
   async getGitInstallationUrl(
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
-    const { gitProvider, workspaceId } = args.data;
+    const { gitProvider, workspaceId, state } = args.data;
     const gitClientService = await this.createGitClientWithoutProperties(
       gitProvider
     );
-    return await gitClientService.getGitInstallationUrl(workspaceId);
+    return await gitClientService.getGitInstallationUrl(state || workspaceId);
   }
 
   async getProjectsConnectedGitRepositories(
@@ -742,7 +742,7 @@ export class GitProviderService {
     args: CompleteGitOAuth2FlowArgs,
     currentUser: User
   ): Promise<GitOrganization> {
-    const { code, gitProvider, workspaceId } = args.data;
+    const { code, gitProvider, workspaceId, state } = args.data;
 
     try {
       const gitClientService = await this.createGitClientWithoutProperties(
@@ -752,7 +752,8 @@ export class GitProviderService {
       const oAuthTokens = await gitClientService.getOAuthTokens(code);
 
       const currentUserData = await gitClientService.getCurrentOAuthUser(
-        oAuthTokens.accessToken
+        oAuthTokens.accessToken,
+        state
       );
 
       const providerOrganizationProperties: OAuthProviderOrganizationProperties =
@@ -806,7 +807,9 @@ export class GitProviderService {
       this.logger.error("Failed to complete OAuth2 flow", undefined, {
         message: error.message,
       });
-      throw new AmplicationError("Failed to complete OAuth2 flow ");
+      throw new AmplicationError(
+        `Failed to complete OAuth2 flow - ${error.message}`
+      );
     }
   }
 

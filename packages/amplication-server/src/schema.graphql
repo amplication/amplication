@@ -1221,6 +1221,7 @@ type GitFolderContentItem {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 """Group of Repositories"""
@@ -1237,6 +1238,7 @@ input GitGroupInput {
 input GitOAuth2FlowInput {
   code: String!
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 type GitOrganization {

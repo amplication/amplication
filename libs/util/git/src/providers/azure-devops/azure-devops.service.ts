@@ -37,6 +37,7 @@ import {
   GitVersionType,
 } from "azure-devops-node-api/interfaces/GitInterfaces";
 import axios from "axios";
+import { isEmpty } from "lodash";
 
 const SCOPES = [
   "499b84ac-1321-427f-aa17-267ca6975798/.default",
@@ -243,7 +244,10 @@ export class AzureDevOpsService implements GitProvider {
     }
   }
 
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
+  async getCurrentOAuthUser(
+    accessToken: string,
+    state?: string
+  ): Promise<CurrentUser> {
     try {
       const profileResponse = await axios.get(
         "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=6.0",
@@ -265,12 +269,40 @@ export class AzureDevOpsService implements GitProvider {
         }
       );
 
-      console.log(
-        "Organizations:",
-        response.data.value.map((org) => org.accountName)
-      );
+      if (response.data.count === 0) {
+        throw new CustomError("No organizations were found in the account");
+      }
 
-      const organization = response.data.value[response.data.value.length - 1];
+      if (!isEmpty(state)) {
+        const selectedOrganization = response.data.value.find(
+          (org: any) => org.accountName === state
+        );
+
+        if (!selectedOrganization) {
+          throw new CustomError("The provided organization name was not found");
+        }
+
+        return {
+          displayName: selectedOrganization.accountName,
+          username: selectedOrganization.accountName,
+          uuid: selectedOrganization.accountId,
+          links: {
+            avatar: {
+              href: "",
+              name: "",
+            },
+          },
+          useGroupingForRepositories: true,
+        };
+      }
+
+      if (response.data.count > 1) {
+        throw new CustomError(
+          "User has multiple organizations, please provide the organization name"
+        );
+      }
+
+      const organization = response.data.value[0];
 
       return {
         displayName: organization.accountName,

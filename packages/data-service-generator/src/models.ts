@@ -1251,6 +1251,7 @@ export type GitFolderContentItem = {
 
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Group of Repositories */
@@ -1267,6 +1268,7 @@ export type GitGroupInput = {
 export type GitOAuth2FlowInput = {
   code: Scalars['String']['input'];
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GitOrganization = {
