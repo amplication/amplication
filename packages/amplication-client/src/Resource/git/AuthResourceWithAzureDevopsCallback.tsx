@@ -5,6 +5,7 @@ import {
   useCompleteGitOAuth2FlowMutation,
 } from "../../models";
 import { useTracking } from "../../util/analytics";
+import { formatError } from "../../util/error";
 
 const AuthResourceWithAzureDevopsCallback = () => {
   const { trackEvent } = useTracking();
@@ -16,6 +17,7 @@ const AuthResourceWithAzureDevopsCallback = () => {
   const authorizationCode = urlParams.get("code");
   const error = urlParams.get("error");
   const errorDescription = urlParams.get("error_description");
+  const state = urlParams.get("state");
 
   const [completeAuthWithGit] = useCompleteGitOAuth2FlowMutation({
     onCompleted: (data) => {
@@ -25,6 +27,11 @@ const AuthResourceWithAzureDevopsCallback = () => {
     },
     onError: (error) => {
       console.error(error);
+      const errorMessage = formatError(error);
+
+      window.opener.postMessage({ failed: true, errorMessage });
+      // close the popup
+      window.close();
     },
     refetchQueries: [
       {
@@ -44,6 +51,7 @@ const AuthResourceWithAzureDevopsCallback = () => {
           completeAuthWithGit({
             variables: {
               code: authorizationCode,
+              state,
               gitProvider: EnumGitProvider.AzureDevOps,
             },
           }).catch(console.error);
@@ -51,7 +59,7 @@ const AuthResourceWithAzureDevopsCallback = () => {
         return true;
       });
     }
-  }, [authorizationCode, completeAuthWithGit, loading, trackEvent]);
+  }, [authorizationCode, completeAuthWithGit, loading, state, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
 

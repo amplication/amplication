@@ -5,11 +5,13 @@ import {
 } from "../../../models";
 import { useTracking } from "../../../util/analytics";
 import "./GitProviderConnectionList.scss";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { gql, useMutation } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { Dialog } from "@amplication/ui/design-system";
+import GitProviderConnectionAzureOrganizationForm from "./GitProviderConnectionAzureOrganizationForm";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -18,7 +20,7 @@ type DType = {
 // eslint-disable-next-line
 let triggerOnDone = () => {};
 // eslint-disable-next-line
-let triggerAuthFailed = () => {};
+let triggerAuthFailed = (errorMessage?: string) => {};
 
 export type Props = {
   onDone: () => void;
@@ -48,6 +50,8 @@ export const GitProviderConnectionList: React.FC<Props> = ({
     featureId: BillingFeature.AzureDevops,
   }).hasAccess;
 
+  const [showAzureOrgName, setShowAzureOrgName] = useState(false);
+
   const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
     onCompleted: (data) => {
       openSignInWindow(data.getGitResourceInstallationUrl.url, "auth with git");
@@ -57,12 +61,18 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   triggerOnDone = () => {
     onDone();
   };
-  triggerAuthFailed = () => {
-    setPopupFailed(true);
+  triggerAuthFailed = (errorMessage?: string) => {
+    //if an error was returned from the other window, show the error
+    if (errorMessage) {
+      //@todo: raise the error message to the user
+      console.error(errorMessage);
+    } else {
+      setPopupFailed(true);
+    }
   };
 
   const handleAddProvider = useCallback(
-    (provider: EnumGitProvider) => {
+    (provider: EnumGitProvider, state?: string) => {
       trackEvent({
         eventName: AnalyticsEventNames.GitProviderConnectClick,
         eventOriginLocation: "git-provider-connection-list",
@@ -71,12 +81,17 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       authWithGit({
         variables: {
           gitProvider: provider,
+          state,
         },
       }).catch(console.error);
       onProviderSelect && onProviderSelect(provider);
     },
     [authWithGit, trackEvent, onProviderSelect]
   );
+
+  const handleAzureDevops = useCallback(() => {
+    setShowAzureOrgName(true);
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
@@ -99,7 +114,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       />
       <GitProviderConnection
         provider={EnumGitProvider.AzureDevOps}
-        onSyncNewGitOrganizationClick={handleAddProvider}
+        onSyncNewGitOrganizationClick={handleAzureDevops}
         billingFeature={BillingFeature.AzureDevops}
         disabled={!showAzureDevops}
       />
@@ -111,13 +126,30 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         billingFeature={BillingFeature.AwsCodeCommit}
         disabled={true}
       />
+      <Dialog
+        isOpen={showAzureOrgName}
+        title="Connect to Azure DevOps"
+        onDismiss={() => setShowAzureOrgName(false)}
+      >
+        <GitProviderConnectionAzureOrganizationForm
+          onSubmit={(values) => {
+            setShowAzureOrgName(false);
+            handleAddProvider(EnumGitProvider.AzureDevOps, values.organization);
+          }}
+        />
+      </Dialog>
     </div>
   );
 };
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
-    getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
+  mutation getGitResourceInstallationUrl(
+    $gitProvider: EnumGitProvider!
+    $state: String
+  ) {
+    getGitResourceInstallationUrl(
+      data: { gitProvider: $gitProvider, state: $state }
+    ) {
       url
     }
   }
@@ -127,6 +159,9 @@ const receiveMessage = (event: any) => {
   const { data } = event;
   if (data.completed) {
     triggerOnDone();
+  }
+  if (data.failed) {
+    triggerAuthFailed(data.errorMessage);
   }
 };
 

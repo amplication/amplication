@@ -50,9 +50,12 @@ export const CREATE_GIT_ORGANIZATION_AWS_CODECOMMIT = gql`
 export const CREATE_GIT_ORGANIZATION_OAUTH2_FLOW = gql`
   mutation completeGitOAuth2Flow(
     $code: String!
+    $state: String
     $gitProvider: EnumGitProvider!
   ) {
-    completeGitOAuth2Flow(data: { code: $code, gitProvider: $gitProvider }) {
+    completeGitOAuth2Flow(
+      data: { code: $code, gitProvider: $gitProvider, state: $state }
+    ) {
       id
       name
     }
