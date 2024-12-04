@@ -8,10 +8,10 @@ import {
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
 import { WizardFlowType } from "../types";
-import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
+import ResourceGitSettingsWithOverrideWizard from "../../git/ResourceGitSettingsWithOverrideWizard";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
-import AuthWithGitProvider from "../../git/AuthWithGitProvider";
+import ResourceGitSettings from "../../git/ResourceGitSettings";
 
 const TOOLTIP_DIRECTION = "n";
 const CLASS_NAME = "create-git-sync";
@@ -137,7 +137,7 @@ const CreateGithubSync: React.FC<props> = ({
       <Layout.RightSide>
         <Layout.ContentWrapper>
           {wizardFlowType === "Onboarding" || isNeedToConnectGitProvider ? (
-            <AuthWithGitProvider
+            <ResourceGitSettings
               type="wizard"
               gitProvider={gitProvider}
               onDone={handleOnDone}
@@ -153,7 +153,7 @@ const CreateGithubSync: React.FC<props> = ({
               }}
             />
           ) : (
-            <ServiceWizardConfigurationGitSettings
+            <ResourceGitSettingsWithOverrideWizard
               onDone={handleOnDone}
               formik={formik}
               gitRepositoryDisconnectedCb={handleRepositoryDisconnected}

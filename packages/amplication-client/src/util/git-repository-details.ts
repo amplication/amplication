@@ -1,4 +1,4 @@
-import { GitOrganizationFromGitRepository } from "../Resource/git/SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../Resource/git/ResourceGitSettingsPage";
 import { EnumGitProvider, GitOrganization } from "../models";
 
 const GITHUB_URL = "https://github.com";

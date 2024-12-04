@@ -2,7 +2,6 @@ import {
   EnumItemsAlign,
   EnumPanelStyle,
   FlexItem,
-  HorizontalRule,
   Panel,
   Toggle,
 } from "@amplication/ui/design-system";
@@ -12,8 +11,7 @@ import { AppContext } from "../../context/appContext";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
-import AuthWithGitProvider from "./AuthWithGitProvider";
-import GitSyncNotes from "./GitSyncNotes";
+import ResourceGitSettings from "./ResourceGitSettings";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import {
   GitRepositoryCreatedData,
@@ -30,7 +28,7 @@ type Props = {
   formik: FormikProps<{ [key: string]: any }>;
 };
 
-const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
+const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
   onDone,
   gitRepositoryDisconnectedCb,
   gitRepositoryCreatedCb,
@@ -111,7 +109,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
       )}
 
       {isOverride && (
-        <AuthWithGitProvider
+        <ResourceGitSettings
           type="wizard"
           gitProvider={gitProvider}
           onDone={onDone}
@@ -126,9 +124,8 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
           }}
         />
       )}
-      <GitSyncNotes />
     </div>
   );
 };
 
-export default ServiceWizardConfigurationGitSettings;
+export default ResourceGitSettingsWithOverrideWizard;

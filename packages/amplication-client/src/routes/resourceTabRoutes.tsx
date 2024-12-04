@@ -147,7 +147,7 @@ export const resourceTabRoutes = (projectBasePath) => [
 
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/git-sync`,
-    Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
+    Component: lazy(() => import("../Resource/git/ResourceGitSettingsPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,

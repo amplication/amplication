@@ -20,7 +20,7 @@ import {
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useAppContext } from "../context/appContext";
 import * as models from "../models";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { GIT_PROVIDER_ICON_MAP } from "../Resource/git/constants";
 import { formatError } from "../util/error";
 import { getGitRepositoryDetails } from "../util/git-repository-details";
 import { pluralize } from "../util/pluralize";
@@ -273,7 +273,7 @@ export const AvailableRemotePrivatePluginList = React.memo(
                   itemsAlign={EnumItemsAlign.Center}
                   gap={EnumGapSize.Small}
                 >
-                  <Icon icon={gitProviderIconMap[gitProvider]} />
+                  <Icon icon={GIT_PROVIDER_ICON_MAP[gitProvider]} />
                   Open git repository
                 </FlexItem>
               </Text>

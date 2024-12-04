@@ -13,11 +13,10 @@ import {
 } from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitOrganizationType } from "../../../../models";
-import "../../AuthResourceWithGit.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import "./RepositoryActions.scss";
-import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
+import ResourceGitSyncDetailsWizard from "./ResourceGitSyncDetailsWizard";
 import { EnumGitProvider } from "@amplication/code-gen-types";
 type Props = {
   onCreateRepository: () => void;
@@ -27,7 +26,7 @@ type Props = {
   selectedGitRepository: GitRepositorySelected;
 };
 
-export default function WizardRepositoryActions({
+export default function RepositoryActionsWizard({
   onCreateRepository,
   onSelectRepository,
   selectedGitOrganization,
@@ -37,7 +36,7 @@ export default function WizardRepositoryActions({
   return (
     <Panel panelStyle={EnumPanelStyle.Bold}>
       {selectedGitRepository?.gitOrganizationId ? (
-        <WizardGithubSyncDetails
+        <ResourceGitSyncDetailsWizard
           repositorySelected={selectedGitRepository}
           onDisconnectGitRepository={onDisconnectGitRepository}
         />

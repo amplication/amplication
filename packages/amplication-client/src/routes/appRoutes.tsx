@@ -290,7 +290,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
-                  () => import("../Resource/git/SyncWithGithubPage")
+                  () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
                 displayName: "Sync with Git",

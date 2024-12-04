@@ -18,8 +18,8 @@ import {
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
-import AuthWithGitProvider from "./AuthWithGitProvider";
-import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
+import ResourceGitSettings from "./ResourceGitSettings";
+import ResourceGitSettingsWithOverride from "./ResourceGitSettingsWithOverride";
 import useCommits from "../../VersionControl/hooks/useCommits";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
@@ -37,7 +37,7 @@ export type GitOrganizationFromGitRepository = {
   useGroupingForRepositories: boolean;
 };
 
-const SyncWithGithubPage: React.FC = () => {
+const ResourceGitSettingsPage: React.FC = () => {
   const {
     currentProjectConfiguration,
     currentWorkspace,
@@ -117,7 +117,7 @@ const SyncWithGithubPage: React.FC = () => {
     >
       <HorizontalRule />
       {data?.resource && isProjectConfiguration && (
-        <AuthWithGitProvider
+        <ResourceGitSettings
           type="resource"
           resource={data.resource}
           onDone={handleOnDone}
@@ -126,7 +126,7 @@ const SyncWithGithubPage: React.FC = () => {
         />
       )}
       {!isProjectConfiguration && data?.resource && (
-        <ServiceConfigurationGitSettings
+        <ResourceGitSettingsWithOverride
           resource={data.resource}
           onDone={handleOnDone}
           gitRepositorySelectedCb={handleRepositorySelected}
@@ -189,7 +189,7 @@ const SyncWithGithubPage: React.FC = () => {
   );
 };
 
-export default SyncWithGithubPage;
+export default ResourceGitSettingsPage;
 
 export const GET_RESOURCE_GIT_REPOSITORY = gql`
   query getResourceGitRepository($resourceId: String!) {

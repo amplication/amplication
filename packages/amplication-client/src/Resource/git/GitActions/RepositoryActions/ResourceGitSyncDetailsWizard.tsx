@@ -20,7 +20,7 @@ type Props = {
   onDisconnectGitRepository: () => void;
 };
 
-function WizardGithubSyncDetails({
+function ResourceGitSyncDetailsWizard({
   repositorySelected,
   className,
   showGitRepositoryBtn = true,
@@ -62,4 +62,4 @@ function WizardGithubSyncDetails({
   );
 }
 
-export default WizardGithubSyncDetails;
+export default ResourceGitSyncDetailsWizard;

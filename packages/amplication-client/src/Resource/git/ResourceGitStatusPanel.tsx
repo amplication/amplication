@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import GitRepoDetails from "./GitRepoDetails";
-import { gitProviderIconMap } from "./git-provider-icon-map";
+import { GIT_PROVIDER_ICON_MAP } from "./constants";
 import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 
 type Props = {
@@ -24,7 +24,7 @@ type Props = {
 
 const DATE_FORMAT = "PP p";
 
-const AppGitStatusPanel = ({ resource }: Props) => {
+const ResourceGitStatusPanel = ({ resource }: Props) => {
   const {
     gitRepositoryUrl,
     gitRepositoryFullName,
@@ -63,7 +63,7 @@ const AppGitStatusPanel = ({ resource }: Props) => {
         itemsAlign={EnumItemsAlign.Center}
       >
         <Icon
-          icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
+          icon={GIT_PROVIDER_ICON_MAP[gitRepositoryOrganizationProvider]}
           size="small"
           color={EnumTextColor.Black20}
         />
@@ -93,4 +93,4 @@ const AppGitStatusPanel = ({ resource }: Props) => {
   );
 };
 
-export default AppGitStatusPanel;
+export default ResourceGitStatusPanel;
