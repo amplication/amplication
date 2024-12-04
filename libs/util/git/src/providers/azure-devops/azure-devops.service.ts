@@ -69,7 +69,7 @@ export class AzureDevOpsService implements GitProvider {
       },
     });
 
-    const { accessToken, refreshToken, expiresAt } =
+    const { accessToken, refreshToken, expiresAt, username } =
       providerOrganizationProperties;
 
     this.auth = {
@@ -87,18 +87,25 @@ export class AzureDevOpsService implements GitProvider {
     this.clientSecret = clientSecret;
     this.tenantId = tenantId;
     this.redirectUri = redirectUri;
-    this.organizationUrl = `https://dev.azure.com/${"organization"}`;
+    this.organizationUrl = `https://dev.azure.com/${username}`;
     this.scopes = SCOPES;
   }
 
   async init(): Promise<void> {
-    // await this.refreshAccessTokenIfNeeded();
-    // const authHandler = azdev.getBearerHandler(this.auth.accessToken);
-    // this.azureDevOpsClient = new azdev.WebApi(
-    //   this.organizationUrl,
-    //   authHandler
-    // );
+    if (!this.auth.accessToken) {
+      return; // the provider can only be used for non authenticated operations (creating access token)
+    }
+    this.initAzureDevOpsClient();
+
     this.logger.info("AzureDevOpsService initialized");
+  }
+
+  private initAzureDevOpsClient(): void {
+    const authHandler = azdev.getBearerHandler(this.auth.accessToken);
+    this.azureDevOpsClient = new azdev.WebApi(
+      this.organizationUrl,
+      authHandler
+    );
   }
 
   getAuthData(): Promise<OAuthTokens> {
@@ -159,6 +166,8 @@ export class AzureDevOpsService implements GitProvider {
         tokenType: token_type,
         scopes: scope.split(" "),
       };
+
+      this.initAzureDevOpsClient();
 
       this.logger.info("Obtained new OAuth tokens");
       return this.auth;
@@ -221,6 +230,8 @@ export class AzureDevOpsService implements GitProvider {
         scopes: token.scope.split(" "),
       };
 
+      this.initAzureDevOpsClient();
+
       this.logger.info("Refreshed OAuth tokens");
       return this.auth;
     } catch (error) {
@@ -233,23 +244,53 @@ export class AzureDevOpsService implements GitProvider {
   }
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    await this.refreshAccessTokenIfNeeded();
+    try {
+      const profileResponse = await axios.get(
+        "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=6.0",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
-    const coreApi = await this.azureDevOpsClient.getCoreApi();
-    const profile = await coreApi.getProjects();
+      const userId = profileResponse.data.id;
 
-    return {
-      displayName: "profile.displayName",
-      username: "profile.emailAddress || profile.displayName",
-      uuid: "profile.id",
-      links: {
-        avatar: {
-          href: "profile._links.avatar.href",
-          name: "profile.displayName",
+      const response = await axios.get(
+        `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userId}&api-version=6.0`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log(
+        "Organizations:",
+        response.data.value.map((org) => org.accountName)
+      );
+
+      const organization = response.data.value[response.data.value.length - 1];
+
+      return {
+        displayName: organization.accountName,
+        username: organization.accountName,
+        uuid: organization.accountId,
+        links: {
+          avatar: {
+            href: "",
+            name: "",
+          },
         },
-      },
-      useGroupingForRepositories: false,
-    };
+        useGroupingForRepositories: true,
+      };
+    } catch (error) {
+      this.logger.error("Error fetching user data:", undefined, {
+        error: error.message,
+        data: error.response?.data,
+      });
+      throw error;
+    }
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
