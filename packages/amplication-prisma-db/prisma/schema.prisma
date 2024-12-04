@@ -773,6 +773,7 @@ enum EnumGitProvider {
   Bitbucket
   AwsCodeCommit
   GitLab
+  AzureDevOps
 }
 
 enum EnumGitOrganizationType {

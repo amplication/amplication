@@ -44,6 +44,9 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const showGitLab = stigg.getBooleanEntitlement({
     featureId: BillingFeature.GitLab,
   }).hasAccess;
+  const showAzureDevops = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.AzureDevops,
+  }).hasAccess;
 
   const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
     onCompleted: (data) => {
@@ -97,6 +100,12 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         onSyncNewGitOrganizationClick={handleAddProvider}
         billingFeature={BillingFeature.GitLab}
         disabled={!showGitLab}
+      />
+      <GitProviderConnection
+        provider={EnumGitProvider.AzureDevOps}
+        onSyncNewGitOrganizationClick={handleAddProvider}
+        billingFeature={BillingFeature.AzureDevops}
+        disabled={!showAzureDevops}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}

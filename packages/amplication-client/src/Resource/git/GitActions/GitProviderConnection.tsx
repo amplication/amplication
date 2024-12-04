@@ -5,7 +5,7 @@ import { EnumGitProvider } from "../../../models";
 import classNames from "classnames";
 import "./GitProviderConnection.scss";
 
-import { PROVIDERS_DISPLAY_NAME } from "../../constants";
+import { GIT_PROVIDER_NAME } from "../constants";
 import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
@@ -32,7 +32,7 @@ export default function GitProviderConnection({
     onSyncNewGitOrganizationClick(provider);
   }, [onSyncNewGitOrganizationClick, provider]);
 
-  const providerDisplayName = PROVIDERS_DISPLAY_NAME[provider];
+  const providerDisplayName = GIT_PROVIDER_NAME[provider];
 
   return (
     <div className={classNames(CLASS_NAME, { enabled: !disabled })}>

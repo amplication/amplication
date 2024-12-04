@@ -15,6 +15,7 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
   AwsCodeCommit = "AwsCodeCommit",
   GitLab = "GitLab",
+  AzureDevOps = "AzureDevOps",
 }
 
 export interface BitBucketConfiguration {
@@ -25,6 +26,13 @@ export interface BitBucketConfiguration {
 export interface GitLabConfiguration {
   clientId: string;
   clientSecret: string;
+  redirectUri: string;
+}
+
+export interface AzureDevopsConfiguration {
+  clientId: string;
+  clientSecret: string;
+  tenantId: string;
   redirectUri: string;
 }
 
@@ -40,6 +48,7 @@ export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
   bitBucketConfiguration: BitBucketConfiguration;
   gitLabConfiguration: GitLabConfiguration;
+  azureDevopsConfiguration: AzureDevopsConfiguration;
 }
 export type GitProviderProperties =
   | GitHubProviderOrganizationProperties

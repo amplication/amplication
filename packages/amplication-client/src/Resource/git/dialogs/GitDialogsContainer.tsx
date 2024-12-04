@@ -9,7 +9,7 @@ import GitRepos, {
 } from "./GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import { useCallback } from "react";
-import { PROVIDERS_DISPLAY_NAME } from "../../constants";
+import { GIT_PROVIDER_NAME } from "../constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -52,7 +52,7 @@ export default function GitDialogsContainer({
     openCreateNewRepo();
   }, [closeSelectRepoDialog, openCreateNewRepo]);
 
-  const providerDisplayName = PROVIDERS_DISPLAY_NAME[gitProvider];
+  const providerDisplayName = GIT_PROVIDER_NAME[gitProvider];
 
   return (
     <div>

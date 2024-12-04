@@ -43,6 +43,19 @@ export class PrivatePluginService {
       Env.GITLAB_REDIRECT_URI
     );
 
+    const azureDevopsClientId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_ID
+    );
+    const azureDevopsClientSecret = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_SECRET
+    );
+    const azureDevopsRedirectUri = this.configService.get<string>(
+      Env.AZURE_DEVOPS_REDIRECT_URI
+    );
+    const azureDevopsTenantId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_TENANT_ID
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -73,6 +86,12 @@ export class PrivatePluginService {
         clientId: gitLabClientId,
         clientSecret: gitLabClientSecret,
         redirectUri: gitLabRedirectUri,
+      },
+      azureDevopsConfiguration: {
+        clientId: azureDevopsClientId,
+        clientSecret: azureDevopsClientSecret,
+        tenantId: azureDevopsTenantId,
+        redirectUri: azureDevopsRedirectUri,
       },
     };
   }

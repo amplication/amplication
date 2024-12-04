@@ -987,6 +987,7 @@ enum EnumGitOrganizationType {
 
 enum EnumGitProvider {
   AwsCodeCommit
+  AzureDevOps
   Bitbucket
   GitLab
   Github

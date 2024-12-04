@@ -1,6 +1,7 @@
 export enum BillingFeature {
   AllowWorkspaceCreation = "feature-allow-workspace-creation",
   AwsCodeCommit = "feature-awscodecommit",
+  AzureDevops = "feature-azure-devops",
   Bitbucket = "feature-bitbucket",
   BlockBuild = "feature-block-build",
   BranchPerResource = "feature-branch-per-resource",

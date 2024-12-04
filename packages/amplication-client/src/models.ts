@@ -1020,6 +1020,7 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
+  AzureDevOps = 'AzureDevOps',
   Bitbucket = 'Bitbucket',
   GitLab = 'GitLab',
   Github = 'Github'
