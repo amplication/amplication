@@ -13,7 +13,7 @@ import { isEmpty } from "lodash";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
-import GithubSyncDetails from "./GitActions/RepositoryActions/GithubSyncDetails";
+import ResourceGitSyncDetails from "./GitActions/RepositoryActions/ResourceGitSyncDetails";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = {
@@ -56,7 +56,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
         >
           {projectConfigurationResource?.gitRepository && (
             <>
-              <GithubSyncDetails
+              <ResourceGitSyncDetails
                 showGitRepositoryBtn={false}
                 resourceWithRepository={projectConfigurationResource}
               />

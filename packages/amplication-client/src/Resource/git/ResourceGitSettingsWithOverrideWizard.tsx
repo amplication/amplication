@@ -2,7 +2,6 @@ import {
   EnumItemsAlign,
   EnumPanelStyle,
   FlexItem,
-  HorizontalRule,
   Panel,
   Toggle,
 } from "@amplication/ui/design-system";
@@ -13,7 +12,6 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import ResourceGitSettings from "./ResourceGitSettings";
-import GitSyncNotes from "./GitSyncNotes";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import {
   GitRepositoryCreatedData,
@@ -126,7 +124,6 @@ const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
           }}
         />
       )}
-      <GitSyncNotes />
     </div>
   );
 };

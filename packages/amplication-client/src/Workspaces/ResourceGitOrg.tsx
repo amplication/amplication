@@ -10,7 +10,7 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { GIT_PROVIDER_ICON_MAP } from "../Resource/git/constants";
 
 type Props = {
   resource: models.Resource;
@@ -36,7 +36,9 @@ function ResourceGitOrg({ resource }: Props) {
       {gitOrg ? (
         <>
           <Icon
-            icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
+            icon={
+              GIT_PROVIDER_ICON_MAP[provider || models.EnumGitProvider.Github]
+            }
             size="xsmall"
           />
           <Text

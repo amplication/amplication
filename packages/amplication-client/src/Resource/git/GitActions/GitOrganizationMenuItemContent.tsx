@@ -1,5 +1,5 @@
 import React from "react";
-import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import "./GitOrganizationMenuItemContent.scss";
 
 const CLASS_NAME = "menu-item-content";

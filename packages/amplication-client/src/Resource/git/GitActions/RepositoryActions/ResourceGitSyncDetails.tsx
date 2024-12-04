@@ -22,7 +22,7 @@ type Props = {
   showGitRepositoryBtn?: boolean;
 };
 
-function GithubSyncDetails({
+function ResourceGitSyncDetails({
   resourceWithRepository,
   className,
   showGitRepositoryBtn = true,
@@ -83,4 +83,4 @@ function GithubSyncDetails({
   );
 }
 
-export default GithubSyncDetails;
+export default ResourceGitSyncDetails;

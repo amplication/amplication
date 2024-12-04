@@ -10,10 +10,10 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { GitSelectMenuItemContent } from "./GitSelectMenuItemContent";
+import { GitSelectGroupItem } from "./GitSelectGroupItem";
 
 import { EnumGitProvider } from "../../../models";
-import { gitLogoMap } from "../git-provider-icon-map";
+import { GIT_LOGO_MAP } from "../constants";
 
 export type Props = {
   selectedItem: any;
@@ -46,8 +46,8 @@ export const GitSelectGroup = ({
           <SelectMenu
             title={
               selectedItem && (
-                <GitSelectMenuItemContent
-                  logo={gitLogoMap[gitProvider]}
+                <GitSelectGroupItem
+                  logo={GIT_LOGO_MAP[gitProvider]}
                   name={selectedItem.name}
                 />
               )
@@ -67,8 +67,8 @@ export const GitSelectGroup = ({
                         onSelect(item);
                       }}
                     >
-                      <GitSelectMenuItemContent
-                        logo={gitLogoMap[gitProvider]}
+                      <GitSelectGroupItem
+                        logo={GIT_LOGO_MAP[gitProvider]}
                         name={item.name}
                       />
                     </SelectMenuItem>

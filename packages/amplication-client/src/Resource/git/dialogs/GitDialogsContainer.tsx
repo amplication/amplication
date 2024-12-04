@@ -7,7 +7,7 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
-import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import { useCallback } from "react";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 

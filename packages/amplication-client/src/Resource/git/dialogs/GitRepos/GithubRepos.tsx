@@ -21,8 +21,8 @@ import {
 } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
-import { GitSelectGroup } from "../../select/GitSelectMenu";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GitSelectGroup } from "../../select/GitSelectGroup";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 

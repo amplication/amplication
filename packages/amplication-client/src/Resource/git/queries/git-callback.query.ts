@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+//these queries are automatically generated as hooks by codegen
+//the file name that ends with .query.ts is automatically generated as a hook
+
 export const CREATE_GIT_ORGANIZATION_GITHUB = gql`
   mutation createOrganizationGitHub(
     $installationId: String!

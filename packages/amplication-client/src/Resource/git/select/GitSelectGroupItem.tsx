@@ -9,7 +9,7 @@ type Props = {
   name: string;
 };
 
-export const GitSelectMenuItemContent = ({ logo, name }: Props) => {
+export const GitSelectGroupItem = ({ logo, name }: Props) => {
   return (
     <FlexItem
       direction={EnumFlexDirection.Row}

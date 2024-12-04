@@ -9,12 +9,11 @@ import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import * as models from "../../models";
 import { EnumGitProvider, Resource } from "../../models";
-import "./ResourceGitSettings.scss";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import RepositoryForm from "./GitActions/RepositoryActions/RepositoryForm";
-import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
+import WizardRepositoryActions from "./GitActions/RepositoryActions/RepositoryActionsWizard";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import {
   GitRepositoryCreatedData,

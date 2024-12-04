@@ -19,8 +19,8 @@ import { CreateGitRepositoryInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
-import { GitSelectGroup } from "../../select/GitSelectMenu";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GitSelectGroup } from "../../select/GitSelectGroup";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import { GET_GROUPS } from "../../queries/gitProvider";
 import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 

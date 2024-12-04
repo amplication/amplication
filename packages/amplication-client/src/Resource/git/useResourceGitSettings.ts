@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "./ResourceGitSettingsPage";
 import { GitOrganization, Resource } from "../../models";
 import {
   GitRepositoryCreatedData,

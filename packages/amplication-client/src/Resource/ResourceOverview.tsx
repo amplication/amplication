@@ -31,7 +31,7 @@ import { PluginsTile } from "./PluginsTile";
 import "./ResourceOverview.scss";
 import { ServicesTile } from "./ServicesTile";
 import { TopicsTile } from "./TopicsTile";
-import AppGitStatusPanel from "./git/AppGitStatusPanel";
+import ResourceGitStatusPanel from "./git/ResourceGitStatusPanel";
 import { useResourceSummary } from "./hooks/useResourceSummary";
 
 const PAGE_TITLE = "Resource Overview";
@@ -137,7 +137,7 @@ const ResourceOverview = () => {
               )}
             </FlexItem>
             {currentResource?.resourceType === EnumResourceType.Service && (
-              <AppGitStatusPanel resource={currentResource} />
+              <ResourceGitStatusPanel resource={currentResource} />
             )}
           </FlexItem.FlexStart>
           {currentResource?.resourceType === EnumResourceType.Service && (

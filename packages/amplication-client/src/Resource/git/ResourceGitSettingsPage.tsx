@@ -37,7 +37,7 @@ export type GitOrganizationFromGitRepository = {
   useGroupingForRepositories: boolean;
 };
 
-const SyncWithGithubPage: React.FC = () => {
+const ResourceGitSettingsPage: React.FC = () => {
   const {
     currentProjectConfiguration,
     currentWorkspace,
@@ -189,7 +189,7 @@ const SyncWithGithubPage: React.FC = () => {
   );
 };
 
-export default SyncWithGithubPage;
+export default ResourceGitSettingsPage;
 
 export const GET_RESOURCE_GIT_REPOSITORY = gql`
   query getResourceGitRepository($resourceId: String!) {
