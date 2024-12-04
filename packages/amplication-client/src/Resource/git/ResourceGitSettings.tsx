@@ -9,7 +9,7 @@ import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import * as models from "../../models";
 import { EnumGitProvider, Resource } from "../../models";
-import "./AuthWithGit.scss";
+import "./ResourceGitSettings.scss";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
@@ -20,9 +20,9 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import useGitHook from "./useAuthWithGit";
+import useResourceGitSettings from "./useResourceGitSettings";
 
-interface AuthWithGitProviderProps {
+interface Props {
   type: "wizard" | "resource";
   gitProvider?: EnumGitProvider;
   onDone: () => void;
@@ -33,7 +33,7 @@ interface AuthWithGitProviderProps {
   gitRepositorySelected?: GitRepositorySelected;
 }
 
-const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
+const ResourceGitSettings: React.FC<Props> = ({
   type,
   gitProvider,
   onDone,
@@ -65,7 +65,7 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
     openCreateNewRepo,
     closeCreateNewRepo,
     updateGitRepository,
-  } = useGitHook({
+  } = useResourceGitSettings({
     resource,
     gitRepositorySelected,
     gitRepositoryDisconnectedCb,
@@ -181,4 +181,4 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
   );
 };
 
-export default AuthWithGitProvider;
+export default ResourceGitSettings;

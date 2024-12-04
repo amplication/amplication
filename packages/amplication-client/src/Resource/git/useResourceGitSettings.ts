@@ -20,7 +20,7 @@ type UpdateGitRepositoryData = {
   updateGitRepository: models.GitRepository;
 };
 
-type UseGitHook = (obj: {
+type UseResourceGitSettingsHook = (obj: {
   resource: Resource;
   gitRepositorySelected?: GitRepositorySelected;
   gitRepositoryDisconnectedCb?: () => void;
@@ -64,7 +64,7 @@ interface setGitOrganizationCompose {
   gitOrganization: GitOrganization;
 }
 
-const useGitHook: UseGitHook = ({
+const useResourceGitSettings: UseResourceGitSettingsHook = ({
   resource,
   gitRepositorySelected,
   gitRepositoryDisconnectedCb,
@@ -74,6 +74,7 @@ const useGitHook: UseGitHook = ({
   const { currentWorkspace } = useContext(AppContext);
   const { trackEvent } = useTracking();
   const gitOrganizations = currentWorkspace?.gitOrganizations;
+
   const [gitOrganization, setGitOrganization] =
     useState<GitOrganizationFromGitRepository | null>(null);
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
@@ -83,16 +84,33 @@ const useGitHook: UseGitHook = ({
     useState(false);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
+
+  //************************ mutatios ************************
   const [
     connectGitRepository,
     { loading: connectGitRepoLoading, error: connectGitRepoError },
   ] = useMutation<Resource>(CONNECT_GIT_PROVIDER_REPOSITORY);
 
+  const [
+    updateGitRepositoryMutation,
+    { error: updateGitRepositoryError, loading: updateGitRepositoryLoading },
+  ] = useMutation<UpdateGitRepositoryData>(UPDATE_GIT_REPOSITORY, {
+    onCompleted: (data) => {
+      //update the state - but it uses some unique type so need to convert first
+    },
+  });
+
   const [connectSelectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
+  //************************ mutatios ************************
+
   const closeSelectRepoDialog = useCallback(() => {
     setSelectRepoOpen(false);
   }, [setSelectRepoOpen]);
 
+  //set the state of the gitOrganization based on this order:
+  //1. resource
+  //2. gitRepositorySelectedData
+  //3. first gitOrganization in the list
   useEffect(() => {
     const getGitOrganization = compose(
       gitOrganizationFromResource,
@@ -107,23 +125,19 @@ const useGitHook: UseGitHook = ({
 
     getGitOrganization.gitOrganization &&
       setGitOrganization(getGitOrganization.gitOrganization);
+
+    //gitOrganization is not included because it will cause infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resource, gitOrganizations, gitRepositorySelectedData]);
 
+  //save the selected gitRepository provided by the parent component to the state
   useEffect(() => {
     if (!gitRepositorySelected?.gitOrganizationId) return;
 
     setGitRepositorySelectedData(gitRepositorySelected);
   }, [gitRepositorySelected?.gitOrganizationId]);
 
-  const [
-    updateGitRepositoryMutation,
-    { error: updateGitRepositoryError, loading: updateGitRepositoryLoading },
-  ] = useMutation<UpdateGitRepositoryData>(UPDATE_GIT_REPOSITORY, {
-    onCompleted: (data) => {
-      //update the state - but it uses some unique type so need to convert first
-    },
-  });
-
+  //calls the mutation to update base branch name
   const updateGitRepository = useCallback(
     (gitRepositoryId: string, data: models.GitRepositoryUpdateInput) => {
       if (data.baseBranchName) {
@@ -140,9 +154,10 @@ const useGitHook: UseGitHook = ({
         },
       }).catch(console.error);
     },
-    [updateGitRepositoryMutation]
+    [trackEvent, updateGitRepositoryMutation]
   );
 
+  //internal function that is called from handleRepoSelected
   const handleAfterRepoConnected = useCallback(
     (data: GitRepositorySelected) => {
       closeSelectRepoDialog();
@@ -162,6 +177,8 @@ const useGitHook: UseGitHook = ({
     ]
   );
 
+  //event to be called after a repo is selected in the "select repository" dialog
+  //when used from the wizard - the mutation is not triggered and we only call the handleAfterRepoConnected
   const handleRepoSelected = useCallback(
     (data: GitRepositorySelected) => {
       if (data.srcType !== "serviceWizard") {
@@ -188,6 +205,8 @@ const useGitHook: UseGitHook = ({
     setCreateNewRepoOpen(false);
   }, [setCreateNewRepoOpen]);
 
+  //calls the server to create a new repository - with or without connecting to the resource
+  //after the repository is created - we close the dialog and call the gitRepositoryCreatedCb
   const handleRepoCreated = useCallback(
     (data: GitRepositoryCreatedData) => {
       connectGitRepository({
@@ -228,6 +247,7 @@ const useGitHook: UseGitHook = ({
     ]
   );
 
+  //sets the selected organization and resets the selected repository
   const handleOrganizationChange = useCallback(
     (organization: GitOrganizationFromGitRepository) => {
       setGitOrganization(organization);
@@ -290,7 +310,7 @@ const useGitHook: UseGitHook = ({
   };
 };
 
-export default useGitHook;
+export default useResourceGitSettings;
 
 const compose =
   (...fns) =>

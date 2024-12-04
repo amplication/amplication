@@ -17,7 +17,7 @@ import {
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import AuthWithGitProvider from "./AuthWithGitProvider";
+import ResourceGitSettings from "./ResourceGitSettings";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import {
   GitRepositoryCreatedData,
@@ -37,7 +37,7 @@ type TData = {
   updateResource: models.Resource;
 };
 
-const ServiceConfigurationGitSettings: React.FC<Props> = ({
+const ResourceGitSettingsWithOverride: React.FC<Props> = ({
   resource,
   onDone,
   gitRepositorySelectedCb,
@@ -127,7 +127,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 
       {isOverride && (
         <>
-          <AuthWithGitProvider
+          <ResourceGitSettings
             type="resource"
             resource={resource}
             onDone={onDone}
@@ -140,4 +140,4 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   );
 };
 
-export default ServiceConfigurationGitSettings;
+export default ResourceGitSettingsWithOverride;

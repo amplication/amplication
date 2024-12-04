@@ -1,6 +1,6 @@
 import { useCallback, useContext } from "react";
 import { AppContext, useAppContext } from "../context/appContext";
-import ServiceConfigurationGitSettings from "../Resource/git/ServiceConfigurationGitSettings";
+import ResourceGitSettingsWithOverride from "../Resource/git/ResourceGitSettingsWithOverride";
 
 const PrivatePluginGitSettings = () => {
   const { refreshCurrentWorkspace, pluginRepositoryResource } =
@@ -18,7 +18,7 @@ const PrivatePluginGitSettings = () => {
   }, [refreshCurrentWorkspace, reloadResources]);
 
   return (
-    <ServiceConfigurationGitSettings
+    <ResourceGitSettingsWithOverride
       resource={pluginRepositoryResource}
       onDone={handleOnDone}
       gitRepositorySelectedCb={handleRepositorySelected}
