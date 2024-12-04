@@ -37,6 +37,7 @@ export default function GitProviderConnection({
   return (
     <div className={classNames(CLASS_NAME, { enabled: !disabled })}>
       <img
+        className={`${CLASS_NAME}__logo`}
         src={`../../../../assets/images/${provider?.toLowerCase()}.svg`}
         alt=""
       />

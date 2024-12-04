@@ -14,6 +14,8 @@ const AuthResourceWithAzureDevopsCallback = () => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const authorizationCode = urlParams.get("code");
+  const error = urlParams.get("error");
+  const errorDescription = urlParams.get("error_description");
 
   const [completeAuthWithGit] = useCompleteGitOAuth2FlowMutation({
     onCompleted: (data) => {
@@ -36,7 +38,7 @@ const AuthResourceWithAzureDevopsCallback = () => {
   });
 
   useEffect(() => {
-    if (window.opener && !loading) {
+    if (window.opener && !loading && authorizationCode) {
       setLoading((loading) => {
         if (!loading) {
           completeAuthWithGit({
@@ -52,6 +54,14 @@ const AuthResourceWithAzureDevopsCallback = () => {
   }, [authorizationCode, completeAuthWithGit, loading, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
+
+  if (error) {
+    return (
+      <p>
+        Error: {error} {errorDescription}
+      </p>
+    );
+  }
 
   return <p>Please wait...</p>;
 };

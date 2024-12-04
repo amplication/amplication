@@ -3,7 +3,7 @@ import BitbucketLogo from "../../assets/images/bitbucket.svg";
 import GithubLogo from "../../assets/images/github.svg";
 import AwsCodeCommit from "../../assets/images/awscodecommit.svg";
 import GitLab from "../../assets/images/gitlab.svg";
-import AzureDevops from "../../assets/images/gitlab.svg";
+import AzureDevops from "../../assets/images/azuredevops.svg";
 
 export const GIT_PROVIDER_ICON_MAP: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.Github]: "github",

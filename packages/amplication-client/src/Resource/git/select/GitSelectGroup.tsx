@@ -11,6 +11,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { GitSelectGroupItem } from "./GitSelectGroupItem";
+import "./GitSelectGroup.scss";
 
 import { EnumGitProvider } from "../../../models";
 import { GIT_LOGO_MAP } from "../constants";

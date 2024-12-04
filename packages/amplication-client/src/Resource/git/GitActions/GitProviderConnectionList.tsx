@@ -72,11 +72,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         variables: {
           gitProvider: provider,
         },
-      })
-        .then(() => {
-          onSelectRepository();
-        })
-        .catch(console.error);
+      }).catch(console.error);
       onProviderSelect && onProviderSelect(provider);
     },
     [authWithGit, trackEvent, onProviderSelect]
