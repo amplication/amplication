@@ -483,7 +483,11 @@ describe("GitClientService", () => {
       const result = await service.getCurrentOAuthUser(accessToken);
 
       expect(result).toBe(currentUser);
-      expect(getCurrentOAuthUserMock).toHaveBeenCalledWith(accessToken);
+      expect(getCurrentOAuthUserMock).toHaveBeenCalledWith(
+        accessToken,
+        undefined,
+        undefined
+      );
     });
   });
 
