@@ -69,10 +69,6 @@ const CreateGithubSync: React.FC<props> = ({
     );
   }, [gitRepository]);
 
-  const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-  }, [refreshCurrentWorkspace]);
-
   const handleOnGitRepositorySelected = useCallback(
     (data: GitRepositorySelected) => {
       formik.setValues(
@@ -140,7 +136,6 @@ const CreateGithubSync: React.FC<props> = ({
             <ResourceGitSettings
               type="wizard"
               gitProvider={gitProvider}
-              onDone={handleOnDone}
               gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
               gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
               gitRepositorySelectedCb={handleOnGitRepositorySelected}
@@ -154,7 +149,6 @@ const CreateGithubSync: React.FC<props> = ({
             />
           ) : (
             <ResourceGitSettingsWithOverrideWizard
-              onDone={handleOnDone}
               formik={formik}
               gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
               gitRepositoryCreatedCb={handleOnGitRepositoryCreated}

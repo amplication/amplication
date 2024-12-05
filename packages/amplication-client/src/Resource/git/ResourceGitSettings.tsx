@@ -25,7 +25,6 @@ import useResourceGitSettings from "./useResourceGitSettings";
 interface Props {
   type: "wizard" | "resource";
   gitProvider?: EnumGitProvider;
-  onDone: () => void;
   resource?: Resource;
   gitRepositoryDisconnectedCb?: () => void;
   gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
@@ -36,7 +35,6 @@ interface Props {
 const ResourceGitSettings: React.FC<Props> = ({
   type,
   gitProvider,
-  onDone,
   resource,
   gitRepositoryDisconnectedCb,
   gitRepositoryCreatedCb,
@@ -65,6 +63,7 @@ const ResourceGitSettings: React.FC<Props> = ({
     openCreateNewRepo,
     closeCreateNewRepo,
     updateGitRepository,
+    handleGitOrganizationConnected,
   } = useResourceGitSettings({
     resource,
     gitRepositorySelected,
@@ -138,7 +137,7 @@ const ResourceGitSettings: React.FC<Props> = ({
           onDismiss={closeSelectOrganizationDialog}
         >
           <GitProviderConnectionList
-            onDone={onDone}
+            onDone={handleGitOrganizationConnected}
             setPopupFailed={setPopupFailed}
             onProviderSelect={closeSelectOrganizationDialog}
             onSelectRepository={openSelectRepoDialog}
@@ -148,7 +147,7 @@ const ResourceGitSettings: React.FC<Props> = ({
       )}
       {isEmpty(gitOrganizations) ? (
         <GitProviderConnectionList
-          onDone={onDone}
+          onDone={handleGitOrganizationConnected}
           setPopupFailed={setPopupFailed}
           onSelectRepository={openSelectRepoDialog}
           onError={handleError}

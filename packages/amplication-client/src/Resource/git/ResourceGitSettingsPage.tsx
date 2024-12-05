@@ -82,11 +82,6 @@ const ResourceGitSettingsPage: React.FC = () => {
   const [openPr, setOpenPr] = useState<boolean>(false);
   const isLimitationError = commitChangesLimitationError !== undefined ?? false;
 
-  const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-    refetch();
-  }, [refreshCurrentWorkspace, refetch]);
-
   const handleRepositorySelected = useCallback(() => {
     refreshCurrentWorkspace();
     refetch();
@@ -120,7 +115,6 @@ const ResourceGitSettingsPage: React.FC = () => {
         <ResourceGitSettings
           type="resource"
           resource={data.resource}
-          onDone={handleOnDone}
           gitRepositorySelectedCb={handleRepositorySelected}
           gitRepositoryCreatedCb={handleRepositorySelected}
         />
@@ -128,7 +122,6 @@ const ResourceGitSettingsPage: React.FC = () => {
       {!isProjectConfiguration && data?.resource && (
         <ResourceGitSettingsWithOverride
           resource={data.resource}
-          onDone={handleOnDone}
           gitRepositorySelectedCb={handleRepositorySelected}
           gitRepositoryCreatedCb={handleRepositorySelected}
         />

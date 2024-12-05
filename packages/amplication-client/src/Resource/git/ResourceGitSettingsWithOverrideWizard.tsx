@@ -21,7 +21,6 @@ import {
 const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
-  onDone: () => void;
   gitRepositoryDisconnectedCb: () => void;
   gitRepositoryCreatedCb: (data: GitRepositoryCreatedData) => void;
   gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
@@ -29,7 +28,6 @@ type Props = {
 };
 
 const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
-  onDone,
   gitRepositoryDisconnectedCb,
   gitRepositoryCreatedCb,
   gitRepositorySelectedCb,
@@ -112,7 +110,6 @@ const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
         <ResourceGitSettings
           type="wizard"
           gitProvider={gitProvider}
-          onDone={onDone}
           gitRepositoryDisconnectedCb={gitRepositoryDisconnectedCb}
           gitRepositoryCreatedCb={gitRepositoryCreatedCb}
           gitRepositorySelectedCb={gitRepositorySelectedCb}

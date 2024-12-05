@@ -18,12 +18,12 @@ type DType = {
 };
 
 // eslint-disable-next-line
-let triggerOnDone = () => {};
+let triggerOnDone = (organizationId: string) => {};
 // eslint-disable-next-line
 let triggerAuthFailed = (errorMessage?: string) => {};
 
 export type Props = {
-  onDone: () => void;
+  onDone: (organizationId: string) => void;
   setPopupFailed: (status: boolean) => void;
   onProviderSelect?: (data: any) => any;
   onSelectRepository?: () => void;
@@ -60,8 +60,8 @@ export const GitProviderConnectionList: React.FC<Props> = ({
     },
   });
 
-  triggerOnDone = () => {
-    onDone();
+  triggerOnDone = (organizationId: string) => {
+    onDone(organizationId);
   };
   triggerAuthFailed = (errorMessage?: string) => {
     //if an error was returned from the other window, show the error
@@ -159,7 +159,7 @@ const START_AUTH_APP_WITH_GITHUB = gql`
 const receiveMessage = (event: any) => {
   const { data } = event;
   if (data.completed) {
-    triggerOnDone();
+    triggerOnDone(data.id);
   }
   if (data.failed) {
     triggerAuthFailed(data.errorMessage);

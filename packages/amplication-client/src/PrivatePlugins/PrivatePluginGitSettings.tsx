@@ -8,10 +8,6 @@ const PrivatePluginGitSettings = () => {
 
   const { reloadResources } = useAppContext();
 
-  const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-  }, [refreshCurrentWorkspace]);
-
   const handleRepositorySelected = useCallback(() => {
     refreshCurrentWorkspace();
     reloadResources();
@@ -20,7 +16,6 @@ const PrivatePluginGitSettings = () => {
   return (
     <ResourceGitSettingsWithOverride
       resource={pluginRepositoryResource}
-      onDone={handleOnDone}
       gitRepositorySelectedCb={handleRepositorySelected}
       gitRepositoryCreatedCb={handleRepositorySelected}
     />
