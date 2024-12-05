@@ -59,7 +59,7 @@ export function getGitRepositoryDetails({
     [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
     [EnumGitProvider.AwsCodeCommit]: `https://console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryFullName}/browse`,
     [EnumGitProvider.GitLab]: `${GITLAB_URL}/${repositoryFullName}`,
-    [EnumGitProvider.AzureDevOps]: `${AZURE_DEVOPS_URL}/${repositoryFullName}`,
+    [EnumGitProvider.AzureDevOps]: `${AZURE_DEVOPS_URL}/${organizationName}/${groupName}/_git/${repositoryName}`,
   };
 
   return {
