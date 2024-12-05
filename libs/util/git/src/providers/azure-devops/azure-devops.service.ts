@@ -1,11 +1,20 @@
+import { ILogger } from "@amplication/util/logging";
+import axios from "axios";
 import * as azdev from "azure-devops-node-api";
+import {
+  GitVersionDescriptor,
+  GitVersionType,
+} from "azure-devops-node-api/interfaces/GitInterfaces";
+import { VersionControlRecursionType } from "azure-devops-node-api/interfaces/TfvcInterfaces";
+import { isEmpty } from "lodash";
 import { GitProvider } from "../../git-provider.interface";
 import {
+  AzureDevopsConfiguration,
+  Bot,
   Branch,
   CloneUrlArgs,
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
-  GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
@@ -13,31 +22,23 @@ import {
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
-  GitProviderGetPullRequestArgs,
+  getFolderContentArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
+  GitFolderContent,
+  GitFolderContentItem,
+  GitProviderCreatePullRequestArgs,
+  GitProviderGetPullRequestArgs,
+  OAuthProviderOrganizationProperties,
   OAuthTokens,
   PaginatedGitGroup,
   PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  getFolderContentArgs,
-  GitFolderContent,
-  Bot,
-  AzureDevopsConfiguration,
-  OAuthProviderOrganizationProperties,
-  GitFolderContentItem,
 } from "../../types";
-import { ILogger } from "@amplication/util/logging";
 import { CustomError } from "../../utils/custom-error";
-import {
-  GitVersionDescriptor,
-  GitVersionType,
-} from "azure-devops-node-api/interfaces/GitInterfaces";
-import axios from "axios";
-import { isEmpty } from "lodash";
 
 const SCOPES = [
   "499b84ac-1321-427f-aa17-267ca6975798/.default",
@@ -151,14 +152,8 @@ export class AzureDevOpsService implements GitProvider {
         }
       );
 
-      const {
-        access_token,
-        refresh_token,
-        token_type,
-        expires_in,
-        scope,
-        created_at,
-      } = response.data;
+      const { access_token, refresh_token, token_type, expires_in, scope } =
+        response.data;
 
       this.auth = {
         accessToken: access_token,
@@ -250,34 +245,33 @@ export class AzureDevOpsService implements GitProvider {
     amplicationWorkspaceId?: string
   ): Promise<CurrentUser> {
     try {
-      const profileResponse = await axios.get(
-        "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=6.0",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+      // Establish a connection without specifying an organization
+      const authHandler = azdev.getPersonalAccessTokenHandler(accessToken);
+      const connection = new azdev.WebApi(
+        "https://app.vssps.visualstudio.com",
+        authHandler
+      );
+      const profileApi = await connection.getProfileApi();
+      const profile = await profileApi.getProfile("me");
+      const userId = profile.id;
+
+      // Use the REST client to call the accounts API
+      const restClient = connection.rest;
+      const response = await restClient.get<{
+        count: number;
+        value: { accountName: string; accountId: string }[];
+      }>(
+        `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userId}&api-version=6.0`
       );
 
-      const userId = profileResponse.data.id;
-
-      const response = await axios.get(
-        `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userId}&api-version=6.0`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (response.data.count === 0) {
+      if (!response.result || response.result?.count === 0) {
         throw new CustomError("No organizations were found in the account");
       }
 
       //when a specific state (not workspaceId) is provided, it means that the user is selecting an organization
       if (!isEmpty(state) && state !== amplicationWorkspaceId) {
-        const selectedOrganization = response.data.value.find(
-          (org: any) => org.accountName === state
+        const selectedOrganization = response.result.value.find(
+          (org) => org.accountName === state
         );
 
         if (!selectedOrganization) {
@@ -298,13 +292,13 @@ export class AzureDevOpsService implements GitProvider {
         };
       }
 
-      if (response.data.count > 1) {
+      if (response.result.count > 1) {
         throw new CustomError(
           "User has multiple organizations, please provide the organization name"
         );
       }
 
-      const organization = response.data.value[0];
+      const organization = response.result.value[0];
 
       return {
         displayName: organization.accountName,
@@ -333,9 +327,9 @@ export class AzureDevOpsService implements GitProvider {
     const coreApi = await this.azureDevOpsClient.getCoreApi();
     const projects = await coreApi.getProjects();
     const groups = projects.map((project) => ({
-      id: project.id!,
-      displayName: project.name!,
-      name: project.name!,
+      id: project.id || "",
+      displayName: project.name || "",
+      name: project.name || "",
     }));
     return {
       total: groups.length,
@@ -365,10 +359,10 @@ export class AzureDevOpsService implements GitProvider {
     const repo = await gitApi.getRepository(repositoryName, groupName);
 
     return {
-      name: repo.name!,
-      url: repo.remoteUrl!,
+      name: repo.name || "",
+      url: repo.remoteUrl || "",
       private: true,
-      fullName: repo.name!,
+      fullName: repo.name || "",
       groupName: groupName,
       defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     };
@@ -388,10 +382,10 @@ export class AzureDevOpsService implements GitProvider {
     const gitApi = await this.azureDevOpsClient.getGitApi();
     const repos = await gitApi.getRepositories(groupName);
     const remoteRepos = repos.map((repo) => ({
-      name: repo.name!,
-      url: repo.webUrl!,
+      name: repo.name || "",
+      url: repo.webUrl || "",
       private: true,
-      fullName: repo.name!,
+      fullName: repo.name || "",
       groupName: groupName,
       defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     }));
@@ -423,10 +417,10 @@ export class AzureDevOpsService implements GitProvider {
     const repo = await gitApi.createRepository(createOptions, groupName);
 
     return {
-      name: repo.name!,
-      url: repo.remoteUrl!,
+      name: repo.name || "",
+      url: repo.remoteUrl || "",
       private: true,
-      fullName: repo.name!,
+      fullName: repo.name || "",
       groupName: groupName,
       defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     };
@@ -437,14 +431,43 @@ export class AzureDevOpsService implements GitProvider {
     return Promise.resolve(true);
   }
 
+  async getBaseOrDefaultBranch(
+    groupName: string,
+    repositoryName: string,
+    ref?: string
+  ): Promise<string> {
+    await this.refreshAccessTokenIfNeeded();
+
+    if (!ref) {
+      const repo = await this.getRepository({
+        repositoryName,
+        groupName,
+        owner: "",
+      });
+
+      return repo.defaultBranch;
+    }
+
+    return ref;
+  }
+
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
     await this.refreshAccessTokenIfNeeded();
 
     const { repositoryName, path, ref, repositoryGroupName } = file;
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Missing repositoryGroupName");
+    }
+
     const gitApi = await this.azureDevOpsClient.getGitApi();
     try {
       const versionDescriptor: GitVersionDescriptor = {
-        version: ref || "master",
+        version: await this.getBaseOrDefaultBranch(
+          repositoryGroupName,
+          repositoryName,
+          ref
+        ),
         versionType: GitVersionType.Branch,
       };
       const itemContent = await gitApi.getItemContent(
@@ -476,30 +499,42 @@ export class AzureDevOpsService implements GitProvider {
     await this.refreshAccessTokenIfNeeded();
 
     const { repositoryName, path, ref, repositoryGroupName } = args;
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Missing repositoryGroupName");
+    }
     const gitApi = await this.azureDevOpsClient.getGitApi();
     const versionDescriptor: GitVersionDescriptor = {
-      version: ref || "master",
+      version: await this.getBaseOrDefaultBranch(
+        repositoryGroupName,
+        repositoryName,
+        ref
+      ),
       versionType: GitVersionType.Branch,
     };
     const items = await gitApi.getItems(
       repositoryName,
       repositoryGroupName,
       path,
-      undefined,
+      VersionControlRecursionType.OneLevel,
       false,
       false,
       false,
       false,
       versionDescriptor
     );
-    const content = items.map(
-      (item) =>
-        ({
-          name: item.path!.split("/").pop() || "",
-          path: item.path!,
-          type: item.isFolder ? "Dir" : "File",
-        } as GitFolderContentItem)
-    );
+    const content = items
+      .filter((item) => item.path !== "/" + path && item.path !== path)
+      .map(
+        (item) =>
+          ({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            name: item.path!.split("/").pop() || "",
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            path: item.path!,
+            type: item.isFolder ? "Dir" : "File",
+          } as GitFolderContentItem)
+      );
     return { content };
   }
 
@@ -543,8 +578,10 @@ export class AzureDevOpsService implements GitProvider {
           owner,
           repositoryGroupName,
           repositoryName,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           prs[0].pullRequestId!
         ),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         number: prs[0].pullRequestId!,
       };
     }
@@ -587,8 +624,10 @@ export class AzureDevOpsService implements GitProvider {
         owner,
         repositoryGroupName,
         repositoryName,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         pr.pullRequestId!
       ),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       number: pr.pullRequestId!,
     };
   }
@@ -605,8 +644,8 @@ export class AzureDevOpsService implements GitProvider {
         repositoryGroupName
       );
       return {
-        name: branch.name!,
-        sha: branch.commit!.commitId!,
+        name: branch.name || "",
+        sha: branch.commit?.commitId || "",
       };
     } catch (error) {
       this.logger.error("Error fetching branch:", error);
