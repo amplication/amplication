@@ -753,7 +753,8 @@ export class GitProviderService {
 
       const currentUserData = await gitClientService.getCurrentOAuthUser(
         oAuthTokens.accessToken,
-        state
+        state,
+        workspaceId
       );
 
       const providerOrganizationProperties: OAuthProviderOrganizationProperties =
