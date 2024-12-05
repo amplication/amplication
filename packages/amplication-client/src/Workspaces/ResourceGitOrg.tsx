@@ -39,7 +39,7 @@ function ResourceGitOrg({ resource }: Props) {
             icon={
               GIT_PROVIDER_ICON_MAP[provider || models.EnumGitProvider.Github]
             }
-            size="xsmall"
+            size="small"
           />
           <Text
             textStyle={EnumTextStyle.Subtle}
