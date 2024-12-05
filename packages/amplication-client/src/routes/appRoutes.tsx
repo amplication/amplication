@@ -530,7 +530,7 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
   },
   {
-    path: "/azure-devops-auth-app/callback",
+    path: "/azure-devops-auth/callback",
     Component: lazy(
       () => import("../Resource/git/AuthResourceWithAzureDevopsCallback")
     ),
