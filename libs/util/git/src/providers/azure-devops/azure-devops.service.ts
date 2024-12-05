@@ -246,7 +246,8 @@ export class AzureDevOpsService implements GitProvider {
 
   async getCurrentOAuthUser(
     accessToken: string,
-    state?: string
+    state?: string,
+    amplicationWorkspaceId?: string
   ): Promise<CurrentUser> {
     try {
       const profileResponse = await axios.get(
@@ -273,7 +274,8 @@ export class AzureDevOpsService implements GitProvider {
         throw new CustomError("No organizations were found in the account");
       }
 
-      if (!isEmpty(state)) {
+      //when a specific state (not workspaceId) is provided, it means that the user is selecting an organization
+      if (!isEmpty(state) && state !== amplicationWorkspaceId) {
         const selectedOrganization = response.data.value.find(
           (org: any) => org.accountName === state
         );

@@ -79,9 +79,14 @@ export class GitClientService {
 
   async getCurrentOAuthUser(
     accessToken: string,
-    state?: string
+    state?: string,
+    amplicationWorkspaceId?: string
   ): Promise<CurrentUser> {
-    return this.provider.getCurrentOAuthUser(accessToken, state);
+    return this.provider.getCurrentOAuthUser(
+      accessToken,
+      state,
+      amplicationWorkspaceId
+    );
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {

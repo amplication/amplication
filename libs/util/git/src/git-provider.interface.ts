@@ -32,7 +32,8 @@ export interface GitProvider {
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(
     accessToken: string,
-    state?: string
+    state?: string,
+    amplicationWorkspaceId?: string
   ): Promise<CurrentUser>;
   getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
