@@ -45,7 +45,7 @@ export default function GitCreateRepo({
     isPublic: true,
   };
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData, loading: loadingGroups } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -106,6 +106,7 @@ export default function GitCreateRepo({
                 selectedItem={repositoryGroup}
                 items={gitGroups}
                 onSelect={setRepositoryGroup}
+                loadingGroups={loadingGroups}
               />
             </>
           )}

@@ -55,6 +55,7 @@ type UseResourceGitSettingsHook = (obj: {
   ) => void;
   updateGitRepositoryError: ApolloError;
   updateGitRepositoryLoading: boolean;
+  handleGitOrganizationConnected: (gitOrganizationId: string) => void;
 };
 
 interface setGitOrganizationCompose {
@@ -71,7 +72,7 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
   gitRepositoryCreatedCb,
   gitRepositorySelectedCb,
 }) => {
-  const { currentWorkspace } = useContext(AppContext);
+  const { currentWorkspace, refreshCurrentWorkspace } = useContext(AppContext);
   const { trackEvent } = useTracking();
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
@@ -84,6 +85,10 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
     useState(false);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
+
+  const [createdGitOrganizationId, setCreatedGitOrganizationId] = useState<
+    string | null
+  >(null);
 
   //************************ mutatios ************************
   const [
@@ -262,6 +267,29 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
     ]
   );
 
+  //after the organization list is updated - check if the created organization is in the list and select it
+  useEffect(() => {
+    if (!createdGitOrganizationId) return;
+
+    const organization = gitOrganizations.find(
+      (organization) => organization.id === createdGitOrganizationId
+    );
+    if (organization) {
+      handleOrganizationChange(organization);
+      setCreatedGitOrganizationId(null);
+    }
+  }, [createdGitOrganizationId, gitOrganizations, handleOrganizationChange]);
+
+  //when a new git organization is created, save the id and refresh the workspace
+  //after the workspace is refreshed - the organization will be selected
+  const handleGitOrganizationConnected = useCallback(
+    (gitOrganizationId: string) => {
+      setCreatedGitOrganizationId(gitOrganizationId);
+      refreshCurrentWorkspace();
+    },
+    [refreshCurrentWorkspace]
+  );
+
   const handleRepoDisconnected = useCallback(() => {
     setGitRepositorySelectedData(null);
     gitRepositoryDisconnectedCb && gitRepositoryDisconnectedCb();
@@ -307,6 +335,7 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
     updateGitRepository,
     updateGitRepositoryLoading,
     updateGitRepositoryError,
+    handleGitOrganizationConnected,
   };
 };
 

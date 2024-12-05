@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   EnumButtonStyle,
   EnumFlexItemMargin,
   EnumTextColor,
@@ -11,6 +12,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { GitSelectGroupItem } from "./GitSelectGroupItem";
+import "./GitSelectGroup.scss";
 
 import { EnumGitProvider } from "../../../models";
 import { GIT_LOGO_MAP } from "../constants";
@@ -20,6 +22,7 @@ export type Props = {
   items: any[];
   onSelect: (item: any) => void;
   gitProvider: EnumGitProvider;
+  loadingGroups: boolean;
 };
 
 export const GitSelectGroup = ({
@@ -27,6 +30,7 @@ export const GitSelectGroup = ({
   items,
   onSelect,
   gitProvider,
+  loadingGroups,
 }: Props) => {
   return (
     <>
@@ -43,40 +47,44 @@ export const GitSelectGroup = ({
       ) : (
         <>
           <Text textStyle={EnumTextStyle.Description}>Select Group</Text>
-          <SelectMenu
-            title={
-              selectedItem && (
-                <GitSelectGroupItem
-                  logo={GIT_LOGO_MAP[gitProvider]}
-                  name={selectedItem.name}
-                />
-              )
-            }
-            buttonStyle={EnumButtonStyle.Outline}
-            icon="chevron_down"
-          >
-            <SelectMenuModal>
-              <SelectMenuList>
-                <>
-                  {items?.map((item) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      selected={selectedItem?.id === item.id}
-                      key={item.id}
-                      onSelectionChange={() => {
-                        onSelect(item);
-                      }}
-                    >
-                      <GitSelectGroupItem
-                        logo={GIT_LOGO_MAP[gitProvider]}
-                        name={item.name}
-                      />
-                    </SelectMenuItem>
-                  ))}
-                </>
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
+          {loadingGroups ? (
+            <CircularProgress />
+          ) : (
+            <SelectMenu
+              title={
+                selectedItem && (
+                  <GitSelectGroupItem
+                    logo={GIT_LOGO_MAP[gitProvider]}
+                    name={selectedItem.name}
+                  />
+                )
+              }
+              buttonStyle={EnumButtonStyle.Outline}
+              icon="chevron_down"
+            >
+              <SelectMenuModal>
+                <SelectMenuList>
+                  <>
+                    {items?.map((item) => (
+                      <SelectMenuItem
+                        closeAfterSelectionChange
+                        selected={selectedItem?.id === item.id}
+                        key={item.id}
+                        onSelectionChange={() => {
+                          onSelect(item);
+                        }}
+                      >
+                        <GitSelectGroupItem
+                          logo={GIT_LOGO_MAP[gitProvider]}
+                          name={item.name}
+                        />
+                      </SelectMenuItem>
+                    ))}
+                  </>
+                </SelectMenuList>
+              </SelectMenuModal>
+            </SelectMenu>
+          )}
         </>
       )}
     </>

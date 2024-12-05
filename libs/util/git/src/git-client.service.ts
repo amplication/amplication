@@ -77,8 +77,16 @@ export class GitClientService {
     return this.provider.isAuthDataRefreshed();
   }
 
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    return this.provider.getCurrentOAuthUser(accessToken);
+  async getCurrentOAuthUser(
+    accessToken: string,
+    state?: string,
+    amplicationWorkspaceId?: string
+  ): Promise<CurrentUser> {
+    return this.provider.getCurrentOAuthUser(
+      accessToken,
+      state,
+      amplicationWorkspaceId
+    );
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {

@@ -5,8 +5,9 @@ import {
   useCompleteGitOAuth2FlowMutation,
 } from "../../models";
 import { useTracking } from "../../util/analytics";
+import { formatError } from "../../util/error";
 
-const AuthResourceWithGitLabCallback = () => {
+const AuthResourceWithAzureDevopsCallback = () => {
   const { trackEvent } = useTracking();
 
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,9 @@ const AuthResourceWithGitLabCallback = () => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const authorizationCode = urlParams.get("code");
+  const error = urlParams.get("error");
+  const errorDescription = urlParams.get("error_description");
+  const state = urlParams.get("state");
 
   const [completeAuthWithGit] = useCompleteGitOAuth2FlowMutation({
     onCompleted: (data) => {
@@ -25,6 +29,14 @@ const AuthResourceWithGitLabCallback = () => {
       // close the popup
       window.close();
     },
+    onError: (error) => {
+      console.error(error);
+      const errorMessage = formatError(error);
+
+      window.opener.postMessage({ failed: true, errorMessage });
+      // close the popup
+      window.close();
+    },
     refetchQueries: [
       {
         query: GET_PROJECTS,
@@ -32,28 +44,38 @@ const AuthResourceWithGitLabCallback = () => {
     ],
     variables: {
       code: authorizationCode,
-      gitProvider: EnumGitProvider.GitLab,
+      gitProvider: EnumGitProvider.AzureDevOps,
     },
   });
 
   useEffect(() => {
-    if (window.opener && !loading) {
+    if (window.opener && !loading && authorizationCode) {
       setLoading((loading) => {
         if (!loading) {
           completeAuthWithGit({
             variables: {
               code: authorizationCode,
-              gitProvider: EnumGitProvider.GitLab,
+              state,
+              gitProvider: EnumGitProvider.AzureDevOps,
             },
           }).catch(console.error);
         }
         return true;
       });
     }
-  }, [authorizationCode, completeAuthWithGit, loading, trackEvent]);
+  }, [authorizationCode, completeAuthWithGit, loading, state, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
+
+  if (error) {
+    return (
+      <p>
+        Error: {error} {errorDescription}
+      </p>
+    );
+  }
+
   return <p>Please wait...</p>;
 };
 
-export default AuthResourceWithGitLabCallback;
+export default AuthResourceWithAzureDevopsCallback;

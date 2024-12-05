@@ -4,6 +4,7 @@ import { EnumGitProvider, GitOrganization } from "../models";
 const GITHUB_URL = "https://github.com";
 const BITBUCKET_URL = "https://bitbucket.org";
 const GITLAB_URL = "https://gitlab.com";
+const AZURE_DEVOPS_URL = "https://dev.azure.com";
 
 type GitRepositoryDetails = {
   repositoryFullName: string | null;
@@ -58,6 +59,7 @@ export function getGitRepositoryDetails({
     [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
     [EnumGitProvider.AwsCodeCommit]: `https://console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryFullName}/browse`,
     [EnumGitProvider.GitLab]: `${GITLAB_URL}/${repositoryFullName}`,
+    [EnumGitProvider.AzureDevOps]: `${AZURE_DEVOPS_URL}/${organizationName}/${groupName}/_git/${repositoryName}`,
   };
 
   return {

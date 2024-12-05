@@ -74,7 +74,7 @@ $tabs-width: 300px;
     overflow-y: auto;
     margin: var(--double-spacing);
     margin-right: 0;
-    @include scrollbars(16px, var(--gray-30), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
     .sub-list {
       margin-left: var(--triple-spacing);
@@ -90,7 +90,7 @@ $tabs-width: 300px;
     position: relative;
     box-sizing: border-box;
     overflow-y: auto;
-    @include scrollbars(16px, var(--gray-30), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
   }
 
   &__main {

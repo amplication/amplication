@@ -1,4 +1,5 @@
 import {
+  ConfirmationDialog,
   Dialog,
   EnumFlexDirection,
   EnumFlexItemMargin,
@@ -6,7 +7,7 @@ import {
   FlexItem,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import * as models from "../../models";
 import { EnumGitProvider, Resource } from "../../models";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
@@ -24,7 +25,6 @@ import useResourceGitSettings from "./useResourceGitSettings";
 interface Props {
   type: "wizard" | "resource";
   gitProvider?: EnumGitProvider;
-  onDone: () => void;
   resource?: Resource;
   gitRepositoryDisconnectedCb?: () => void;
   gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
@@ -35,7 +35,6 @@ interface Props {
 const ResourceGitSettings: React.FC<Props> = ({
   type,
   gitProvider,
-  onDone,
   resource,
   gitRepositoryDisconnectedCb,
   gitRepositoryCreatedCb,
@@ -64,6 +63,7 @@ const ResourceGitSettings: React.FC<Props> = ({
     openCreateNewRepo,
     closeCreateNewRepo,
     updateGitRepository,
+    handleGitOrganizationConnected,
   } = useResourceGitSettings({
     resource,
     gitRepositorySelected,
@@ -79,8 +79,29 @@ const ResourceGitSettings: React.FC<Props> = ({
     [updateGitRepository]
   );
 
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleError = useCallback((errorMessage: string) => {
+    setErrorMessage(errorMessage);
+    setError(true);
+  }, []);
+
   return (
     <>
+      <ConfirmationDialog
+        isOpen={error}
+        onDismiss={() => {
+          setError(false);
+        }}
+        message={errorMessage}
+        confirmButton={{
+          label: "OK",
+        }}
+        onConfirm={() => {
+          setError(false);
+        }}
+      ></ConfirmationDialog>
       {gitOrganization && (
         <GitDialogsContainer
           gitOrganization={gitOrganization}
@@ -116,18 +137,20 @@ const ResourceGitSettings: React.FC<Props> = ({
           onDismiss={closeSelectOrganizationDialog}
         >
           <GitProviderConnectionList
-            onDone={onDone}
+            onDone={handleGitOrganizationConnected}
             setPopupFailed={setPopupFailed}
             onProviderSelect={closeSelectOrganizationDialog}
             onSelectRepository={openSelectRepoDialog}
+            onError={handleError}
           />
         </Dialog>
       )}
       {isEmpty(gitOrganizations) ? (
         <GitProviderConnectionList
-          onDone={onDone}
+          onDone={handleGitOrganizationConnected}
           setPopupFailed={setPopupFailed}
           onSelectRepository={openSelectRepoDialog}
+          onError={handleError}
         />
       ) : (
         <>

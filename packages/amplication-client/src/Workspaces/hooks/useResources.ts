@@ -63,6 +63,8 @@ const createGitRepositoryFullName = (
       return `${gitRepository.name}`;
     case models.EnumGitProvider.GitLab:
       return `${gitRepository.groupName}/${gitRepository.name}`;
+    case models.EnumGitProvider.AzureDevOps:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
   }
 };
 

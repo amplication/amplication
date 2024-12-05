@@ -83,7 +83,7 @@ model GitOrganization {
   workspace                  Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
   gitRepositories            GitRepository[]
 
-  @@unique([provider, installationId])
+  @@unique([provider, installationId, workspaceId])
 }
 
 model GitRepository {
@@ -773,6 +773,7 @@ enum EnumGitProvider {
   Bitbucket
   AwsCodeCommit
   GitLab
+  AzureDevOps
 }
 
 enum EnumGitOrganizationType {

@@ -1020,6 +1020,7 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
+  AzureDevOps = 'AzureDevOps',
   Bitbucket = 'Bitbucket',
   GitLab = 'GitLab',
   Github = 'Github'
@@ -1253,6 +1254,7 @@ export type GitFolderContentItem = {
 
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Group of Repositories */
@@ -1269,6 +1271,7 @@ export type GitGroupInput = {
 export type GitOAuth2FlowInput = {
   code: Scalars['String']['input'];
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GitOrganization = {
@@ -4193,6 +4196,7 @@ export type CreateOrganizationAwsCodeCommitMutation = { createOrganization: { id
 
 export type CompleteGitOAuth2FlowMutationVariables = Exact<{
   code: Scalars['String']['input'];
+  state?: InputMaybe<Scalars['String']['input']>;
   gitProvider: EnumGitProvider;
 }>;
 
@@ -4279,8 +4283,10 @@ export type CreateOrganizationAwsCodeCommitMutationHookResult = ReturnType<typeo
 export type CreateOrganizationAwsCodeCommitMutationResult = Apollo.MutationResult<CreateOrganizationAwsCodeCommitMutation>;
 export type CreateOrganizationAwsCodeCommitMutationOptions = Apollo.BaseMutationOptions<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>;
 export const CompleteGitOAuth2FlowDocument = gql`
-    mutation completeGitOAuth2Flow($code: String!, $gitProvider: EnumGitProvider!) {
-  completeGitOAuth2Flow(data: {code: $code, gitProvider: $gitProvider}) {
+    mutation completeGitOAuth2Flow($code: String!, $state: String, $gitProvider: EnumGitProvider!) {
+  completeGitOAuth2Flow(
+    data: {code: $code, gitProvider: $gitProvider, state: $state}
+  ) {
     id
     name
   }
@@ -4302,6 +4308,7 @@ export type CompleteGitOAuth2FlowMutationFn = Apollo.MutationFunction<CompleteGi
  * const [completeGitOAuth2FlowMutation, { data, loading, error }] = useCompleteGitOAuth2FlowMutation({
  *   variables: {
  *      code: // value for 'code'
+ *      state: // value for 'state'
  *      gitProvider: // value for 'gitProvider'
  *   },
  * });

@@ -6,7 +6,7 @@ $resource-name-max-width: 180px;
   flex-grow: 1;
   flex-basis: 0px;
   overflow-y: auto;
-  @include scrollbars(16px, var(--gray-30), transparent);
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
   &__changes__resource {
     @include bold-12;

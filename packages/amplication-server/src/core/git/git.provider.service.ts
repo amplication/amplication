@@ -85,6 +85,19 @@ export class GitProviderService {
       Env.GITLAB_REDIRECT_URI
     );
 
+    const azureDevopsClientId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_ID
+    );
+    const azureDevopsClientSecret = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_SECRET
+    );
+    const azureDevopsRedirectUri = this.configService.get<string>(
+      Env.AZURE_DEVOPS_REDIRECT_URI
+    );
+    const azureDevopsTenantId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_TENANT_ID
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -115,6 +128,12 @@ export class GitProviderService {
         clientId: gitLabClientId,
         clientSecret: gitLabClientSecret,
         redirectUri: gitLabRedirectUri,
+      },
+      azureDevopsConfiguration: {
+        clientId: azureDevopsClientId,
+        clientSecret: azureDevopsClientSecret,
+        tenantId: azureDevopsTenantId,
+        redirectUri: azureDevopsRedirectUri,
       },
     };
   }
@@ -165,6 +184,19 @@ export class GitProviderService {
         scopes: null,
       };
     } else if (provider === EnumGitProvider.GitLab) {
+      providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
+        links: null,
+        username: null,
+        useGroupingForRepositories: null,
+        uuid: null,
+        displayName: null,
+        accessToken: null,
+        refreshToken: null,
+        tokenType: null,
+        expiresAt: null,
+        scopes: null,
+      };
+    } else if (provider === EnumGitProvider.AzureDevOps) {
       providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
         links: null,
         username: null,
@@ -608,11 +640,11 @@ export class GitProviderService {
   async getGitInstallationUrl(
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
-    const { gitProvider, workspaceId } = args.data;
+    const { gitProvider, workspaceId, state } = args.data;
     const gitClientService = await this.createGitClientWithoutProperties(
       gitProvider
     );
-    return await gitClientService.getGitInstallationUrl(workspaceId);
+    return await gitClientService.getGitInstallationUrl(state || workspaceId);
   }
 
   async getProjectsConnectedGitRepositories(
@@ -710,7 +742,7 @@ export class GitProviderService {
     args: CompleteGitOAuth2FlowArgs,
     currentUser: User
   ): Promise<GitOrganization> {
-    const { code, gitProvider, workspaceId } = args.data;
+    const { code, gitProvider, workspaceId, state } = args.data;
 
     try {
       const gitClientService = await this.createGitClientWithoutProperties(
@@ -720,7 +752,9 @@ export class GitProviderService {
       const oAuthTokens = await gitClientService.getOAuthTokens(code);
 
       const currentUserData = await gitClientService.getCurrentOAuthUser(
-        oAuthTokens.accessToken
+        oAuthTokens.accessToken,
+        state,
+        workspaceId
       );
 
       const providerOrganizationProperties: OAuthProviderOrganizationProperties =
@@ -735,9 +769,10 @@ export class GitProviderService {
       const gitOrganization = await this.prisma.gitOrganization.upsert({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          provider_installationId: {
+          provider_installationId_workspaceId: {
             provider: gitProvider,
             installationId: currentUserData.uuid,
+            workspaceId,
           },
         },
         create: {
@@ -770,7 +805,12 @@ export class GitProviderService {
 
       return gitOrganization;
     } catch (error) {
-      throw new AmplicationError("Failed to complete OAuth2 flow");
+      this.logger.error("Failed to complete OAuth2 flow", undefined, {
+        message: error.message,
+      });
+      throw new AmplicationError(
+        `Failed to complete OAuth2 flow - ${error.message}`
+      );
     }
   }
 
