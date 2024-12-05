@@ -370,8 +370,12 @@ export class AzureDevOpsService implements GitProvider {
       private: true,
       fullName: repo.name!,
       groupName: groupName,
-      defaultBranch: repo.defaultBranch!.replace("refs/heads/", ""),
+      defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     };
+  }
+
+  private parseDefaultBranch(defaultBranch?: string): string {
+    return defaultBranch?.replace("refs/heads/", "") || "";
   }
 
   async getRepositories(
@@ -385,11 +389,11 @@ export class AzureDevOpsService implements GitProvider {
     const repos = await gitApi.getRepositories(groupName);
     const remoteRepos = repos.map((repo) => ({
       name: repo.name!,
-      url: repo.remoteUrl!,
+      url: repo.webUrl!,
       private: true,
       fullName: repo.name!,
       groupName: groupName,
-      defaultBranch: repo.defaultBranch!.replace("refs/heads/", ""),
+      defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     }));
     return {
       repos: remoteRepos,
@@ -424,7 +428,7 @@ export class AzureDevOpsService implements GitProvider {
       private: true,
       fullName: repo.name!,
       groupName: groupName,
-      defaultBranch: "master",
+      defaultBranch: this.parseDefaultBranch(repo.defaultBranch),
     };
   }
 
@@ -506,13 +510,27 @@ export class AzureDevOpsService implements GitProvider {
     throw new Error("Method not implemented.");
   }
 
+  private getPullRequestUrl(
+    owner: string,
+    repositoryGroupName: string,
+    repositoryName: string,
+    pullRequestId: number
+  ): string {
+    return `https://${this.domain}/${owner}/${repositoryGroupName}/_git/${repositoryName}/pullrequest/${pullRequestId}`;
+  }
+
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<PullRequest | null> {
     await this.refreshAccessTokenIfNeeded();
 
-    const { repositoryName, branchName, repositoryGroupName } =
+    const { repositoryName, branchName, repositoryGroupName, owner } =
       getPullRequestArgs;
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Missing repositoryGroupName");
+    }
+
     const gitApi = await this.azureDevOpsClient.getGitApi();
     const prs = await gitApi.getPullRequests(
       repositoryName,
@@ -521,7 +539,12 @@ export class AzureDevOpsService implements GitProvider {
     );
     if (prs.length > 0) {
       return {
-        url: prs[0]._links.web.href,
+        url: this.getPullRequestUrl(
+          owner,
+          repositoryGroupName,
+          repositoryName,
+          prs[0].pullRequestId!
+        ),
         number: prs[0].pullRequestId!,
       };
     }
@@ -540,7 +563,13 @@ export class AzureDevOpsService implements GitProvider {
       pullRequestTitle,
       pullRequestBody,
       repositoryGroupName,
+      owner,
     } = createPullRequestArgs;
+
+    if (!repositoryGroupName) {
+      throw new CustomError("Missing repositoryGroupName");
+    }
+
     const gitApi = await this.azureDevOpsClient.getGitApi();
     const gitPullRequestToCreate = {
       sourceRefName: `refs/heads/${branchName}`,
@@ -554,7 +583,12 @@ export class AzureDevOpsService implements GitProvider {
       repositoryGroupName
     );
     return {
-      url: pr._links.web.href,
+      url: this.getPullRequestUrl(
+        owner,
+        repositoryGroupName,
+        repositoryName,
+        pr.pullRequestId!
+      ),
       number: pr.pullRequestId!,
     };
   }
@@ -601,15 +635,17 @@ export class AzureDevOpsService implements GitProvider {
   }
 
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
+    const { repositoryGroupName, repositoryName, owner } = args;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
+    }
+
     await this.refreshAccessTokenIfNeeded();
 
-    const { repositoryName, repositoryGroupName } = args;
-    const gitApi = await this.azureDevOpsClient.getGitApi();
-    const repo = await gitApi.getRepository(
-      repositoryName,
-      repositoryGroupName
+    return Promise.resolve(
+      `https://x-token-auth:${this.auth.accessToken}@dev.azure.com/${owner}/${repositoryGroupName}/_git/${repositoryName}`
     );
-    return repo.remoteUrl!;
   }
 
   async createPullRequestComment(
