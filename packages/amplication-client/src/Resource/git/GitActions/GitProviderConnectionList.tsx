@@ -1,17 +1,17 @@
-import GitProviderConnection from "./GitProviderConnection";
+import { Dialog } from "@amplication/ui/design-system";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
+import { useCallback, useState } from "react";
 import {
   AuthorizeResourceWithGitResult,
   EnumGitProvider,
 } from "../../../models";
 import { useTracking } from "../../../util/analytics";
-import "./GitProviderConnectionList.scss";
-import { useCallback, useState } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
-import { gql, useMutation } from "@apollo/client";
-import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { Dialog } from "@amplication/ui/design-system";
+import GitProviderConnection from "./GitProviderConnection";
 import GitProviderConnectionAzureOrganizationForm from "./GitProviderConnectionAzureOrganizationForm";
+import "./GitProviderConnectionList.scss";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -27,6 +27,7 @@ export type Props = {
   setPopupFailed: (status: boolean) => void;
   onProviderSelect?: (data: any) => any;
   onSelectRepository?: () => void;
+  onError?: (error: string) => void;
 };
 
 const CLASS_NAME = "git-provider-connection-list";
@@ -36,6 +37,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   setPopupFailed,
   onProviderSelect,
   onSelectRepository,
+  onError,
 }) => {
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -64,8 +66,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   triggerAuthFailed = (errorMessage?: string) => {
     //if an error was returned from the other window, show the error
     if (errorMessage) {
-      //@todo: raise the error message to the user
-      console.error(errorMessage);
+      onError && onError(errorMessage);
     } else {
       setPopupFailed(true);
     }

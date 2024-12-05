@@ -35,7 +35,7 @@ export default function ExistingConnectionsMenu({
   return (
     <>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select organization" />
+        <Label text="Select Git Organization" />
       </div>
       <SelectMenu
         selectRef={selectRef}
@@ -44,7 +44,6 @@ export default function ExistingConnectionsMenu({
             <GitOrganizationMenuItemContent
               gitAvatar={GIT_LOGO_MAP[selectedGitOrganization.provider]}
               gitOrganization={selectedGitOrganization}
-              isMenuTitle
             />
           ) : (
             "select organization" // temporary
