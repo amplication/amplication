@@ -66,7 +66,11 @@ function GitRepos({
 }: Props) {
   const [page, setPage] = useState(1);
 
-  const { data: gitGroupsData, error: gitGroupsError } = useQuery(GET_GROUPS, {
+  const {
+    data: gitGroupsData,
+    error: gitGroupsError,
+    loading: loadingGroups,
+  } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -165,6 +169,7 @@ function GitRepos({
             selectedItem={repositoryGroup}
             items={gitGroups}
             onSelect={setRepositoryGroup}
+            loadingGroups={loadingGroups}
           />
         </>
       )}

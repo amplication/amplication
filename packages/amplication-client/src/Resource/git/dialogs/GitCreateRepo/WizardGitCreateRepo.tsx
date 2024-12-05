@@ -53,7 +53,7 @@ export default function WizardGitCreateRepo({
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData, loading: loadingGroups } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -134,6 +134,7 @@ export default function WizardGitCreateRepo({
             selectedItem={repositoryGroup}
             items={gitGroups}
             onSelect={handleSelectGroup}
+            loadingGroups={loadingGroups}
           />
         </>
       )}
