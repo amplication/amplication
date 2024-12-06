@@ -49,6 +49,8 @@ import { BlueprintService } from "../blueprint/blueprint.service";
 import { Relation } from "../relation/dto/Relation";
 import { RelationService } from "../relation/relation.service";
 import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
+import { ResourceSettings } from "../resourceSettings/dto";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -64,7 +66,8 @@ export class ResourceResolver {
     private readonly ownershipService: OwnershipService,
     private readonly projectService: ProjectService,
     private readonly blueprintService: BlueprintService,
-    private readonly relationService: RelationService
+    private readonly relationService: RelationService,
+    private readonly resourceSettingsService: ResourceSettingsService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -368,6 +371,19 @@ export class ResourceResolver {
         resource: {
           id: resource.id,
         },
+      },
+    });
+  }
+
+  @ResolveField(() => ResourceSettings, { nullable: true })
+  async settings(@Parent() resource: Resource): Promise<ResourceSettings> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceSettingsService.getResourceSettingsBlock({
+      where: {
+        id: resource.id,
       },
     });
   }
