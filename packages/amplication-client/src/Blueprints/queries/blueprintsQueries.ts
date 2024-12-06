@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { CUSTOM_PROPERTY_FIELDS_FRAGMENT } from "../../CustomProperties/queries/customPropertiesQueries";
 
 export const BLUEPRINT_RELATION_FIELDS_FRAGMENT = gql`
   fragment BlueprintRelationFields on BlueprintRelation {
@@ -12,6 +13,7 @@ export const BLUEPRINT_RELATION_FIELDS_FRAGMENT = gql`
 `;
 
 export const BLUEPRINT_FIELDS_FRAGMENT = gql`
+  ${CUSTOM_PROPERTY_FIELDS_FRAGMENT}
   ${BLUEPRINT_RELATION_FIELDS_FRAGMENT}
   fragment BlueprintFields on Blueprint {
     id
@@ -20,6 +22,9 @@ export const BLUEPRINT_FIELDS_FRAGMENT = gql`
     key
     enabled
     color
+    properties {
+      ...CustomPropertyFields
+    }
     relations {
       ...BlueprintRelationFields
     }

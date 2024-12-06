@@ -90,7 +90,7 @@ const BlueprintRelationList = React.memo(
         </Dialog>
         <TabContentTitle
           title="Relations"
-          subTitle="Define relations between blueprints "
+          subTitle="Relations define how blueprints are connected to each other"
         />
         <FlexItem
           margin={EnumFlexItemMargin.Bottom}
