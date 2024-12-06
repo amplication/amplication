@@ -24,7 +24,7 @@ import {
   UPDATE_RESOURCE,
 } from "../Workspaces/queries/resourcesQueries";
 import { OwnerSelector } from "../Components/OwnerSelector";
-import ResourcePropertiesFields from "../CustomProperties/CustomPropertiesFormFields";
+import CustomPropertiesFormFields from "../CustomProperties/CustomPropertiesFormFields";
 
 type Props = {
   resourceId: string;
@@ -133,7 +133,7 @@ function ResourceForm({ resourceId }: Props) {
                 </Form>
                 <OwnerSelector resource={data.resource} />
 
-                <ResourcePropertiesFields />
+                <CustomPropertiesFormFields />
               </>
             );
           }}

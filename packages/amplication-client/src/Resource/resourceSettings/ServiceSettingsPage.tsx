@@ -27,6 +27,12 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       <InnerTabLink to={`${baseUrl}/settings/general`} icon="app-settings">
         General
       </InnerTabLink>
+      <InnerTabLink
+        to={`${baseUrl}/settings/resource-settings`}
+        icon="app-settings"
+      >
+        Blueprint Settings
+      </InnerTabLink>
       {(currentResource.resourceType === EnumResourceType.Service ||
         currentResource.resourceType === EnumResourceType.ServiceTemplate) && (
         <>
