@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Workspace } from "./Workspace";
 import { BlueprintRelation } from "./BlueprintRelation";
+import { CustomProperty } from "./CustomProperty";
 
 @ObjectType({
   isAbstract: true,
@@ -46,6 +47,11 @@ export class Blueprint {
     nullable: true,
   })
   relations?: BlueprintRelation[] | null | undefined;
+
+  @Field(() => [CustomProperty], {
+    nullable: true,
+  })
+  properties?: CustomProperty[];
 
   workspace?: Workspace;
 

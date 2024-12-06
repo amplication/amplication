@@ -227,6 +227,7 @@ export type Blueprint = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  properties?: Maybe<Array<CustomProperty>>;
   relations?: Maybe<Array<BlueprintRelation>>;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -485,6 +486,8 @@ export type CreateGitRepositoryInput = {
 };
 
 export type CustomProperty = {
+  blueprint?: Maybe<Scalars['String']['output']>;
+  blueprintId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
@@ -497,6 +500,7 @@ export type CustomProperty = {
 };
 
 export type CustomPropertyCreateInput = {
+  blueprint?: InputMaybe<WhereParentIdInput>;
   name: Scalars['String']['input'];
 };
 
@@ -530,6 +534,8 @@ export type CustomPropertyUpdateInput = {
 };
 
 export type CustomPropertyWhereInput = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;

@@ -202,6 +202,7 @@ type Blueprint {
   id: String!
   key: String!
   name: String!
+  properties: [CustomProperty!]
   relations: [BlueprintRelation!]
   updatedAt: DateTime!
 }
@@ -471,6 +472,8 @@ input CreateGitRepositoryInput {
 }
 
 type CustomProperty {
+  blueprint: String
+  blueprintId: String
   createdAt: DateTime!
   description: String
   enabled: Boolean!
@@ -483,6 +486,7 @@ type CustomProperty {
 }
 
 input CustomPropertyCreateInput {
+  blueprint: WhereParentIdInput
   name: String!
 }
 
@@ -516,6 +520,8 @@ input CustomPropertyUpdateInput {
 }
 
 input CustomPropertyWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
