@@ -816,8 +816,8 @@ model CustomProperty {
   blueprintId String?
   blueprint   Blueprint?         @relation(fields: [blueprintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@unique([workspaceId, key], map: "CustomProperty.workspaceId_key_unique")
-  @@unique([workspaceId, name], map: "CustomProperty.workspaceId_name_unique")
+  @@unique([workspaceId, blueprintId, key], map: "CustomProperty.workspaceId_blueprintId_key_unique")
+  @@unique([workspaceId, blueprintId, name], map: "CustomProperty.workspaceId_blueprintId_name_unique")
 }
 
 enum CustomPropertyType {
