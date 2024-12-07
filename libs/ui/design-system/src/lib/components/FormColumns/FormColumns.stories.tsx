@@ -4,28 +4,13 @@ import Page from "../Page/Page";
 import { SelectField } from "../SelectField/SelectField";
 import { TextField } from "../TextField/TextField";
 import { ToggleField } from "../Toggle/ToggleField";
-import { OptionItem } from "../types";
-import { Form } from "./Form";
+import { Form } from "../Form/Form";
+import { FormColumns } from "./FormColumns";
 
 export default {
-  title: "Form",
-  component: Form,
+  title: "FormColumns",
+  component: FormColumns,
 } as Meta;
-
-const OPTIONS: OptionItem[] = [
-  {
-    label: "Yellow",
-    value: "Yellow",
-  },
-  {
-    label: "Red",
-    value: "Red",
-  },
-  {
-    label: "Blue",
-    value: "Blue",
-  },
-];
 
 export const Default = {
   render: (props: any) => {
@@ -43,11 +28,14 @@ export const Default = {
           onSubmit={() => {}}
         >
           <Form>
-            <TextField name="name" label="Name" />
-            <TextField name="description" textarea label="Description" />
-            <SelectField label="Color" name="color" options={OPTIONS} />
+            <FormColumns>
+              <TextField name="name" label="Name" />
+              <TextField name="lastName" label="Last Name" />
+              <TextField name="comment" label="comment" />
+              <TextField name="comment2" label="comment" />
+              <TextField name="description" textarea label="Description" />
+            </FormColumns>
             <ToggleField name="required" label="Required Field" />
-            <TextField name="lastName" label="Last Name" />
           </Form>
         </Formik>
       </Page>
