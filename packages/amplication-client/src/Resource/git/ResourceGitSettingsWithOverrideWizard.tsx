@@ -34,7 +34,7 @@ const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
   formik,
 }) => {
   const { currentProjectConfiguration, resources } = useContext(AppContext);
-  const { gitRepository } = currentProjectConfiguration;
+  const { gitRepository } = currentProjectConfiguration || {};
   const [isOverride, setIsOverride] = useState<boolean>(
     formik.values.isOverrideGitRepository ||
       (!gitRepository && resources.length > 0)
