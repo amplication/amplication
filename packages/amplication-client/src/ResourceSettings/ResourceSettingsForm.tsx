@@ -59,12 +59,10 @@ function ResourceSettingsForm({ resource }: Props) {
             <>
               <Form>
                 {Object.values(customPropertiesMap).map((customProperty) => (
-                  <>
-                    <CustomPropertiesFormField
-                      key={customProperty.key}
-                      property={customProperty}
-                    />
-                  </>
+                  <CustomPropertiesFormField
+                    key={customProperty.key}
+                    property={customProperty}
+                  />
                 ))}
                 <div>
                   <FlexItem

@@ -106,7 +106,11 @@ export const RoleList = React.memo(
           gap={EnumGapSize.None}
         >
           {data?.resourceRoles?.map((role) => (
-            <InnerTabLink icon="roles" to={`${baseUrl}/roles/${role.id}`}>
+            <InnerTabLink
+              icon="roles"
+              to={`${baseUrl}/roles/${role.id}`}
+              key={role.id}
+            >
               <span>{role.displayName}</span>
             </InnerTabLink>
           ))}
