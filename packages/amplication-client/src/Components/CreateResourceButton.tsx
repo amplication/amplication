@@ -32,6 +32,12 @@ export type CreateResourceButtonItemType = {
 
 const ITEMS: CreateResourceButtonItemType[] = [
   {
+    type: models.EnumResourceType.Component,
+    label: "Resource from Blueprint",
+    route: "new-resource",
+    info: "Create a resource from a blueprint",
+  },
+  {
     type: models.EnumResourceType.Service,
     label: "Service",
     route: "create-resource",
@@ -48,12 +54,6 @@ const ITEMS: CreateResourceButtonItemType[] = [
     label: "Message Broker",
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
-  },
-  {
-    type: models.EnumResourceType.Component,
-    label: "Resource from Blueprint",
-    route: "new-resource",
-    info: "Create a resource from a blueprint",
   },
 ];
 

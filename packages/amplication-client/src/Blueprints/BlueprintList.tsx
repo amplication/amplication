@@ -32,7 +32,7 @@ type Props = {
 export const BlueprintList = React.memo(({ selectFirst = false }: Props) => {
   const { currentWorkspace } = useAppContext();
 
-  const baseUrl = `/${currentWorkspace?.id}/settings`;
+  const baseUrl = `/${currentWorkspace?.id}`;
 
   const {
     setSearchPhrase,

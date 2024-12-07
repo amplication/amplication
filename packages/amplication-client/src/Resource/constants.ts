@@ -279,7 +279,7 @@ export const resourceThemeMap: {
     name: "Template",
   },
   [models.EnumResourceType.Component]: {
-    icon: "code",
+    icon: "blueprint",
     color: "#20A4F3",
     name: "Component",
   },

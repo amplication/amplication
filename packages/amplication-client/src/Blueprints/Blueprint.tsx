@@ -22,10 +22,10 @@ import useBlueprints from "./hooks/useBlueprints";
 const Blueprint = () => {
   const match = useRouteMatch<{
     blueprintId: string;
-  }>(["/:workspace/settings/blueprints/:blueprintId"]);
+  }>(["/:workspace/blueprints/:blueprintId"]);
 
   const { currentWorkspace } = useAppContext();
-  const baseUrl = `/${currentWorkspace?.id}/settings`;
+  const baseUrl = `/${currentWorkspace?.id}`;
   const history = useHistory();
 
   const { blueprintId } = match?.params ?? {};

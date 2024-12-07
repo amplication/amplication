@@ -10,7 +10,9 @@ import {
 import CustomPropertiesFormField from "../../CustomProperties/CustomPropertiesFormField";
 import useBlueprintCustomPropertiesMap from "../../CustomProperties/hooks/useBlueprintCustomPropertiesMap";
 import useBlueprintsMap from "../../Blueprints/hooks/useBlueprintsMap";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { CreateResourceType } from "./CreateResourceForm";
+import { useFormikContext } from "formik";
 
 type Props = {
   blueprintId: string;
@@ -23,6 +25,14 @@ export const ResourceSettingsFormFields = ({
 }: Props) => {
   const { customPropertiesMap } = useBlueprintCustomPropertiesMap(blueprintId);
   const { blueprintsMap } = useBlueprintsMap();
+  const { setFieldValue } = useFormikContext<CreateResourceType>();
+
+  useEffect(() => {
+    //remove properties when blueprint changes
+    if (blueprintId) {
+      setFieldValue("settings.properties", {});
+    }
+  }, [blueprintId, setFieldValue]);
 
   const blueprint = useMemo(
     () =>
@@ -32,8 +42,11 @@ export const ResourceSettingsFormFields = ({
     [blueprintsMap, blueprintId]
   );
 
+  const hasProperties = Object.values(customPropertiesMap).length > 0;
+
   return (
-    blueprint && (
+    blueprint &&
+    hasProperties && (
       <div>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <Text textStyle={EnumTextStyle.H4}>

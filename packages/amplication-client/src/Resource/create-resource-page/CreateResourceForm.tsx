@@ -22,26 +22,75 @@ import CustomPropertiesFormFields from "../../CustomProperties/CustomPropertiesF
 import { validate } from "../../util/formikValidateJsonSchema";
 import ResourceGitSettingsWithOverrideWizard from "../git/ResourceGitSettingsWithOverrideWizard";
 import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
+import * as models from "../../models";
+import { EnumResourceType } from "@amplication/code-gen-types";
+import useCreateComponent from "./hooks/useCreateComponent";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { useHistory } from "react-router-dom";
 
-export type CreateResourceType = {
-  name: string;
-  description?: string;
-  projectId: string;
-  blueprintId: string;
-  properties?: Record<string, any>;
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
+
+type GitSettingsType = Omit<models.ConnectGitRepositoryInput, "name"> & {
+  gitRepositoryName?: string;
+};
+
+const GIT_SETTINGS_KEYS = [
+  "gitOrganizationId",
+  "groupName",
+  "isOverrideGitRepository",
+  "gitRepositoryName",
+];
+
+const NON_INPUT_GRAPHQL_PROPERTIES = [
+  "gitProvider",
+  "connectToDemoRepo",
+  "gitRepositoryUrl",
+];
+
+export type CreateResourceType = Omit<
+  models.ResourceCreateInput,
+  "serviceSettings" | "gitRepository" | "resourceType" | "codeGenerator"
+> & {
   settings: {
     properties: Record<string, any>;
   };
+  properties: Record<string, any>;
 };
 
+export type CreateResourceFormType = CreateResourceType & GitSettingsType;
+
 const FORM_SCHEMA = {
-  required: ["name", "blueprintId", "projectId"],
+  required: ["name"],
   properties: {
-    blueprintId: {
-      type: "string",
+    blueprint: {
+      type: "object",
+      properties: {
+        connect: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: {
+              type: "string",
+            },
+          },
+        },
+      },
     },
-    projectId: {
-      type: "string",
+    project: {
+      type: "object",
+      properties: {
+        connect: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: {
+              type: "string",
+            },
+          },
+        },
+      },
     },
     name: {
       type: "string",
@@ -56,23 +105,104 @@ const FORM_SCHEMA = {
   },
 };
 
-const DEFAULT_VALUES: Partial<CreateResourceType> = {
+const GIT_DEFAULT_VALUES: models.ConnectGitRepositoryInput = {
+  gitOrganizationId: "",
+  name: "",
+  resourceId: "",
+};
+
+const DEFAULT_VALUES: Partial<CreateResourceFormType> = {
   name: "",
   description: "",
+  settings: {
+    properties: {},
+  },
+  properties: {},
+  gitOrganizationId: "",
+  blueprint: {
+    connect: {
+      id: "",
+    },
+  },
+  project: {
+    connect: {
+      id: "",
+    },
+  },
 };
 
 type Props = {
   projectId?: string;
 };
 const CreateResourceForm = ({ projectId }: Props) => {
-  const handleSubmit = useCallback((values: CreateResourceType) => {
-    console.log("CreateResourceForm handleSubmit");
-    console.log(values);
-  }, []);
+  const { baseUrl } = useProjectBaseUrl();
+  const history = useHistory();
 
-  const initialValue = {
+  const handleComponentCreated = useCallback(
+    (component: models.Resource) => {
+      history.push(`${baseUrl}/${component.id}`);
+    },
+    [baseUrl, history]
+  );
+
+  const { createComponent, loadingCreateComponent } = useCreateComponent({
+    onComponentCreated: handleComponentCreated,
+  });
+
+  const handleSubmit = useCallback(
+    (values: CreateResourceFormType) => {
+      const sanitizedValues = omitDeep(
+        {
+          ...values,
+        },
+        NON_INPUT_GRAPHQL_PROPERTIES
+      );
+
+      // Separate GitSettings and other props dynamically
+      const gitSettings = {} as models.ConnectGitRepositoryInput;
+      const createResourceProps = {} as CreateResourceType;
+
+      Object.entries(sanitizedValues).forEach(([key, value]) => {
+        if (GIT_SETTINGS_KEYS.includes(key)) {
+          if (key === "gitRepositoryName") {
+            //replace the key with the correct one
+            gitSettings.name = value as string;
+          } else {
+            gitSettings[key] = value;
+          }
+        } else {
+          createResourceProps[key] = value;
+        }
+      });
+
+      const { settings, properties, ...resource } = createResourceProps;
+
+      const preparedValues: models.ResourceCreateInput = {
+        ...resource,
+        gitRepository: {
+          ...GIT_DEFAULT_VALUES,
+          ...gitSettings,
+        },
+        resourceType: EnumResourceType.Component,
+      };
+
+      createComponent(preparedValues, properties, settings);
+    },
+    [createComponent]
+  );
+
+  const initialValue: Partial<CreateResourceFormType> = {
     ...DEFAULT_VALUES,
-    projectId: projectId,
+    project: {
+      connect: {
+        id: projectId,
+      },
+    },
+    blueprint: {
+      connect: {
+        id: "",
+      },
+    },
   };
 
   return (
@@ -87,7 +217,9 @@ const CreateResourceForm = ({ projectId }: Props) => {
       </Text>
       <Formik
         initialValues={initialValue}
-        validate={(values: CreateResourceType) => validate(values, FORM_SCHEMA)}
+        validate={(values: CreateResourceFormType) =>
+          validate(values, FORM_SCHEMA)
+        }
         enableReinitialize
         onSubmit={handleSubmit}
       >
@@ -102,11 +234,14 @@ const CreateResourceForm = ({ projectId }: Props) => {
                 <FormColumns>
                   <DisplayNameField name="name" label="Name" minLength={1} />
                   <BlueprintSelectField
-                    name="blueprintId"
+                    name="blueprint.connect.id"
                     label="Blueprint"
                     isMulti={false}
                   />
-                  <ProjectSelectField name="projectId" label="Project" />
+                  <ProjectSelectField
+                    name="project.connect.id"
+                    label="Project"
+                  />
                   <SelectField name="Owner" label="owner" options={[]} />
                   <TextField
                     name={"description"}
@@ -120,6 +255,11 @@ const CreateResourceForm = ({ projectId }: Props) => {
                 {/* <OwnerSelector resource={{}} /> */}
               </Panel>
             </div>
+
+            <ResourceSettingsFormFields
+              fieldNamePrefix="settings."
+              blueprintId={formik.values.blueprint.connect.id}
+            />
             <div>
               <FlexItem margin={EnumFlexItemMargin.Both}>
                 <Text textStyle={EnumTextStyle.H4}>
@@ -130,11 +270,6 @@ const CreateResourceForm = ({ projectId }: Props) => {
                 <ResourceGitSettingsWithOverrideWizard formik={formik} />
               </Panel>
             </div>
-            <ResourceSettingsFormFields
-              fieldNamePrefix="settings."
-              blueprintId={formik.values.blueprintId}
-            />
-
             <div>
               <FlexItem margin={EnumFlexItemMargin.Both}>
                 <Text textStyle={EnumTextStyle.H4}>Catalog Properties</Text>
@@ -152,7 +287,9 @@ const CreateResourceForm = ({ projectId }: Props) => {
                   <Button
                     type="submit"
                     buttonStyle={EnumButtonStyle.Primary}
-                    disabled={!formik.isValid || !formik.dirty}
+                    disabled={
+                      !formik.isValid || !formik.dirty || loadingCreateComponent
+                    }
                   >
                     Create Resource
                   </Button>

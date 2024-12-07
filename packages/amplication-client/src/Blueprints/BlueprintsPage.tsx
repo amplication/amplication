@@ -16,7 +16,7 @@ const BlueprintsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
   const pageTitle = "Blueprints";
 
   const blueprintMatch = useRouteMatch<{ blueprintId: string }>([
-    "/:workspace/settings/blueprints/:blueprintId",
+    "/:workspace/blueprints/:blueprintId",
   ]);
 
   let blueprintId = null;

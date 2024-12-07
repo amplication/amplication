@@ -10,11 +10,13 @@ type Props = {
 };
 
 function CustomPropertiesFormField({ property, fieldNamePrefix }: Props) {
+  const prefix = fieldNamePrefix || "";
+
   if (property.type === EnumCustomPropertyType.Text) {
     return (
       <CustomPropertiesFormFieldText
         property={property}
-        fieldNamePrefix={fieldNamePrefix}
+        fieldNamePrefix={prefix}
       />
     );
   }
@@ -23,7 +25,7 @@ function CustomPropertiesFormField({ property, fieldNamePrefix }: Props) {
     return (
       <CustomPropertiesFormFieldLink
         property={property}
-        fieldNamePrefix={fieldNamePrefix}
+        fieldNamePrefix={prefix}
       />
     );
   }
@@ -32,7 +34,7 @@ function CustomPropertiesFormField({ property, fieldNamePrefix }: Props) {
     return (
       <CustomPropertiesFormFieldSelect
         property={property}
-        fieldNamePrefix={fieldNamePrefix}
+        fieldNamePrefix={prefix}
       />
     );
   }
@@ -41,7 +43,7 @@ function CustomPropertiesFormField({ property, fieldNamePrefix }: Props) {
     return (
       <CustomPropertiesFormFieldMultiSelect
         property={property}
-        fieldNamePrefix={fieldNamePrefix}
+        fieldNamePrefix={prefix}
       />
     );
   }
