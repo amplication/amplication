@@ -32,6 +32,16 @@ export class CustomPropertyService {
   async customProperties(
     args: CustomPropertyFindManyArgs
   ): Promise<CustomProperty[]> {
+    args.where = args.where || {};
+
+    //when searching for properties, without specifying blueprintId or blueprint, we should return only global properties
+    if (
+      args.where.blueprintId === undefined &&
+      args.where.blueprint === undefined
+    ) {
+      args.where.blueprintId = null;
+    }
+
     const properties = await this.prisma.customProperty.findMany({
       ...args,
       where: {

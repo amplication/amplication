@@ -31,6 +31,7 @@ function ResourceRelations() {
       {relationsMap &&
         currentBlueprint?.relations?.map((relationDef) => (
           <ResourceRelationsForm
+            key={relationDef.key}
             resourceId={currentResource?.id}
             relation={relationsMap[relationDef.key]}
             relationDef={relationDef}

@@ -181,19 +181,20 @@ model ApiToken {
 }
 
 model Blueprint {
-  id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
-  name        String
-  key         String
-  description String?
-  enabled     Boolean    @default(true)
-  workspaceId String
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  color       String?
-  resources   Resource[]
-  relations   Json?
+  id               String           @id @default(cuid())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+  name             String
+  key              String
+  description      String?
+  enabled          Boolean          @default(true)
+  workspaceId      String
+  workspace        Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  color            String?
+  resources        Resource[]
+  relations        Json?
+  customProperties CustomProperty[]
 
   @@unique([workspaceId, key], map: "Blueprint.workspaceId_key_unique")
   @@unique([workspaceId, name], map: "Blueprint.workspaceId_name_unique")
@@ -660,6 +661,7 @@ enum EnumBlockType {
   Package
   CodeEngineVersion
   Relation
+  ResourceSettings //generic settings block that can be used for any resource type
 }
 
 enum ActionStepStatus {
@@ -812,9 +814,11 @@ model CustomProperty {
   workspaceId String
   workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   options     Json?
+  blueprintId String?
+  blueprint   Blueprint?         @relation(fields: [blueprintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@unique([workspaceId, key], map: "CustomProperty.workspaceId_key_unique")
-  @@unique([workspaceId, name], map: "CustomProperty.workspaceId_name_unique")
+  @@unique([workspaceId, blueprintId, key], map: "CustomProperty.workspaceId_blueprintId_key_unique")
+  @@unique([workspaceId, blueprintId, name], map: "CustomProperty.workspaceId_blueprintId_name_unique")
 }
 
 enum CustomPropertyType {

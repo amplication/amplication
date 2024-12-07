@@ -127,6 +127,7 @@ export const PrivatePluginList = React.memo(
           Object.entries(privatePluginsByCodeGenerator).map(
             ([codeGenerator, privatePlugins]) => (
               <CollapsibleListItem
+                key={codeGenerator}
                 initiallyExpanded
                 icon={"code"}
                 expandable

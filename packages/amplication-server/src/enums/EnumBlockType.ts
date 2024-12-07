@@ -14,6 +14,7 @@ export enum EnumBlockType {
   PrivatePlugin = "PrivatePlugin",
   CodeEngineVersion = "CodeEngineVersion",
   Relation = "Relation",
+  ResourceSettings = "ResourceSettings",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

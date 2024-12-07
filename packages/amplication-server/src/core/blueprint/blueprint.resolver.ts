@@ -1,5 +1,12 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { Roles } from "../../decorators/roles.decorator";
@@ -9,7 +16,7 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Blueprint, User } from "../../models";
+import { Blueprint, CustomProperty, User } from "../../models";
 import { BlueprintService } from "./blueprint.service";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
@@ -92,5 +99,14 @@ export class BlueprintResolver {
     @Args() args: DeleteBlueprintRelationArgs
   ): Promise<BlueprintRelation> {
     return this.blueprintService.deleteRelation(args);
+  }
+
+  @ResolveField(() => [CustomProperty])
+  async properties(@Parent() blueprint: Blueprint): Promise<CustomProperty[]> {
+    return this.blueprintService.properties({
+      where: {
+        id: blueprint.id,
+      },
+    });
   }
 }

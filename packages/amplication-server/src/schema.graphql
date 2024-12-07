@@ -202,6 +202,7 @@ type Blueprint {
   id: String!
   key: String!
   name: String!
+  properties: [CustomProperty!]
   relations: [BlueprintRelation!]
   updatedAt: DateTime!
 }
@@ -471,6 +472,8 @@ input CreateGitRepositoryInput {
 }
 
 type CustomProperty {
+  blueprint: String
+  blueprintId: String
   createdAt: DateTime!
   description: String
   enabled: Boolean!
@@ -483,6 +486,7 @@ type CustomProperty {
 }
 
 input CustomPropertyCreateInput {
+  blueprint: WhereParentIdInput
   name: String!
 }
 
@@ -516,6 +520,8 @@ input CustomPropertyUpdateInput {
 }
 
 input CustomPropertyWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
@@ -863,6 +869,7 @@ enum EnumBlockType {
   PrivatePlugin
   ProjectConfigurationSettings
   Relation
+  ResourceSettings
   ServiceSettings
   ServiceTopics
   Topic
@@ -1770,6 +1777,7 @@ type Mutation {
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateResourceSettings(data: ResourceSettingsUpdateInput!, where: WhereUniqueInput!): ResourceSettings
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
@@ -2280,6 +2288,7 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
+  resourceSettings(where: WhereUniqueInput!): ResourceSettings!
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
@@ -2436,6 +2445,7 @@ type Resource {
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   serviceTemplateVersion: String
+  settings: ResourceSettings
   updatedAt: DateTime!
   version: ResourceVersion
 }
@@ -2540,6 +2550,31 @@ input ResourceSetOwnerInput {
   resourceId: String!
   teamId: String
   userId: String
+}
+
+type ResourceSettings implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  properties: JSONObject
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ResourceSettingsUpdateInput {
+  description: String
+  displayName: String
+  properties: JSONObject
 }
 
 input ResourceUpdateInput {

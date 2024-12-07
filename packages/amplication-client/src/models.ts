@@ -230,6 +230,7 @@ export type Blueprint = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  properties?: Maybe<Array<CustomProperty>>;
   relations?: Maybe<Array<BlueprintRelation>>;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -488,6 +489,8 @@ export type CreateGitRepositoryInput = {
 };
 
 export type CustomProperty = {
+  blueprint?: Maybe<Scalars['String']['output']>;
+  blueprintId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
@@ -500,6 +503,7 @@ export type CustomProperty = {
 };
 
 export type CustomPropertyCreateInput = {
+  blueprint?: InputMaybe<WhereParentIdInput>;
   name: Scalars['String']['input'];
 };
 
@@ -533,6 +537,8 @@ export type CustomPropertyUpdateInput = {
 };
 
 export type CustomPropertyWhereInput = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
@@ -896,6 +902,7 @@ export enum EnumBlockType {
   PrivatePlugin = 'PrivatePlugin',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   Relation = 'Relation',
+  ResourceSettings = 'ResourceSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
   Topic = 'Topic'
@@ -1790,6 +1797,7 @@ export type Mutation = {
   updateResource?: Maybe<Resource>;
   updateResourceRelation: Relation;
   updateResourceRole?: Maybe<ResourceRole>;
+  updateResourceSettings?: Maybe<ResourceSettings>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
   updateTeam: Team;
@@ -2450,6 +2458,12 @@ export type MutationUpdateResourceRoleArgs = {
 };
 
 
+export type MutationUpdateResourceSettingsArgs = {
+  data: ResourceSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateServiceSettingsArgs = {
   data: ServiceSettingsUpdateInput;
   where: WhereUniqueInput;
@@ -2985,6 +2999,7 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
+  resourceSettings: ResourceSettings;
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
@@ -3351,6 +3366,11 @@ export type QueryResourceRolesArgs = {
 };
 
 
+export type QueryResourceSettingsArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type QueryResourceVersionArgs = {
   where: WhereUniqueInput;
 };
@@ -3568,6 +3588,7 @@ export type Resource = {
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
+  settings?: Maybe<ResourceSettings>;
   updatedAt: Scalars['DateTime']['output'];
   version?: Maybe<ResourceVersion>;
 };
@@ -3688,6 +3709,31 @@ export type ResourceSetOwnerInput = {
   resourceId: Scalars['String']['input'];
   teamId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ResourceSettings = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  properties?: Maybe<Scalars['JSONObject']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ResourceSettingsUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type ResourceUpdateInput = {
