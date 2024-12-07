@@ -35,6 +35,7 @@ import { EnumOwnershipType } from "../ownership/dto/Ownership";
 import { ProjectService } from "../project/project.service";
 import { BlueprintService } from "../blueprint/blueprint.service";
 import { RelationService } from "../relation/relation.service";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -468,6 +469,10 @@ describe("ResourceResolver", () => {
           useClass: jest.fn(() => ({
             getOwnership: ownershipServiceGetOwnershipMock,
           })),
+        },
+        {
+          provide: ResourceSettingsService,
+          useClass: jest.fn(() => ({})),
         },
       ],
       imports: [

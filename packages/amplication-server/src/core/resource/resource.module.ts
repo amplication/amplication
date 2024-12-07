@@ -32,6 +32,7 @@ import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/te
 import { OwnershipModule } from "../ownership/ownership.module";
 import { BlueprintModule } from "../blueprint/blueprint.module";
 import { RelationModule } from "../relation/relation.module";
+import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { RelationModule } from "../relation/relation.module";
     OwnershipModule,
     BlueprintModule,
     RelationModule,
+    ResourceSettingsModule,
   ],
   providers: [
     ResourceService,

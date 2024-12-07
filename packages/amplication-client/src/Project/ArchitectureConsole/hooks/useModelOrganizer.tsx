@@ -74,7 +74,7 @@ const useModelOrganizer = ({
     OverrideChanges | undefined
   >(undefined);
 
-  const { resourceSettings } = useResource(currentEditableResourceNode?.id);
+  const { serviceSettings } = useResource(currentEditableResourceNode?.id);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showRelationDetails, setShowRelationDetails] = useState(
@@ -614,7 +614,7 @@ const useModelOrganizer = ({
 
         const currentEntityName = currentNode.data.payload.name;
         const authEntity =
-          resourceSettings?.serviceSettings?.authEntityName ===
+          serviceSettings?.serviceSettings?.authEntityName ===
           currentEntityName;
 
         if (
@@ -673,7 +673,7 @@ const useModelOrganizer = ({
       showRelationDetails,
       saveToPersistentData,
       trackEvent,
-      resourceSettings,
+      serviceSettings,
     ]
   );
 

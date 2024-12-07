@@ -69,7 +69,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const [pluginInstallationUpdateData, setPluginInstallationUpdateData] =
     useState<models.PluginInstallation>(null);
 
-  const { resourceSettings } = useResource(resource);
+  const { serviceSettings } = useResource(resource);
 
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
@@ -121,13 +121,13 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { addEntity } = useContext(AppContext);
 
   const userEntity = useMemo(() => {
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
     if (!authEntity) {
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities?.entities, resourceSettings?.serviceSettings]);
+  }, [entities?.entities, serviceSettings?.serviceSettings]);
 
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {

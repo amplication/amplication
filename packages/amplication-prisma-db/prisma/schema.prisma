@@ -661,6 +661,7 @@ enum EnumBlockType {
   Package
   CodeEngineVersion
   Relation
+  ResourceSettings //generic settings block that can be used for any resource type
 }
 
 enum ActionStepStatus {

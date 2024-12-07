@@ -10,12 +10,10 @@ function CustomPropertiesFormFields() {
   return (
     <div className={CLASS_NAME}>
       {Object.values(customPropertiesMap).map((customProperty) => (
-        <>
-          <CustomPropertiesFormField
-            key={customProperty.key}
-            property={customProperty}
-          />
-        </>
+        <CustomPropertiesFormField
+          key={customProperty.key}
+          property={customProperty}
+        />
       ))}
       <FlexItem margin={EnumFlexItemMargin.Both} />
     </div>

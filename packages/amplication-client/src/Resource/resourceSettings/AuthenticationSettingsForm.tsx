@@ -18,7 +18,7 @@ const CLASS_NAME = "generation-settings-form";
 
 function AuthenticationSettingsForm() {
   const { currentResource } = useContext(AppContext);
-  const { resourceSettings, updateResourceSettings } = useResource(
+  const { serviceSettings, updateServiceSettings } = useResource(
     currentResource.id
   );
 
@@ -28,14 +28,14 @@ function AuthenticationSettingsForm() {
   const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
     resourceId,
-    updateResourceSettings,
+    updateResourceSettings: updateServiceSettings,
   });
 
   return (
     <div className={CLASS_NAME}>
-      {resourceSettings?.serviceSettings && (
+      {serviceSettings?.serviceSettings && (
         <Formik
-          initialValues={resourceSettings.serviceSettings}
+          initialValues={serviceSettings.serviceSettings}
           validate={(values: models.ServiceSettings) =>
             validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
