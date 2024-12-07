@@ -4,6 +4,7 @@ import { Icon } from "../Icon/Icon";
 import "./TextInput.scss";
 import { Label, LabelTypes } from "../Label/Label";
 import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
+import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   helpText?: string;
@@ -59,20 +60,21 @@ export function TextInput({
               ref={inputRef as React.Ref<HTMLInputElement>}
             />
           )}
-          {hasError && (
-            <Icon
-              icon="info_circle"
-              size="small"
-              className={`${CLASS_NAME}__invalid`}
-            />
-          )}
+
           {helpText && labelType && labelType === "normal" && (
             <Label text={helpText} type={labelType} />
           )}
         </label>
       </div>
 
-      {hasError && helpText && <Label text={helpText} type="error" />}
+      {hasError && helpText && (
+        <Text
+          textStyle={EnumTextStyle.Description}
+          textColor={EnumTextColor.ThemeRed}
+        >
+          {helpText}
+        </Text>
+      )}
     </div>
   );
 }

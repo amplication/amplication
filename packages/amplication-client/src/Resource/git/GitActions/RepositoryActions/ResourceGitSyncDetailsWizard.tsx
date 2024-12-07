@@ -1,17 +1,8 @@
-import classNames from "classnames";
-import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
+import { EnumItemsAlign, FlexItem } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import GitRepoDetails from "../../GitRepoDetails";
+import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
-import {
-  EnumFlexDirection,
-  EnumItemsAlign,
-  EnumTextStyle,
-  FlexItem,
-  Text,
-} from "@amplication/ui/design-system";
-
-const CLASS_NAME = "git-repo-details";
+import ResourceGitSyncDetailsContent from "./ResourceGitSyncDetailsContent";
 
 type Props = {
   repositorySelected: GitRepositorySelected;
@@ -26,7 +17,7 @@ function ResourceGitSyncDetailsWizard({
   showGitRepositoryBtn = true,
   onDisconnectGitRepository,
 }: Props) {
-  const { repositoryName, gitRepositoryUrl } = repositorySelected;
+  const { repositoryName, gitRepositoryUrl, gitProvider } = repositorySelected;
 
   return (
     <FlexItem
@@ -45,19 +36,11 @@ function ResourceGitSyncDetailsWizard({
         )
       }
     >
-      <FlexItem direction={EnumFlexDirection.Column}>
-        <Text>
-          <GitRepoDetails
-            gitRepositoryFullName={repositoryName}
-            className={classNames(className, `${CLASS_NAME}__name`)}
-          />
-        </Text>
-        <Text textStyle={EnumTextStyle.Tag} underline={true}>
-          <a href={gitRepositoryUrl} target="github_repo" className={className}>
-            {gitRepositoryUrl}
-          </a>
-        </Text>
-      </FlexItem>
+      <ResourceGitSyncDetailsContent
+        gitProvider={gitProvider}
+        repositoryFullName={repositoryName}
+        repositoryUrl={gitRepositoryUrl}
+      />
     </FlexItem>
   );
 }

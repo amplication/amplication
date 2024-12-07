@@ -1,20 +1,22 @@
 import React from "react";
 import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import "./GitOrganizationMenuItemContent.scss";
+import * as models from "../../../models";
+import GitProviderLogo from "../GitProviderLogo";
 
 const CLASS_NAME = "menu-item-content";
 
 type Props = {
-  gitAvatar: string;
+  gitProvider: models.EnumGitProvider;
   gitOrganization: GitOrganizationFromGitRepository;
 };
 export const GitOrganizationMenuItemContent = ({
-  gitAvatar,
+  gitProvider,
   gitOrganization: { name },
 }: Props) => {
   return (
     <span className={`${CLASS_NAME}`}>
-      <img src={gitAvatar} alt="Git organization" />
+      <GitProviderLogo gitProvider={gitProvider} />
       <span className={`${CLASS_NAME}__text`}>{name}</span>
     </span>
   );

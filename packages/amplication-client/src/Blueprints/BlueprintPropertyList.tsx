@@ -98,6 +98,7 @@ const BlueprintPropertyList = React.memo(
               end={
                 <DeleteCustomProperty
                   customProperty={property}
+                  showLabel={false}
                   onDelete={() => {
                     onPropertyUpdated && onPropertyUpdated(null);
                   }}

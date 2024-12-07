@@ -12,10 +12,8 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { GitSelectGroupItem } from "./GitSelectGroupItem";
-import "./GitSelectGroup.scss";
 
 import { EnumGitProvider } from "../../../models";
-import { GIT_LOGO_MAP } from "../constants";
 
 export type Props = {
   selectedItem: any;
@@ -54,7 +52,7 @@ export const GitSelectGroup = ({
               title={
                 selectedItem && (
                   <GitSelectGroupItem
-                    logo={GIT_LOGO_MAP[gitProvider]}
+                    gitProvider={gitProvider}
                     name={selectedItem.name}
                   />
                 )
@@ -75,7 +73,7 @@ export const GitSelectGroup = ({
                         }}
                       >
                         <GitSelectGroupItem
-                          logo={GIT_LOGO_MAP[gitProvider]}
+                          gitProvider={gitProvider}
                           name={item.name}
                         />
                       </SelectMenuItem>

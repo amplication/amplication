@@ -24,6 +24,10 @@ function ResourceOwner({ resource }: Props) {
 
   let content = null;
 
+  if (resourceType === models.EnumResourceType.PluginRepository) {
+    return null;
+  }
+
   if (!owner) {
     content = <Text textStyle={EnumTextStyle.Description}>(not set)</Text>;
   } else if (owner["__typename"] === "User") {

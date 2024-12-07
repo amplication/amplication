@@ -1,29 +1,18 @@
 import {
-  CircleBadge,
-  CircularProgress,
   EnumButtonStyle,
   EnumItemsAlign,
   FlexItem,
-  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Snackbar,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import useBlueprints from "../Blueprints/hooks/useBlueprints";
-import {
-  prepareComponentObject,
-  resourceThemeMap,
-} from "../Resource/constants";
 import { CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL } from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
-import { useAppContext } from "../context/appContext";
 import * as models from "../models";
-import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import {
   EntitlementType,
@@ -42,6 +31,12 @@ export type CreateResourceButtonItemType = {
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
+  {
+    type: models.EnumResourceType.Component,
+    label: "Resource from Blueprint",
+    route: "new-resource",
+    info: "Create a resource from a blueprint",
+  },
   {
     type: models.EnumResourceType.Service,
     label: "Service",
@@ -65,36 +60,18 @@ const ITEMS: CreateResourceButtonItemType[] = [
 const CreateResourceButton: React.FC = () => {
   const { stigg } = useStiggContext();
   const history = useHistory();
-  const [loading, setLoading] = React.useState(false);
 
   const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
     featureId: BillingFeature.PrivatePlugins,
   });
 
-  const { findBlueprintsData } = useBlueprints();
-
-  const availableBluePrints = useMemo(() => {
-    return findBlueprintsData?.blueprints.filter((b) => b.enabled) || [];
-  }, [findBlueprintsData]);
-
-  const { currentProject, createComponent, errorCreateComponent } =
-    useAppContext();
-
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
-
-  const errorMessage = formatError(errorCreateComponent);
 
   const handleResourceClick = (item: CreateResourceButtonItemType) => {
     if (item.route) {
       const to = `${baseUrl}/${item.route}`;
       history.push(to);
     }
-  };
-
-  const handleComponentClick = (blueprint: models.Blueprint) => {
-    const resource = prepareComponentObject(currentProject.id, blueprint);
-    setLoading(true);
-    createComponent(resource);
   };
 
   const licensedItems = useMemo(() => {
@@ -115,9 +92,8 @@ const CreateResourceButton: React.FC = () => {
         paidPlansExclusive={false}
       >
         <SelectMenu
-          title={!loading ? "Add Component" : <CircularProgress />}
+          title={"Add Resource"}
           buttonStyle={EnumButtonStyle.Primary}
-          disabled={loading}
         >
           <SelectMenuModal align="right" withCaret>
             <SelectMenuList>
@@ -138,36 +114,10 @@ const CreateResourceButton: React.FC = () => {
                   </FlexItem>
                 </SelectMenuItem>
               ))}
-
-              {availableBluePrints.map((blueprint, index) => (
-                <SelectMenuItem
-                  itemData={blueprint}
-                  onSelectionChange={handleComponentClick}
-                  key={blueprint.id}
-                >
-                  <FlexItem
-                    itemsAlign={EnumItemsAlign.Center}
-                    start={
-                      <CircleBadge color={blueprint.color} size={"small"}>
-                        <Icon
-                          icon={
-                            resourceThemeMap[models.EnumResourceType.Component]
-                              .icon
-                          }
-                          size={"small"}
-                        />
-                      </CircleBadge>
-                    }
-                  >
-                    <span>{blueprint.name}</span>
-                  </FlexItem>
-                </SelectMenuItem>
-              ))}
             </SelectMenuList>
           </SelectMenuModal>
         </SelectMenu>
       </FeatureIndicatorContainer>
-      <Snackbar open={Boolean(errorCreateComponent)} message={errorMessage} />
     </div>
   );
 };

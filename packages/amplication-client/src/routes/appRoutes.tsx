@@ -42,6 +42,25 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
+            Component: lazy(() => import("../Blueprints/BlueprintsPage")),
+            moduleName: "",
+            displayName: "Blueprints",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/blueprints/:blueprint([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Blueprints/Blueprint")),
+                moduleName: "",
+                displayName: "Blueprint",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
             Component: lazy(
               () => import("../Workspaces/WorkspaceSettingsPage")
@@ -78,25 +97,7 @@ export const Routes: RouteDef[] = [
                 ],
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints",
-                Component: lazy(() => import("../Blueprints/BlueprintsPage")),
-                moduleName: "",
-                displayName: "Blueprints",
-                exactPath: false,
-                routes: [
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints/:blueprint([A-Za-z0-9-]{20,})",
-                    Component: lazy(() => import("../Blueprints/Blueprint")),
-                    moduleName: "",
-                    displayName: "Blueprint",
-                    exactPath: true,
-                    routes: [],
-                    isAnalytics: true,
-                  },
-                ],
-                isAnalytics: true,
-              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
                 Component: lazy(
@@ -125,6 +126,18 @@ export const Routes: RouteDef[] = [
           },
         ],
         routes: [
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
+            Component: lazy(
+              () =>
+                import("../Resource/create-resource-page/CreateResourcePage")
+            ),
+            moduleName: "CreateResourcePage",
+            moduleClass: "create-resource-page",
+            exactPath: true,
+            routes: [],
+          },
+
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Platform/ProjectPlatformPage")),

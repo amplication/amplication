@@ -9,7 +9,7 @@ type TData = {
   updateResourceSettings: models.ResourceSettings;
 };
 
-const useResourceSettings = (resourceId: string) => {
+const useResourceSettings = (resourceId?: string) => {
   const { addBlock } = useContext(AppContext);
 
   const [resourceSettings, setResourceSettings] =
@@ -21,6 +21,7 @@ const useResourceSettings = (resourceId: string) => {
     variables: {
       id: resourceId,
     },
+    skip: !resourceId,
     onCompleted: (data) => {
       setResourceSettings(data.resource.settings || null);
     },

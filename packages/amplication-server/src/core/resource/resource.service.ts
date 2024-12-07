@@ -556,7 +556,7 @@ export class ResourceService {
   }
 
   /**
-   * Create a resource of type "Component"
+   * Create a resource of type "Component" (blueprint)
    */
   async createComponent(
     args: CreateOneResourceArgs,

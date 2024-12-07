@@ -163,7 +163,6 @@ function GitRepos({
       {gitOrganization.useGroupingForRepositories && (
         <>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-
           <GitSelectGroup
             gitProvider={gitProvider}
             selectedItem={repositoryGroup}

@@ -89,6 +89,7 @@ const CustomProperty = () => {
               ></Toggle>
               <DeleteCustomProperty
                 customProperty={data?.customProperty}
+                showLabel={true}
                 onDelete={handleDeleteModule}
               />
             </>
