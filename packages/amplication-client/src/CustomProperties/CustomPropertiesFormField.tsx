@@ -6,23 +6,44 @@ import CustomPropertiesFormFieldText from "./CustomPropertiesFormFieldText";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
 };
 
-function CustomPropertiesFormField({ property }: Props) {
+function CustomPropertiesFormField({ property, fieldNamePrefix }: Props) {
   if (property.type === EnumCustomPropertyType.Text) {
-    return <CustomPropertiesFormFieldText property={property} />;
+    return (
+      <CustomPropertiesFormFieldText
+        property={property}
+        fieldNamePrefix={fieldNamePrefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.Link) {
-    return <CustomPropertiesFormFieldLink property={property} />;
+    return (
+      <CustomPropertiesFormFieldLink
+        property={property}
+        fieldNamePrefix={fieldNamePrefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.Select) {
-    return <CustomPropertiesFormFieldSelect property={property} />;
+    return (
+      <CustomPropertiesFormFieldSelect
+        property={property}
+        fieldNamePrefix={fieldNamePrefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.MultiSelect) {
-    return <CustomPropertiesFormFieldMultiSelect property={property} />;
+    return (
+      <CustomPropertiesFormFieldMultiSelect
+        property={property}
+        fieldNamePrefix={fieldNamePrefix}
+      />
+    );
   }
 
   return null;
