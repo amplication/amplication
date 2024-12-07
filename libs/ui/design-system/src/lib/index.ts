@@ -108,6 +108,7 @@ export { default as Page } from "./components/Page/Page";
 export type { Props as PageProps } from "./components/Page/Page";
 
 export { Form } from "./components/Form/Form";
+export { FormColumns } from "./components/FormColumns/FormColumns";
 
 export type { Props as FormProps } from "./components/Form/Form";
 

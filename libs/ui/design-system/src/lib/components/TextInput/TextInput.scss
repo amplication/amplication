@@ -3,13 +3,6 @@
 .text-input {
   position: relative;
 
-  &__invalid {
-    color: var(--theme-red);
-    position: absolute;
-    right: 8px;
-    bottom: 10px;
-  }
-
   label {
     @include label;
     position: relative;
