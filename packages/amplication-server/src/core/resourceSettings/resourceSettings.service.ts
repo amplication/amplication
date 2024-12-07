@@ -4,8 +4,18 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { BlockService } from "../block/block.service";
-import { ResourceSettingsValues } from "./constants";
+import {
+  ResourceSettingsValues,
+  ResourceSettingsValuesExtended,
+} from "./constants";
 import { ResourceSettings, UpdateResourceSettingsArgs } from "./dto";
+
+export const DEFAULT_RESOURCE_SETTINGS: ResourceSettingsValuesExtended = {
+  blockType: EnumBlockType.ResourceSettings,
+  description: "",
+  displayName: "Resource Settings",
+  properties: {},
+};
 
 @Injectable()
 export class ResourceSettingsService {
@@ -49,6 +59,23 @@ export class ResourceSettingsService {
     const resourceSettingsBlock = await this.getResourceSettingsBlock({
       where: { id: args.where.id },
     });
+
+    if (!resourceSettingsBlock) {
+      return this.blockService.create<ResourceSettings>(
+        {
+          data: {
+            ...DEFAULT_RESOURCE_SETTINGS,
+            resource: {
+              connect: {
+                id: args.where.id,
+              },
+            },
+            ...args.data,
+          },
+        },
+        user.id
+      );
+    }
 
     return this.blockService.update<ResourceSettings>(
       {

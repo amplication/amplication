@@ -28,10 +28,12 @@ export class ResourceSettingsResolver {
   }
 
   @Query(() => ResourceSettings, {
-    nullable: false,
+    nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async resourceSettings(@Args() args: FindOneArgs): Promise<ResourceSettings> {
+  async resourceSettings(
+    @Args() args: FindOneArgs
+  ): Promise<ResourceSettings | null> {
     return this.service.getResourceSettingsBlock(args);
   }
 }

@@ -376,7 +376,9 @@ export class ResourceResolver {
   }
 
   @ResolveField(() => ResourceSettings, { nullable: true })
-  async settings(@Parent() resource: Resource): Promise<ResourceSettings> {
+  async settings(
+    @Parent() resource: Resource
+  ): Promise<ResourceSettings | null> {
     if (!resource.id) {
       return null;
     }

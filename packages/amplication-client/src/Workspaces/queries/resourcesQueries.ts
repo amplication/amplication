@@ -20,6 +20,7 @@ export const RESOURCE_FIELDS_FRAGMENT = gql`
     projectId
     properties
     settings {
+      id
       properties
     }
     owner {
@@ -217,8 +218,8 @@ export const CONNECT_RESOURCE_PROJECT_REPO = gql`
 `;
 
 export const UPDATE_RESOURCE = gql`
+  ${RESOURCE_FIELDS_FRAGMENT}
   mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
-    ${RESOURCE_FIELDS_FRAGMENT}
     updateResource(data: $data, where: { id: $resourceId }) {
       ...ResourceFields
     }
