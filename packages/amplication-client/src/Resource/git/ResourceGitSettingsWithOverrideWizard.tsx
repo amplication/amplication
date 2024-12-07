@@ -21,9 +21,9 @@ import {
 const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
-  gitRepositoryDisconnectedCb: () => void;
-  gitRepositoryCreatedCb: (data: GitRepositoryCreatedData) => void;
-  gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
+  gitRepositoryDisconnectedCb?: () => void;
+  gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
+  gitRepositorySelectedCb?: (data: GitRepositorySelected) => void;
   formik: FormikProps<{ [key: string]: any }>;
 };
 
@@ -87,6 +87,58 @@ const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
     [trackEvent, formik.values]
   );
 
+  const handleRepositoryDisconnected = useCallback(() => {
+    formik.setValues(
+      {
+        ...formik.values,
+        gitRepositoryName: null,
+        gitOrganizationId: null,
+        gitRepositoryUrl: null,
+        groupName: null,
+      },
+      true
+    );
+    gitRepositoryDisconnectedCb && gitRepositoryDisconnectedCb();
+  }, [formik, gitRepositoryDisconnectedCb]);
+
+  const handleOnGitRepositorySelected = useCallback(
+    (data: GitRepositorySelected) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          connectToDemoRepo: false,
+          gitRepositoryName: data.repositoryName,
+          gitOrganizationId: data.gitOrganizationId,
+          gitRepositoryUrl: data.gitRepositoryUrl,
+          gitProvider: data.gitProvider,
+          groupName: data.groupName,
+        },
+        true
+      );
+      gitRepositorySelectedCb && gitRepositorySelectedCb(data);
+    },
+    [formik, gitRepositorySelectedCb]
+  );
+
+  const handleOnGitRepositoryCreated = useCallback(
+    (data: GitRepositoryCreatedData) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          connectToDemoRepo: false,
+          gitRepositoryName: data.name,
+          gitOrganizationId: data.gitOrganizationId,
+          gitRepositoryUrl: data.gitRepositoryUrl,
+          gitProvider: data.gitProvider,
+          groupName: data.groupName,
+        },
+        true
+      );
+      gitRepositoryCreatedCb && gitRepositoryCreatedCb(data);
+    },
+    [formik, gitRepositoryCreatedCb]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <Panel panelStyle={EnumPanelStyle.Surface}>
@@ -98,21 +150,18 @@ const ResourceGitSettingsWithOverrideWizard: React.FC<Props> = ({
           />
         </FlexItem>
       </Panel>
-
       {!isOverride && (
         <ProjectConfigurationGitSettings
           isOverride={isOverride}
           showProjectSettingsLink={false}
         />
       )}
-
       {isOverride && (
         <ResourceGitSettings
           type="wizard"
-          gitProvider={gitProvider}
-          gitRepositoryDisconnectedCb={gitRepositoryDisconnectedCb}
-          gitRepositoryCreatedCb={gitRepositoryCreatedCb}
-          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
+          gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
+          gitRepositorySelectedCb={handleOnGitRepositorySelected}
           gitRepositorySelected={{
             gitOrganizationId: formik.values.gitOrganizationId,
             repositoryName: formik.values.gitRepositoryName,

@@ -9,7 +9,7 @@ import {
 import { isEmpty } from "lodash";
 import React, { useCallback, useState } from "react";
 import * as models from "../../models";
-import { EnumGitProvider, Resource } from "../../models";
+import { Resource } from "../../models";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
@@ -24,7 +24,6 @@ import useResourceGitSettings from "./useResourceGitSettings";
 
 interface Props {
   type: "wizard" | "resource";
-  gitProvider?: EnumGitProvider;
   resource?: Resource;
   gitRepositoryDisconnectedCb?: () => void;
   gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
@@ -34,7 +33,6 @@ interface Props {
 
 const ResourceGitSettings: React.FC<Props> = ({
   type,
-  gitProvider,
   resource,
   gitRepositoryDisconnectedCb,
   gitRepositoryCreatedCb,
@@ -102,13 +100,14 @@ const ResourceGitSettings: React.FC<Props> = ({
           setError(false);
         }}
       ></ConfirmationDialog>
+
       {gitOrganization && (
         <GitDialogsContainer
           gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={gitProvider || gitOrganization.provider}
+          gitProvider={gitOrganization.provider}
           src={type === "wizard" ? "serviceWizard" : "githubPage"}
           onSelectGitRepository={(data: GitRepositorySelected) => {
             handleRepoSelected(data);

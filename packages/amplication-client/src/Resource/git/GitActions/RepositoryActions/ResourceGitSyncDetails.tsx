@@ -1,10 +1,7 @@
 import {
-  EnumFlexDirection,
   EnumItemsAlign,
-  EnumTextStyle,
   FlexItem,
   Snackbar,
-  Text,
 } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import { useCallback } from "react";
@@ -14,7 +11,7 @@ import { Resource } from "../../../../models";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { formatError } from "../../../../util/error";
 import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
-import GitRepoDetails from "../../GitRepoDetails";
+import ResourceGitSyncDetailsContent from "./ResourceGitSyncDetailsContent";
 
 type Props = {
   resourceWithRepository: Resource;
@@ -46,6 +43,9 @@ function ResourceGitSyncDetails({
     groupName: resourceWithRepository?.gitRepository?.groupName,
   });
 
+  const gitProvider =
+    resourceWithRepository.gitRepository?.gitOrganization.provider;
+
   return (
     <>
       <FlexItem
@@ -64,18 +64,11 @@ function ResourceGitSyncDetails({
           )
         }
       >
-        <FlexItem direction={EnumFlexDirection.Column}>
-          <Text>
-            <GitRepoDetails
-              gitRepositoryFullName={gitRepositoryDetails.repositoryFullName}
-            />
-          </Text>
-          <Text textStyle={EnumTextStyle.Tag} underline={true}>
-            <a href={gitRepositoryDetails.repositoryUrl} target="github_repo">
-              {gitRepositoryDetails.repositoryUrl}
-            </a>
-          </Text>
-        </FlexItem>
+        <ResourceGitSyncDetailsContent
+          gitProvider={gitProvider}
+          repositoryFullName={gitRepositoryDetails.repositoryFullName}
+          repositoryUrl={gitRepositoryDetails.repositoryUrl}
+        />
       </FlexItem>
 
       <Snackbar open={Boolean(disconnectErrorUpdate)} message={errorMessage} />

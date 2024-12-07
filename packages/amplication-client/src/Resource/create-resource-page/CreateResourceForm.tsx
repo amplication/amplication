@@ -127,12 +127,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
                 </Text>
               </FlexItem>
               <Panel panelStyle={EnumPanelStyle.Bordered}>
-                <ResourceGitSettingsWithOverrideWizard
-                  formik={formik}
-                  gitRepositoryDisconnectedCb={() => {}}
-                  gitRepositoryCreatedCb={() => {}}
-                  gitRepositorySelectedCb={() => {}}
-                />
+                <ResourceGitSettingsWithOverrideWizard formik={formik} />
               </Panel>
             </div>
             <ResourceSettingsFormFields

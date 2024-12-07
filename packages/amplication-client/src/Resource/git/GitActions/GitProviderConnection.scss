@@ -14,11 +14,6 @@
     background-color: var(--gray-full);
   }
 
-  &__logo {
-    max-width: 24px;
-    max-height: 24px;
-  }
-
   &__name {
     @include title-14;
   }
