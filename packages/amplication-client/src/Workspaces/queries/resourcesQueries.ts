@@ -9,6 +9,7 @@ export const RESOURCE_FIELDS_FRAGMENT = gql`
     description
     githubLastSync
     githubLastMessage
+    gitRepositoryOverride
     resourceType
     licensed
     blueprintId
