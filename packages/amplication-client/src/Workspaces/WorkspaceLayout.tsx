@@ -35,6 +35,7 @@ import { AssistantContextProvider } from "../Assistant/context/AssistantContext"
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import classNames from "classnames";
 import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertiesMap";
+import { CatalogContextProvider } from "../Catalog/CatalogContext";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -245,57 +246,59 @@ const WorkspaceLayout: React.FC<Props> = ({
       }}
     >
       <AssistantContextProvider>
-        {isMobileOnly ? (
-          <MobileMessage />
-        ) : (
-          <StiggProvider
-            apiKey={REACT_APP_BILLING_API_KEY}
-            customerId={currentWorkspace.id}
-          >
-            <Track>
-              <div className={`${moduleClass}__assistant__wrapper`}>
-                {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
-                  <div className={`${moduleClass}__assistant`}>
-                    <Assistant />
+        <CatalogContextProvider>
+          {isMobileOnly ? (
+            <MobileMessage />
+          ) : (
+            <StiggProvider
+              apiKey={REACT_APP_BILLING_API_KEY}
+              customerId={currentWorkspace.id}
+            >
+              <Track>
+                <div className={`${moduleClass}__assistant__wrapper`}>
+                  {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
+                    <div className={`${moduleClass}__assistant`}>
+                      <Assistant />
+                    </div>
+                  )}
+                  <div
+                    className={classNames(moduleClass, {
+                      [`${moduleClass}--with-side-panel`]: showSideBar,
+                    })}
+                  >
+                    <WorkspaceHeader />
+                    <CompleteInvitation />
+                    <RedeemCoupon />
+
+                    <div className={`${moduleClass}__page_content`}>
+                      <ResponsiveContainer
+                        className={`${moduleClass}__main_content`}
+                      >
+                        {innerRoutes}
+                      </ResponsiveContainer>
+
+                      {showSideBar ? (
+                        <div className={`${moduleClass}__changes_menu`}>
+                          <PendingChanges projectId={currentProject.id} />
+                          {!isPlatformConsole && commitUtils.lastCommit && (
+                            <LastCommit lastCommit={commitUtils.lastCommit} />
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
+                    <HubSpotChatComponent
+                      setChatStatus={setChatStatus}
+                      chatStatus={chatStatus}
+                    />
+                    <ScreenResolutionMessage />
                   </div>
-                )}
-                <div
-                  className={classNames(moduleClass, {
-                    [`${moduleClass}--with-side-panel`]: showSideBar,
-                  })}
-                >
-                  <WorkspaceHeader />
-                  <CompleteInvitation />
-                  <RedeemCoupon />
-
-                  <div className={`${moduleClass}__page_content`}>
-                    <ResponsiveContainer
-                      className={`${moduleClass}__main_content`}
-                    >
-                      {innerRoutes}
-                    </ResponsiveContainer>
-
-                    {showSideBar ? (
-                      <div className={`${moduleClass}__changes_menu`}>
-                        <PendingChanges projectId={currentProject.id} />
-                        {!isPlatformConsole && commitUtils.lastCommit && (
-                          <LastCommit lastCommit={commitUtils.lastCommit} />
-                        )}
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
-                  <HubSpotChatComponent
-                    setChatStatus={setChatStatus}
-                    chatStatus={chatStatus}
-                  />
-                  <ScreenResolutionMessage />
                 </div>
-              </div>
-            </Track>
-          </StiggProvider>
-        )}
+              </Track>
+            </StiggProvider>
+          )}
+        </CatalogContextProvider>
       </AssistantContextProvider>
     </AppContextProvider>
   ) : (
