@@ -12,7 +12,6 @@ const useBlueprintsMap = () => {
   >({});
 
   useQuery<TFindData>(GET_BLUEPRINTS_MAP, {
-    fetchPolicy: "no-cache",
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       if (data) {

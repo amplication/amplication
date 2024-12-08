@@ -98,9 +98,7 @@ export function DataGridFilters<T>({
   );
 
   useEffect(() => {
-    if (Object.keys(fixedFilters).length === 0) {
-      return;
-    }
+    //reset the filters on first load
 
     setVisibleFilters(Object.keys(fixedFilters));
     setSelectedValues((prevValues) => {

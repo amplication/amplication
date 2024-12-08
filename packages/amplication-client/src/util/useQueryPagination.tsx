@@ -5,7 +5,36 @@ type Props = {
   onLoadMore?: () => void;
 };
 
-export function useQueryPagination<T, R = undefined>(props?: Props) {
+export type Pagination = {
+  pageNumber: number;
+  setPageNumber: (pageNumber: number) => void;
+  pageSize: number;
+  setPageSize: (pageSize: number) => void;
+  pageCount: number;
+  recordCount: number;
+  triggerLoadMore: () => void;
+};
+
+export type Sorting<R> = {
+  orderBy: R;
+  setOrderBy: (orderBy: R) => void;
+};
+
+export type QueryPagination<T, R> = {
+  pagination: Pagination;
+  sorting: Sorting<R>;
+  queryPaginationParams: {
+    take: number;
+    skip: number;
+  };
+  setCurrentPageData: (data: T[]) => void;
+  currentPageData: T[];
+  setMeta: (meta: MetaQueryPayload) => void;
+};
+
+export function useQueryPagination<T, R = undefined>(
+  props?: Props
+): QueryPagination<T, R> {
   const { onLoadMore } = props || {};
 
   const [pageNumber, setPageNumber] = useState<number>(1);

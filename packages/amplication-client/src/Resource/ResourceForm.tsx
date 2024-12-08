@@ -65,16 +65,8 @@ function ResourceForm({ resourceId }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateResource, { error: updateError }] = useMutation<TData>(
-    UPDATE_RESOURCE,
-    {
-      refetchQueries: [
-        {
-          query: GET_PROJECTS,
-        },
-      ],
-    }
-  );
+  const [updateResource, { error: updateError }] =
+    useMutation<TData>(UPDATE_RESOURCE);
 
   const handleSubmit = useCallback(
     (data: models.Resource) => {

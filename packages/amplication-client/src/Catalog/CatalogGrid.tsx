@@ -17,7 +17,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
@@ -29,7 +29,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
 import "./CatalogGrid.scss";
-import useCatalog from "./hooks/useCatalog";
+import { useCatalogContext } from "./CatalogContext";
 
 const CLASS_NAME = "catalog-grid";
 
@@ -89,7 +89,7 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
     setSearchPhrase,
     pagination,
     //sorting,
-  } = useCatalog();
+  } = useCatalogContext();
 
   const errorMessage = formatError(error);
 
@@ -110,6 +110,11 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
   //   },
   //   [sorting, pagination]
   // );
+
+  // Reset page number on initial load
+  useEffect(() => {
+    pagination.setPageNumber(1);
+  }, []);
 
   return (
     <div className={`${CLASS_NAME}__wrapper`}>
