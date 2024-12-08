@@ -7,50 +7,49 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
+import { EntityService, ResourceService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project, Team, Blueprint } from "../../models";
+import { Blueprint, Entity, Project, Resource, Team, User } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
-import { ResourceService, EntityService } from "..";
+import { BlueprintService } from "../blueprint/blueprint.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
 import { FindManyBuildArgs } from "../build/dto/FindManyBuildArgs";
 import { FindManyEntityArgs } from "../entity/dto";
 import { Environment } from "../environment/dto/Environment";
 import { EnvironmentService } from "../environment/environment.service";
-import {
-  CreateServiceWithEntitiesArgs,
-  CreateOneResourceArgs,
-  FindManyResourceArgs,
-  UpdateOneResourceArgs,
-  ResourceCreateWithEntitiesResult,
-  UpdateCodeGeneratorVersionArgs,
-} from "./dto";
-import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
-import { UserAction } from "../userAction/dto";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
-import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { Owner } from "../ownership/dto/Owner";
 import { OwnershipService } from "../ownership/ownership.service";
-import { Ownership } from "../ownership/dto/Ownership";
-import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { BlueprintService } from "../blueprint/blueprint.service";
 import { Relation } from "../relation/dto/Relation";
 import { RelationService } from "../relation/relation.service";
-import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { ResourceSettings } from "../resourceSettings/dto";
 import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
+import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { UserAction } from "../userAction/dto";
+import {
+  CreateOneResourceArgs,
+  CreateServiceWithEntitiesArgs,
+  FindManyResourceArgs,
+  ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
+  UpdateOneResourceArgs,
+} from "./dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
+import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
