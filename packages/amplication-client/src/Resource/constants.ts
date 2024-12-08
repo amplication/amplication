@@ -279,15 +279,8 @@ export const resourceThemeMap: {
     name: "Template",
   },
   [models.EnumResourceType.Component]: {
-    icon: "code",
+    icon: "blueprint",
     color: "#20A4F3",
     name: "Component",
   },
-};
-
-export const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
-  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
-  [EnumGitProvider.Bitbucket]: "Bitbucket",
-  [EnumGitProvider.Github]: "GitHub",
-  [EnumGitProvider.GitLab]: "GitLab",
 };

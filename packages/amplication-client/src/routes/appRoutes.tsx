@@ -42,6 +42,25 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
+            Component: lazy(() => import("../Blueprints/BlueprintsPage")),
+            moduleName: "",
+            displayName: "Blueprints",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/blueprints/:blueprint([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Blueprints/Blueprint")),
+                moduleName: "",
+                displayName: "Blueprint",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
             Component: lazy(
               () => import("../Workspaces/WorkspaceSettingsPage")
@@ -78,25 +97,7 @@ export const Routes: RouteDef[] = [
                 ],
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints",
-                Component: lazy(() => import("../Blueprints/BlueprintsPage")),
-                moduleName: "",
-                displayName: "Blueprints",
-                exactPath: false,
-                routes: [
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints/:blueprint([A-Za-z0-9-]{20,})",
-                    Component: lazy(() => import("../Blueprints/Blueprint")),
-                    moduleName: "",
-                    displayName: "Blueprint",
-                    exactPath: true,
-                    routes: [],
-                    isAnalytics: true,
-                  },
-                ],
-                isAnalytics: true,
-              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
                 Component: lazy(
@@ -125,6 +126,18 @@ export const Routes: RouteDef[] = [
           },
         ],
         routes: [
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
+            Component: lazy(
+              () =>
+                import("../Resource/create-resource-page/CreateResourcePage")
+            ),
+            moduleName: "CreateResourcePage",
+            moduleClass: "create-resource-page",
+            exactPath: true,
+            routes: [],
+          },
+
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Platform/ProjectPlatformPage")),
@@ -290,7 +303,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
-                  () => import("../Resource/git/SyncWithGithubPage")
+                  () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
                 displayName: "Sync with Git",
@@ -524,6 +537,17 @@ export const Routes: RouteDef[] = [
       () => import("../Resource/git/AuthResourceWithGitLabCallback")
     ),
     moduleName: "AuthResourceWithGitLabCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/azure-devops-auth/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithAzureDevopsCallback")
+    ),
+    moduleName: "AuthResourceWithAzureDevopsCallback",
     permission: true,
     routeTrackType: "auth app with git callback",
     exactPath: true,

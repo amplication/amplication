@@ -69,6 +69,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
   [EnumGitProvider.GitLab]: "GitLab",
+  [EnumGitProvider.AzureDevOps]: "Azure DevOps",
 };
 import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
@@ -77,6 +78,7 @@ import { PackageService } from "../package/package.service";
 import omitDeep from "deepdash/omitDeep";
 import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 import { compareBuild } from "semver";
+import { BuildPlugin } from "./dto/BuildPlugin";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -431,6 +433,14 @@ export class BuildService {
       });
 
     return generateStep;
+  }
+
+  async getBuildPlugins(buildId: string): Promise<BuildPlugin[]> {
+    return this.prisma.buildPlugin.findMany({
+      where: {
+        buildId: buildId,
+      },
+    });
   }
 
   async onCodeGenerationSuccess(buildId: string): Promise<void> {

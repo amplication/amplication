@@ -21,6 +21,8 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "./types";
 
 export interface GitProvider {
@@ -28,7 +30,11 @@ export interface GitProvider {
   readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
+  getCurrentOAuthUser(
+    accessToken: string,
+    state?: string,
+    amplicationWorkspaceId?: string
+  ): Promise<CurrentUser>;
   getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
@@ -43,6 +49,8 @@ export interface GitProvider {
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: GetFileArgs): Promise<GitFile | null>;
+  getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent>;
+
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
@@ -59,4 +67,7 @@ export interface GitProvider {
     args: CreatePullRequestCommentArgs
   ) => Promise<void>;
   getAmplicationBotIdentity(): Promise<Bot | null>;
+
+  getAuthData(): Promise<OAuthTokens | null>;
+  isAuthDataRefreshed(): Promise<boolean>;
 }

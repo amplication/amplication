@@ -105,7 +105,6 @@ describe("AwsCodeCommit", () => {
         });
 
       const expectedRepository = {
-        admin: false,
         defaultBranch: "main",
         fullName: "example-repo",
         name: "example-repo",
@@ -167,7 +166,6 @@ describe("AwsCodeCommit", () => {
 
       const expectedRepositories = [
         {
-          admin: false,
           defaultBranch: "",
           fullName: "repo1",
           name: "repo1",
@@ -176,7 +174,6 @@ describe("AwsCodeCommit", () => {
           groupName: null,
         },
         {
-          admin: false,
           defaultBranch: "",
           fullName: "repo2",
           name: "repo2",
@@ -185,7 +182,6 @@ describe("AwsCodeCommit", () => {
           groupName: null,
         },
         {
-          admin: false,
           defaultBranch: "",
           fullName: "repo3",
           name: "repo3",
@@ -225,7 +221,6 @@ describe("AwsCodeCommit", () => {
 
       const expectedRepositories = [
         {
-          admin: false,
           defaultBranch: "",
           fullName: "repo3",
           name: "repo3",
@@ -234,7 +229,6 @@ describe("AwsCodeCommit", () => {
           groupName: null,
         },
         {
-          admin: false,
           defaultBranch: "",
           fullName: "repo4",
           name: "repo4",
@@ -298,7 +292,6 @@ describe("AwsCodeCommit", () => {
         });
 
       const expectedRepository = {
-        admin: false,
         defaultBranch: "main",
         fullName: "example-repo",
         name: "example-repo",

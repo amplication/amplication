@@ -82,3 +82,15 @@ export const UPDATE_PRIVATE_PLUGIN = gql`
     }
   }
 `;
+
+export const GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS = gql`
+  query pluginRepositoryRemotePlugins($where: WhereUniqueInput!) {
+    pluginRepositoryRemotePlugins(where: $where) {
+      content {
+        name
+        type
+        path
+      }
+    }
+  }
+`;

@@ -31,6 +31,8 @@ import {
   OAuthTokens,
   UpdateFile,
   DownloadPrivatePluginsArgs,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -68,8 +70,23 @@ export class GitClientService {
     return this.provider.getOAuthTokens(authorizationCode);
   }
 
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    return this.provider.getCurrentOAuthUser(accessToken);
+  async getAuthData(): Promise<OAuthTokens | null> {
+    return this.provider.getAuthData();
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return this.provider.isAuthDataRefreshed();
+  }
+
+  async getCurrentOAuthUser(
+    accessToken: string,
+    state?: string,
+    amplicationWorkspaceId?: string
+  ): Promise<CurrentUser> {
+    return this.provider.getCurrentOAuthUser(
+      accessToken,
+      state,
+      amplicationWorkspaceId
+    );
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
@@ -86,6 +103,12 @@ export class GitClientService {
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
     return this.provider.getRepositories(getRepositoriesArgs);
+  }
+
+  async getFolderContent(
+    args: getFolderContentArgs
+  ): Promise<GitFolderContent> {
+    return this.provider.getFolderContent(args);
   }
 
   async createRepository(

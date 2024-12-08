@@ -13,8 +13,8 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { EnumGitOrganizationType, Resource } from "../../../../models";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import GithubSyncDetails from "./GithubSyncDetails";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
+import ResourceGitSyncDetails from "./ResourceGitSyncDetails";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
@@ -33,7 +33,7 @@ export default function RepositoryActions({
   return (
     <Panel panelStyle={EnumPanelStyle.Bold}>
       {gitRepository ? (
-        <GithubSyncDetails
+        <ResourceGitSyncDetails
           resourceWithRepository={currentResourceWithGitRepository}
         />
       ) : (

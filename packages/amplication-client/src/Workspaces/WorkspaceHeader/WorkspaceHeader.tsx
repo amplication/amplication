@@ -168,23 +168,6 @@ const WorkspaceHeader: React.FC = () => {
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="search"
-                  iconSize="small"
-                />
-              </Tooltip>
-            }
-          />
-          <hr className={`${CLASS_NAME}__vertical_border`} />
           <HelpMenu />
           {canShowNotification && (
             <>
@@ -224,22 +207,18 @@ const WorkspaceHeader: React.FC = () => {
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Logout`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="log_out"
-                  onClick={handleSignOut}
-                />
-              </Tooltip>
-            }
-          />
+          <Tooltip
+            className="amp-menu-item__tooltip"
+            aria-label={`Logout`}
+            direction="sw"
+            noDelay
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="log_out"
+              onClick={handleSignOut}
+            />
+          </Tooltip>
         </div>
       </div>
 

@@ -440,6 +440,7 @@ describe("BillingService", () => {
       EnumGitProvider.AwsCodeCommit,
       EnumGitProvider.Bitbucket,
       EnumGitProvider.GitLab,
+      EnumGitProvider.AzureDevOps,
     ])(
       "should throw exception when using %s git provider if the workspace has no entitlement or bypass code generation limitation",
       async (currentGitProvider) => {

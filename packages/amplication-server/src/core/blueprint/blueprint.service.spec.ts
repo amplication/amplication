@@ -4,6 +4,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { BlueprintService } from "./blueprint.service";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 
 const EXAMPLE_BLUEPRINT_ID = "exampleBlueprintId";
 const EXAMPLE_BLUEPRINT_KEY = "exampleBlueprintKey";
@@ -68,6 +69,10 @@ describe("BlueprintService", () => {
         {
           provide: PrismaService,
           useValue: prismaMock,
+        },
+        {
+          provide: CustomPropertyService,
+          useValue: {},
         },
 
         MockedSegmentAnalyticsProvider(),

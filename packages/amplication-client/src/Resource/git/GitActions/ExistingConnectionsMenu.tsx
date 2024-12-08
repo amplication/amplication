@@ -7,11 +7,10 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
-import { gitLogoMap } from "../git-provider-icon-map";
-import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import { useRef } from "react";
+import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
-import { useRef } from "react";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -35,16 +34,15 @@ export default function ExistingConnectionsMenu({
   return (
     <>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select organization" />
+        <Label text="Select Git Organization" />
       </div>
       <SelectMenu
         selectRef={selectRef}
         title={
           selectedGitOrganization?.name ? (
             <GitOrganizationMenuItemContent
-              gitAvatar={gitLogoMap[selectedGitOrganization.provider]}
+              gitProvider={selectedGitOrganization.provider}
               gitOrganization={selectedGitOrganization}
-              isMenuTitle
             />
           ) : (
             "select organization" // temporary
@@ -66,7 +64,7 @@ export default function ExistingConnectionsMenu({
                   }}
                 >
                   <GitOrganizationMenuItemContent
-                    gitAvatar={gitLogoMap[gitOrganization.provider]}
+                    gitProvider={gitOrganization.provider}
                     gitOrganization={gitOrganization}
                   />
                 </SelectMenuItem>

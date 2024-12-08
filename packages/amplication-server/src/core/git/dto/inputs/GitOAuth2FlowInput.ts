@@ -12,4 +12,7 @@ export class GitOAuth2FlowInput {
 
   @Field(() => String, { nullable: false })
   code!: string;
+
+  @Field(() => String, { nullable: true })
+  state?: string;
 }

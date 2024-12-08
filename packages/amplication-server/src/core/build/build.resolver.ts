@@ -15,6 +15,7 @@ import { Build } from "./dto/Build";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { BuildPlugin } from "./dto/BuildPlugin";
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -75,5 +76,10 @@ export class BuildResolver {
       return this.service.calcBuildStatus(build.id);
     }
     return Promise.resolve(EnumBuildStatus[build.status]);
+  }
+
+  @ResolveField(() => [BuildPlugin])
+  buildPlugins(@Parent() build: Build): Promise<BuildPlugin[]> {
+    return this.service.getBuildPlugins(build.id);
   }
 }

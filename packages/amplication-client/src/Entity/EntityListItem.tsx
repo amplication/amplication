@@ -63,7 +63,7 @@ export const EntityListItem = ({
   const { addEntity } = useContext(AppContext);
   const history = useHistory();
 
-  const { resourceSettings } = useResource(resourceId);
+  const { serviceSettings } = useResource(resourceId);
 
   const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
@@ -131,7 +131,7 @@ export const EntityListItem = ({
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
 
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
 
     deleteEntity({
       variables: {
@@ -141,13 +141,13 @@ export const EntityListItem = ({
 
     if (authEntity === entity.name) {
       const updateServiceSettings = {
-        ...resourceSettings?.serviceSettings,
+        ...serviceSettings?.serviceSettings,
         authEntityName: null,
       };
       handleSubmit(updateServiceSettings);
     }
   }, [
-    resourceSettings?.serviceSettings,
+    serviceSettings?.serviceSettings,
     deleteEntity,
     entity,
     onError,
@@ -160,8 +160,8 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isAuthEntity = resourceSettings?.serviceSettings?.authEntityName
-    ? entity.name === resourceSettings?.serviceSettings?.authEntityName
+  const isAuthEntity = serviceSettings?.serviceSettings?.authEntityName
+    ? entity.name === serviceSettings?.serviceSettings?.authEntityName
     : entity.name === USER_ENTITY;
 
   const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;

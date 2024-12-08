@@ -1,12 +1,13 @@
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import CatalogGrid from "../Catalog/CatalogGrid";
-import CreateResourceButton from "../Components/CreateResourceButton";
+
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./ResourceList.scss";
 import { useAppContext } from "../context/appContext";
+import CreateResourceButton from "../Components/CreateResourceButton";
 
 const CLASS_NAME = "resource-list";
 const PAGE_TITLE = "Project Overview";

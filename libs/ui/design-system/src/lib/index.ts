@@ -108,6 +108,7 @@ export { default as Page } from "./components/Page/Page";
 export type { Props as PageProps } from "./components/Page/Page";
 
 export { Form } from "./components/Form/Form";
+export { FormColumns } from "./components/FormColumns/FormColumns";
 
 export type { Props as FormProps } from "./components/Form/Form";
 
@@ -264,6 +265,7 @@ export { JumboButton } from "./components/JumboButton/JumboButton";
 
 export { NavigationFilter } from "./components/NavigationFilter/NavigationFilter";
 export { NavigationFilterItem } from "./components/NavigationFilter/NavigationFilterItem";
+export { NavigationHeader } from "./components/NavigationHeader/NavigationHeader";
 
 export type { Props as NavigationFilterItemProps } from "./components/NavigationFilter/NavigationFilterItem";
 

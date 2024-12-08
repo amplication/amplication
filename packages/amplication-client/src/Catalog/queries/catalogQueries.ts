@@ -3,15 +3,11 @@ import { gql } from "@apollo/client";
 export const SEARCH_CATALOG = gql`
   query searchCatalog(
     $where: ResourceWhereInputWithPropertiesFilter
+    $orderBy: [ResourceOrderByInput!]
     $take: Int
     $skip: Int
   ) {
-    catalog(
-      where: $where
-      take: $take
-      skip: $skip
-      orderBy: [{ createdAt: Desc }]
-    ) {
+    catalog(where: $where, take: $take, skip: $skip, orderBy: $orderBy) {
       totalCount
       data {
         id
@@ -79,45 +75,12 @@ export const SEARCH_CATALOG = gql`
             useGroupingForRepositories
           }
         }
-        entities {
-          id
-          name
-        }
         builds(orderBy: { createdAt: Desc }, take: 1) {
           id
           version
           createdAt
           status
           codeGeneratorVersion
-          commit {
-            user {
-              account {
-                id
-                lastName
-                firstName
-                email
-              }
-            }
-          }
-          action {
-            id
-            createdAt
-            steps {
-              id
-              name
-              createdAt
-              message
-              status
-              completedAt
-              logs {
-                id
-                createdAt
-                message
-                meta
-                level
-              }
-            }
-          }
         }
       }
     }

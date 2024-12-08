@@ -230,6 +230,7 @@ export type Blueprint = {
   id: Scalars['String']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  properties?: Maybe<Array<CustomProperty>>;
   relations?: Maybe<Array<BlueprintRelation>>;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -309,6 +310,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI?: Maybe<Scalars['String']['output']>;
+  buildPlugins: Array<BuildPlugin>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit?: Maybe<Commit>;
   commitId: Scalars['String']['output'];
@@ -334,6 +336,16 @@ export type BuildOrderByInput = {
   status?: InputMaybe<SortOrder>;
   userId?: InputMaybe<SortOrder>;
   version?: InputMaybe<SortOrder>;
+};
+
+export type BuildPlugin = {
+  build?: Maybe<Build>;
+  buildId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  packageName: Scalars['String']['output'];
+  packageVersion: Scalars['String']['output'];
+  requestedFullPackageName: Scalars['String']['output'];
 };
 
 export type BuildWhereInput = {
@@ -477,6 +489,8 @@ export type CreateGitRepositoryInput = {
 };
 
 export type CustomProperty = {
+  blueprint?: Maybe<Scalars['String']['output']>;
+  blueprintId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   enabled: Scalars['Boolean']['output'];
@@ -489,6 +503,7 @@ export type CustomProperty = {
 };
 
 export type CustomPropertyCreateInput = {
+  blueprint?: InputMaybe<WhereParentIdInput>;
   name: Scalars['String']['input'];
 };
 
@@ -522,6 +537,8 @@ export type CustomPropertyUpdateInput = {
 };
 
 export type CustomPropertyWhereInput = {
+  blueprint?: InputMaybe<BlueprintWhereInput>;
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
@@ -885,6 +902,7 @@ export enum EnumBlockType {
   PrivatePlugin = 'PrivatePlugin',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   Relation = 'Relation',
+  ResourceSettings = 'ResourceSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
   Topic = 'Topic'
@@ -996,6 +1014,12 @@ export enum EnumEntityPermissionType {
   Public = 'Public'
 }
 
+export enum EnumGitFolderContentItemType {
+  Dir = 'Dir',
+  File = 'File',
+  Other = 'Other'
+}
+
 export enum EnumGitOrganizationType {
   Organization = 'Organization',
   User = 'User'
@@ -1003,6 +1027,7 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
+  AzureDevOps = 'AzureDevOps',
   Bitbucket = 'Bitbucket',
   GitLab = 'GitLab',
   Github = 'Github'
@@ -1224,8 +1249,19 @@ export type EvaluationInsights = {
   timeSaved: Scalars['Int']['output'];
 };
 
+export type GitFolderContent = {
+  content: Array<GitFolderContentItem>;
+};
+
+export type GitFolderContentItem = {
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+  type: EnumGitFolderContentItemType;
+};
+
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Group of Repositories */
@@ -1242,6 +1278,7 @@ export type GitGroupInput = {
 export type GitOAuth2FlowInput = {
   code: Scalars['String']['input'];
   gitProvider: EnumGitProvider;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GitOrganization = {
@@ -1279,6 +1316,12 @@ export type GitOrganizationCreateInputGitHub = {
   installationId: Scalars['String']['input'];
 };
 
+export type GitOrganizationOrderByInput = {
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  provider?: InputMaybe<SortOrder>;
+};
+
 export type GitOrganizationWhereInput = {
   id?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1292,6 +1335,15 @@ export type GitRepository = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type GitRepositoryOrderByInput = {
+  baseBranchName?: InputMaybe<SortOrder>;
+  gitOrganization?: InputMaybe<GitOrganizationOrderByInput>;
+  gitOrganizationId?: InputMaybe<SortOrder>;
+  groupName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
 };
 
 export type GitRepositoryUpdateInput = {
@@ -1745,6 +1797,7 @@ export type Mutation = {
   updateResource?: Maybe<Resource>;
   updateResourceRelation: Relation;
   updateResourceRole?: Maybe<ResourceRole>;
+  updateResourceSettings?: Maybe<ResourceSettings>;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
   updateTeam: Team;
@@ -2405,6 +2458,12 @@ export type MutationUpdateResourceRoleArgs = {
 };
 
 
+export type MutationUpdateResourceSettingsArgs = {
+  data: ResourceSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateServiceSettingsArgs = {
   data: ServiceSettingsUpdateInput;
   where: WhereUniqueInput;
@@ -2928,6 +2987,7 @@ export type Query = {
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
+  pluginRepositoryRemotePlugins: GitFolderContent;
   privatePlugin?: Maybe<PrivatePlugin>;
   privatePlugins: Array<PrivatePlugin>;
   project?: Maybe<Project>;
@@ -2939,6 +2999,7 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
+  resourceSettings: ResourceSettings;
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
@@ -3232,6 +3293,11 @@ export type QueryPluginOrderArgs = {
 };
 
 
+export type QueryPluginRepositoryRemotePluginsArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type QueryPrivatePluginArgs = {
   where: WhereUniqueInput;
 };
@@ -3297,6 +3363,11 @@ export type QueryResourceRolesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ResourceRoleWhereInput>;
+};
+
+
+export type QueryResourceSettingsArgs = {
+  where: WhereUniqueInput;
 };
 
 
@@ -3482,7 +3553,6 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 };
 
 export type RemoteGitRepository = {
-  admin: Scalars['Boolean']['output'];
   defaultBranch: Scalars['String']['output'];
   fullName: Scalars['String']['output'];
   groupName?: Maybe<Scalars['String']['output']>;
@@ -3518,6 +3588,7 @@ export type Resource = {
   resourceType: EnumResourceType;
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
+  settings?: Maybe<ResourceSettings>;
   updatedAt: Scalars['DateTime']['output'];
   version?: Maybe<ResourceVersion>;
 };
@@ -3580,8 +3651,10 @@ export type ResourceCreateWithEntitiesResult = {
 export type ResourceOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
+  gitRepository?: InputMaybe<GitRepositoryOrderByInput>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+  project?: InputMaybe<ProjectOrderByInput>;
   resourceType?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
 };
@@ -3636,6 +3709,31 @@ export type ResourceSetOwnerInput = {
   resourceId: Scalars['String']['input'];
   teamId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ResourceSettings = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUser?: Maybe<User>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
+  properties?: Maybe<Scalars['JSONObject']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ResourceSettingsUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type ResourceUpdateInput = {
@@ -4144,6 +4242,7 @@ export type CreateOrganizationAwsCodeCommitMutation = { createOrganization: { id
 
 export type CompleteGitOAuth2FlowMutationVariables = Exact<{
   code: Scalars['String']['input'];
+  state?: InputMaybe<Scalars['String']['input']>;
   gitProvider: EnumGitProvider;
 }>;
 
@@ -4230,8 +4329,10 @@ export type CreateOrganizationAwsCodeCommitMutationHookResult = ReturnType<typeo
 export type CreateOrganizationAwsCodeCommitMutationResult = Apollo.MutationResult<CreateOrganizationAwsCodeCommitMutation>;
 export type CreateOrganizationAwsCodeCommitMutationOptions = Apollo.BaseMutationOptions<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>;
 export const CompleteGitOAuth2FlowDocument = gql`
-    mutation completeGitOAuth2Flow($code: String!, $gitProvider: EnumGitProvider!) {
-  completeGitOAuth2Flow(data: {code: $code, gitProvider: $gitProvider}) {
+    mutation completeGitOAuth2Flow($code: String!, $state: String, $gitProvider: EnumGitProvider!) {
+  completeGitOAuth2Flow(
+    data: {code: $code, gitProvider: $gitProvider, state: $state}
+  ) {
     id
     name
   }
@@ -4253,6 +4354,7 @@ export type CompleteGitOAuth2FlowMutationFn = Apollo.MutationFunction<CompleteGi
  * const [completeGitOAuth2FlowMutation, { data, loading, error }] = useCompleteGitOAuth2FlowMutation({
  *   variables: {
  *      code: // value for 'code'
+ *      state: // value for 'state'
  *      gitProvider: // value for 'gitProvider'
  *   },
  * });

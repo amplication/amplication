@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+$gap: var(--double-spacing);
+
+.amp-form-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--default-spacing) $gap;
+
+  > * {
+    flex: 1 1 calc(50% - $gap);
+    max-width: none;
+  }
+
+  .text-input input,
+  .text-input textarea {
+    max-width: none;
+  }
+}

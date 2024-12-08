@@ -1,41 +1,54 @@
 import { gql } from "@apollo/client";
 
-export const GET_RESOURCE = gql`
-  query getResource($id: String!) {
-    resource(where: { id: $id }) {
+export const RESOURCE_FIELDS_FRAGMENT = gql`
+  fragment ResourceFields on Resource {
+    id
+    createdAt
+    updatedAt
+    name
+    description
+    githubLastSync
+    githubLastMessage
+    gitRepositoryOverride
+    resourceType
+    licensed
+    blueprintId
+    blueprint {
       id
-      createdAt
-      updatedAt
       name
-      description
-      githubLastSync
-      githubLastMessage
-      resourceType
-      licensed
-      blueprint {
+      color
+    }
+    projectId
+    properties
+    settings {
+      id
+      properties
+    }
+    owner {
+      ... on User {
+        id
+        account {
+          id
+          email
+          firstName
+          lastName
+        }
+      }
+      ... on Team {
         id
         name
+        description
         color
       }
-      projectId
-      properties
-      owner {
-        ... on User {
-          id
-          account {
-            id
-            email
-            firstName
-            lastName
-          }
-        }
-        ... on Team {
-          id
-          name
-          description
-          color
-        }
-      }
+    }
+  }
+`;
+
+export const GET_RESOURCE = gql`
+  ${RESOURCE_FIELDS_FRAGMENT}
+  query getResource($id: String!) {
+    resource(where: { id: $id }) {
+      ...ResourceFields
     }
   }
 `;
@@ -58,6 +71,7 @@ export const GET_RESOURCES = gql`
       codeGeneratorVersion
       codeGenerator
       licensed
+      blueprintId
       blueprint {
         id
         name
@@ -117,35 +131,6 @@ export const GET_RESOURCES = gql`
         createdAt
         status
         codeGeneratorVersion
-        commit {
-          user {
-            account {
-              id
-              lastName
-              firstName
-              email
-            }
-          }
-        }
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
       }
     }
   }
@@ -178,25 +163,6 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
         id
         version
         status
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
       }
     }
   }
@@ -253,15 +219,22 @@ export const CONNECT_RESOURCE_PROJECT_REPO = gql`
 `;
 
 export const UPDATE_RESOURCE = gql`
+  ${RESOURCE_FIELDS_FRAGMENT}
   mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
     updateResource(data: $data, where: { id: $resourceId }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      gitRepositoryOverride
-      properties
+      ...ResourceFields
+    }
+  }
+`;
+
+export const UPDATE_RESOURCE_SETTINGS = gql`
+  ${RESOURCE_FIELDS_FRAGMENT}
+  mutation updateResourceSettings(
+    $data: ResourceSettingsUpdateInput!
+    $resourceId: String!
+  ) {
+    updateResourceSettings(data: $data, where: { id: $resourceId }) {
+      ...ResourceFields
     }
   }
 `;
