@@ -1,6 +1,6 @@
 @import "../../../style/index.scss";
 
-.model-node {
+.blueprint-node {
   overflow: hidden;
   border-radius: var(--default-border-radius);
   background-color: vaR(--gray-full);
@@ -10,19 +10,15 @@
   border-top: 3px solid var(--gray-base);
 
   &--draggable {
-    .model-node__header {
+    .blueprint-node__header {
       .amp-text {
         color: var(--gray-base) !important;
       }
     }
   }
 
-  &.model-with-pending-changes {
-    border-color: var(--theme-turquoise);
-  }
-
   &--highlight {
-    .model-node__header {
+    .blueprint-node__header {
       .amp-text {
         color: var(--theme-orange) !important;
       }
@@ -49,7 +45,7 @@
     display: flex;
     position: relative;
 
-    &:last-child > .model-node__column_display_name {
+    &:last-child > .blueprint-node__column_display_name {
       margin-bottom: 0;
     }
   }
@@ -63,17 +59,6 @@
     padding: var(--icon-spacing);
     margin-bottom: var(--icon-spacing);
     border-radius: var(--default-border-radius);
-
-    &_datatype {
-      color: var(--theme-blue);
-      font-weight: 200;
-      font-size: calc(var(--normal-font-size) - 2px);
-    }
-    &_custom_attributes {
-      color: var(--theme-turquoise);
-      font-weight: 200;
-      font-size: calc(var(--normal-font-size) - 2px);
-    }
   }
   &__handle {
     &_left {

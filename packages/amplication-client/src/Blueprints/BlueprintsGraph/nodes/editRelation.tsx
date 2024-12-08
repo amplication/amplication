@@ -53,7 +53,6 @@ const EditRelation = React.memo(({ blueprint, relation }: Props) => {
         )}
       </Dialog>
       <div
-        className={`model-node__column_display_name`}
         onClick={() => {
           setIsOpen(true);
         }}

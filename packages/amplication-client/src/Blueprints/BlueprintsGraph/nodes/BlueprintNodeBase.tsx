@@ -1,9 +1,10 @@
 import { ReactElement, memo, useCallback, type FC } from "react";
 import { Handle, Position, useStore } from "reactflow";
-import "./modelNode.scss";
+import "./BlueprintNode.scss";
 
 import {
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -22,9 +23,9 @@ type Props = {
   renderContent?: (data: NodePayload<models.Blueprint>) => ReactElement;
 };
 
-const CLASS_NAME = "model-node";
+const CLASS_NAME = "blueprint-node";
 
-const ModelNodeBase: FC<Props> = memo(
+const BlueprintNodeBase: FC<Props> = memo(
   ({ className, renderContent, modelId }) => {
     const sourceNode = useStore(
       useCallback(
@@ -77,6 +78,14 @@ const ModelNodeBase: FC<Props> = memo(
             />
           ))}
         </div>
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+        >
+          {data.payload.properties?.map((property) => (
+            <Text textStyle={EnumTextStyle.Description}>{property.name}</Text>
+          ))}
+        </FlexItem>
         <Handle
           className={`${CLASS_NAME}__handle_right`}
           type="source"
@@ -121,4 +130,4 @@ const Relation = memo(({ relation, blueprint }: RelationProps) => {
 
 Relation.displayName = "Column";
 
-export default ModelNodeBase;
+export default BlueprintNodeBase;

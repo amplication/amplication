@@ -1,7 +1,7 @@
 import { type Node as ReactFlowNode } from "reactflow";
 import * as models from "../../models";
 
-export const NODE_TYPE_MODEL = "model";
+export const NODE_TYPE_MODEL = "blueprint";
 
 export type NodeType = typeof NODE_TYPE_MODEL;
 
