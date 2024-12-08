@@ -16,7 +16,6 @@ import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
-import { SEARCH_CATALOG } from "../../Catalog/queries/catalogQueries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -160,7 +159,6 @@ const useResources = (
       {
         query: GET_PROJECTS,
       },
-      SEARCH_CATALOG,
     ],
   });
 
@@ -239,9 +237,7 @@ const useResources = (
       loading: loadingCreatePluginRepository,
       error: errorCreatePluginRepository,
     },
-  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY, {
-    refetchQueries: [SEARCH_CATALOG],
-  });
+  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY, {});
 
   const createPluginRepository = (data: models.ResourceCreateInput) => {
     trackEvent({
@@ -264,9 +260,7 @@ const useResources = (
   const [
     createBroker,
     { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
-  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER, {
-    refetchQueries: [SEARCH_CATALOG],
-  });
+  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER, {});
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
@@ -387,9 +381,7 @@ const useResources = (
       loading: loadingCreateServiceFromTemplate,
       error: errorCreateServiceFromTemplate,
     },
-  ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {
-    refetchQueries: [SEARCH_CATALOG],
-  });
+  ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
 
   const createServiceFromTemplate = (
     data: models.ServiceFromTemplateCreateInput

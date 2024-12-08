@@ -1763,7 +1763,7 @@ export type Mutation = {
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
-  setResourceOwner: Ownership;
+  setResourceOwner: Resource;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
@@ -2548,10 +2548,6 @@ export type OutdatedVersionAlertWhereInput = {
 
 export type Owner = Team | User;
 
-export type Ownership = {
-  owner: Owner;
-};
-
 export type OwnershipWhereInput = {
   teamId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
@@ -2999,7 +2995,7 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
-  resourceSettings: ResourceSettings;
+  resourceSettings?: Maybe<ResourceSettings>;
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;

@@ -37,11 +37,7 @@ const useResource = (resourceId: string) => {
       },
     });
 
-  const [setResourceOwner] = useMutation<setOwnerData>(SET_RESOURCE_OWNER, {
-    onCompleted: (data) => {
-      reloadResources();
-    },
-  });
+  const [setResourceOwner] = useMutation<setOwnerData>(SET_RESOURCE_OWNER, {});
 
   return {
     serviceSettings,

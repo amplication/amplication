@@ -12,6 +12,7 @@ export interface CatalogContextInterface {
   setFilter: (filters: Record<string, string>) => void;
   pagination: Pagination;
   sorting: Sorting<models.ResourceOrderByInput[]>;
+  reloadCatalog: () => void;
 }
 
 const initialContext: CatalogContextInterface = {
@@ -33,6 +34,7 @@ const initialContext: CatalogContextInterface = {
     orderBy: [],
     setOrderBy: () => {},
   },
+  reloadCatalog: () => {},
 };
 
 export const CatalogContext =
@@ -49,6 +51,7 @@ export const CatalogContextProvider: React.FC<{
     setSearchPhrase,
     pagination,
     sorting,
+    reloadCatalog,
   } = useCatalog();
 
   const contextValue: CatalogContextInterface = {
@@ -59,6 +62,7 @@ export const CatalogContextProvider: React.FC<{
     setSearchPhrase,
     pagination,
     sorting,
+    reloadCatalog,
   };
 
   return (

@@ -40,6 +40,7 @@ const useCatalog = () => {
     data: catalogData,
     loading,
     error,
+    refetch,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
       //orderBy: sorting.orderBy,
@@ -142,6 +143,11 @@ const useCatalog = () => {
     [customPropertiesMap]
   );
 
+  const reloadCatalog = useCallback(() => {
+    pagination.setPageNumber(1);
+    refetch();
+  }, [pagination, refetch]);
+
   return {
     catalog: currentPageData || [],
     loading,
@@ -150,6 +156,7 @@ const useCatalog = () => {
     setFilter,
     pagination,
     sorting,
+    reloadCatalog,
   };
 };
 

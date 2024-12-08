@@ -27,6 +27,7 @@ import { EnumResourceType } from "@amplication/code-gen-types";
 import useCreateComponent from "./hooks/useCreateComponent";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import { useHistory } from "react-router-dom";
+import { useCatalogContext } from "../../Catalog/CatalogContext";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -137,12 +138,14 @@ type Props = {
 const CreateResourceForm = ({ projectId }: Props) => {
   const { baseUrl } = useProjectBaseUrl();
   const history = useHistory();
+  const { reloadCatalog } = useCatalogContext();
 
   const handleComponentCreated = useCallback(
     (component: models.Resource) => {
+      reloadCatalog();
       history.push(`${baseUrl}/${component.id}`);
     },
-    [baseUrl, history]
+    [baseUrl, history, reloadCatalog]
   );
 
   const { createComponent, loadingCreateComponent } = useCreateComponent({
