@@ -13,7 +13,11 @@ const ResourceSelectField = (props: Props) => {
 
   const { blueprintsMap } = useBlueprintsMap();
 
-  const { catalog, setFilter } = useCatalog();
+  const { catalog, setFilter, pagination } = useCatalog();
+
+  useEffect(() => {
+    if (pagination.pageSize !== 200) pagination.setPageSize(200);
+  }, [pagination]);
 
   useEffect(() => {
     const blueprint = Object.values(blueprintsMap).find(
