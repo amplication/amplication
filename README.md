@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-  <i align="center">Instantly generate production-ready .NET and Node.js backend apps 🚀</i>
+  <i align="center">Transform platform engineering with tailor-made live templates and service catalog 🚀</i>
 </p>
 
 <h4 align="center">
@@ -42,13 +42,13 @@
 
 ## Introduction
 
-`Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure .NET and Node.js applications. Amplication is the only AI platform turning ideas into production-ready code in a few minutes. We automate your backend applications development, ensuring consistency, predictability, and adherence to the highest standards with code that’s built to scale
+`Amplication` enables you to quickly build, maintain, and scale backend services that embed your company’s best practices and standards.
 
-Our user-friendly interface fosters seamless integration of APIs, data models, databases, authentication, and authorization. Built on a flexible, plugin-based architecture, Amplication allows effortless customization of the code and offers a diverse range of integrations.
+With Amplication you can create your own live templates embedding your organization’s best practices and standards, to ensure consistency and compliance from the start. 
 
-With a strong focus on collaboration, Amplication streamlines team-oriented development, making it an ideal choice for groups of all sizes, from startups to large enterprises. Our platform enables you to concentrate on your business logic, while we handle the heavy lifting.
+Leveraging AI-powered automation, Amplication will generate microservices in no time, with everything that is needed to support your business domain: APIs, data models, DTOs and more, allowing engineers to focus on business logic. 
 
-Experience the fastest way to develop .NET and Node.js applications with Amplication.
+Now your live applications will be always up-to-date. Amplication automatically handles package updates, patches, and versioning, reducing technical debt and ensuring consistency across your services. 
 
 <details open>
 <summary>
