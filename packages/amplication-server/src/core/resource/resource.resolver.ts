@@ -229,17 +229,23 @@ export class ResourceResolver {
     return this.resourceService.updateResource(args);
   }
 
-  @Mutation(() => Ownership, { nullable: false })
+  @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
   async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
-  ): Promise<Ownership> {
-    return this.resourceService.setOwner(
+  ): Promise<Resource> {
+    await this.resourceService.setOwner(
       args.data.resourceId,
       args.data.userId,
       args.data.teamId
     );
+
+    return this.resourceService.resource({
+      where: {
+        id: args.data.resourceId,
+      },
+    });
   }
 
   @Mutation(() => UserAction, { nullable: false })
