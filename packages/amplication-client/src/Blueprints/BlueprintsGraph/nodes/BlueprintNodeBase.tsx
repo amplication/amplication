@@ -5,7 +5,9 @@ import "./BlueprintNode.scss";
 import {
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
@@ -15,6 +17,7 @@ import classNames from "classnames";
 import * as models from "../../../models";
 import { Node, NodePayload } from "../types";
 import AddRelation from "./addRelation";
+import EditBlueprintProperty from "./EditBlueprintProperty";
 import EditRelation from "./editRelation";
 
 type Props = {
@@ -69,21 +72,43 @@ const BlueprintNodeBase: FC<Props> = memo(
             {data.payload.name}
           </Text>
         </FlexItem>
-        <div className={`${CLASS_NAME}__column_container`}>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+        >
+          <Text
+            textStyle={EnumTextStyle.Tag}
+            textColor={EnumTextColor.ThemeTurquoise}
+          >
+            Properties
+          </Text>
+          {data.payload.properties?.map((property) => (
+            <EditBlueprintProperty
+              key={property.id}
+              blueprint={data.payload}
+              property={property}
+            />
+          ))}
+        </FlexItem>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+          itemsAlign={EnumItemsAlign.Stretch}
+        >
+          <Text
+            textStyle={EnumTextStyle.Tag}
+            textColor={EnumTextColor.ThemeTurquoise}
+          >
+            Relations
+          </Text>
           {data.payload.relations?.map((relation) => (
             <Relation
               relation={relation}
               key={relation.key}
               blueprint={data.payload}
             />
-          ))}
-        </div>
-        <FlexItem
-          direction={EnumFlexDirection.Column}
-          margin={EnumFlexItemMargin.Both}
-        >
-          {data.payload.properties?.map((property) => (
-            <Text textStyle={EnumTextStyle.Description}>{property.name}</Text>
           ))}
         </FlexItem>
         <Handle
@@ -106,7 +131,7 @@ interface RelationProps {
 
 const Relation = memo(({ relation, blueprint }: RelationProps) => {
   return (
-    <div key={relation.key} className={`${CLASS_NAME}__column_inner_container`}>
+    <div key={relation.key} className={`${CLASS_NAME}__handles-container`}>
       <Handle
         className={`${CLASS_NAME}__handle_left`}
         type="source"

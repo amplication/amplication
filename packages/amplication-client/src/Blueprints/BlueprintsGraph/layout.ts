@@ -64,8 +64,6 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
     });
   });
 
-  console.log({ elkNodes, elkEdges });
-
   const layout = await elk.layout({
     id: "root",
     children: elkNodes,
