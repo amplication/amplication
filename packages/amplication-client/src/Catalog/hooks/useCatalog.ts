@@ -14,6 +14,9 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
   not: models.EnumResourceType.ProjectConfiguration,
 };
 
+const RESOURCE_TYPE_PREFIX = "resourceType_";
+const BLUEPRINT_PREFIX = "blueprint_";
+
 const useCatalog = () => {
   const { customPropertiesMap } = useAppContext();
 
@@ -111,11 +114,17 @@ const useCatalog = () => {
 
       const otherFilterObject = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
-          if (key === "resourceType" && value) {
-            const filter: models.EnumResourceTypeFilter = {
-              equals: value as models.EnumResourceType,
-            };
-            acc[key] = filter;
+          if (key === "resourceTypeOrBlueprint" && value) {
+            if (value.startsWith(BLUEPRINT_PREFIX)) {
+              value = value.replace(BLUEPRINT_PREFIX, "");
+              acc["blueprintId"] = value;
+            } else {
+              value = value.replace(RESOURCE_TYPE_PREFIX, "");
+              const filter: models.EnumResourceTypeFilter = {
+                equals: value as models.EnumResourceType,
+              };
+              acc["resourceType"] = filter;
+            }
           } else if (key === "ownership" && value) {
             const values = value.split(":");
             if (values.length !== 2 || !values[0] || !values[1]) {

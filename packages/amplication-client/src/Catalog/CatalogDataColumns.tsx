@@ -23,7 +23,7 @@ import ResourceGitOrg from "../Workspaces/ResourceGitOrg";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
-    key: "resourceType",
+    key: "resourceTypeOrBlueprint",
     name: "Type",
     width: 60,
     filterable: true,
