@@ -13,7 +13,11 @@ Run `nx lint amplication-code-gen-types` to execute the lint via [ESLint](https:
 
 ## Publish to npm
 
-In order to publish to npm `@amplication/code-gen-types` run the following:
+In order to publish to npm `@amplication/code-gen-types` :
+
+1. Make sure to update the version in the package.json. 
+2. Run the following:
+
 
 ```sh
 # From the monorepo root folder
@@ -23,5 +27,19 @@ npx nx build code-gen-types
 
 cd ./dist/libs/util/code-gen-types
 
-npm publish --access public ....
 ```
+
+To publish the package as "beta" run:
+
+```
+npm publish --access public --tag beta
+```
+
+To publish the package as "latest" run:
+
+```sh
+
+npm publish --access public
+    
+```
+    
