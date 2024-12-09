@@ -140,18 +140,17 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
         />
       </div>
       <div className={`${CLASS_NAME}__grid-container`}>
-        {isEmpty(catalog) && !loading ? (
+        <DataGrid
+          columns={columns}
+          rows={catalog}
+          onColumnsReorder={onColumnsReorder}
+          onScrollToBottom={handleLoadMore}
+        ></DataGrid>
+        {isEmpty(catalog) && !loading && (
           <EmptyState
             message="There are no items to show with the current filters"
             image={EnumImages.AddResource}
           />
-        ) : (
-          <DataGrid
-            columns={columns}
-            rows={catalog}
-            onColumnsReorder={onColumnsReorder}
-            onScrollToBottom={handleLoadMore}
-          ></DataGrid>
         )}
       </div>
       <Snackbar open={Boolean(error)} message={errorMessage} />
