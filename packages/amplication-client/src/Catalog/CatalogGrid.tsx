@@ -1,34 +1,40 @@
 import {
+  Button,
   CircularProgress,
   DataGrid,
   DataGridColumn,
   DataGridColumnFilter,
   DataGridFilters,
+  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumGapSize,
+  EnumIconPosition,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
+  Modal,
   SearchField,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
-import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 import { useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
-import "./CatalogGrid.scss";
 import { useCatalogContext } from "./CatalogContext";
+import {
+  columnsWithProperties,
+  RESOURCE_LIST_COLUMNS,
+} from "./CatalogDataColumns";
+import CatalogGraph from "./CatalogGraph/CatalogGraph";
+import "./CatalogGrid.scss";
 
 const CLASS_NAME = "catalog-grid";
 
@@ -41,39 +47,13 @@ type Props = {
 
 function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
   const { customPropertiesMap } = useAppContext();
+  const [graphIsOpen, setGraphIsOpen] = useState(false);
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
-    const propCols = Object.values(customPropertiesMap).map(
-      (property): DataGridColumn<models.Resource> => {
-        return {
-          key: property.key,
-          name: property.name,
-          resizable: true,
-          sortable: true,
-          filterable: true,
-          renderFilter: CustomPropertyFilter,
-          hidden: false,
-          renderCell: (props) => {
-            return (
-              <CustomPropertyValue
-                propertyKey={property.key}
-                allValues={props.row.properties}
-              />
-            );
-          },
-          getValue: (row) => {
-            return row.properties && row.properties[property.key]
-              ? row.properties[property.key]
-              : "";
-          },
-        };
-      }
+    return columnsWithProperties(
+      RESOURCE_LIST_COLUMNS,
+      Object.values(customPropertiesMap)
     );
-
-    const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
-    const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);
-
-    return [...otherCols, ...propCols, lastCol];
   }, [customPropertiesMap]);
 
   const { columns, setColumns, onColumnsReorder } = useDataGridColumnFilter(
@@ -128,6 +108,14 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
+              <Button
+                icon="relation"
+                iconPosition={EnumIconPosition.Left}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={() => setGraphIsOpen(true)}
+              >
+                Show Graph
+              </Button>
               {HeaderActions}
             </FlexItem>
           }
@@ -153,6 +141,17 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
           />
         )}
       </div>
+      {graphIsOpen && (
+        <Modal
+          css="catalog-graph-modal"
+          onCloseEvent={() => setGraphIsOpen(false)}
+          open={graphIsOpen}
+          fullScreen
+          showCloseButton={true}
+        >
+          <CatalogGraph />
+        </Modal>
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
