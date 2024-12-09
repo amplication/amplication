@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback } from "react";
-import { Node } from "./types";
+import { Node } from "../../Blueprints/BlueprintsGraph/types";
 
 export const CLASS_NAME = "graph-toolbar";
 
