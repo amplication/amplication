@@ -113,10 +113,7 @@ export default function BlueprintGraph() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <GraphToolbar
-              nodes={nodes}
-              searchPhraseChanged={searchPhraseChanged}
-            />
+            <GraphToolbar searchPhraseChanged={searchPhraseChanged} />
 
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow
