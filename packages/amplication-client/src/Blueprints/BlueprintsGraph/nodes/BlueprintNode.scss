@@ -38,7 +38,7 @@
     }
   }
 
-  &__relation {
+  &__child-item {
     width: 100%;
     box-sizing: border-box;
     padding: var(--icon-spacing);
@@ -48,6 +48,10 @@
     &:hover {
       background-color: var(--gray-80);
       cursor: pointer;
+    }
+
+    &--add {
+      border: 1px dashed var(--gray-70);
     }
   }
 

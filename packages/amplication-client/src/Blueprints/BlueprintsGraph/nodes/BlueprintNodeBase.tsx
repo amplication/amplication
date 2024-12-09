@@ -66,7 +66,14 @@ const BlueprintNodeBase: FC<Props> = memo(
           className={`${CLASS_NAME}__header`}
           direction={EnumFlexDirection.Row}
           itemsAlign={EnumItemsAlign.Center}
-          end={<AddRelation blueprint={data.payload} />}
+          end={
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              itemsAlign={EnumItemsAlign.Center}
+            >
+              <AddRelation blueprint={data.payload} />
+            </FlexItem>
+          }
         >
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             {data.payload.name}

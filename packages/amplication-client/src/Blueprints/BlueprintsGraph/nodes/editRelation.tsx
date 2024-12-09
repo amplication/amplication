@@ -65,7 +65,7 @@ const EditRelation = React.memo(({ blueprint, relation }: Props) => {
         onClick={() => {
           setIsOpen(true);
         }}
-        className="blueprint-node__relation"
+        className="blueprint-node__child-item"
       >
         <Text
           textStyle={EnumTextStyle.Description}

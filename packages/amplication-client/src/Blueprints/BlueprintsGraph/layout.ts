@@ -2,8 +2,11 @@ import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
 import { type Edge } from "reactflow";
 import { Node } from "./types";
 
-const FIELD_HEIGHT = 41;
-const TITLE_HEIGHT = 50;
+const RELATION_HEIGHT = 36;
+const RELATIONS_PADDING = 26;
+const PROPERTY_HEIGHT = 36;
+const PROPERTY_PADDING = 38;
+const TITLE_HEIGHT = 60;
 const CHAR_WIDTH = 10;
 const MARGIN = 100;
 const MIN_WIDTH = 200;
@@ -11,8 +14,10 @@ const MIN_WIDTH = 200;
 const elk = new Elk({
   defaultLayoutOptions: {
     "elk.algorithm": "org.eclipse.elk.layered",
-    "elk.spacing.nodeNode": "400",
-    "elk.layered.spacing.nodeNodeBetweenLayers": "400",
+    "elk.direction": "RIGHT", // Controls the direction of connected nodes
+    "elk.spacing.nodeNode": "300", // Spacing between connected nodes
+    "elk.layered.spacing.nodeNodeBetweenLayers": "500", // Spacing between connected nodes in different layers
+    "elk.spacing.componentComponent": "200", // Spacing between disconnected components
   },
 });
 
@@ -21,9 +26,14 @@ const normalizeSize = (value: number, minValue: number) =>
 
 const calculateNodeHeight = (node: Node) => {
   const relationsHeight =
-    (node.data.payload.relations?.length || 0) * FIELD_HEIGHT;
+    (node.data.payload.relations?.length || 0) * RELATION_HEIGHT +
+    RELATIONS_PADDING;
 
-  const heightWithTitle = relationsHeight + TITLE_HEIGHT;
+  const propertiesHeight =
+    (node.data.payload.properties?.length || 0) * PROPERTY_HEIGHT +
+    PROPERTY_PADDING;
+
+  const heightWithTitle = relationsHeight + propertiesHeight + TITLE_HEIGHT;
 
   return normalizeSize(heightWithTitle, MARGIN);
 };

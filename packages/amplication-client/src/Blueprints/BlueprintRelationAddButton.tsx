@@ -1,4 +1,9 @@
-import { Button, Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
+import {
+  Button,
+  Dialog,
+  EnumButtonStyle,
+  Tooltip,
+} from "@amplication/ui/design-system";
 import React, { useState } from "react";
 import * as models from "../models";
 import BlueprintRelationForm from "./BlueprintRelationForm";
@@ -47,14 +52,16 @@ const BlueprintRelationAddButton = ({
         )}
       </Dialog>
 
-      <Button
-        buttonStyle={buttonStyle}
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        {buttonContent}
-      </Button>
+      <Tooltip title="Add Relation">
+        <Button
+          buttonStyle={buttonStyle}
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
+          {buttonContent}
+        </Button>
+      </Tooltip>
     </>
   );
 };

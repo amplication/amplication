@@ -15,6 +15,7 @@ import { CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON } from "../../../CustomPropertie
 import useCustomProperties from "../../../CustomProperties/hooks/useCustomProperties";
 import * as models from "../../../models";
 import { formatError } from "../../../util/error";
+import useBlueprints from "../../hooks/useBlueprints";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -24,6 +25,8 @@ type Props = {
 const EditBlueprintProperty = React.memo(({ blueprint, property }: Props) => {
   const { updateCustomProperty, updateCustomPropertyError: updateError } =
     useCustomProperties();
+
+  const { getBlueprintRefetch } = useBlueprints(blueprint.id);
 
   const errorMessage = formatError(updateError);
 
@@ -53,7 +56,7 @@ const EditBlueprintProperty = React.memo(({ blueprint, property }: Props) => {
           <CustomPropertyFormAndOptions
             handleSubmit={handleSubmit}
             customProperty={property}
-            onOptionListChanged={() => {}}
+            onOptionListChanged={getBlueprintRefetch}
           ></CustomPropertyFormAndOptions>
         )}
       </Dialog>
@@ -61,7 +64,7 @@ const EditBlueprintProperty = React.memo(({ blueprint, property }: Props) => {
         onClick={() => {
           setIsOpen(true);
         }}
-        className="blueprint-node__relation"
+        className="blueprint-node__child-item"
       >
         <Text
           textStyle={EnumTextStyle.Description}
