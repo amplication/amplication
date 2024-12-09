@@ -8,6 +8,7 @@ import {
   EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumGapSize,
   EnumIconPosition,
   EnumItemsAlign,
@@ -120,12 +121,14 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
             </FlexItem>
           }
         ></FlexItem>
-        <HorizontalRule doubleSpacing />
-        <DataGridFilters
-          columns={columns}
-          onChange={setFilter}
-          fixedFilters={fixedFilters}
-        />
+        <HorizontalRule />
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <DataGridFilters
+            columns={columns}
+            onChange={setFilter}
+            fixedFilters={fixedFilters}
+          />
+        </FlexItem>
       </div>
       <div className={`${CLASS_NAME}__grid-container`}>
         <DataGrid

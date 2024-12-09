@@ -130,7 +130,6 @@ export function DataGridFilters<T>({
       direction={EnumFlexDirection.Row}
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
-      margin={EnumFlexItemMargin.Bottom}
       className={CLASS_NAME}
     >
       {visibleFilters.map((key) => {
