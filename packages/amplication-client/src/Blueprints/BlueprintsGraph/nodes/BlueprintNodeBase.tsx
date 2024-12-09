@@ -66,14 +66,6 @@ const BlueprintNodeBase: FC<Props> = memo(
           className={`${CLASS_NAME}__header`}
           direction={EnumFlexDirection.Row}
           itemsAlign={EnumItemsAlign.Center}
-          end={
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              itemsAlign={EnumItemsAlign.Center}
-            >
-              <AddRelation blueprint={data.payload} />
-            </FlexItem>
-          }
         >
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             {data.payload.name}
@@ -104,12 +96,25 @@ const BlueprintNodeBase: FC<Props> = memo(
           margin={EnumFlexItemMargin.Both}
           itemsAlign={EnumItemsAlign.Stretch}
         >
-          <Text
-            textStyle={EnumTextStyle.Tag}
-            textColor={EnumTextColor.ThemeTurquoise}
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            itemsAlign={EnumItemsAlign.End}
+            end={
+              <FlexItem
+                direction={EnumFlexDirection.Row}
+                itemsAlign={EnumItemsAlign.Center}
+              >
+                <AddRelation blueprint={data.payload} />
+              </FlexItem>
+            }
           >
-            Relations
-          </Text>
+            <Text
+              textStyle={EnumTextStyle.Tag}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              Relations
+            </Text>
+          </FlexItem>
           {data.payload.relations?.map((relation) => (
             <Relation
               relation={relation}

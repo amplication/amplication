@@ -39,7 +39,7 @@ const AddRelation = React.memo(({ blueprint }: Props) => {
     <>
       <BlueprintRelationAddButton
         buttonStyle={EnumButtonStyle.Text}
-        buttonContent={<Icon icon="relation" />}
+        buttonContent={<Icon size="xsmall" icon="plus" />}
         blueprint={blueprint}
         onSubmit={handleSubmit}
       />
