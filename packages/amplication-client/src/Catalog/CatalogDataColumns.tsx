@@ -91,7 +91,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     resizable: true,
     sortable: true,
-    getValue: (row) => row.gitRepository?.gitOrganization?.name,
+    getValue: (row) => row.gitRepository?.gitOrganization?.name ?? "",
   },
   {
     key: "gitRepository",
@@ -105,7 +105,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     resizable: true,
     sortable: true,
-    getValue: (row) => row.gitRepository?.name,
+    getValue: (row) => row.gitRepository?.name ?? "",
   },
   {
     key: "description",
