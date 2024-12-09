@@ -1,6 +1,6 @@
 @import "../../../style/index.scss";
 
-.model-node {
+.blueprint-node {
   overflow: hidden;
   border-radius: var(--default-border-radius);
   background-color: vaR(--gray-full);
@@ -10,19 +10,15 @@
   border-top: 3px solid var(--gray-base);
 
   &--draggable {
-    .model-node__header {
+    .blueprint-node__header {
       .amp-text {
         color: var(--gray-base) !important;
       }
     }
   }
 
-  &.model-with-pending-changes {
-    border-color: var(--theme-turquoise);
-  }
-
   &--highlight {
-    .model-node__header {
+    .blueprint-node__header {
       .amp-text {
         color: var(--theme-orange) !important;
       }
@@ -30,7 +26,7 @@
   }
 
   &__header {
-    border-bottom: 1px solid var(--gray-base);
+    border-bottom: 1px solid var(--gray-70);
     padding-bottom: var(--default-spacing);
     display: flex;
     justify-content: space-between;
@@ -42,42 +38,31 @@
     }
   }
 
-  &__column_container {
-    padding-top: var(--default-spacing);
-  }
-  &__column_inner_container {
-    display: flex;
-    position: relative;
-
-    &:last-child > .model-node__column_display_name {
-      margin-bottom: 0;
-    }
-  }
-  &__column_display_name {
-    align-items: center;
-    display: flex;
-    font-size: var(--normal-font-size);
-    gap: var(--default-spacing-small);
+  &__child-item {
     width: 100%;
-    border: 1px solid var(--gray-70);
+    box-sizing: border-box;
     padding: var(--icon-spacing);
-    margin-bottom: var(--icon-spacing);
+    border: 1px solid var(--gray-70);
     border-radius: var(--default-border-radius);
 
-    &_datatype {
-      color: var(--theme-blue);
-      font-weight: 200;
-      font-size: calc(var(--normal-font-size) - 2px);
+    &:hover {
+      background-color: var(--gray-80);
+      cursor: pointer;
     }
-    &_custom_attributes {
-      color: var(--theme-turquoise);
-      font-weight: 200;
-      font-size: calc(var(--normal-font-size) - 2px);
+
+    &--add {
+      border: 1px dashed var(--gray-70);
     }
   }
+
+  &__handles-container {
+    display: flex;
+    position: relative;
+  }
+
   &__handle {
     &_left {
-      left: -2px !important;
+      left: -3px !important;
       top: 23px !important;
       border-radius: 0 !important;
       border-width: 0 !important;
@@ -86,12 +71,26 @@
     }
 
     &_right {
-      right: -2px !important;
+      right: -3px !important;
       top: 23px !important;
       border-radius: 0 !important;
       border-width: 0 !important;
       width: 0.5rem !important;
       background-color: transparent !important;
+    }
+  }
+
+  &__handles-container {
+    .blueprint-node__handle {
+      &_left {
+        top: 17px !important;
+        left: -13px !important;
+      }
+
+      &_right {
+        top: 17px !important;
+        right: -13px !important;
+      }
     }
   }
 }

@@ -1,10 +1,13 @@
 import { ReactElement, memo, useCallback, type FC } from "react";
 import { Handle, Position, useStore } from "reactflow";
-import "./modelNode.scss";
+import "./BlueprintNode.scss";
 
 import {
   EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
@@ -14,6 +17,7 @@ import classNames from "classnames";
 import * as models from "../../../models";
 import { Node, NodePayload } from "../types";
 import AddRelation from "./addRelation";
+import EditBlueprintProperty from "./EditBlueprintProperty";
 import EditRelation from "./editRelation";
 
 type Props = {
@@ -22,9 +26,9 @@ type Props = {
   renderContent?: (data: NodePayload<models.Blueprint>) => ReactElement;
 };
 
-const CLASS_NAME = "model-node";
+const CLASS_NAME = "blueprint-node";
 
-const ModelNodeBase: FC<Props> = memo(
+const BlueprintNodeBase: FC<Props> = memo(
   ({ className, renderContent, modelId }) => {
     const sourceNode = useStore(
       useCallback(
@@ -62,13 +66,55 @@ const ModelNodeBase: FC<Props> = memo(
           className={`${CLASS_NAME}__header`}
           direction={EnumFlexDirection.Row}
           itemsAlign={EnumItemsAlign.Center}
-          end={<AddRelation blueprint={data.payload} />}
         >
           <Text className={`${CLASS_NAME}__title`} textStyle={EnumTextStyle.H4}>
             {data.payload.name}
           </Text>
         </FlexItem>
-        <div className={`${CLASS_NAME}__column_container`}>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+        >
+          <Text
+            textStyle={EnumTextStyle.Tag}
+            textColor={EnumTextColor.ThemeTurquoise}
+          >
+            Properties
+          </Text>
+          {data.payload.properties?.map((property) => (
+            <EditBlueprintProperty
+              key={property.id}
+              blueprint={data.payload}
+              property={property}
+            />
+          ))}
+        </FlexItem>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+          itemsAlign={EnumItemsAlign.Stretch}
+        >
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            itemsAlign={EnumItemsAlign.End}
+            end={
+              <FlexItem
+                direction={EnumFlexDirection.Row}
+                itemsAlign={EnumItemsAlign.Center}
+              >
+                <AddRelation blueprint={data.payload} />
+              </FlexItem>
+            }
+          >
+            <Text
+              textStyle={EnumTextStyle.Tag}
+              textColor={EnumTextColor.ThemeTurquoise}
+            >
+              Relations
+            </Text>
+          </FlexItem>
           {data.payload.relations?.map((relation) => (
             <Relation
               relation={relation}
@@ -76,7 +122,7 @@ const ModelNodeBase: FC<Props> = memo(
               blueprint={data.payload}
             />
           ))}
-        </div>
+        </FlexItem>
         <Handle
           className={`${CLASS_NAME}__handle_right`}
           type="source"
@@ -97,7 +143,7 @@ interface RelationProps {
 
 const Relation = memo(({ relation, blueprint }: RelationProps) => {
   return (
-    <div key={relation.key} className={`${CLASS_NAME}__column_inner_container`}>
+    <div key={relation.key} className={`${CLASS_NAME}__handles-container`}>
       <Handle
         className={`${CLASS_NAME}__handle_left`}
         type="source"
@@ -121,4 +167,4 @@ const Relation = memo(({ relation, blueprint }: RelationProps) => {
 
 Relation.displayName = "Column";
 
-export default ModelNodeBase;
+export default BlueprintNodeBase;

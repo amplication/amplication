@@ -15,7 +15,7 @@ import GraphToolbar from "./GraphToolbar";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import useBlueprintGraph from "./hooks/useBlueprintGraph";
 import { applyAutoLayout } from "./layout";
-import ModelNode from "./nodes/modelNode";
+import BlueprintNode from "./nodes/BlueprintNode";
 import { Node, NodePayloadWithPayloadType } from "./types";
 
 export const CLASS_NAME = "blueprint-graph";
@@ -23,7 +23,7 @@ const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
 const MESSAGE_AUTO_HIDE_DURATION = 3000;
 
 const simpleNodeTypes = {
-  model: ModelNode,
+  blueprint: BlueprintNode,
 };
 
 const edgeTypes = {
