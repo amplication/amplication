@@ -42,6 +42,7 @@ import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings"
 import { EnumGitProvider } from "@amplication/util/git";
 import { PrivatePlugin } from "../privatePlugin/dto/PrivatePlugin";
 import { PrivatePluginVersion } from "../privatePlugin/dto/PrivatePluginVersion";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -282,6 +283,12 @@ describe("BuildService", () => {
           provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
             getServiceSettingsValues: jest.fn(),
+          })),
+        },
+        {
+          provide: ResourceSettingsService,
+          useClass: jest.fn(() => ({
+            getResourceSettingsBlock: jest.fn(),
           })),
         },
         {

@@ -27,6 +27,7 @@ import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 import { PackageModule } from "../package/package.module";
 import { ProjectConfigurationSettingsModule } from "../projectConfigurationSettings/projectConfigurationSettings.module";
 import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
+import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
     PackageModule,
     ProjectConfigurationSettingsModule,
     PrivatePluginModule,
+    ResourceSettingsModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

@@ -79,6 +79,7 @@ import omitDeep from "deepdash/omitDeep";
 import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 import { compareBuild } from "semver";
 import { BuildPlugin } from "./dto/BuildPlugin";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -237,6 +238,7 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly resourceSettingsService: ResourceSettingsService,
     private readonly packageService: PackageService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
 
@@ -1361,6 +1363,11 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const resourceSettings =
+      await this.resourceSettingsService.getResourceSettingsBlock({
+        where: { id: resourceId },
+      });
+
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -1408,10 +1415,11 @@ export class BuildService {
       );
     }
 
-    const dsgResourceData = {
+    const dsgResourceData: CodeGenTypes.DSGResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
+      resourceSettings: resourceSettings,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,

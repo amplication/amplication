@@ -237,6 +237,8 @@ export type Package = BlockOmittedFields<models.Package> & {
 //   diff: string;
 // };
 
+export type ResourceSettings = BlockOmittedFields<models.ResourceSettings>;
+
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 
 export type ModuleAction = Omit<
