@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { MetaQueryPayload } from "../models";
+import { set } from "lodash";
 
 type Props = {
   onLoadMore?: () => void;
@@ -20,7 +21,7 @@ export type Sorting<R> = {
   setOrderBy: (orderBy: R) => void;
 };
 
-export type QueryPagination<T, R> = {
+export type QueryPagination<T, R extends any[]> = {
   pagination: Pagination;
   sorting: Sorting<R>;
   queryPaginationParams: {
@@ -32,7 +33,7 @@ export type QueryPagination<T, R> = {
   setMeta: (meta: MetaQueryPayload) => void;
 };
 
-export function useQueryPagination<T, R = undefined>(
+export function useQueryPagination<T, R extends any[] = undefined>(
   props?: Props
 ): QueryPagination<T, R> {
   const { onLoadMore } = props || {};
@@ -53,6 +54,23 @@ export function useQueryPagination<T, R = undefined>(
   };
 
   const pageCount = meta.count > 0 ? Math.ceil(meta.count / pageSize) : 1;
+
+  const handleOrderBy = useCallback((orderBy: R) => {
+    const preparedOrderBy = [] as R;
+
+    //iterate over orderBy and replace keys with . notation to object
+    console.log("orderBy", orderBy);
+
+    orderBy?.forEach((item) => {
+      const key = Object.keys(item)[0];
+      const value = item[key];
+      preparedOrderBy.push(set({}, key, value));
+    });
+
+    console.log("preparedOrderBy", preparedOrderBy);
+    setOrderBy(preparedOrderBy);
+    setPageNumber(1);
+  }, []);
 
   const triggerLoadMore = useCallback(() => {
     if (isLoadingMore) {
@@ -96,7 +114,7 @@ export function useQueryPagination<T, R = undefined>(
     },
     sorting: {
       orderBy,
-      setOrderBy,
+      setOrderBy: handleOrderBy,
     },
     queryPaginationParams,
     setCurrentPageData: setCurrentPageDataInternal,
