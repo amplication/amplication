@@ -1,4 +1,4 @@
-import { EnumButtonStyle, Icon, Tooltip } from "@amplication/ui/design-system";
+import { EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import { Snackbar } from "@mui/material";
 import React from "react";
 import * as models from "../../../models";
