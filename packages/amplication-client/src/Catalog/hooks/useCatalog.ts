@@ -43,7 +43,6 @@ const useCatalog = () => {
     refetch,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
-      //orderBy: sorting.orderBy,
       ...queryPaginationParams,
       where: {
         ...queryFilters,
