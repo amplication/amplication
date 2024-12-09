@@ -17,7 +17,13 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
 const RESOURCE_TYPE_PREFIX = "resourceType_";
 const BLUEPRINT_PREFIX = "blueprint_";
 
-const useCatalog = () => {
+type Props = {
+  initialPageSize?: number;
+};
+
+const useCatalog = (props?: Props) => {
+  const { initialPageSize } = props || {};
+
   const { customPropertiesMap } = useAppContext();
 
   const {
@@ -27,7 +33,9 @@ const useCatalog = () => {
     setCurrentPageData,
     setMeta,
     sorting,
-  } = useQueryPagination<models.Resource, models.ResourceOrderByInput[]>();
+  } = useQueryPagination<models.Resource, models.ResourceOrderByInput[]>({
+    initialPageSize,
+  });
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [propertiesFilter, setPropertiesFilter] =
