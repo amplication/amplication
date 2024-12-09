@@ -23,9 +23,6 @@ const useBlueprintGraph = ({ onMessage }: Props) => {
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const [saveDataTimestampTrigger, setSaveDataTimestampTrigger] =
-    useState<Date>(null);
-
   const [errorMessage, setErrorMessage] = useState<string>(null);
 
   const setSelectRelatedNodes = useCallback(

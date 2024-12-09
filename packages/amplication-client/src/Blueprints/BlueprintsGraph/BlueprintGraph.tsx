@@ -10,8 +10,8 @@ import {
 import "reactflow/dist/style.css";
 import useMessage from "../../util/useMessage";
 import "./BlueprintGraph.scss";
-import GraphControls from "./GraphControls";
-import GraphToolbar from "./GraphToolbar";
+import GraphControls from "../../Components/GraphComponents/GraphControls";
+import GraphToolbar from "../../Components/GraphComponents/GraphToolbar";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import useBlueprintGraph from "./hooks/useBlueprintGraph";
 import { applyAutoLayout } from "./layout";
