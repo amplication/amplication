@@ -11,6 +11,10 @@ const useBlueprintsMap = () => {
     Record<string, models.Blueprint>
   >({});
 
+  const [blueprintsMapById, setBlueprintsMapById] = useState<
+    Record<string, models.Blueprint>
+  >({});
+
   useQuery<TFindData>(GET_BLUEPRINTS_MAP, {
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
@@ -20,6 +24,13 @@ const useBlueprintsMap = () => {
           return acc;
         }, {} as Record<string, models.Blueprint>);
         setBlueprintsMap(blueprintsMap);
+
+        const blueprintsMapById = data.blueprints.reduce((acc, blueprint) => {
+          acc[blueprint.id] = blueprint;
+          return acc;
+        }, {} as Record<string, models.Blueprint>);
+        setBlueprintsMapById(blueprintsMapById);
+
         return;
       }
 
@@ -29,6 +40,7 @@ const useBlueprintsMap = () => {
 
   return {
     blueprintsMap,
+    blueprintsMapById,
   };
 };
 
