@@ -29,6 +29,7 @@ import {
 import * as models from "../../models";
 import useCustomPropertiesMap from "../../CustomProperties/hooks/useCustomPropertiesMap";
 import GraphToolbarItem from "../../Components/GraphComponents/GraphToolbarItem";
+import GroupNode from "./nodes/GroupNode";
 
 export const CLASS_NAME = "catalog-graph";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -36,6 +37,7 @@ const MESSAGE_AUTO_HIDE_DURATION = 3000;
 
 const simpleNodeTypes = {
   resource: ResourceNode,
+  group2: GroupNode,
 };
 
 const edgeTypes = {
@@ -169,6 +171,7 @@ export default function CatalogGraph() {
                 minZoom={0.1}
                 panOnScroll
                 selectionKeyCode={null}
+                elevateNodesOnSelect={false}
               >
                 <Background color="grey" />
               </ReactFlow>

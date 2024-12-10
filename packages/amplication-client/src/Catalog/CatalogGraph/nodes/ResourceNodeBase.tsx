@@ -19,7 +19,7 @@ import * as models from "../../../models";
 import { Node, NodePayload } from "../types";
 import useBlueprintsMap from "../../../Blueprints/hooks/useBlueprintsMap";
 import { Link } from "react-router-dom";
-import { useResourceBaseUrl } from "packages/amplication-client/src/util/useResourceBaseUrl";
+import { useResourceBaseUrl } from "../../../util/useResourceBaseUrl";
 
 type Props = {
   className?: string;

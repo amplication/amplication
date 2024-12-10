@@ -2,7 +2,7 @@ import { type Node as ReactFlowNode } from "reactflow";
 import * as models from "../../models";
 
 export const NODE_TYPE_RESOURCE = "resource";
-export const NODE_TYPE_GROUP = "group";
+export const NODE_TYPE_GROUP = "group2";
 
 export type NodeType = typeof NODE_TYPE_RESOURCE | typeof NODE_TYPE_GROUP;
 
@@ -31,7 +31,9 @@ export type Group = {
   color: string;
 };
 
-export type GroupNode = NodeWithType<NodePayload<Group>> & {
+export type GroupNodePayload = NodePayload<Group>;
+
+export type GroupNode = NodeWithType<GroupNodePayload> & {
   type: typeof NODE_TYPE_GROUP;
 };
 

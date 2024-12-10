@@ -30,11 +30,10 @@
     padding-bottom: var(--default-spacing);
     display: flex;
     justify-content: space-between;
-  }
-
-  &__title {
     .amp-text {
-      color: var(--gray-20) !important;
+      a {
+        color: var(--gray-base) !important;
+      }
     }
   }
 
@@ -44,15 +43,6 @@
     padding: var(--icon-spacing);
     border: 1px solid var(--gray-70);
     border-radius: var(--default-border-radius);
-
-    &:hover {
-      background-color: var(--gray-80);
-      cursor: pointer;
-    }
-
-    &--add {
-      border: 1px dashed var(--gray-70);
-    }
   }
 
   &__handles-container {

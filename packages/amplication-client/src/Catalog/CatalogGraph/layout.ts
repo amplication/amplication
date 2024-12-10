@@ -6,17 +6,18 @@ const TITLE_HEIGHT = 60;
 const CHAR_WIDTH = 10;
 const MARGIN = 100;
 const MIN_WIDTH = 200;
+const PROPERTY_HEIGHT = 30;
 
 const elk = new Elk({
   defaultLayoutOptions: {
     "elk.algorithm": "org.eclipse.elk.force",
-    "elk.direction": "DOWN", // Controls the direction of connected nodes
-    "elk.spacing.nodeNode": "100", // Spacing between connected nodes
-    //"elk.layered.spacing.nodeNodeBetweenLayers": "50", // Spacing between connected nodes in different layers
-    "elk.spacing.componentComponent": "250", // Spacing between disconnected components
-    "org.eclipse.elk.aspectRatio": "3", //this may be calculated based on screen size
-    //"org.eclipse.elk.force.model": "EADES",
-    padding: "250",
+    "elk.direction": "RIGHT", // Controls the direction of connected nodes
+    "org.eclipse.elk.aspectRatio": (1520 / 550).toString(), //this may be calculated based on screen size
+    "elk.edgeRouting": "polyline", // Options: polyline, splines, orthogonal
+    "elk.force.repulsionStrength": "5000", // Spread out disconnected nodes
+    "elk.force.attractionStrength": "0", // Disable attraction for disconnected nodes
+    "elk.force.iterations": "200", // Ensure enough iterations for randomness
+    "elk.force.edgeInfluence": "0.1", // Minimal influence of edges (irrelevant for disconnected nodes)
   },
 });
 
@@ -24,9 +25,7 @@ const normalizeSize = (value: number, minValue: number) =>
   Math.max(value, minValue);
 
 const calculateNodeHeight = (node: Node) => {
-  const propertiesHeight = 0;
-  // (node.data.payload.properties?.length || 0) * PROPERTY_HEIGHT +
-  // PROPERTY_PADDING;
+  const propertiesHeight = 5 * PROPERTY_HEIGHT;
 
   const heightWithTitle = propertiesHeight + TITLE_HEIGHT;
 
@@ -50,7 +49,6 @@ const calculateNodeWidth = (node: Node) => {
 };
 
 export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
-  //const elkNodes: ElkNode[] = [];
   const elkEdges: ElkExtendedEdge[] = [];
 
   const groupNodes = nodes.filter((node) => node.type === NODE_TYPE_GROUP);
@@ -63,14 +61,6 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
       children: [],
     };
   });
-
-  groupElkNodes["NONE"] = {
-    id: "NONE",
-    children: [],
-    layoutOptions: {
-      "nodeSize.constraints": "MINIMUM_SIZE",
-    },
-  };
 
   nodes
     .filter((x) => x.type === NODE_TYPE_RESOURCE)
@@ -115,17 +105,18 @@ export async function applyLayoutToNodes(
         .find((n) => n.id === group.id)
         .children.find((n) => n.id === node.id);
     }
-    //const position = layout.children.find((n) => n.id === node.id);
 
     return {
       ...node,
-      position: { x: position.x, y: position.y },
-      style: { width: position.width, height: position.height },
-      // data: {
-      //   ...node.data,
-      //   width: position.width,
-      //   height: position.height,
-      // },
+
+      position: {
+        x: position.x,
+        y: position.y,
+      },
+      style: {
+        ...{ width: position.width, height: position.height },
+        ...(node.type === NODE_TYPE_GROUP ? { zIndex: -1 } : {}),
+      },
     };
   });
 

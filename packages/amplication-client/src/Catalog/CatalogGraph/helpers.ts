@@ -91,7 +91,7 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
     ([nodes, groupNodes], resource) => {
       const group = resource.properties?.DOMAIN;
 
-      //check if gruop is an array and take the first value
+      //check if group is an array and take the first value
       const parentId = Array.isArray(group) ? group[0] : group ?? "NONE";
 
       const node: ResourceNode = {
@@ -104,6 +104,7 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
         deletable: false,
         parentId: parentId,
         type: NODE_TYPE_RESOURCE,
+        extent: "parent",
         position: {
           x: 0,
           y: 0,
@@ -123,6 +124,9 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
           },
           id: node.parentId,
           type: NODE_TYPE_GROUP,
+          selectable: true,
+          // deletable: false,
+          // draggable: false,
           position: {
             x: 0,
             y: 0,
@@ -137,23 +141,7 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
     [[], {}]
   );
 
-  // const nodes: ResourceNode[] = resources.map((resource) => ({
-  //   data: {
-  //     payload: resource,
-  //   },
-  //   id: resource.id,
-  //   draggable: true,
-  //   selectable: true,
-  //   deletable: false,
-  //   parentId: resource.properties["DOMAIN"] ?? "NONE",
-
-  //   type: NODE_TYPE_RESOURCE,
-  //   position: {
-  //     x: 0,
-  //     y: 0,
-  //   },
-  // }));
-  return [...nodes, ...Object.values(groupNodes)];
+  return [...Object.values(groupNodes), ...nodes];
 }
 
 export function nodesToSimpleEdges(nodes: Node[]) {
