@@ -119,7 +119,6 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
             payload: {
               id: node.parentId,
               name: node.parentId,
-              color: "#FFFFFF",
             },
           },
           id: node.parentId,
@@ -186,7 +185,7 @@ export function nodesToSimpleEdges(nodes: Node[]) {
   return edges;
 }
 
-export async function blueprintsToNodesAndEdges(resources: models.Resource[]) {
+export async function resourcesToNodesAndEdges(resources: models.Resource[]) {
   const nodes = resourcesToNodes(resources);
 
   const simpleEdges = nodesToSimpleEdges(nodes);

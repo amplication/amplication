@@ -28,7 +28,6 @@ export type ResourceNode = NodeWithType<NodePayload<models.Resource>> & {
 export type Group = {
   id: string;
   name: string;
-  color: string;
 };
 
 export type GroupNodePayload = NodePayload<Group>;

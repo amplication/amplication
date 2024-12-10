@@ -6,30 +6,30 @@ import {
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  applyNodeChanges,
   Background,
   ConnectionMode,
   ReactFlow,
   ReactFlowInstance,
-  applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import useMessage from "../../util/useMessage";
-import "./CatalogGraph.scss";
 import GraphControls from "../../Components/GraphComponents/GraphControls";
 import GraphToolbar from "../../Components/GraphComponents/GraphToolbar";
-import simpleRelationEdge from "./edges/simpleRelationEdge";
-import useCatalogGraph from "./hooks/useCatalogGraph";
-import { applyAutoLayout } from "./layout";
-import ResourceNode from "./nodes/ResourceNode";
-import { Node, NodePayloadWithPayloadType } from "./types";
+import GraphToolbarItem from "../../Components/GraphComponents/GraphToolbarItem";
+import useCustomPropertiesMap from "../../CustomProperties/hooks/useCustomPropertiesMap";
+import * as models from "../../models";
+import useMessage from "../../util/useMessage";
 import {
   columnsWithProperties,
   RESOURCE_LIST_COLUMNS,
 } from "../CatalogDataColumns";
-import * as models from "../../models";
-import useCustomPropertiesMap from "../../CustomProperties/hooks/useCustomPropertiesMap";
-import GraphToolbarItem from "../../Components/GraphComponents/GraphToolbarItem";
+import "./CatalogGraph.scss";
+import simpleRelationEdge from "./edges/simpleRelationEdge";
+import useCatalogGraph from "./hooks/useCatalogGraph";
+import { applyAutoLayout } from "./layout";
 import GroupNode from "./nodes/GroupNode";
+import ResourceNode from "./nodes/ResourceNode";
+import { Node, NodePayloadWithPayloadType } from "./types";
 
 export const CLASS_NAME = "catalog-graph";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";

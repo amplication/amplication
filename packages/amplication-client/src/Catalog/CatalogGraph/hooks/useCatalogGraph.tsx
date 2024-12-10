@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
 import { Node, NODE_TYPE_RESOURCE } from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
-import { blueprintsToNodesAndEdges } from "../helpers";
 import useCatalog from "../../hooks/useCatalog";
+import { resourcesToNodesAndEdges } from "../helpers";
 
 type Props = {
   onMessage: (message: string, type: EnumMessageType) => void;
@@ -88,7 +88,7 @@ const useCatalogGraph = ({ onMessage }: Props) => {
           })
         : catalog;
 
-      const { nodes, simpleEdges } = await blueprintsToNodesAndEdges(
+      const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
         filteredCatalog
       );
       setNodes(nodes);
