@@ -1,0 +1,60 @@
+@import "../../style/index.scss";
+
+$dropdown-box-shadow: 0 36px 34px -24px #15102c70;
+$dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+
+.amp-select-panel {
+  &__button {
+    width: auto;
+    padding: 0 var(--default-spacing);
+  }
+
+  label {
+    @include label;
+    position: relative;
+  }
+
+  &__picker {
+    border: $border-dark;
+    box-shadow: $dropdown-box-shadow;
+    border-radius: var(--default-border-radius);
+    min-width: 300px;
+
+    &__items {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      &__item {
+        cursor: pointer;
+        border-bottom: none;
+        color: var(--gray-20);
+        background-color: var(--gray-90);
+        justify-content: space-between;
+        box-sizing: border-box;
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        padding: var(--default-spacing);
+        min-height: 40px; //2* spacing + min checkbox height
+
+        &--selected,
+        &[aria-checked="true"] {
+          color: var(--gray-base);
+        }
+
+        &:hover {
+          background-color: var(--gray-80);
+        }
+      }
+    }
+    label {
+      color: var(--gray-base) !important;
+    }
+  }
+}
