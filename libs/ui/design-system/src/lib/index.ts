@@ -285,7 +285,6 @@ export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
 export { DataGridFilters } from "./components/DataGrid/DataGridFilters";
 export { DataGridFilter } from "./components/DataGrid/DataGridFilter";
-
 export {
   ToggleView,
   Props as ToggleViewProps,
