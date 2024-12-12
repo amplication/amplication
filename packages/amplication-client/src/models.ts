@@ -3783,7 +3783,7 @@ export type ResourceVersionsDiffBlock = {
 
 export type ResourceWhereInput = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
-  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  blueprintId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3798,7 +3798,7 @@ export type ResourceWhereInput = {
 
 export type ResourceWhereInputWithPropertiesFilter = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
-  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  blueprintId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3806,6 +3806,7 @@ export type ResourceWhereInputWithPropertiesFilter = {
   ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
+  projectIdFilter?: InputMaybe<StringFilter>;
   properties?: InputMaybe<JsonPathStringFilter>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   serviceTemplateId?: InputMaybe<Scalars['String']['input']>;

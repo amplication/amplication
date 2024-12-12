@@ -123,16 +123,7 @@ const useCatalog = (props?: Props) => {
       const otherFilterObject = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
           if (key === "resourceTypeOrBlueprint" && value) {
-            if (value.startsWith(BLUEPRINT_PREFIX)) {
-              value = value.replace(BLUEPRINT_PREFIX, "");
-              acc["blueprintId"] = value;
-            } else {
-              value = value.replace(RESOURCE_TYPE_PREFIX, "");
-              const filter: models.EnumResourceTypeFilter = {
-                equals: value as models.EnumResourceType,
-              };
-              acc["resourceType"] = filter;
-            }
+            acc = updateResourceTypeFilter(acc, value as unknown as string[]);
           } else if (key === "ownership" && value) {
             const values = value.split(":");
             if (values.length !== 2 || !values[0] || !values[1]) {
@@ -143,7 +134,7 @@ const useCatalog = (props?: Props) => {
             };
             acc[key] = filter;
           } else if (value) {
-            acc[key] = value;
+            acc[key] = Array.isArray(value) ? { in: value } : value;
           }
           return acc;
         },
@@ -177,3 +168,32 @@ const useCatalog = (props?: Props) => {
 };
 
 export default useCatalog;
+
+const updateResourceTypeFilter = (
+  currentFilter: Partial<models.ResourceWhereInputWithPropertiesFilter>,
+  value: string[]
+) => {
+  const [blueprintValues, resourceTypeValues] = value.reduce(
+    (acc, value) => {
+      if (value.startsWith(BLUEPRINT_PREFIX)) {
+        acc[0].push(value.replace(BLUEPRINT_PREFIX, ""));
+      } else {
+        acc[1].push(value.replace(RESOURCE_TYPE_PREFIX, ""));
+      }
+      return acc;
+    },
+    [[], []] as [string[], string[]]
+  );
+
+  return {
+    ...currentFilter,
+    resourceType:
+      resourceTypeValues.length > 0
+        ? {
+            in: resourceTypeValues as models.EnumResourceType[],
+          }
+        : undefined,
+    blueprintId:
+      blueprintValues.length > 0 ? { in: blueprintValues } : undefined,
+  };
+};

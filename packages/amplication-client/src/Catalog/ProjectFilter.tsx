@@ -46,6 +46,7 @@ export const ProjectFilter = ({
         onChange={handleOnChange}
         onRemove={handleOnRemove}
         disabled={disabled}
+        isMulti={true}
       />
     </>
   );

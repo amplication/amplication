@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Button, Props as ButtonProps } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
 import { Popover } from "../Popover/Popover";
@@ -8,6 +8,7 @@ import { OptionItem } from "../types";
 import "./SelectPanel.scss";
 
 const CLASS_NAME = "amp-select-panel";
+const DEFAULT_COLOR = "#FFFFFF";
 
 export type Props = {
   label: string;
@@ -32,6 +33,17 @@ export const SelectPanel: React.FC<Props> = ({
 
   const selectRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedItems = useMemo(() => {
+    if (!selectedValue) {
+      return [];
+    }
+    return options.filter((option) =>
+      isMulti
+        ? (selectedValue as string[]).includes(option.value)
+        : option.value === selectedValue
+    );
+  }, [selectedValue, options, isMulti]);
 
   const handleChange = (value: string) => {
     if (!isMulti) {
@@ -106,13 +118,7 @@ export const SelectPanel: React.FC<Props> = ({
                       }
                     }}
                   >
-                    {item.color ? (
-                      <Tag value={item.label} color={item.color} />
-                    ) : (
-                      <Text textStyle={EnumTextStyle.Description}>
-                        {item.label}
-                      </Text>
-                    )}
+                    <SelectPanelItemContent item={item} />
                     {selected && <Icon icon="check" size="xsmall" />}
                   </li>
                 );
@@ -129,9 +135,35 @@ export const SelectPanel: React.FC<Props> = ({
           type="button"
           disabled={disabled}
         >
-          {label}
+          {selectedItems.length > 0 ? (
+            selectedItems.map((item) => (
+              <SelectPanelItemContent
+                key={item.value}
+                item={item}
+                isMulti={isMulti}
+              />
+            ))
+          ) : (
+            <Text textStyle={EnumTextStyle.Description}>{label}</Text>
+          )}
         </Button>
       </Popover>
     </div>
+  );
+};
+
+type SelectPanelItemContentProps = {
+  item: OptionItem;
+  isMulti?: boolean;
+};
+
+const SelectPanelItemContent = ({
+  item,
+  isMulti,
+}: SelectPanelItemContentProps) => {
+  return item.color || isMulti ? (
+    <Tag value={item.label} color={item.color || DEFAULT_COLOR} />
+  ) : (
+    <Text textStyle={EnumTextStyle.Description}>{item.label}</Text>
   );
 };

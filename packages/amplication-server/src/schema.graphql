@@ -2624,7 +2624,7 @@ type ResourceVersionsDiffBlock {
 
 input ResourceWhereInput {
   blueprint: BlueprintWhereInput
-  blueprintId: String
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2639,7 +2639,7 @@ input ResourceWhereInput {
 
 input ResourceWhereInputWithPropertiesFilter {
   blueprint: BlueprintWhereInput
-  blueprintId: String
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2647,6 +2647,7 @@ input ResourceWhereInputWithPropertiesFilter {
   ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
+  projectIdFilter: StringFilter
   properties: JsonPathStringFilter
   resourceType: EnumResourceTypeFilter
   serviceTemplateId: String
