@@ -4,7 +4,12 @@ import { Node, NODE_TYPE_RESOURCE } from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
-import { resourcesToNodesAndEdges } from "../helpers";
+import {
+  groupResourcesByPaths,
+  removeUnusedRelations,
+  resourcesToNodesAndEdges,
+} from "../helpers";
+import { useAppContext } from "../../../context/appContext";
 
 type Props = {
   onMessage: (message: string, type: EnumMessageType) => void;
@@ -12,6 +17,10 @@ type Props = {
 
 const useCatalogGraph = ({ onMessage }: Props) => {
   const { catalog, setFilter } = useCatalog({ initialPageSize: 1000 });
+
+  const {
+    blueprintsMap: { blueprintsMapById, ready: blueprintsReady },
+  } = useAppContext();
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
@@ -68,6 +77,11 @@ const useCatalogGraph = ({ onMessage }: Props) => {
 
   useEffect(() => {
     async function prepareNodes() {
+      if (!blueprintsReady) {
+        //do not load data until the blueprints are ready
+        return;
+      }
+
       const connectedResources = catalog.reduce((acc, curr) => {
         const connected = curr.relations?.flatMap((relation) => {
           return relation.relatedResources;
@@ -88,15 +102,33 @@ const useCatalogGraph = ({ onMessage }: Props) => {
           })
         : catalog;
 
+      const sanitizedCatalog = removeUnusedRelations(
+        filteredCatalog,
+        blueprintsMapById
+      );
+
+      const groups = groupResourcesByPaths(sanitizedCatalog, [
+        "project.name",
+        "properties.DOMAIN.0",
+      ]);
+
+      console.log("groups", groups);
+
       const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
-        filteredCatalog
+        sanitizedCatalog
       );
       setNodes(nodes);
       setEdges(simpleEdges);
     }
 
     prepareNodes();
-  }, [catalog, setEdges, showDisconnectedResources]);
+  }, [
+    blueprintsMapById,
+    catalog,
+    setEdges,
+    showDisconnectedResources,
+    blueprintsReady,
+  ]);
 
   return {
     nodes,

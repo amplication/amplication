@@ -6,6 +6,12 @@ type TFindData = {
   blueprints: models.Blueprint[];
 };
 
+export interface IBlueprintsMap {
+  ready: boolean;
+  blueprintsMap: Record<string, models.Blueprint>;
+  blueprintsMapById: Record<string, models.Blueprint>;
+}
+
 const useBlueprintsMap = () => {
   const [blueprintsMap, setBlueprintsMap] = useState<
     Record<string, models.Blueprint>
@@ -14,6 +20,8 @@ const useBlueprintsMap = () => {
   const [blueprintsMapById, setBlueprintsMapById] = useState<
     Record<string, models.Blueprint>
   >({});
+
+  const [ready, setReady] = useState(false);
 
   useQuery<TFindData>(GET_BLUEPRINTS_MAP, {
     notifyOnNetworkStatusChange: true,
@@ -31,6 +39,8 @@ const useBlueprintsMap = () => {
         }, {} as Record<string, models.Blueprint>);
         setBlueprintsMapById(blueprintsMapById);
 
+        setReady(true);
+
         return;
       }
 
@@ -39,6 +49,7 @@ const useBlueprintsMap = () => {
   });
 
   return {
+    ready,
     blueprintsMap,
     blueprintsMapById,
   };

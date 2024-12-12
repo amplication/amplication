@@ -17,9 +17,9 @@ import {
 import classNames from "classnames";
 import * as models from "../../../models";
 import { Node, NodePayload } from "../types";
-import useBlueprintsMap from "../../../Blueprints/hooks/useBlueprintsMap";
 import { Link } from "react-router-dom";
 import { useResourceBaseUrl } from "../../../util/useResourceBaseUrl";
+import { useAppContext } from "../../../context/appContext";
 
 type Props = {
   className?: string;
@@ -48,7 +48,9 @@ const ResourceNodeBase: FC<Props> = memo(
 
     const updateNodeInternals = useUpdateNodeInternals();
 
-    const { blueprintsMapById } = useBlueprintsMap();
+    const {
+      blueprintsMap: { blueprintsMapById },
+    } = useAppContext();
 
     const blueprint = blueprintsMapById[resource.blueprintId];
 

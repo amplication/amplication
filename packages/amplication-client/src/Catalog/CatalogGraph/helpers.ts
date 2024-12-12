@@ -146,6 +146,11 @@ function resourcesToNodes(resources: models.Resource[]): Node[] {
 export function nodesToSimpleEdges(nodes: Node[]) {
   const relations: SimpleRelation[] = [];
 
+  const nodesMap = nodes.reduce((acc, node) => {
+    acc[node.id] = node;
+    return acc;
+  }, {});
+
   nodes.forEach((node) => {
     if (node.type !== NODE_TYPE_RESOURCE) {
       return;
@@ -158,7 +163,8 @@ export function nodesToSimpleEdges(nodes: Node[]) {
       const relatedResources = relation.relatedResources;
 
       relatedResources.forEach((relatedResource) => {
-        const relatedNode = nodes.find((n) => n.id === relatedResource);
+        const relatedNode = nodesMap[relatedResource];
+
         if (relatedNode) {
           relations.push({
             sourceId: resource.id,
@@ -180,8 +186,6 @@ export function nodesToSimpleEdges(nodes: Node[]) {
     type: "relationSimple",
   }));
 
-  console.log("edges", edges);
-
   return edges;
 }
 
@@ -194,4 +198,74 @@ export async function resourcesToNodesAndEdges(resources: models.Resource[]) {
     nodes: await applyAutoLayout(nodes, simpleEdges),
     simpleEdges,
   };
+}
+
+export function groupResourcesByPaths(
+  resources: models.Resource[],
+  groupPaths: string[]
+) {
+  // Helper function to get the value from a resource using a dynamic path
+  function getValueByPath(resource, path) {
+    return path.split(".").reduce((acc, key) => {
+      return acc && acc[key] !== undefined ? acc[key] : "Unknown";
+    }, resource);
+  }
+
+  // Recursive function to group resources
+  function groupRecursively(items, paths, depth = 0) {
+    if (depth >= paths.length) {
+      return items;
+    }
+
+    const grouped = {};
+    const currentPath = paths[depth];
+
+    items.forEach((item) => {
+      const groupKey = getValueByPath(item, currentPath);
+
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = [];
+      }
+
+      grouped[groupKey].push(item);
+    });
+
+    // Recurse for subgroups
+    for (const key in grouped) {
+      grouped[key] = groupRecursively(grouped[key], paths, depth + 1);
+    }
+
+    return grouped;
+  }
+
+  return groupRecursively(resources, groupPaths);
+}
+
+//remove relations that are no longer defined in the blueprint
+export function removeUnusedRelations(
+  resources: models.Resource[],
+  blueprintsMapById: Record<string, models.Blueprint>
+): models.Resource[] {
+  const relationsMap = Object.values(blueprintsMapById).reduce(
+    (acc, blueprint) => {
+      blueprint.relations?.forEach((relation) => {
+        acc[blueprint.id] = acc[blueprint.id] || {};
+        acc[blueprint.id][relation.key] = relation;
+      });
+      return acc;
+    },
+    {}
+  );
+
+  return resources.map((resource) => {
+    const blueprint = blueprintsMapById[resource.blueprintId];
+    const relations = resource.relations?.filter((relation) => {
+      return relationsMap[blueprint.id]?.[relation.relationKey];
+    });
+
+    return {
+      ...resource,
+      relations,
+    };
+  });
 }

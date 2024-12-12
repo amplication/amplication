@@ -4,8 +4,8 @@ import {
 } from "@amplication/ui/design-system";
 import { resourceThemeMap } from "../Resource/constants";
 import { EnumResourceType } from "../models";
-import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
 import { useMemo } from "react";
+import { useAppContext } from "../context/appContext";
 
 const RESOURCE_TYPE_PREFIX = "resourceType_";
 const BLUEPRINT_PREFIX = "blueprint_";
@@ -33,7 +33,9 @@ export const ResourceTypeFilter = ({
   columnKey,
   disabled,
 }: DataGridRenderFilterProps) => {
-  const { blueprintsMap } = useBlueprintsMap();
+  const {
+    blueprintsMap: { blueprintsMap },
+  } = useAppContext();
 
   const options = useMemo(() => {
     const blueprintOptions = Object.keys(blueprintsMap).map((key) => {
