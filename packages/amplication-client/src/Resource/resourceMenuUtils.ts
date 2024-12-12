@@ -62,7 +62,7 @@ export const linksMap: {
     to: "/roles",
   },
   git: {
-    title: "Sync with Git",
+    title: "Git Settings",
     icon: "pending_changes",
     to: "/git-sync",
   },

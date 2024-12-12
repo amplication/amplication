@@ -1,27 +1,23 @@
 import {
-  Button,
   CircularProgress,
   DataGrid,
   DataGridColumn,
   DataGridColumnFilter,
   DataGridFilters,
-  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
-  EnumIconPosition,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  Modal,
   SearchField,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
@@ -34,7 +30,6 @@ import {
   columnsWithProperties,
   RESOURCE_LIST_COLUMNS,
 } from "./CatalogDataColumns";
-import CatalogGraph from "./CatalogGraph/CatalogGraph";
 import "./CatalogGrid.scss";
 
 const CLASS_NAME = "catalog-grid";
@@ -48,7 +43,6 @@ type Props = {
 
 function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
   const { customPropertiesMap } = useAppContext();
-  const [graphIsOpen, setGraphIsOpen] = useState(false);
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
     return columnsWithProperties(
@@ -109,14 +103,6 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
-              <Button
-                icon="relation"
-                iconPosition={EnumIconPosition.Left}
-                buttonStyle={EnumButtonStyle.Outline}
-                onClick={() => setGraphIsOpen(true)}
-              >
-                Show Graph
-              </Button>
               {HeaderActions}
             </FlexItem>
           }
@@ -144,17 +130,7 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
           />
         )}
       </div>
-      {graphIsOpen && (
-        <Modal
-          css="catalog-graph-modal"
-          onCloseEvent={() => setGraphIsOpen(false)}
-          open={graphIsOpen}
-          fullScreen
-          showCloseButton={true}
-        >
-          <CatalogGraph />
-        </Modal>
-      )}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

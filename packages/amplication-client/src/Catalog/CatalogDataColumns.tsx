@@ -36,6 +36,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         <ResourceTypeBadge showTooltip resource={props.row} size="small" />
       );
     },
+    getValue: (row) => row.blueprint?.name ?? row.resourceType,
   },
   {
     key: "name",

@@ -6,14 +6,12 @@
 
   &__container {
     position: relative;
-    width: calc(100% - var(--default-spacing) * 2);
-    height: calc(100% - var(--default-spacing) * 2);
+    width: 100%;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
     gap: var(--default-spacing);
-    border: var(--border-color) 1px solid;
-    margin: var(--default-spacing);
     z-index: 0;
   }
 

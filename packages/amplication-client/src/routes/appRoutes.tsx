@@ -34,6 +34,14 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         tabRoutes: [
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/graph",
+            Component: lazy(() => import("../Workspaces/WorkspaceGraph")),
+            moduleName: "",
+            displayName: "Architecture",
+            exactPath: false,
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/projects",
             Component: lazy(() => import("../Workspaces/WorkspaceOverview")),
             moduleName: "",
@@ -287,26 +295,26 @@ export const Routes: RouteDef[] = [
             moduleClass: "project-page",
             exactPath: false,
             tabRoutes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
-                Component: lazy(
-                  () =>
-                    import("../Project/ArchitectureConsole/ArchitectureConsole")
-                ),
-                moduleName: "ProjectArchitecture",
-                displayName: "Architecture",
-                moduleClass: "",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-              },
+              // {
+              //   path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
+              //   Component: lazy(
+              //     () =>
+              //       import("../Project/ArchitectureConsole/ArchitectureConsole")
+              //   ),
+              //   moduleName: "ProjectArchitecture",
+              //   displayName: "Architecture",
+              //   moduleClass: "",
+              //   routeTrackType: "",
+              //   exactPath: false,
+              //   isAnalytics: true,
+              // },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
                   () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
-                displayName: "Sync with Git",
+                displayName: "Git Settings",
                 moduleClass: "",
                 routeTrackType: "",
                 exactPath: false,
