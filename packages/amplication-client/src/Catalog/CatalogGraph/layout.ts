@@ -2,22 +2,30 @@ import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
 import { type Edge } from "reactflow";
 import { Node, NODE_TYPE_GROUP, NODE_TYPE_RESOURCE } from "./types";
 
-const TITLE_HEIGHT = 60;
+const TITLE_HEIGHT = 46;
 const CHAR_WIDTH = 10;
 const MARGIN = 100;
 const MIN_WIDTH = 200;
-const PROPERTY_HEIGHT = 30;
+const RELATION_HEIGHT = 36;
+const RELATION_TITLE_HEIGHT = 53;
+
+const NODES_LAYOUT_OPTIONS = {
+  "elk.algorithm": "org.eclipse.elk.layered",
+  "elk.spacing.nodeNode": "100",
+  "elk.layered.spacing.nodeNodeBetweenLayers": "100",
+  "elk.spacing.componentComponent": "100",
+  "org.eclipse.elk.padding": `[top=${MARGIN},left=${MARGIN},bottom=${MARGIN},right=${MARGIN}]`,
+};
 
 const elk = new Elk({
   defaultLayoutOptions: {
     "elk.algorithm": "org.eclipse.elk.force",
-    "elk.direction": "RIGHT", // Controls the direction of connected nodes
-    "org.eclipse.elk.aspectRatio": (1520 / 550).toString(), //this may be calculated based on screen size
-    "elk.edgeRouting": "polyline", // Options: polyline, splines, orthogonal
-    "elk.force.repulsionStrength": "5000", // Spread out disconnected nodes
-    "elk.force.attractionStrength": "0", // Disable attraction for disconnected nodes
-    "elk.force.iterations": "200", // Ensure enough iterations for randomness
-    "elk.force.edgeInfluence": "0.1", // Minimal influence of edges (irrelevant for disconnected nodes)
+    "org.eclipse.elk.aspectRatio": "2.5", //this may be calculated based on screen size
+    "elk.direction": "LEFT",
+    "org.eclipse.elk.contentAlignment": "H_RIGHT",
+    "org.eclipse.elk.expandNodes": "true",
+    "elk.spacing.nodeNode": "100",
+    "elk.padding": "[top=100,left=100,bottom=100,right=100]",
   },
 });
 
@@ -25,7 +33,15 @@ const normalizeSize = (value: number, minValue: number) =>
   Math.max(value, minValue);
 
 const calculateNodeHeight = (node: Node) => {
-  const propertiesHeight = 5 * PROPERTY_HEIGHT;
+  if (node.type === NODE_TYPE_GROUP) {
+    //group size is calculated based on the children
+    return undefined;
+  }
+
+  const relationCount = node.data.relationCount || 0;
+
+  const propertiesHeight =
+    relationCount * RELATION_HEIGHT + RELATION_TITLE_HEIGHT;
 
   const heightWithTitle = propertiesHeight + TITLE_HEIGHT;
 
@@ -33,6 +49,11 @@ const calculateNodeHeight = (node: Node) => {
 };
 
 const calculateNodeWidth = (node: Node) => {
+  if (node.type === NODE_TYPE_GROUP) {
+    //group size is calculated based on the children
+    return undefined;
+  }
+
   const headerLength = node.data.payload.name.length;
 
   const columnsLength = 0;
@@ -48,29 +69,61 @@ const calculateNodeWidth = (node: Node) => {
   return normalizeSize(width, MIN_WIDTH);
 };
 
-export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
-  const elkEdges: ElkExtendedEdge[] = [];
+function buildElkTree(nodes: Node[]): ElkNode[] {
+  // Create a map for quick lookup by node id
+  const nodeMap: Map<string, ElkNode> = new Map();
+  const resourceNodeContainers: Map<string, ElkNode> = new Map();
 
-  const groupNodes = nodes.filter((node) => node.type === NODE_TYPE_GROUP);
-
-  const groupElkNodes = {};
-
-  groupNodes.forEach((node) => {
-    groupElkNodes[node.id] = {
+  // Initialize each node as an ElkNode with an empty children array
+  nodes.forEach((node) => {
+    const elkNode: ElkNode = {
       id: node.id,
       children: [],
     };
+
+    if (node.type === NODE_TYPE_RESOURCE) {
+      elkNode.width = calculateNodeWidth(node);
+      elkNode.height = calculateNodeHeight(node);
+    } else {
+      //
+    }
+
+    nodeMap.set(node.id, elkNode);
   });
 
-  nodes
-    .filter((x) => x.type === NODE_TYPE_RESOURCE)
-    .forEach((node) => {
-      groupElkNodes[node.parentId].children.push({
-        id: node.id,
-        width: calculateNodeWidth(node),
-        height: calculateNodeHeight(node),
-      });
-    });
+  // Build the tree structure
+  const tree: ElkNode[] = [];
+
+  nodes.forEach((node) => {
+    const elkNode = nodeMap.get(node.id);
+    if (node.parentId) {
+      // Find the parent and add the current node to its children
+      const parentElkNode = nodeMap.get(node.parentId);
+      if (parentElkNode) {
+        parentElkNode.children.push(elkNode);
+      } else {
+        console.warn(
+          `Parent with id ${node.parentId} not found for node ${node.id}`
+        );
+      }
+      if (node.type === NODE_TYPE_RESOURCE) {
+        resourceNodeContainers.set(node.parentId, parentElkNode);
+      }
+    } else {
+      // If no parentId, this node is a root node
+      tree.push(elkNode);
+    }
+  });
+
+  resourceNodeContainers.forEach((container, id) => {
+    container.layoutOptions = NODES_LAYOUT_OPTIONS;
+  });
+
+  return tree;
+}
+
+export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
+  const elkEdges: ElkExtendedEdge[] = [];
 
   edges.forEach((edge) => {
     elkEdges.push({
@@ -82,7 +135,7 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
 
   const layout = await elk.layout({
     id: "root",
-    children: Object.values(groupElkNodes),
+    children: buildElkTree(nodes),
     edges: elkEdges,
   });
 
@@ -93,34 +146,39 @@ export async function applyLayoutToNodes(
   nodes: Node[],
   layout: ElkNode
 ): Promise<Node[]> {
-  const children = nodes;
+  // Create a map of node positions from the ELK layout
+  const positions: Record<string, ElkNode> = {};
 
-  const allNodes = children.map((node) => {
-    let position;
-    if (node.type === NODE_TYPE_GROUP) {
-      position = layout.children.find((n) => n.id === node.id);
-    } else {
-      const group = children.find((n) => n.id === node.parentId);
-      position = layout.children
-        .find((n) => n.id === group.id)
-        .children.find((n) => n.id === node.id);
+  const traverseElkTree = (elkNode: ElkNode) => {
+    positions[elkNode.id] = elkNode;
+
+    if (elkNode.children) {
+      elkNode.children.forEach(traverseElkTree);
     }
+  };
 
-    return {
-      ...node,
+  // Traverse the ELK layout tree to extract positions
+  traverseElkTree(layout);
 
-      position: {
-        x: position.x,
-        y: position.y,
-      },
-      style: {
-        ...{ width: position.width, height: position.height },
-        ...(node.type === NODE_TYPE_GROUP ? { zIndex: -1 } : {}),
-      },
-    };
+  // Map over the React Flow nodes to update their positions
+  return nodes.map((node) => {
+    const position = positions[node.id];
+    if (position) {
+      return {
+        ...node,
+
+        position: {
+          x: position.x,
+          y: position.y,
+        },
+        style: {
+          ...{ width: position.width, height: position.height },
+          ...(node.type === NODE_TYPE_GROUP ? { zIndex: -1 } : {}),
+        },
+      };
+    }
+    return node;
   });
-
-  return allNodes;
 }
 
 export async function applyAutoLayout(

@@ -13,6 +13,7 @@ export type NodePayload<T> = {
   highlight?: boolean;
   selectRelatedNodes?: boolean;
   color?: string;
+  relationCount?: number;
 };
 
 export type NodePayloadWithPayloadType =

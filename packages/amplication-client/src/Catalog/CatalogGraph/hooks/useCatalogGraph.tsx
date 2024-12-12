@@ -4,11 +4,7 @@ import { Node, NODE_TYPE_RESOURCE } from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
-import {
-  groupResourcesByPaths,
-  removeUnusedRelations,
-  resourcesToNodesAndEdges,
-} from "../helpers";
+import { removeUnusedRelations, resourcesToNodesAndEdges } from "../helpers";
 import { useAppContext } from "../../../context/appContext";
 
 type Props = {
@@ -107,15 +103,18 @@ const useCatalogGraph = ({ onMessage }: Props) => {
         blueprintsMapById
       );
 
-      const groups = groupResourcesByPaths(sanitizedCatalog, [
-        "project.name",
-        "properties.DOMAIN.0",
-      ]);
+      const groups = [
+        { namePath: "project.name", idPath: "project.id" },
+        { namePath: "properties.DOMAIN", idPath: "properties.DOMAIN" },
+        { namePath: "blueprint.name", idPath: "blueprint.id" },
+      ];
 
-      console.log("groups", groups);
+      // console.log("groups", groups);
 
       const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
-        sanitizedCatalog
+        sanitizedCatalog,
+        groups,
+        blueprintsMapById
       );
       setNodes(nodes);
       setEdges(simpleEdges);

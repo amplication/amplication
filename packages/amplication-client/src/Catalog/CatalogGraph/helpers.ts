@@ -10,6 +10,12 @@ import {
 
 import * as models from "../../models";
 import { applyAutoLayout } from "./layout";
+import {
+  GroupedResult,
+  GroupPath,
+} from "../../Blueprints/BlueprintsGraph/types";
+
+const ROOT_NODE_ID = "root-node-id";
 
 function getParams(
   nodeA: Node,
@@ -86,61 +92,53 @@ export function getEdgeParams(
   };
 }
 
-function resourcesToNodes(resources: models.Resource[]): Node[] {
-  const [nodes, groupNodes] = resources.reduce(
-    ([nodes, groupNodes], resource) => {
-      const group = resource.properties?.DOMAIN;
-
-      //check if group is an array and take the first value
-      const parentId = Array.isArray(group) ? group[0] : group ?? "NONE";
-
-      const node: ResourceNode = {
-        data: {
-          payload: resource,
-        },
-        id: resource.id,
-        draggable: true,
-        selectable: true,
-        deletable: false,
-        parentId: parentId,
-        type: NODE_TYPE_RESOURCE,
-        extent: "parent",
-        position: {
-          x: 0,
-          y: 0,
-        },
-      };
-
-      nodes.push(node);
-
-      if (!groupNodes[node.parentId]) {
-        const groupNode: GroupNode = {
-          data: {
-            payload: {
-              id: node.parentId,
-              name: node.parentId,
-            },
-          },
-          id: node.parentId,
-          type: NODE_TYPE_GROUP,
-          selectable: true,
-          // deletable: false,
-          // draggable: false,
-          position: {
-            x: 0,
-            y: 0,
-          },
-        };
-        groupNodes[node.parentId] = groupNode;
-        nodes.push(groupNode);
-      }
-
-      return [nodes, groupNodes];
+function resourcesToNodes(
+  resources: models.Resource[],
+  parentId: string,
+  blueprintsMapById: Record<string, models.Blueprint>
+): ResourceNode[] {
+  return resources.map((resource) => ({
+    data: {
+      payload: resource,
+      relationCount:
+        (resource.blueprintId &&
+          blueprintsMapById[resource.blueprintId]?.relations?.length) ||
+        0,
     },
-    [[], {}]
-  );
+    id: resource.id,
+    draggable: true,
+    selectable: true,
+    deletable: false,
+    parentId: parentId,
+    type: NODE_TYPE_RESOURCE,
+    extent: "parent",
+    position: {
+      x: 0,
+      y: 0,
+    },
+  }));
+}
 
-  return [...Object.values(groupNodes), ...nodes];
+function groupToNode(group: GroupedResult, parentId: string): GroupNode {
+  return {
+    data: {
+      payload: {
+        id: group.key,
+        name: group.name,
+      },
+    },
+    id: group.key,
+    draggable: false,
+    selectable: false,
+    deletable: false,
+    parentId: parentId,
+    type: NODE_TYPE_GROUP,
+    extent: "parent",
+    position: {
+      x: 0,
+      y: 0,
+    },
+  };
 }
 
 export function nodesToSimpleEdges(nodes: Node[]) {
@@ -189,8 +187,16 @@ export function nodesToSimpleEdges(nodes: Node[]) {
   return edges;
 }
 
-export async function resourcesToNodesAndEdges(resources: models.Resource[]) {
-  const nodes = resourcesToNodes(resources);
+export async function resourcesToNodesAndEdges(
+  resources: models.Resource[],
+  groupPaths: GroupPath[],
+  blueprintsMapById: Record<string, models.Blueprint>
+) {
+  const root = groupResourcesByPaths(resources, groupPaths);
+
+  const nodes = root.children.flatMap((child) =>
+    createNodesForGroupsAndResources(child, undefined, blueprintsMapById)
+  );
 
   const simpleEdges = nodesToSimpleEdges(nodes);
 
@@ -200,45 +206,93 @@ export async function resourcesToNodesAndEdges(resources: models.Resource[]) {
   };
 }
 
-export function groupResourcesByPaths(
+function createNodesForGroupsAndResources(
+  group: GroupedResult,
+  parentId: string,
+  blueprintsMapById: Record<string, models.Blueprint>
+): Node[] {
+  const firstChildren = group.children?.length && group.children[0];
+
+  const groupNode = groupToNode(group, parentId);
+
+  //check the type of the first children and generate the nodes accordingly
+  if ((firstChildren as GroupedResult)?.type === "node-group") {
+    const children = group.children.flatMap((child) =>
+      createNodesForGroupsAndResources(child, group.key, blueprintsMapById)
+    );
+    return [groupNode, ...children];
+  } else {
+    const resources = group.children as models.Resource[];
+    const nodes = resourcesToNodes(resources, group.key, blueprintsMapById);
+    return [groupNode, ...nodes];
+  }
+}
+
+function groupResourcesByPaths(
   resources: models.Resource[],
-  groupPaths: string[]
-) {
+  groupPaths: GroupPath[]
+): GroupedResult {
   // Helper function to get the value from a resource using a dynamic path
-  function getValueByPath(resource, path) {
+  function getValueByPath(resource: models.Resource, path: string): string {
     return path.split(".").reduce((acc, key) => {
-      return acc && acc[key] !== undefined ? acc[key] : "Unknown";
+      const value = acc && acc[key] !== undefined ? acc[key] : "Unknown";
+
+      return Array.isArray(value) ? value[0] : value;
     }, resource);
   }
 
   // Recursive function to group resources
-  function groupRecursively(items, paths, depth = 0) {
+  function groupRecursively(
+    items: models.Resource[],
+    paths: GroupPath[],
+    depth = 0,
+    parentKey: string
+  ): GroupedResult[] | models.Resource[] {
     if (depth >= paths.length) {
       return items;
     }
 
-    const grouped = {};
-    const currentPath = paths[depth];
+    const grouped: Record<string, { name: string; items: models.Resource[] }> =
+      {};
+    const currentGroup = paths[depth];
 
     items.forEach((item) => {
-      const groupKey = getValueByPath(item, currentPath);
+      const groupKey = `${getValueByPath(
+        item,
+        currentGroup.idPath
+      )}-${parentKey}`;
+
+      const groupName = getValueByPath(item, currentGroup.namePath);
 
       if (!grouped[groupKey]) {
-        grouped[groupKey] = [];
+        grouped[groupKey] = { name: groupName, items: [] };
       }
 
-      grouped[groupKey].push(item);
+      grouped[groupKey].items.push(item);
     });
 
-    // Recurse for subgroups
-    for (const key in grouped) {
-      grouped[key] = groupRecursively(grouped[key], paths, depth + 1);
-    }
-
-    return grouped;
+    return Object.entries(grouped).map(
+      ([key, group]) =>
+        ({
+          key: key,
+          type: "node-group",
+          name: group.name,
+          children: groupRecursively(
+            group.items,
+            paths,
+            depth + 1,
+            `${parentKey}-${key}`
+          ),
+        } as GroupedResult)
+    );
   }
 
-  return groupRecursively(resources, groupPaths);
+  return {
+    key: ROOT_NODE_ID,
+    type: "node-group",
+    name: "Root",
+    children: groupRecursively(resources, groupPaths, 0, "root"),
+  };
 }
 
 //remove relations that are no longer defined in the blueprint
