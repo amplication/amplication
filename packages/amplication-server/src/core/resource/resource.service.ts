@@ -1623,6 +1623,12 @@ export class ResourceService {
       );
     }
 
+    //since we can't expose the StringFilter as union type, we use a separate field for the projectId filter and then merge it back to the where object
+    if (where.projectIdFilter) {
+      where.projectId = where.projectIdFilter;
+      delete where.projectIdFilter;
+    }
+
     const { properties: whereProperties, ...whereElse } = where;
     const wherePropertiesFilter = jsonPathStringFilterToPrismaFilter(
       whereProperties,

@@ -44,7 +44,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
   },
   {
-    key: "projectId",
+    key: "projectIdFilter",
     name: "Project",
     resizable: true,
     sortable: true,

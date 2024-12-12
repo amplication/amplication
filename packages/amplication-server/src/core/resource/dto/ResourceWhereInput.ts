@@ -53,8 +53,8 @@ export class ResourceWhereInput {
   })
   ownership?: OwnershipWhereInput | null;
 
-  @Field(() => String, { nullable: true })
-  blueprintId?: string | null;
+  @Field(() => StringFilter, { nullable: true })
+  blueprintId?: StringFilter | string | null;
 
   @Field(() => BlueprintWhereInput, {
     nullable: true,

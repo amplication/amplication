@@ -60,6 +60,7 @@ export const ResourceTypeFilter = ({
         onChange={onChange}
         onRemove={onRemove}
         disabled={disabled}
+        isMulti={true}
       />
     </>
   );
