@@ -30,6 +30,7 @@ import { applyAutoLayout } from "./layout";
 import GroupNode from "./nodes/GroupNode";
 import ResourceNode from "./nodes/ResourceNode";
 import { Node, NodePayloadWithPayloadType } from "./types";
+import { CatalogGroupBySelector } from "./hooks/CatalogGroupBySelector";
 
 export const CLASS_NAME = "catalog-graph";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -58,8 +59,7 @@ export default function CatalogGraph() {
     searchPhraseChanged,
     setSelectRelatedNodes,
     setFilter,
-    showDisconnectedResources,
-    setShowDisconnectedResources,
+    setGroupByFields,
   } = useCatalogGraph({
     onMessage: showMessage,
   });
@@ -147,11 +147,7 @@ export default function CatalogGraph() {
                 />
               </GraphToolbarItem>
               <GraphToolbarItem>
-                <Toggle
-                  label="Hide disconnected resources"
-                  onValueChange={setShowDisconnectedResources}
-                  checked={showDisconnectedResources}
-                />
+                <CatalogGroupBySelector onChange={setGroupByFields} />
               </GraphToolbarItem>
             </GraphToolbar>
 

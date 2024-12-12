@@ -2,7 +2,7 @@ import { type Node as ReactFlowNode } from "reactflow";
 import * as models from "../../models";
 
 export const NODE_TYPE_RESOURCE = "resource";
-export const NODE_TYPE_GROUP = "group2";
+export const NODE_TYPE_GROUP = "group2"; // "group" is a reserved word
 
 export type NodeType = typeof NODE_TYPE_RESOURCE | typeof NODE_TYPE_GROUP;
 
@@ -29,6 +29,8 @@ export type ResourceNode = NodeWithType<NodePayload<models.Resource>> & {
 export type Group = {
   id: string;
   name: string;
+  fieldKey: string;
+  fieldId: string;
 };
 
 export type GroupNodePayload = NodePayload<Group>;
@@ -55,3 +57,18 @@ export type SimpleRelation = {
 };
 
 export type Relation = SimpleRelation;
+
+export type GroupByField = {
+  fieldKey: string;
+  idPath: string; // Path for ID used in grouping
+  namePath: string; // Path for the display name
+};
+
+export type GroupedResult = {
+  nodeId: string;
+  name: string;
+  fieldKey: string;
+  fieldId: string;
+  type: "node-group";
+  children?: GroupedResult[] | models.Resource[];
+};

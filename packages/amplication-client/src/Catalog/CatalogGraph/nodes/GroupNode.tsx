@@ -12,6 +12,9 @@ import { memo, useCallback, type FC } from "react";
 import { useStore, type NodeProps } from "reactflow";
 import { GroupNode as GroupNodeType, GroupNodePayload } from "../types";
 import "./GroupNode.scss";
+import { useAppContext } from "../../../context/appContext";
+import useCustomPropertiesMap from "../../../CustomProperties/hooks/useCustomPropertiesMap";
+import ColoredContainer from "./ColoredContainer";
 
 type ModelProps = NodeProps & {
   data: GroupNodePayload;
@@ -20,22 +23,36 @@ type ModelProps = NodeProps & {
 const CLASS_NAME = "catalog-graph-group-node";
 
 const GroupNode: FC<ModelProps> = memo(({ id }) => {
+  const {
+    blueprintsMap: { blueprintsMapById },
+  } = useAppContext();
+
+  const { customPropertiesMap } = useCustomPropertiesMap();
+
   const sourceNode = useStore(
     useCallback((store) => store.nodeInternals.get(id) as GroupNodeType, [id])
   );
   const data = sourceNode?.data;
 
-  const style = { borderTopColor: data.color };
+  if (data.payload.fieldKey === "Domain") {
+    const property = customPropertiesMap["DOMAIN"];
+    data.color = property?.options?.find(
+      (option) => option.value === data.payload.fieldId
+    )?.color;
+  }
+
+  if (data.payload.fieldKey === "Blueprint") {
+    const blueprint = blueprintsMapById[data.payload.fieldId];
+    data.color = blueprint?.color;
+  }
 
   return (
     data && (
-      <div
+      <ColoredContainer
+        color={data.color}
         className={classNames(`${CLASS_NAME}`, {
           [`${CLASS_NAME}--highlight`]: data.highlight,
         })}
-        tabIndex={0}
-        style={style}
-        title={data.payload.name}
       >
         <FlexItem
           itemsAlign={EnumItemsAlign.Start}
@@ -48,7 +65,7 @@ const GroupNode: FC<ModelProps> = memo(({ id }) => {
         </FlexItem>
 
         <HorizontalRule />
-      </div>
+      </ColoredContainer>
     )
   );
 });

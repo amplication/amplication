@@ -6,14 +6,12 @@ import {
   SimpleRelation,
   GroupNode,
   NODE_TYPE_GROUP,
+  GroupByField,
+  GroupedResult,
 } from "./types";
 
 import * as models from "../../models";
 import { applyAutoLayout } from "./layout";
-import {
-  GroupedResult,
-  GroupPath,
-} from "../../Blueprints/BlueprintsGraph/types";
 
 const ROOT_NODE_ID = "root-node-id";
 
@@ -123,11 +121,13 @@ function groupToNode(group: GroupedResult, parentId: string): GroupNode {
   return {
     data: {
       payload: {
-        id: group.key,
+        id: group.nodeId,
         name: group.name,
+        fieldId: group.fieldId,
+        fieldKey: group.fieldKey,
       },
     },
-    id: group.key,
+    id: group.nodeId,
     draggable: false,
     selectable: false,
     deletable: false,
@@ -189,14 +189,20 @@ export function nodesToSimpleEdges(nodes: Node[]) {
 
 export async function resourcesToNodesAndEdges(
   resources: models.Resource[],
-  groupPaths: GroupPath[],
+  groupByFields: GroupByField[],
   blueprintsMapById: Record<string, models.Blueprint>
 ) {
-  const root = groupResourcesByPaths(resources, groupPaths);
+  let nodes: Node[] = [];
 
-  const nodes = root.children.flatMap((child) =>
-    createNodesForGroupsAndResources(child, undefined, blueprintsMapById)
-  );
+  if (groupByFields.length === 0) {
+    nodes = resourcesToNodes(resources, undefined, blueprintsMapById);
+  } else {
+    const root = groupResourcesByPaths(resources, groupByFields);
+
+    nodes = root.children.flatMap((child) =>
+      createNodesForGroupsAndResources(child, undefined, blueprintsMapById)
+    );
+  }
 
   const simpleEdges = nodesToSimpleEdges(nodes);
 
@@ -218,19 +224,19 @@ function createNodesForGroupsAndResources(
   //check the type of the first children and generate the nodes accordingly
   if ((firstChildren as GroupedResult)?.type === "node-group") {
     const children = group.children.flatMap((child) =>
-      createNodesForGroupsAndResources(child, group.key, blueprintsMapById)
+      createNodesForGroupsAndResources(child, group.nodeId, blueprintsMapById)
     );
     return [groupNode, ...children];
   } else {
-    const resources = group.children as models.Resource[];
-    const nodes = resourcesToNodes(resources, group.key, blueprintsMapById);
+    const resources = (group.children as models.Resource[]) || [];
+    const nodes = resourcesToNodes(resources, group.nodeId, blueprintsMapById);
     return [groupNode, ...nodes];
   }
 }
 
 function groupResourcesByPaths(
   resources: models.Resource[],
-  groupPaths: GroupPath[]
+  groupByFields: GroupByField[]
 ): GroupedResult {
   // Helper function to get the value from a resource using a dynamic path
   function getValueByPath(resource: models.Resource, path: string): string {
@@ -244,54 +250,70 @@ function groupResourcesByPaths(
   // Recursive function to group resources
   function groupRecursively(
     items: models.Resource[],
-    paths: GroupPath[],
+    groupByFields: GroupByField[],
     depth = 0,
     parentKey: string
   ): GroupedResult[] | models.Resource[] {
-    if (depth >= paths.length) {
+    if (depth >= groupByFields.length) {
       return items;
     }
 
-    const grouped: Record<string, { name: string; items: models.Resource[] }> =
-      {};
-    const currentGroup = paths[depth];
+    const grouped: Record<
+      string,
+      {
+        fieldId: string;
+        fieldKey: string;
+        name: string;
+        items: models.Resource[];
+      }
+    > = {};
+    const currentGroup = groupByFields[depth];
+
+    const fieldKey = currentGroup.fieldKey;
 
     items.forEach((item) => {
-      const groupKey = `${getValueByPath(
-        item,
-        currentGroup.idPath
-      )}-${parentKey}`;
-
+      const fieldId = getValueByPath(item, currentGroup.idPath);
       const groupName = getValueByPath(item, currentGroup.namePath);
 
+      const groupKey = `${fieldId}-${parentKey}`; //unique ID across the tree
+
       if (!grouped[groupKey]) {
-        grouped[groupKey] = { name: groupName, items: [] };
+        grouped[groupKey] = {
+          fieldId: fieldId,
+          fieldKey: fieldKey,
+          name: groupName,
+          items: [],
+        };
       }
 
       grouped[groupKey].items.push(item);
     });
 
-    return Object.entries(grouped).map(
-      ([key, group]) =>
-        ({
-          key: key,
-          type: "node-group",
-          name: group.name,
-          children: groupRecursively(
-            group.items,
-            paths,
-            depth + 1,
-            `${parentKey}-${key}`
-          ),
-        } as GroupedResult)
-    );
+    return Object.entries(grouped).map(([key, group]) => {
+      const groupWithChildren: GroupedResult = {
+        nodeId: key,
+        type: "node-group",
+        name: group.name,
+        fieldId: group.fieldId,
+        fieldKey: group.fieldKey,
+        children: groupRecursively(
+          group.items,
+          groupByFields,
+          depth + 1,
+          `${parentKey}-${key}`
+        ),
+      };
+      return groupWithChildren;
+    });
   }
 
   return {
-    key: ROOT_NODE_ID,
+    nodeId: ROOT_NODE_ID,
     type: "node-group",
     name: "Root",
-    children: groupRecursively(resources, groupPaths, 0, "root"),
+    children: groupRecursively(resources, groupByFields, 0, "root"),
+    fieldKey: "",
+    fieldId: "",
   };
 }
 

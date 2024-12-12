@@ -4,28 +4,31 @@ import { Node, NODE_TYPE_GROUP, NODE_TYPE_RESOURCE } from "./types";
 
 const TITLE_HEIGHT = 46;
 const CHAR_WIDTH = 10;
-const MARGIN = 100;
+const NODE_MIN_HEIGHT = 100;
 const MIN_WIDTH = 200;
 const RELATION_HEIGHT = 36;
 const RELATION_TITLE_HEIGHT = 53;
+const GROUP_PADDING = "100";
+const NODES_SPACING = "250";
 
 const NODES_LAYOUT_OPTIONS = {
-  "elk.algorithm": "org.eclipse.elk.layered",
-  "elk.spacing.nodeNode": "100",
-  "elk.layered.spacing.nodeNodeBetweenLayers": "100",
-  "elk.spacing.componentComponent": "100",
-  "org.eclipse.elk.padding": `[top=${MARGIN},left=${MARGIN},bottom=${MARGIN},right=${MARGIN}]`,
+  "elk.algorithm": "elk.layered",
+  "elk.spacing.nodeNode": NODES_SPACING,
+  "elk.layered.spacing.nodeNodeBetweenLayers": NODES_SPACING,
+  "elk.spacing.componentComponent": "200",
+  "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
+  "elk.separateConnectedComponents": "true",
 };
 
 const elk = new Elk({
   defaultLayoutOptions: {
-    "elk.algorithm": "org.eclipse.elk.force",
-    "org.eclipse.elk.aspectRatio": "2.5", //this may be calculated based on screen size
+    "elk.algorithm": "elk.rectpacking",
+    "elk.aspectRatio": "2.5", //this may be calculated based on screen size
     "elk.direction": "LEFT",
-    "org.eclipse.elk.contentAlignment": "H_RIGHT",
-    "org.eclipse.elk.expandNodes": "true",
-    "elk.spacing.nodeNode": "100",
-    "elk.padding": "[top=100,left=100,bottom=100,right=100]",
+    "elk.contentAlignment": "H_RIGHT",
+    "elk.expandNodes": "true",
+    "elk.spacing.nodeNode": GROUP_PADDING,
+    "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
   },
 });
 
@@ -45,7 +48,7 @@ const calculateNodeHeight = (node: Node) => {
 
   const heightWithTitle = propertiesHeight + TITLE_HEIGHT;
 
-  return normalizeSize(heightWithTitle, MARGIN);
+  return normalizeSize(heightWithTitle, NODE_MIN_HEIGHT);
 };
 
 const calculateNodeWidth = (node: Node) => {
@@ -69,10 +72,15 @@ const calculateNodeWidth = (node: Node) => {
   return normalizeSize(width, MIN_WIDTH);
 };
 
-function buildElkTree(nodes: Node[]): ElkNode[] {
+function buildElkTree(nodes: Node[]): {
+  elkNodes: ElkNode[];
+  groupsExist: boolean;
+} {
   // Create a map for quick lookup by node id
   const nodeMap: Map<string, ElkNode> = new Map();
   const resourceNodeContainers: Map<string, ElkNode> = new Map();
+
+  const groupsExist = nodes.some((node) => node.type === NODE_TYPE_GROUP);
 
   // Initialize each node as an ElkNode with an empty children array
   nodes.forEach((node) => {
@@ -119,7 +127,7 @@ function buildElkTree(nodes: Node[]): ElkNode[] {
     container.layoutOptions = NODES_LAYOUT_OPTIONS;
   });
 
-  return tree;
+  return { elkNodes: tree, groupsExist };
 }
 
 export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
@@ -133,10 +141,13 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
     });
   });
 
+  const { elkNodes, groupsExist } = buildElkTree(nodes);
+
   const layout = await elk.layout({
     id: "root",
-    children: buildElkTree(nodes),
+    children: elkNodes,
     edges: elkEdges,
+    layoutOptions: !groupsExist ? NODES_LAYOUT_OPTIONS : undefined,
   });
 
   return layout;

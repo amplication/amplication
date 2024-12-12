@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
-import { Node, NODE_TYPE_RESOURCE } from "../types";
+import { GroupByField, Node, NODE_TYPE_RESOURCE } from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
@@ -18,14 +18,13 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     blueprintsMap: { blueprintsMapById, ready: blueprintsReady },
   } = useAppContext();
 
+  const [groupByFields, setGroupByFields] = useState<GroupByField[]>([]);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const [errorMessage, setErrorMessage] = useState<string>(null);
-  const [showDisconnectedResources, setShowDisconnectedResources] =
-    useState(false);
 
   const setSelectRelatedNodes = useCallback(
     (node: Node) => {
@@ -78,42 +77,16 @@ const useCatalogGraph = ({ onMessage }: Props) => {
         return;
       }
 
-      const connectedResources = catalog.reduce((acc, curr) => {
-        const connected = curr.relations?.flatMap((relation) => {
-          return relation.relatedResources;
-        });
-
-        if (connected && connected.length > 0) {
-          acc[curr.id] = true;
-          connected.forEach((id) => {
-            acc[id] = true;
-          });
-        }
-        return acc;
-      }, {});
-
-      const filteredCatalog = showDisconnectedResources
-        ? catalog.filter((resource) => {
-            return connectedResources[resource.id];
-          })
-        : catalog;
-
       const sanitizedCatalog = removeUnusedRelations(
-        filteredCatalog,
+        catalog,
         blueprintsMapById
       );
-
-      const groups = [
-        { namePath: "project.name", idPath: "project.id" },
-        { namePath: "properties.DOMAIN", idPath: "properties.DOMAIN" },
-        { namePath: "blueprint.name", idPath: "blueprint.id" },
-      ];
 
       // console.log("groups", groups);
 
       const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
         sanitizedCatalog,
-        groups,
+        groupByFields,
         blueprintsMapById
       );
       setNodes(nodes);
@@ -121,13 +94,7 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     }
 
     prepareNodes();
-  }, [
-    blueprintsMapById,
-    catalog,
-    setEdges,
-    showDisconnectedResources,
-    blueprintsReady,
-  ]);
+  }, [blueprintsMapById, catalog, setEdges, blueprintsReady, groupByFields]);
 
   return {
     nodes,
@@ -140,8 +107,8 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     setSelectRelatedNodes,
     errorMessage,
     setFilter,
-    showDisconnectedResources,
-    setShowDisconnectedResources,
+    setGroupByFields,
+    groupByFields,
   };
 };
 

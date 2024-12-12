@@ -38,11 +38,14 @@ export const SelectPanel: React.FC<Props> = ({
     if (!selectedValue) {
       return [];
     }
-    return options.filter((option) =>
-      isMulti
-        ? (selectedValue as string[]).includes(option.value)
-        : option.value === selectedValue
-    );
+
+    if (isMulti) {
+      return (selectedValue as string[]).map((value) => {
+        return options.find((option) => option.value === value);
+      });
+    } else {
+      return options.filter((option) => option.value === selectedValue);
+    }
   }, [selectedValue, options, isMulti]);
 
   const handleChange = (value: string) => {

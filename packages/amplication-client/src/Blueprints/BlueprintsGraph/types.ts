@@ -45,15 +45,3 @@ export type ModelOrganizerPersistentData = {
   projectId: string;
   nodes: Node[];
 };
-
-export type GroupPath = {
-  idPath: string; // Path for ID used in grouping
-  namePath: string; // Path for the display name
-};
-
-export type GroupedResult = {
-  key: string;
-  name: string;
-  type: "node-group";
-  children?: GroupedResult[] | models.Resource[];
-};
