@@ -38,6 +38,7 @@ export const IconPicker: React.FC<Props> = ({
     <div className={CLASS_NAME}>
       <Popover
         arrow
+        onClose={() => setIsOpen(false)}
         open={isOpen}
         placement="bottom-start"
         content={

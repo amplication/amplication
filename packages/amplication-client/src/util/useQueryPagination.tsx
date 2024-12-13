@@ -4,6 +4,7 @@ import { set } from "lodash";
 
 type Props = {
   onLoadMore?: () => void;
+  initialPageSize?: number;
 };
 
 export type Pagination = {
@@ -36,10 +37,10 @@ export type QueryPagination<T, R extends any[]> = {
 export function useQueryPagination<T, R extends any[] = undefined>(
   props?: Props
 ): QueryPagination<T, R> {
-  const { onLoadMore } = props || {};
+  const { onLoadMore, initialPageSize } = props || {};
 
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(20);
+  const [pageSize, setPageSize] = useState<number>(initialPageSize || 20);
 
   const [currentPageData, setCurrentPageData] = useState<T[]>([]);
   const [meta, setMeta] = useState<MetaQueryPayload>({ count: 0 });

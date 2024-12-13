@@ -36,6 +36,7 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import classNames from "classnames";
 import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertiesMap";
 import { CatalogContextProvider } from "../Catalog/CatalogContext";
+import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -78,6 +79,8 @@ const WorkspaceLayout: React.FC<Props> = ({
     onNewProjectCompleted,
     currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
+
+  const blueprintsMap = useBlueprintsMap();
 
   const { isPlatformConsole } = useProjectBaseUrl();
 
@@ -243,6 +246,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateServiceFromTemplate,
         errorCreateServiceFromTemplate,
         customPropertiesMap,
+        blueprintsMap,
       }}
     >
       <AssistantContextProvider>

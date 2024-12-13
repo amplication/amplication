@@ -13,8 +13,8 @@ import ResourceSelectField from "../Blueprints/ResourceSelectField";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useResourceRelations from "./hooks/useResourceRelations";
-import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
 import FormikAutoSave from "../util/formikAutoSave";
+import { useAppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -33,7 +33,9 @@ function ResourceRelationsForm({ resourceId, relationDef, relation }: Props) {
   const { updateRelation, updateRelationError, updateRelationLoading } =
     useResourceRelations(resourceId);
 
-  const { blueprintsMap } = useBlueprintsMap();
+  const {
+    blueprintsMap: { blueprintsMap },
+  } = useAppContext();
 
   const errorMessage = formatError(updateRelationError);
 

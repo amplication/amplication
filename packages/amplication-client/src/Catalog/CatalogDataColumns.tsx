@@ -20,6 +20,9 @@ import { ResourceTypeFilter } from "./ResourceTypeFilter";
 import { OwnerFilter } from "./OwnerFilter";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import ResourceGitOrg from "../Workspaces/ResourceGitOrg";
+import * as models from "../models";
+import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
+import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
@@ -33,6 +36,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
         <ResourceTypeBadge showTooltip resource={props.row} size="small" />
       );
     },
+    getValue: (row) => row.blueprint?.name ?? row.resourceType,
   },
   {
     key: "name",
@@ -199,3 +203,46 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     resizable: true,
   },
 ];
+
+export function columnsWithProperties(
+  columns: DataGridColumn<Resource>[],
+  customProperties: models.CustomProperty[]
+) {
+  const propCols = customProperties.map(
+    (property): DataGridColumn<models.Resource> => {
+      const filterable =
+        (property.type === models.EnumCustomPropertyType.Select ||
+          property.type === models.EnumCustomPropertyType.MultiSelect) &&
+        property.options &&
+        property.options.length > 0;
+
+      return {
+        key: property.key,
+        name: property.name,
+        resizable: true,
+        sortable: true,
+        filterable: filterable,
+        renderFilter: filterable && CustomPropertyFilter,
+        hidden: false,
+        renderCell: (props) => {
+          return (
+            <CustomPropertyValue
+              propertyKey={property.key}
+              allValues={props.row.properties}
+            />
+          );
+        },
+        getValue: (row) => {
+          return row.properties && row.properties[property.key]
+            ? row.properties[property.key]
+            : "";
+        },
+      };
+    }
+  );
+
+  const lastCol = columns[columns.length - 1];
+  const otherCols = columns.slice(0, -1);
+
+  return [...otherCols, ...propCols, lastCol];
+}

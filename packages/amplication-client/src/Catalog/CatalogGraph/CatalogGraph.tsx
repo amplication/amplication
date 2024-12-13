@@ -1,38 +1,54 @@
-import { Snackbar } from "@amplication/ui/design-system";
-import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  DataGridColumn,
+  DataGridFilters,
+  Snackbar,
+} from "@amplication/ui/design-system";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  applyNodeChanges,
   Background,
   ConnectionMode,
   ReactFlow,
   ReactFlowInstance,
-  applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import useMessage from "../../util/useMessage";
-import "./BlueprintGraph.scss";
 import GraphControls from "../../Components/GraphComponents/GraphControls";
 import GraphToolbar from "../../Components/GraphComponents/GraphToolbar";
+import GraphToolbarItem from "../../Components/GraphComponents/GraphToolbarItem";
+import useCustomPropertiesMap from "../../CustomProperties/hooks/useCustomPropertiesMap";
+import * as models from "../../models";
+import useMessage from "../../util/useMessage";
+import {
+  columnsWithProperties,
+  RESOURCE_LIST_COLUMNS,
+} from "../CatalogDataColumns";
+import "./CatalogGraph.scss";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
-import useBlueprintGraph from "./hooks/useBlueprintGraph";
+import useCatalogGraph from "./hooks/useCatalogGraph";
 import { applyAutoLayout } from "./layout";
-import BlueprintNode from "./nodes/BlueprintNode";
+import GroupNode from "./nodes/GroupNode";
+import ResourceNode from "./nodes/ResourceNode";
 import { Node, NodePayloadWithPayloadType } from "./types";
+import { CatalogGroupBySelector } from "./hooks/CatalogGroupBySelector";
 
-export const CLASS_NAME = "blueprint-graph";
+export const CLASS_NAME = "catalog-graph";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
 const MESSAGE_AUTO_HIDE_DURATION = 3000;
 
 const simpleNodeTypes = {
-  blueprint: BlueprintNode,
+  resource: ResourceNode,
+  group2: GroupNode,
 };
 
 const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function BlueprintGraph() {
+export default function CatalogGraph() {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
+
+  const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
 
   const { message, messageType, showMessage, removeMessage } = useMessage();
 
@@ -41,11 +57,23 @@ export default function BlueprintGraph() {
     setNodes,
     edges,
     onEdgesChange,
-    searchPhraseChanged,
+    setSearchPhrase,
     setSelectRelatedNodes,
-  } = useBlueprintGraph({
+    setFilter,
+    setGroupByFields,
+    setWindowSize,
+  } = useCatalogGraph({
     onMessage: showMessage,
   });
+
+  const { customPropertiesMap } = useCustomPropertiesMap();
+
+  const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
+    return columnsWithProperties(
+      RESOURCE_LIST_COLUMNS,
+      Object.values(customPropertiesMap)
+    );
+  }, [customPropertiesMap]);
 
   const fitViewTimerRef = useRef(null);
 
@@ -89,9 +117,19 @@ export default function BlueprintGraph() {
   );
 
   const onArrangeNodes = useCallback(async () => {
-    const updatedNodes = await applyAutoLayout(nodes, edges);
-    setNodes(updatedNodes);
-    fitToView();
+    if (reactFlowWrapper.current) {
+      // Get the dimensions of the React Flow container
+      const { width, height } =
+        reactFlowWrapper.current.getBoundingClientRect();
+
+      const updatedNodes = await applyAutoLayout(nodes, edges, {
+        width,
+        height,
+      });
+
+      setNodes(updatedNodes);
+      fitToView();
+    }
   }, [nodes, edges, setNodes, fitToView]);
 
   const onNodeClick = useCallback(
@@ -101,6 +139,15 @@ export default function BlueprintGraph() {
     },
     [setSelectRelatedNodes]
   );
+
+  useEffect(() => {
+    if (reactFlowWrapper.current) {
+      const { width, height } =
+        reactFlowWrapper.current.getBoundingClientRect();
+
+      setWindowSize({ width, height });
+    }
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
@@ -113,9 +160,19 @@ export default function BlueprintGraph() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <GraphToolbar searchPhraseChanged={searchPhraseChanged} />
+            <GraphToolbar searchPhraseChanged={setSearchPhrase}>
+              <GraphToolbarItem>
+                <DataGridFilters
+                  columns={columnsWithAllProps}
+                  onChange={setFilter}
+                />
+              </GraphToolbarItem>
+              <GraphToolbarItem>
+                <CatalogGroupBySelector onChange={setGroupByFields} />
+              </GraphToolbarItem>
+            </GraphToolbar>
 
-            <div className={REACT_FLOW_CLASS_NAME}>
+            <div className={REACT_FLOW_CLASS_NAME} ref={reactFlowWrapper}>
               <ReactFlow
                 onInit={onInit}
                 nodes={nodes}
@@ -131,6 +188,7 @@ export default function BlueprintGraph() {
                 minZoom={0.1}
                 panOnScroll
                 selectionKeyCode={null}
+                elevateNodesOnSelect={false}
               >
                 <Background color="grey" />
               </ReactFlow>

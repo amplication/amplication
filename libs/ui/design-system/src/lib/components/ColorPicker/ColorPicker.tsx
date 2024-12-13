@@ -61,6 +61,7 @@ export const ColorPicker: React.FC<Props> = ({
   return (
     <div className={CLASS_NAME}>
       <Popover
+        onClose={() => setIsOpen(false)}
         arrow
         open={isOpen}
         placement="bottom-start"

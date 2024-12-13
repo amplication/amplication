@@ -9,10 +9,10 @@ import {
 } from "@amplication/ui/design-system";
 import CustomPropertiesFormField from "../../CustomProperties/CustomPropertiesFormField";
 import useBlueprintCustomPropertiesMap from "../../CustomProperties/hooks/useBlueprintCustomPropertiesMap";
-import useBlueprintsMap from "../../Blueprints/hooks/useBlueprintsMap";
 import { useEffect, useMemo } from "react";
 import { CreateResourceType } from "./CreateResourceForm";
 import { useFormikContext } from "formik";
+import { useAppContext } from "../../context/appContext";
 
 type Props = {
   blueprintId: string;
@@ -24,7 +24,9 @@ export const ResourceSettingsFormFields = ({
   fieldNamePrefix,
 }: Props) => {
   const { customPropertiesMap } = useBlueprintCustomPropertiesMap(blueprintId);
-  const { blueprintsMap } = useBlueprintsMap();
+  const {
+    blueprintsMap: { blueprintsMap },
+  } = useAppContext();
   const { setFieldValue } = useFormikContext<CreateResourceType>();
 
   useEffect(() => {
