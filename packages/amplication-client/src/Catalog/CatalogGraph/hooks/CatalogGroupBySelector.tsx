@@ -24,6 +24,21 @@ const FIELDS: { [key: string]: GroupByField } = {
     namePath: "blueprint.name",
     idPath: "blueprint.id",
   },
+  gitOrganization: {
+    fieldKey: "Git Organization",
+    namePath: "gitRepository.gitOrganization.name",
+    idPath: "gitRepository.gitOrganization.id",
+  },
+  gitRepo: {
+    fieldKey: "Git Repository",
+    namePath: "gitRepository.name",
+    idPath: "gitRepository.id",
+  },
+  serviceTemplate: {
+    fieldKey: "Service Templates",
+    namePath: "serviceTemplate.name",
+    idPath: "serviceTemplate.id",
+  },
 };
 
 type Props = {
