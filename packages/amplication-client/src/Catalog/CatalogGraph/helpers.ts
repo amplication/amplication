@@ -8,6 +8,7 @@ import {
   NODE_TYPE_GROUP,
   GroupByField,
   GroupedResult,
+  WindowSize,
 } from "./types";
 
 import * as models from "../../models";
@@ -190,7 +191,8 @@ export function nodesToSimpleEdges(nodes: Node[]) {
 export async function resourcesToNodesAndEdges(
   resources: models.Resource[],
   groupByFields: GroupByField[],
-  blueprintsMapById: Record<string, models.Blueprint>
+  blueprintsMapById: Record<string, models.Blueprint>,
+  WindowsSize: WindowSize
 ) {
   let nodes: Node[] = [];
 
@@ -207,7 +209,7 @@ export async function resourcesToNodesAndEdges(
   const simpleEdges = nodesToSimpleEdges(nodes);
 
   return {
-    nodes: await applyAutoLayout(nodes, simpleEdges),
+    nodes: await applyAutoLayout(nodes, simpleEdges, WindowsSize),
     simpleEdges,
   };
 }

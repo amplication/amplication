@@ -9,6 +9,7 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
@@ -132,6 +133,7 @@ export function DataGridFilters<T>({
       itemsAlign={EnumItemsAlign.Center}
       className={CLASS_NAME}
     >
+      <Icon icon="filter" color={EnumTextColor.Black20} />
       {visibleFilters.map((key) => {
         const columnFilter = columnsMap[key]?.renderFilter;
 

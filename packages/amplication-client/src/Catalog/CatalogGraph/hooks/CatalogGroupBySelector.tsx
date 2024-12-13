@@ -1,6 +1,12 @@
 import {
   DataGridColumn,
   EnumButtonStyle,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextColor,
+  FlexItem,
+  Icon,
   SelectPanel,
 } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
@@ -54,7 +60,13 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
   );
 
   return (
-    <div>
+    <FlexItem
+      direction={EnumFlexDirection.Row}
+      gap={EnumGapSize.Large}
+      itemsAlign={EnumItemsAlign.Center}
+    >
+      <Icon icon="filter" color={EnumTextColor.Black20} />
+
       <SelectPanel
         label={"Group By"}
         options={options}
@@ -65,6 +77,6 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
           buttonStyle: EnumButtonStyle.Text,
         }}
       />
-    </div>
+    </FlexItem>
   );
 };

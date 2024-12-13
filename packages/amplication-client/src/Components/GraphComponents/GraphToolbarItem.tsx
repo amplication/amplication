@@ -7,5 +7,10 @@ type Props = {
 };
 
 export default function GraphToolbarItem({ children }: Props) {
-  return <div className={CLASS_NAME}>{children}</div>;
+  return (
+    <>
+      <div className="graph-toolbar__divider"></div>
+      <div className={CLASS_NAME}>{children}</div>
+    </>
+  );
 }

@@ -72,3 +72,8 @@ export type GroupedResult = {
   type: "node-group";
   children?: GroupedResult[] | models.Resource[];
 };
+
+export type WindowSize = {
+  width: number;
+  height: number;
+};

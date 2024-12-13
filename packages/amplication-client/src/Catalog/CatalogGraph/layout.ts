@@ -1,6 +1,6 @@
 import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
 import { type Edge } from "reactflow";
-import { Node, NODE_TYPE_GROUP, NODE_TYPE_RESOURCE } from "./types";
+import { Node, NODE_TYPE_GROUP, NODE_TYPE_RESOURCE, WindowSize } from "./types";
 
 const TITLE_HEIGHT = 46;
 const CHAR_WIDTH = 10;
@@ -17,19 +17,19 @@ const NODES_LAYOUT_OPTIONS = {
   "elk.layered.spacing.nodeNodeBetweenLayers": NODES_SPACING,
   "elk.spacing.componentComponent": "200",
   "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
-  "elk.separateConnectedComponents": "true",
+};
+
+const GROUPS_LAYOUT_OPTIONS = {
+  "elk.algorithm": "elk.rectpacking",
+  "elk.direction": "LEFT",
+  "elk.contentAlignment": "H_RIGHT",
+  "elk.expandNodes": "true",
+  "elk.spacing.nodeNode": GROUP_PADDING,
+  "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
 };
 
 const elk = new Elk({
-  defaultLayoutOptions: {
-    "elk.algorithm": "elk.rectpacking",
-    "elk.aspectRatio": "2.5", //this may be calculated based on screen size
-    "elk.direction": "LEFT",
-    "elk.contentAlignment": "H_RIGHT",
-    "elk.expandNodes": "true",
-    "elk.spacing.nodeNode": GROUP_PADDING,
-    "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
-  },
+  defaultLayoutOptions: GROUPS_LAYOUT_OPTIONS,
 });
 
 const normalizeSize = (value: number, minValue: number) =>
@@ -130,8 +130,14 @@ function buildElkTree(nodes: Node[]): {
   return { elkNodes: tree, groupsExist };
 }
 
-export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
+export const getAutoLayout = async (
+  nodes: Node[],
+  edges: Edge[],
+  windowsSize: WindowSize
+) => {
   const elkEdges: ElkExtendedEdge[] = [];
+
+  const aspectRatio = (windowsSize.width / windowsSize.height).toString();
 
   edges.forEach((edge) => {
     elkEdges.push({
@@ -147,7 +153,15 @@ export const getAutoLayout = async (nodes: Node[], edges: Edge[]) => {
     id: "root",
     children: elkNodes,
     edges: elkEdges,
-    layoutOptions: !groupsExist ? NODES_LAYOUT_OPTIONS : undefined,
+    layoutOptions: !groupsExist
+      ? {
+          ...NODES_LAYOUT_OPTIONS,
+          "elk.aspectRatio": aspectRatio,
+        }
+      : {
+          ...GROUPS_LAYOUT_OPTIONS,
+          "elk.aspectRatio": aspectRatio,
+        },
   });
 
   return layout;
@@ -194,9 +208,10 @@ export async function applyLayoutToNodes(
 
 export async function applyAutoLayout(
   nodes: Node[],
-  edges: Edge[]
+  edges: Edge[],
+  WindowsSize: WindowSize
 ): Promise<Node[]> {
-  const layout = await getAutoLayout(nodes, edges);
+  const layout = await getAutoLayout(nodes, edges, WindowsSize);
 
   return applyLayoutToNodes(nodes, layout);
 }

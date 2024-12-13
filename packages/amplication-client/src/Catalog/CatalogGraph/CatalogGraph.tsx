@@ -2,7 +2,6 @@ import {
   DataGridColumn,
   DataGridFilters,
   Snackbar,
-  Toggle,
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -49,6 +48,8 @@ export default function CatalogGraph() {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
+  const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
+
   const { message, messageType, showMessage, removeMessage } = useMessage();
 
   const {
@@ -56,10 +57,11 @@ export default function CatalogGraph() {
     setNodes,
     edges,
     onEdgesChange,
-    searchPhraseChanged,
+    setSearchPhrase,
     setSelectRelatedNodes,
     setFilter,
     setGroupByFields,
+    setWindowSize,
   } = useCatalogGraph({
     onMessage: showMessage,
   });
@@ -115,9 +117,19 @@ export default function CatalogGraph() {
   );
 
   const onArrangeNodes = useCallback(async () => {
-    const updatedNodes = await applyAutoLayout(nodes, edges);
-    setNodes(updatedNodes);
-    fitToView();
+    if (reactFlowWrapper.current) {
+      // Get the dimensions of the React Flow container
+      const { width, height } =
+        reactFlowWrapper.current.getBoundingClientRect();
+
+      const updatedNodes = await applyAutoLayout(nodes, edges, {
+        width,
+        height,
+      });
+
+      setNodes(updatedNodes);
+      fitToView();
+    }
   }, [nodes, edges, setNodes, fitToView]);
 
   const onNodeClick = useCallback(
@@ -127,6 +139,15 @@ export default function CatalogGraph() {
     },
     [setSelectRelatedNodes]
   );
+
+  useEffect(() => {
+    if (reactFlowWrapper.current) {
+      const { width, height } =
+        reactFlowWrapper.current.getBoundingClientRect();
+
+      setWindowSize({ width, height });
+    }
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
@@ -139,7 +160,7 @@ export default function CatalogGraph() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <GraphToolbar searchPhraseChanged={searchPhraseChanged}>
+            <GraphToolbar searchPhraseChanged={setSearchPhrase}>
               <GraphToolbarItem>
                 <DataGridFilters
                   columns={columnsWithAllProps}
@@ -151,7 +172,7 @@ export default function CatalogGraph() {
               </GraphToolbarItem>
             </GraphToolbar>
 
-            <div className={REACT_FLOW_CLASS_NAME}>
+            <div className={REACT_FLOW_CLASS_NAME} ref={reactFlowWrapper}>
               <ReactFlow
                 onInit={onInit}
                 nodes={nodes}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
-import { GroupByField, Node, NODE_TYPE_RESOURCE } from "../types";
+import { GroupByField, Node, NODE_TYPE_RESOURCE, WindowSize } from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
@@ -12,14 +12,20 @@ type Props = {
 };
 
 const useCatalogGraph = ({ onMessage }: Props) => {
-  const { catalog, setFilter } = useCatalog({ initialPageSize: 1000 });
+  const { catalog, setFilter, setSearchPhrase } = useCatalog({
+    initialPageSize: 1000,
+  });
 
   const {
     blueprintsMap: { blueprintsMapById, ready: blueprintsReady },
   } = useAppContext();
 
+  const [windowSize, setWindowSize] = useState<WindowSize>({
+    width: 1600,
+    height: 900,
+  });
+
   const [groupByFields, setGroupByFields] = useState<GroupByField[]>([]);
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -49,27 +55,6 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     [nodes]
   );
 
-  const searchPhraseChanged = useCallback(
-    (searchPhrase: string) => {
-      nodes.forEach((x) => (x.data.highlight = false));
-
-      if (searchPhrase !== "") {
-        const searchResults = nodes.filter((node) =>
-          node.data.payload.name
-            .toLowerCase()
-            .includes(searchPhrase.toLowerCase())
-        );
-
-        searchResults.forEach((searchedNode) => {
-          searchedNode.data.highlight = true;
-        });
-      }
-
-      setNodes((nodes) => [...nodes]);
-    },
-    [nodes]
-  );
-
   useEffect(() => {
     async function prepareNodes() {
       if (!blueprintsReady) {
@@ -87,7 +72,8 @@ const useCatalogGraph = ({ onMessage }: Props) => {
       const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
         sanitizedCatalog,
         groupByFields,
-        blueprintsMapById
+        blueprintsMapById,
+        windowSize
       );
       setNodes(nodes);
       setEdges(simpleEdges);
@@ -103,12 +89,12 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     setEdges,
     onEdgesChange,
     setSearchPhrase,
-    searchPhraseChanged,
     setSelectRelatedNodes,
     errorMessage,
     setFilter,
     setGroupByFields,
     groupByFields,
+    setWindowSize,
   };
 };
 

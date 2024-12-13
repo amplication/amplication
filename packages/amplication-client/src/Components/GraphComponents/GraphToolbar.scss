@@ -5,7 +5,7 @@
   z-index: 1;
   top: var(--icon-spacing);
   left: var(--icon-spacing);
-  padding: var(--default-spacing);
+  padding: var(--icon-spacing) var(--default-spacing);
   background: var(--gray-90);
   border-radius: var(--default-button-radius);
   box-shadow: var(--dropdown-box-shadow);
