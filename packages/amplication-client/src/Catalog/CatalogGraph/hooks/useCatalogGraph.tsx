@@ -11,10 +11,18 @@ import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
 import { removeUnusedRelations, resourcesToNodesAndEdges } from "../helpers";
 import { useAppContext } from "../../../context/appContext";
+import useLocalStorageData from "../../../util/useLocalStorageData";
+
+type GraphPersistedData = {
+  layoutOptions: LayoutOptions;
+  groupByFields: GroupByField[];
+};
 
 type Props = {
   onMessage: (message: string, type: EnumMessageType) => void;
 };
+
+const LOCAL_STORAGE_KEY = "catalogGraphLayout";
 
 const useCatalogGraph = ({ onMessage }: Props) => {
   const [layoutOptions, setLayoutOptions] = useState<LayoutOptions>({
@@ -23,6 +31,13 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     layersDirection: "RIGHT",
     windowSize: { width: 1600, height: 900 },
   });
+
+  const { currentWorkspace } = useAppContext();
+
+  const storageKey = `${LOCAL_STORAGE_KEY}-${currentWorkspace?.id}`;
+
+  const { persistData, loadPersistentData, clearPersistentData } =
+    useLocalStorageData<GraphPersistedData>(storageKey);
 
   const { catalog, setFilter, setSearchPhrase } = useCatalog({
     initialPageSize: 1000,
@@ -74,6 +89,19 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     []
   );
 
+  const saveState = useCallback(() => {
+    persistData({ layoutOptions, groupByFields });
+    onMessage && onMessage("State saved", EnumMessageType.Success);
+  }, [groupByFields, layoutOptions, onMessage, persistData]);
+
+  useEffect(() => {
+    const persistedData = loadPersistentData();
+    if (persistedData) {
+      setLayoutOptions(persistedData.layoutOptions || layoutOptions);
+      setGroupByFields(persistedData.groupByFields || []);
+    }
+  }, []);
+
   useEffect(() => {
     async function prepareNodes() {
       if (!blueprintsReady) {
@@ -122,6 +150,7 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     groupByFields,
     setPartialLayoutOptions,
     layoutOptions,
+    saveState,
   };
 };
 

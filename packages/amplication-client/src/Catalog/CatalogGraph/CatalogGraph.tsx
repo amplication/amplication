@@ -1,7 +1,10 @@
 import {
+  Button,
   DataGridColumn,
   DataGridFilters,
+  EnumButtonStyle,
   Snackbar,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -62,8 +65,10 @@ export default function CatalogGraph() {
     setSelectRelatedNodes,
     setFilter,
     setGroupByFields,
+    groupByFields,
     setPartialLayoutOptions,
     layoutOptions,
+    saveState,
   } = useCatalogGraph({
     onMessage: showMessage,
   });
@@ -172,13 +177,25 @@ export default function CatalogGraph() {
                 />
               </GraphToolbarItem>
               <GraphToolbarItem>
-                <CatalogGroupBySelector onChange={setGroupByFields} />
+                <CatalogGroupBySelector
+                  onChange={setGroupByFields}
+                  selectedValue={groupByFields}
+                />
               </GraphToolbarItem>
               <GraphToolbarItem>
                 <LayoutSettings
                   layoutOptions={layoutOptions}
                   onChange={setPartialLayoutOptions}
                 />
+              </GraphToolbarItem>
+              <GraphToolbarItem>
+                <Tooltip title="Save Current View" direction="s">
+                  <Button
+                    icon="save"
+                    buttonStyle={EnumButtonStyle.Text}
+                    onClick={saveState}
+                  />
+                </Tooltip>
               </GraphToolbarItem>
             </GraphToolbar>
 

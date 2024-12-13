@@ -41,7 +41,12 @@ export const SelectPanel: React.FC<Props> = ({
 
     if (isMulti) {
       return (selectedValue as string[]).map((value) => {
-        return options.find((option) => option.value === value);
+        return (
+          options.find((option) => option.value === value) || {
+            value,
+            label: value,
+          }
+        );
       });
     } else {
       return options.filter((option) => option.value === selectedValue);
