@@ -23,13 +23,14 @@ import {
   RESOURCE_LIST_COLUMNS,
 } from "../CatalogDataColumns";
 import "./CatalogGraph.scss";
+import { CatalogGroupBySelector } from "./CatalogGroupBySelector";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import useCatalogGraph from "./hooks/useCatalogGraph";
 import { applyAutoLayout } from "./layout";
+import { LayoutSettings } from "./LayoutSettings";
 import GroupNode from "./nodes/GroupNode";
 import ResourceNode from "./nodes/ResourceNode";
 import { Node, NodePayloadWithPayloadType } from "./types";
-import { CatalogGroupBySelector } from "./hooks/CatalogGroupBySelector";
 
 export const CLASS_NAME = "catalog-graph";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -61,7 +62,8 @@ export default function CatalogGraph() {
     setSelectRelatedNodes,
     setFilter,
     setGroupByFields,
-    setWindowSize,
+    setPartialLayoutOptions,
+    layoutOptions,
   } = useCatalogGraph({
     onMessage: showMessage,
   });
@@ -123,14 +125,14 @@ export default function CatalogGraph() {
         reactFlowWrapper.current.getBoundingClientRect();
 
       const updatedNodes = await applyAutoLayout(nodes, edges, {
-        width,
-        height,
+        ...layoutOptions,
+        windowSize: { width, height },
       });
 
       setNodes(updatedNodes);
       fitToView();
     }
-  }, [nodes, edges, setNodes, fitToView]);
+  }, [nodes, edges, layoutOptions, setNodes, fitToView]);
 
   const onNodeClick = useCallback(
     async (event: React.MouseEvent, node: Node) => {
@@ -145,7 +147,9 @@ export default function CatalogGraph() {
       const { width, height } =
         reactFlowWrapper.current.getBoundingClientRect();
 
-      setWindowSize({ width, height });
+      setPartialLayoutOptions({
+        windowSize: { width, height },
+      });
     }
   }, []);
 
@@ -169,6 +173,12 @@ export default function CatalogGraph() {
               </GraphToolbarItem>
               <GraphToolbarItem>
                 <CatalogGroupBySelector onChange={setGroupByFields} />
+              </GraphToolbarItem>
+              <GraphToolbarItem>
+                <LayoutSettings
+                  layoutOptions={layoutOptions}
+                  onChange={setPartialLayoutOptions}
+                />
               </GraphToolbarItem>
             </GraphToolbar>
 

@@ -77,3 +77,10 @@ export type WindowSize = {
   width: number;
   height: number;
 };
+
+export type LayoutOptions = {
+  layersDirection?: "UP" | "DOWN" | "LEFT" | "RIGHT";
+  layersSpacing?: number;
+  nodeSpacing?: number;
+  windowSize?: WindowSize;
+};

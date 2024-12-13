@@ -7,11 +7,12 @@ import {
   FlexItem,
   Icon,
   SelectPanel,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback, useMemo, useState } from "react";
-import { GroupByField } from "../types";
-import useCustomPropertiesMap from "../../../CustomProperties/hooks/useCustomPropertiesMap";
-import * as models from "../../../models";
+import { GroupByField } from "./types";
+import useCustomPropertiesMap from "../../CustomProperties/hooks/useCustomPropertiesMap";
+import * as models from "../../models";
 
 const FIELDS: { [key: string]: GroupByField } = {
   project: {
@@ -105,7 +106,9 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
     >
-      <Icon icon="grid" color={EnumTextColor.Black20} />
+      <Tooltip title="Group by" direction="s">
+        <Icon icon="lookup" color={EnumTextColor.Black20} />
+      </Tooltip>
 
       <SelectPanel
         label={"Group By"}

@@ -1,14 +1,14 @@
 import { internalsSymbol, Position } from "reactflow";
 import {
-  ResourceNode,
-  Node,
-  NODE_TYPE_RESOURCE,
-  SimpleRelation,
-  GroupNode,
-  NODE_TYPE_GROUP,
   GroupByField,
   GroupedResult,
-  WindowSize,
+  GroupNode,
+  LayoutOptions,
+  Node,
+  NODE_TYPE_GROUP,
+  NODE_TYPE_RESOURCE,
+  ResourceNode,
+  SimpleRelation,
 } from "./types";
 
 import * as models from "../../models";
@@ -192,7 +192,7 @@ export async function resourcesToNodesAndEdges(
   resources: models.Resource[],
   groupByFields: GroupByField[],
   blueprintsMapById: Record<string, models.Blueprint>,
-  WindowsSize: WindowSize
+  layoutOptions: LayoutOptions
 ) {
   let nodes: Node[] = [];
 
@@ -209,7 +209,7 @@ export async function resourcesToNodesAndEdges(
   const simpleEdges = nodesToSimpleEdges(nodes);
 
   return {
-    nodes: await applyAutoLayout(nodes, simpleEdges, WindowsSize),
+    nodes: await applyAutoLayout(nodes, simpleEdges, layoutOptions),
     simpleEdges,
   };
 }
