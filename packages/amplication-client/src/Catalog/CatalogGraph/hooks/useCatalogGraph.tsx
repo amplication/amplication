@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useEdgesState } from "reactflow";
-import { GroupByField, Node, NODE_TYPE_RESOURCE, WindowSize } from "../types";
+import {
+  GroupByField,
+  LayoutOptions,
+  Node,
+  NODE_TYPE_RESOURCE,
+} from "../types";
 
 import { EnumMessageType } from "../../../util/useMessage";
 import useCatalog from "../../hooks/useCatalog";
@@ -12,6 +17,13 @@ type Props = {
 };
 
 const useCatalogGraph = ({ onMessage }: Props) => {
+  const [layoutOptions, setLayoutOptions] = useState<LayoutOptions>({
+    nodeSpacing: 250,
+    layersSpacing: 250,
+    layersDirection: "RIGHT",
+    windowSize: { width: 1600, height: 900 },
+  });
+
   const { catalog, setFilter, setSearchPhrase } = useCatalog({
     initialPageSize: 1000,
   });
@@ -19,11 +31,6 @@ const useCatalogGraph = ({ onMessage }: Props) => {
   const {
     blueprintsMap: { blueprintsMapById, ready: blueprintsReady },
   } = useAppContext();
-
-  const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: 1600,
-    height: 900,
-  });
 
   const [groupByFields, setGroupByFields] = useState<GroupByField[]>([]);
   const [nodes, setNodes] = useState<Node[]>([]); // main data elements for save
@@ -55,6 +62,18 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     [nodes]
   );
 
+  const setPartialLayoutOptions = useCallback(
+    (partialLayoutOptions: LayoutOptions) => {
+      setLayoutOptions((prev) => {
+        return {
+          ...prev,
+          ...partialLayoutOptions,
+        };
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     async function prepareNodes() {
       if (!blueprintsReady) {
@@ -73,14 +92,21 @@ const useCatalogGraph = ({ onMessage }: Props) => {
         sanitizedCatalog,
         groupByFields,
         blueprintsMapById,
-        windowSize
+        layoutOptions
       );
       setNodes(nodes);
       setEdges(simpleEdges);
     }
 
     prepareNodes();
-  }, [blueprintsMapById, catalog, setEdges, blueprintsReady, groupByFields]);
+  }, [
+    blueprintsMapById,
+    catalog,
+    setEdges,
+    blueprintsReady,
+    groupByFields,
+    layoutOptions,
+  ]);
 
   return {
     nodes,
@@ -94,7 +120,8 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     setFilter,
     setGroupByFields,
     groupByFields,
-    setWindowSize,
+    setPartialLayoutOptions,
+    layoutOptions,
   };
 };
 

@@ -1,6 +1,11 @@
 import Elk, { type ElkExtendedEdge, type ElkNode } from "elkjs/lib/elk.bundled";
 import { type Edge } from "reactflow";
-import { Node, NODE_TYPE_GROUP, NODE_TYPE_RESOURCE, WindowSize } from "./types";
+import {
+  LayoutOptions,
+  Node,
+  NODE_TYPE_GROUP,
+  NODE_TYPE_RESOURCE,
+} from "./types";
 
 const TITLE_HEIGHT = 46;
 const CHAR_WIDTH = 10;
@@ -12,9 +17,11 @@ const GROUP_PADDING = "100";
 const NODES_SPACING = "250";
 
 const NODES_LAYOUT_OPTIONS = {
+  "elk.interactive": "true",
   "elk.algorithm": "elk.layered",
+  "elk.direction": "DOWN",
   "elk.spacing.nodeNode": NODES_SPACING,
-  "elk.layered.spacing.nodeNodeBetweenLayers": NODES_SPACING,
+  "elk.layered.spacing.nodeNodeBetweenLayers": "1000",
   "elk.spacing.componentComponent": "200",
   "elk.padding": `[top=${GROUP_PADDING},left=${GROUP_PADDING},bottom=${GROUP_PADDING},right=${GROUP_PADDING}]`,
 };
@@ -31,6 +38,17 @@ const GROUPS_LAYOUT_OPTIONS = {
 const elk = new Elk({
   defaultLayoutOptions: GROUPS_LAYOUT_OPTIONS,
 });
+
+const getNodesLayoutOptions = (layoutOptions: LayoutOptions) => {
+  return {
+    ...NODES_LAYOUT_OPTIONS,
+    "elk.spacing.nodeNode":
+      layoutOptions.nodeSpacing?.toString() || NODES_SPACING,
+    "elk.layered.spacing.nodeNodeBetweenLayers":
+      layoutOptions.layersSpacing?.toString() || NODES_SPACING,
+    "elk.direction": layoutOptions.layersDirection || "DOWN",
+  };
+};
 
 const normalizeSize = (value: number, minValue: number) =>
   Math.max(value, minValue);
@@ -72,7 +90,10 @@ const calculateNodeWidth = (node: Node) => {
   return normalizeSize(width, MIN_WIDTH);
 };
 
-function buildElkTree(nodes: Node[]): {
+function buildElkTree(
+  nodes: Node[],
+  layoutOptions: LayoutOptions
+): {
   elkNodes: ElkNode[];
   groupsExist: boolean;
 } {
@@ -123,8 +144,10 @@ function buildElkTree(nodes: Node[]): {
     }
   });
 
+  console.log("layoutOptions", layoutOptions);
+
   resourceNodeContainers.forEach((container, id) => {
-    container.layoutOptions = NODES_LAYOUT_OPTIONS;
+    container.layoutOptions = getNodesLayoutOptions(layoutOptions);
   });
 
   return { elkNodes: tree, groupsExist };
@@ -133,11 +156,13 @@ function buildElkTree(nodes: Node[]): {
 export const getAutoLayout = async (
   nodes: Node[],
   edges: Edge[],
-  windowsSize: WindowSize
+  layoutOptions: LayoutOptions
 ) => {
   const elkEdges: ElkExtendedEdge[] = [];
 
-  const aspectRatio = (windowsSize.width / windowsSize.height).toString();
+  const aspectRatio = (
+    layoutOptions.windowSize.width / layoutOptions.windowSize.height
+  ).toString();
 
   edges.forEach((edge) => {
     elkEdges.push({
@@ -147,7 +172,7 @@ export const getAutoLayout = async (
     });
   });
 
-  const { elkNodes, groupsExist } = buildElkTree(nodes);
+  const { elkNodes, groupsExist } = buildElkTree(nodes, layoutOptions);
 
   const layout = await elk.layout({
     id: "root",
@@ -155,7 +180,7 @@ export const getAutoLayout = async (
     edges: elkEdges,
     layoutOptions: !groupsExist
       ? {
-          ...NODES_LAYOUT_OPTIONS,
+          ...getNodesLayoutOptions(layoutOptions),
           "elk.aspectRatio": aspectRatio,
         }
       : {
@@ -209,9 +234,9 @@ export async function applyLayoutToNodes(
 export async function applyAutoLayout(
   nodes: Node[],
   edges: Edge[],
-  WindowsSize: WindowSize
+  layoutOptions: LayoutOptions
 ): Promise<Node[]> {
-  const layout = await getAutoLayout(nodes, edges, WindowsSize);
+  const layout = await getAutoLayout(nodes, edges, layoutOptions);
 
   return applyLayoutToNodes(nodes, layout);
 }

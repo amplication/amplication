@@ -15,6 +15,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Text,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import {
   Fragment,
@@ -133,7 +134,9 @@ export function DataGridFilters<T>({
       itemsAlign={EnumItemsAlign.Center}
       className={CLASS_NAME}
     >
-      <Icon icon="filter" color={EnumTextColor.Black20} />
+      <Tooltip title="Filters" direction="s">
+        <Icon icon="filter" color={EnumTextColor.Black20} />
+      </Tooltip>
       {visibleFilters.map((key) => {
         const columnFilter = columnsMap[key]?.renderFilter;
 
