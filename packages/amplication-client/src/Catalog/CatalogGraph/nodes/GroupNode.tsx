@@ -34,8 +34,8 @@ const GroupNode: FC<ModelProps> = memo(({ id }) => {
   );
   const data = sourceNode?.data;
 
-  if (data.payload.fieldKey === "Domain") {
-    const property = customPropertiesMap["DOMAIN"];
+  if (customPropertiesMap[data.payload.fieldKey]) {
+    const property = customPropertiesMap[data.payload.fieldKey];
     data.color = property?.options?.find(
       (option) => option.value === data.payload.fieldId
     )?.color;

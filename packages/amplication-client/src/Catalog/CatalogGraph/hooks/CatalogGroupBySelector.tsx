@@ -1,5 +1,4 @@
 import {
-  DataGridColumn,
   EnumButtonStyle,
   EnumFlexDirection,
   EnumGapSize,
@@ -9,9 +8,10 @@ import {
   Icon,
   SelectPanel,
 } from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
-import { Resource } from "../../../models";
+import { useCallback, useMemo, useState } from "react";
 import { GroupByField } from "../types";
+import useCustomPropertiesMap from "../../../CustomProperties/hooks/useCustomPropertiesMap";
+import * as models from "../../../models";
 
 const FIELDS: { [key: string]: GroupByField } = {
   project: {
@@ -24,39 +24,64 @@ const FIELDS: { [key: string]: GroupByField } = {
     namePath: "blueprint.name",
     idPath: "blueprint.id",
   },
-  domain: {
-    fieldKey: "Domain",
-    namePath: "properties.DOMAIN",
-    idPath: "properties.DOMAIN",
-  },
 };
 
 type Props = {
   onChange: (groupByFields: GroupByField[]) => void;
-  columns?: DataGridColumn<Resource>[];
 };
 
 export const CatalogGroupBySelector = ({ onChange }: Props) => {
   const [selectedValue, setSelectedValue] = useState<string[]>([]);
 
-  const options = Object.keys(FIELDS).map((key) => {
-    const field = FIELDS[key];
-    return {
-      value: key,
-      label: field.fieldKey,
-    };
-  });
+  const { customPropertiesMap } = useCustomPropertiesMap();
+
+  const options = useMemo(() => {
+    const fixed = Object.keys(FIELDS).map((key) => {
+      const field = FIELDS[key];
+      return {
+        value: key,
+        label: field.fieldKey,
+      };
+    });
+
+    const custom = Object.values(customPropertiesMap)
+
+      .filter(
+        (property) =>
+          (property.type === models.EnumCustomPropertyType.Select ||
+            property.type === models.EnumCustomPropertyType.MultiSelect) &&
+          property.options &&
+          property.options.length > 0
+      )
+
+      .map((property) => {
+        return {
+          value: property.key,
+          label: property.name,
+        };
+      });
+
+    return [...fixed, ...custom];
+  }, [customPropertiesMap]);
 
   const handleChange = useCallback(
     (value) => {
       setSelectedValue(value);
 
-      const selectedFields = value.map((field) => {
+      const selectedFields: GroupByField[] = value.map((field) => {
+        if (customPropertiesMap[field]) {
+          return {
+            fieldKey: field,
+            namePath: `properties.${field}`,
+            idPath: `properties.${field}`,
+          };
+        }
+
         return FIELDS[field];
       });
       onChange(selectedFields);
     },
-    [onChange]
+    [customPropertiesMap, onChange]
   );
 
   return (
@@ -65,7 +90,7 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
     >
-      <Icon icon="filter" color={EnumTextColor.Black20} />
+      <Icon icon="grid" color={EnumTextColor.Black20} />
 
       <SelectPanel
         label={"Group By"}
