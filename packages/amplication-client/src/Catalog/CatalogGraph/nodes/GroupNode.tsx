@@ -41,7 +41,7 @@ const GroupNode: FC<ModelProps> = memo(({ id }) => {
     )?.color;
   }
 
-  if (data.payload.fieldKey === "Blueprint") {
+  if (data.payload.fieldKey === "blueprint") {
     const blueprint = blueprintsMapById[data.payload.fieldId];
     data.color = blueprint?.color;
   }
