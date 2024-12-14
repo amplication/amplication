@@ -144,8 +144,6 @@ function buildElkTree(
     }
   });
 
-  console.log("layoutOptions", layoutOptions);
-
   resourceNodeContainers.forEach((container, id) => {
     container.layoutOptions = getNodesLayoutOptions(layoutOptions);
   });

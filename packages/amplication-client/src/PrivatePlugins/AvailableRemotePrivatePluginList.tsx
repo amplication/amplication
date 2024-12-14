@@ -100,8 +100,6 @@ export const AvailableRemotePrivatePluginList = React.memo(
         return acc;
       }, {} as Record<string, boolean>);
 
-      console.log({ privatePluginsIds });
-
       return remotePluginsData.pluginRepositoryRemotePlugins.content?.filter(
         (remotePlugin) => !privatePluginsIds[remotePlugin.name]
       );

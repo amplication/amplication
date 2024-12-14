@@ -44,8 +44,6 @@ function InstalledPluginVersionIndicator({
       "0.0.1"
     );
 
-    console.log("latestVersion", latestVersion);
-
     const updateAvailable =
       (latestVersion !== currentVersion && !useLatestTag) ||
       latestVersion !== lastBuildVersion;

@@ -114,8 +114,6 @@ const useCatalogGraph = ({ onMessage }: Props) => {
         blueprintsMapById
       );
 
-      // console.log("groups", groups);
-
       const { nodes, simpleEdges } = await resourcesToNodesAndEdges(
         sanitizedCatalog,
         groupByFields,
