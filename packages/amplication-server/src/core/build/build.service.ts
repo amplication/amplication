@@ -1432,6 +1432,7 @@ export class BuildService {
       }),
       buildId: buildId,
       resourceInfo: {
+        properties: resource.properties,
         name: resource.name,
         description: resource.description,
         version: buildVersion,
