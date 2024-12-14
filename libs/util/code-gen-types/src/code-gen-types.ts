@@ -4,6 +4,7 @@ import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { BuildLogger } from "./build-logger";
 import { FileMap, IFile } from "./files";
+import { JsonValue } from "type-fest";
 
 export {
   EnumDataType,
@@ -38,6 +39,7 @@ export type AppInfo = {
   settings: ServiceSettings;
   codeGeneratorVersionOptions: models.CodeGeneratorVersionOptionsInput;
   codeGeneratorName?: string;
+  properties?: JsonValue;
 };
 
 export type Role = Omit<
