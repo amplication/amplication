@@ -60,6 +60,7 @@ export type Relation = SimpleRelation;
 
 export type GroupByField = {
   fieldKey: string;
+  fieldName: string;
   idPath: string; // Path for ID used in grouping
   namePath: string; // Path for the display name
 };

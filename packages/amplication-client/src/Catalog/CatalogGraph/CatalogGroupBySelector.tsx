@@ -16,27 +16,32 @@ import * as models from "../../models";
 
 const FIELDS: { [key: string]: GroupByField } = {
   project: {
-    fieldKey: "Project",
+    fieldKey: "project",
+    fieldName: "Project",
     namePath: "project.name",
     idPath: "project.id",
   },
   blueprint: {
-    fieldKey: "Blueprint",
+    fieldKey: "blueprint",
+    fieldName: "Blueprint",
     namePath: "blueprint.name",
     idPath: "blueprint.id",
   },
   gitOrganization: {
-    fieldKey: "Git Organization",
+    fieldKey: "gitOrganization",
+    fieldName: "Git Organization",
     namePath: "gitRepository.gitOrganization.name",
     idPath: "gitRepository.gitOrganization.id",
   },
   gitRepo: {
-    fieldKey: "Git Repository",
+    fieldKey: "gitRepo",
+    fieldName: "Git Repository",
     namePath: "gitRepository.name",
     idPath: "gitRepository.id",
   },
   serviceTemplate: {
-    fieldKey: "Service Templates",
+    fieldKey: "serviceTemplate",
+    fieldName: "Service Templates",
     namePath: "serviceTemplate.name",
     idPath: "serviceTemplate.id",
   },
@@ -44,11 +49,10 @@ const FIELDS: { [key: string]: GroupByField } = {
 
 type Props = {
   onChange: (groupByFields: GroupByField[]) => void;
+  selectedValue: GroupByField[];
 };
 
-export const CatalogGroupBySelector = ({ onChange }: Props) => {
-  const [selectedValue, setSelectedValue] = useState<string[]>([]);
-
+export const CatalogGroupBySelector = ({ onChange, selectedValue }: Props) => {
   const { customPropertiesMap } = useCustomPropertiesMap();
 
   const options = useMemo(() => {
@@ -56,7 +60,7 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
       const field = FIELDS[key];
       return {
         value: key,
-        label: field.fieldKey,
+        label: field.fieldName,
       };
     });
 
@@ -80,10 +84,12 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
     return [...fixed, ...custom];
   }, [customPropertiesMap]);
 
+  const selectedKeys = useMemo(() => {
+    return selectedValue?.map((field) => field.fieldKey) || [];
+  }, [selectedValue]);
+
   const handleChange = useCallback(
     (value) => {
-      setSelectedValue(value);
-
       const selectedFields: GroupByField[] = value.map((field) => {
         if (customPropertiesMap[field]) {
           return {
@@ -113,7 +119,7 @@ export const CatalogGroupBySelector = ({ onChange }: Props) => {
       <SelectPanel
         label={"Group By"}
         options={options}
-        selectedValue={selectedValue}
+        selectedValue={selectedKeys}
         onChange={handleChange}
         isMulti={true}
         buttonProps={{
