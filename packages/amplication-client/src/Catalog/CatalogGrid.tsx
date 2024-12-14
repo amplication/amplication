@@ -42,7 +42,7 @@ type Props = {
 };
 
 function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
-  const { customPropertiesMap } = useAppContext();
+  const { customPropertiesMap, currentWorkspace } = useAppContext();
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
     return columnsWithProperties(
@@ -53,7 +53,7 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
 
   const { columns, setColumns, onColumnsReorder } = useDataGridColumnFilter(
     columnsWithAllProps,
-    COLUMNS_LOCAL_STORAGE_KEY
+    `${COLUMNS_LOCAL_STORAGE_KEY}-${currentWorkspace?.id}`
   );
   const { catalog, loading, error, setFilter, setSearchPhrase, pagination } =
     useCatalogContext();
