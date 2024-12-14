@@ -60,7 +60,6 @@ export function useQueryPagination<T, R extends any[] = undefined>(
     const preparedOrderBy = [] as R;
 
     //iterate over orderBy and replace keys with . notation to object
-    console.log("orderBy", orderBy);
 
     orderBy?.forEach((item) => {
       const key = Object.keys(item)[0];
@@ -68,7 +67,6 @@ export function useQueryPagination<T, R extends any[] = undefined>(
       preparedOrderBy.push(set({}, key, value));
     });
 
-    console.log("preparedOrderBy", preparedOrderBy);
     setOrderBy(preparedOrderBy);
     setPageNumber(1);
   }, []);
