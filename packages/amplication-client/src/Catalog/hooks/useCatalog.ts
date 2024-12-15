@@ -11,7 +11,10 @@ type CatalogResults = {
 };
 
 const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
-  not: models.EnumResourceType.ProjectConfiguration,
+  notIn: [
+    models.EnumResourceType.ProjectConfiguration,
+    models.EnumResourceType.PluginRepository,
+  ],
 };
 
 const RESOURCE_TYPE_PREFIX = "resourceType_";

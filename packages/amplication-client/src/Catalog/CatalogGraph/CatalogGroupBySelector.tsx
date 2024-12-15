@@ -37,7 +37,7 @@ const FIELDS: { [key: string]: GroupByField } = {
     fieldKey: "gitRepo",
     fieldName: "Git Repository",
     namePath: "gitRepository.name",
-    idPath: "gitRepository.id",
+    idPath: "gitRepository.name",
   },
   serviceTemplate: {
     fieldKey: "serviceTemplate",
