@@ -23,6 +23,17 @@ $border-radius: 12px;
     }
   }
 
+  &--selected {
+    background-color: var(--gray-80);
+  }
+
+  &__toolbar {
+    background-color: var(--tooltip-background);
+    padding: var(--icon-spacing);
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--gray-40);
+  }
+
   &.drop-target {
     border-left-width: 2px;
     border-right-width: 2px;
