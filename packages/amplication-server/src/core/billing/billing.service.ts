@@ -2,10 +2,12 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
+  BillingPeriod,
   BooleanEntitlement,
   MeteredEntitlement,
   NumericEntitlement,
   ReportUsageAck,
+  SubscriptionAddon,
   SubscriptionStatus,
   UsageUpdateBehavior,
 } from "@stigg/node-server-sdk";
@@ -339,6 +341,26 @@ export class BillingService {
       customerId: workspaceId,
       planId: this.defaultSubscriptionPlan.planId,
       addons: this.defaultSubscriptionPlan.addons,
+    });
+  }
+
+  async provisionNewSubscriptionForAwsMarketplaceIntegration(
+    workspaceId: string,
+    planId: BillingPlan,
+    planBillingPeriod: BillingPeriod,
+    addons?: SubscriptionAddon[]
+  ): Promise<void> {
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    await this.stiggClient.provisionSubscription({
+      customerId: workspaceId,
+      planId,
+      skipTrial: true,
+      billingPeriod: planBillingPeriod,
+      // promotionCode: "AWS-MARKETPLACE",
+      addons,
     });
   }
 
