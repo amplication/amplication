@@ -11,7 +11,7 @@ import {
 import { applyAutoLayout } from "../layout";
 import {
   REDESIGN_PROJECT,
-  GET_RESOURCES,
+  GET_RESOURCES_FOR_MODE_ORGANIZER,
   START_REDESIGN,
 } from "../queries/modelsQueries";
 import {
@@ -126,7 +126,7 @@ const useModelOrganizer = ({
   const [
     loadProjectResourcesInternal,
     { loading: loadingResources, error: resourcesError, data: resourcesData },
-  ] = useLazyQuery<TData>(GET_RESOURCES, {
+  ] = useLazyQuery<TData>(GET_RESOURCES_FOR_MODE_ORGANIZER, {
     variables: {
       projectId: projectId,
     },

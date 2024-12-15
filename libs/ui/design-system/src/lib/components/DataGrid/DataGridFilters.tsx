@@ -9,11 +9,13 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Text,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import {
   Fragment,
@@ -98,9 +100,7 @@ export function DataGridFilters<T>({
   );
 
   useEffect(() => {
-    if (Object.keys(fixedFilters).length === 0) {
-      return;
-    }
+    //reset the filters on first load
 
     setVisibleFilters(Object.keys(fixedFilters));
     setSelectedValues((prevValues) => {
@@ -132,9 +132,11 @@ export function DataGridFilters<T>({
       direction={EnumFlexDirection.Row}
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
-      margin={EnumFlexItemMargin.Bottom}
       className={CLASS_NAME}
     >
+      <Tooltip title="Filters" direction="s">
+        <Icon icon="filter" color={EnumTextColor.Black20} />
+      </Tooltip>
       {visibleFilters.map((key) => {
         const columnFilter = columnsMap[key]?.renderFilter;
 

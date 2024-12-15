@@ -10,16 +10,15 @@ import {
   Tooltip,
 } from "@amplication/ui/design-system";
 import { useCallback } from "react";
-import { Node } from "./types";
 
 export const CLASS_NAME = "graph-toolbar";
 
 type Props = {
-  nodes: Node[];
   searchPhraseChanged: (searchPhrase: string) => void;
+  children?: React.ReactNode;
 };
 
-export default function GraphToolbar({ nodes, searchPhraseChanged }: Props) {
+export default function GraphToolbar({ searchPhraseChanged, children }: Props) {
   const handleSearchPhraseChanged = useCallback(
     (searchPhrase: string) => {
       searchPhraseChanged(searchPhrase);
@@ -34,23 +33,18 @@ export default function GraphToolbar({ nodes, searchPhraseChanged }: Props) {
         contentAlign={EnumContentAlign.Start}
         gap={EnumGapSize.Large}
       >
-        <FlexItem
-          itemsAlign={EnumItemsAlign.Center}
-          contentAlign={EnumContentAlign.Start}
-          direction={EnumFlexDirection.Row}
+        <Tooltip
+          aria-label="search for blueprints. Results are highlighted"
+          noDelay
+          direction="se"
         >
-          <Tooltip
-            aria-label="search for blueprints. Results are highlighted"
-            noDelay
-            direction="se"
-          >
-            <SearchField
-              label=""
-              placeholder="search"
-              onChange={handleSearchPhraseChanged}
-            />
-          </Tooltip>
-        </FlexItem>
+          <SearchField
+            label=""
+            placeholder="search"
+            onChange={handleSearchPhraseChanged}
+          />
+        </Tooltip>
+        {children}
       </FlexItem>
     </div>
   );

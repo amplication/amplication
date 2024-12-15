@@ -26,7 +26,7 @@ import BlueprintRelationForm from "./BlueprintRelationForm";
 import "./BlueprintRelationList.scss";
 import BlueprintGraph from "./BlueprintsGraph/BlueprintGraph";
 import useBlueprints from "./hooks/useBlueprints";
-import useBlueprintsMap from "./hooks/useBlueprintsMap";
+import { useAppContext } from "../context/appContext";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -43,7 +43,9 @@ const BlueprintRelationList = React.memo(
 
     const [graphIsOpen, setGraphIsOpen] = useState(false);
 
-    const { blueprintsMap } = useBlueprintsMap();
+    const {
+      blueprintsMap: { blueprintsMap },
+    } = useAppContext();
 
     const errorMessage = formatError(upsertBlueprintRelationError);
 

@@ -10,12 +10,12 @@ import {
 import "reactflow/dist/style.css";
 import useMessage from "../../util/useMessage";
 import "./BlueprintGraph.scss";
-import GraphControls from "./GraphControls";
-import GraphToolbar from "./GraphToolbar";
+import GraphControls from "../../Components/GraphComponents/GraphControls";
+import GraphToolbar from "../../Components/GraphComponents/GraphToolbar";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import useBlueprintGraph from "./hooks/useBlueprintGraph";
 import { applyAutoLayout } from "./layout";
-import ModelNode from "./nodes/modelNode";
+import BlueprintNode from "./nodes/BlueprintNode";
 import { Node, NodePayloadWithPayloadType } from "./types";
 
 export const CLASS_NAME = "blueprint-graph";
@@ -23,7 +23,7 @@ const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
 const MESSAGE_AUTO_HIDE_DURATION = 3000;
 
 const simpleNodeTypes = {
-  model: ModelNode,
+  blueprint: BlueprintNode,
 };
 
 const edgeTypes = {
@@ -113,10 +113,7 @@ export default function BlueprintGraph() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
-            <GraphToolbar
-              nodes={nodes}
-              searchPhraseChanged={searchPhraseChanged}
-            />
+            <GraphToolbar searchPhraseChanged={searchPhraseChanged} />
 
             <div className={REACT_FLOW_CLASS_NAME}>
               <ReactFlow

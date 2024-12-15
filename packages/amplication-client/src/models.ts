@@ -1763,7 +1763,7 @@ export type Mutation = {
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
-  setResourceOwner: Ownership;
+  setResourceOwner: Resource;
   signup: Auth;
   signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
@@ -2548,10 +2548,6 @@ export type OutdatedVersionAlertWhereInput = {
 
 export type Owner = Team | User;
 
-export type Ownership = {
-  owner: Owner;
-};
-
 export type OwnershipWhereInput = {
   teamId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
@@ -2999,7 +2995,7 @@ export type Query = {
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
-  resourceSettings: ResourceSettings;
+  resourceSettings?: Maybe<ResourceSettings>;
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
@@ -3787,7 +3783,7 @@ export type ResourceVersionsDiffBlock = {
 
 export type ResourceWhereInput = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
-  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  blueprintId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3802,7 +3798,7 @@ export type ResourceWhereInput = {
 
 export type ResourceWhereInputWithPropertiesFilter = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
-  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  blueprintId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3810,6 +3806,7 @@ export type ResourceWhereInputWithPropertiesFilter = {
   ownership?: InputMaybe<OwnershipWhereInput>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']['input']>;
+  projectIdFilter?: InputMaybe<StringFilter>;
   properties?: InputMaybe<JsonPathStringFilter>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   serviceTemplateId?: InputMaybe<Scalars['String']['input']>;

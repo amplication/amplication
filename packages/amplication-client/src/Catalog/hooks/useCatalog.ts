@@ -14,7 +14,16 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
   not: models.EnumResourceType.ProjectConfiguration,
 };
 
-const useCatalog = () => {
+const RESOURCE_TYPE_PREFIX = "resourceType_";
+const BLUEPRINT_PREFIX = "blueprint_";
+
+type Props = {
+  initialPageSize?: number;
+};
+
+const useCatalog = (props?: Props) => {
+  const { initialPageSize } = props || {};
+
   const { customPropertiesMap } = useAppContext();
 
   const {
@@ -24,7 +33,9 @@ const useCatalog = () => {
     setCurrentPageData,
     setMeta,
     sorting,
-  } = useQueryPagination<models.Resource, models.ResourceOrderByInput[]>();
+  } = useQueryPagination<models.Resource, models.ResourceOrderByInput[]>({
+    initialPageSize,
+  });
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [propertiesFilter, setPropertiesFilter] =
@@ -40,9 +51,9 @@ const useCatalog = () => {
     data: catalogData,
     loading,
     error,
+    refetch,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
     variables: {
-      //orderBy: sorting.orderBy,
       ...queryPaginationParams,
       where: {
         ...queryFilters,
@@ -111,11 +122,8 @@ const useCatalog = () => {
 
       const otherFilterObject = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
-          if (key === "resourceType" && value) {
-            const filter: models.EnumResourceTypeFilter = {
-              equals: value as models.EnumResourceType,
-            };
-            acc[key] = filter;
+          if (key === "resourceTypeOrBlueprint" && value) {
+            acc = updateResourceTypeFilter(acc, value as unknown as string[]);
           } else if (key === "ownership" && value) {
             const values = value.split(":");
             if (values.length !== 2 || !values[0] || !values[1]) {
@@ -126,7 +134,7 @@ const useCatalog = () => {
             };
             acc[key] = filter;
           } else if (value) {
-            acc[key] = value;
+            acc[key] = Array.isArray(value) ? { in: value } : value;
           }
           return acc;
         },
@@ -142,6 +150,11 @@ const useCatalog = () => {
     [customPropertiesMap]
   );
 
+  const reloadCatalog = useCallback(() => {
+    pagination.setPageNumber(1);
+    refetch();
+  }, [pagination, refetch]);
+
   return {
     catalog: currentPageData || [],
     loading,
@@ -150,7 +163,37 @@ const useCatalog = () => {
     setFilter,
     pagination,
     sorting,
+    reloadCatalog,
   };
 };
 
 export default useCatalog;
+
+const updateResourceTypeFilter = (
+  currentFilter: Partial<models.ResourceWhereInputWithPropertiesFilter>,
+  value: string[]
+) => {
+  const [blueprintValues, resourceTypeValues] = value.reduce(
+    (acc, value) => {
+      if (value.startsWith(BLUEPRINT_PREFIX)) {
+        acc[0].push(value.replace(BLUEPRINT_PREFIX, ""));
+      } else {
+        acc[1].push(value.replace(RESOURCE_TYPE_PREFIX, ""));
+      }
+      return acc;
+    },
+    [[], []] as [string[], string[]]
+  );
+
+  return {
+    ...currentFilter,
+    resourceType:
+      resourceTypeValues.length > 0
+        ? {
+            in: resourceTypeValues as models.EnumResourceType[],
+          }
+        : undefined,
+    blueprintId:
+      blueprintValues.length > 0 ? { in: blueprintValues } : undefined,
+  };
+};

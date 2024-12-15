@@ -138,8 +138,6 @@ export async function blueprintsToNodesAndEdges(
 
   const simpleEdges = nodesToSimpleEdges(nodes);
 
-  console.log({ nodes, simpleEdges });
-
   return {
     nodes: await applyAutoLayout(nodes, simpleEdges),
     simpleEdges,

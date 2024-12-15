@@ -24,6 +24,12 @@ export const SEARCH_CATALOG = gql`
         licensed
         projectId
         properties
+        relations {
+          id
+          relationKey
+          relatedResources
+        }
+        blueprintId
         blueprint {
           id
           name

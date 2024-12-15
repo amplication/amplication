@@ -160,7 +160,6 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
     sortable: false,
     width: 150,
     renderCell: (props) => {
-      console.log({ props });
       return (
         <Text textStyle={EnumTextStyle.Description}>
           {props.row.changes.length}{" "}

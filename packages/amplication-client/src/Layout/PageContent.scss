@@ -106,4 +106,17 @@ $tabs-width: 300px;
   &__spacer {
     padding: var(--default-spacing);
   }
+
+  &--content-padding-none {
+    .amp-page-content__main-scroll {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .amp-page-content__main {
+      margin-top: 0;
+      margin-bottom: 0;
+      min-height: 100%;
+    }
+  }
 }

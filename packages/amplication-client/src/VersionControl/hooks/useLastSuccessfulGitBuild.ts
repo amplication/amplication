@@ -7,6 +7,7 @@ export const useLastSuccessfulGitBuild = (resourceId: string) => {
   const { data, error, loading } = useQuery<{
     builds: models.Build[];
   }>(GET_LAST_SUCCESSFUL_GIT_BUILD, {
+    skip: !resourceId,
     variables: {
       resourceId,
     },

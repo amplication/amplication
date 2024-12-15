@@ -34,8 +34,10 @@ export {
   SelectMenuItem,
   SelectMenuList,
 } from "./components/SelectMenu/SelectMenu";
-
 export type { Props as SelectMenuProps } from "./components/SelectMenu/SelectMenu";
+
+export { SelectPanel } from "./components/SelectPanel/SelectPanel";
+export type { Props as SelectPanelProps } from "./components/SelectPanel/SelectPanel";
 
 export { SelectField } from "./components/SelectField/SelectField";
 
@@ -283,7 +285,6 @@ export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
 export { DataGridFilters } from "./components/DataGrid/DataGridFilters";
 export { DataGridFilter } from "./components/DataGrid/DataGridFilter";
-
 export {
   ToggleView,
   Props as ToggleViewProps,

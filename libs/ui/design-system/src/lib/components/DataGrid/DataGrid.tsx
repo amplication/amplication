@@ -45,6 +45,7 @@ export type DataGridColumn<T> = Column<T> & {
   hidden?: boolean;
   filterable?: boolean;
   name: string;
+  sortKey?: string; //support keys with . notation like "project.id"
   renderFilter?: (props: DataGridRenderFilterProps) => ReactNode;
 };
 
@@ -102,15 +103,22 @@ export function DataGrid<T>({
     (sortColumns: SortColumn[]) => {
       setSortColumns(sortColumns);
 
+      const sortColumnsWithSortKey = sortColumns.map((sortColumn) => ({
+        ...sortColumn,
+        columnKey:
+          columns.find((column) => column.key === sortColumn.columnKey)
+            ?.sortKey || sortColumn.columnKey,
+      }));
+
       onSortColumnsChange &&
         onSortColumnsChange(
-          sortColumns.map((sortColumn) => ({
+          sortColumnsWithSortKey.map((sortColumn) => ({
             [sortColumn.columnKey]:
               SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER[sortColumn.direction],
           }))
         );
     },
-    [onSortColumnsChange]
+    [columns, onSortColumnsChange]
   );
 
   const columnValueGetters = useMemo(() => {

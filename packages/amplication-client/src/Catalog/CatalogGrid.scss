@@ -12,3 +12,9 @@
     overflow: hidden;
   }
 }
+
+.catalog-graph-modal {
+  .amp-modal__close {
+    z-index: 1;
+  }
+}

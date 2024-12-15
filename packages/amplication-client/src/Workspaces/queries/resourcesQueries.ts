@@ -250,25 +250,10 @@ export const CREATE_SERVICE_FROM_TEMPLATE = gql`
 `;
 
 export const SET_RESOURCE_OWNER = gql`
+  ${RESOURCE_FIELDS_FRAGMENT}
   mutation setResourceOwner($data: ResourceSetOwnerInput!) {
     setResourceOwner(data: $data) {
-      owner {
-        ... on User {
-          id
-          account {
-            id
-            email
-            firstName
-            lastName
-          }
-        }
-        ... on Team {
-          id
-          name
-          description
-          color
-        }
-      }
+      ...ResourceFields
     }
   }
 `;

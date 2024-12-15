@@ -1,8 +1,8 @@
 import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 import { useEffect, useMemo } from "react";
 import useCatalog from "../Catalog/hooks/useCatalog";
-import useBlueprintsMap from "./hooks/useBlueprintsMap";
 import { EnumResourceType } from "../models";
+import { useAppContext } from "../context/appContext";
 
 type Props = Omit<SelectFieldProps, "options"> & {
   blueprintId?: string;
@@ -11,9 +11,15 @@ type Props = Omit<SelectFieldProps, "options"> & {
 const ResourceSelectField = (props: Props) => {
   const { blueprintId, ...rest } = props;
 
-  const { blueprintsMap } = useBlueprintsMap();
+  const {
+    blueprintsMap: { blueprintsMap },
+  } = useAppContext();
 
-  const { catalog, setFilter } = useCatalog();
+  const { catalog, setFilter, pagination } = useCatalog();
+
+  useEffect(() => {
+    if (pagination.pageSize !== 200) pagination.setPageSize(200);
+  }, [pagination]);
 
   useEffect(() => {
     const blueprint = Object.values(blueprintsMap).find(

@@ -4,9 +4,9 @@ import {
   DataGridColumn,
   DataGridColumnFilter,
   DataGridFilters,
-  //DataGridSortColumn,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextStyle,
@@ -17,19 +17,20 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
-import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
 import useDataGridColumnFilter from "../Layout/useDataGridColumnFilter";
 import { useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import { RESOURCE_LIST_COLUMNS } from "./CatalogDataColumns";
+import { useCatalogContext } from "./CatalogContext";
+import {
+  columnsWithProperties,
+  RESOURCE_LIST_COLUMNS,
+} from "./CatalogDataColumns";
 import "./CatalogGrid.scss";
-import useCatalog from "./hooks/useCatalog";
 
 const CLASS_NAME = "catalog-grid";
 
@@ -41,55 +42,21 @@ type Props = {
 };
 
 function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
-  const { customPropertiesMap } = useAppContext();
+  const { customPropertiesMap, currentWorkspace } = useAppContext();
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
-    const propCols = Object.values(customPropertiesMap).map(
-      (property): DataGridColumn<models.Resource> => {
-        return {
-          key: property.key,
-          name: property.name,
-          resizable: true,
-          sortable: true,
-          filterable: true,
-          renderFilter: CustomPropertyFilter,
-          hidden: false,
-          renderCell: (props) => {
-            return (
-              <CustomPropertyValue
-                propertyKey={property.key}
-                allValues={props.row.properties}
-              />
-            );
-          },
-          getValue: (row) => {
-            return row.properties && row.properties[property.key]
-              ? row.properties[property.key]
-              : "";
-          },
-        };
-      }
+    return columnsWithProperties(
+      RESOURCE_LIST_COLUMNS,
+      Object.values(customPropertiesMap)
     );
-
-    const lastCol = RESOURCE_LIST_COLUMNS[RESOURCE_LIST_COLUMNS.length - 1];
-    const otherCols = RESOURCE_LIST_COLUMNS.slice(0, -1);
-
-    return [...otherCols, ...propCols, lastCol];
   }, [customPropertiesMap]);
 
   const { columns, setColumns, onColumnsReorder } = useDataGridColumnFilter(
     columnsWithAllProps,
-    COLUMNS_LOCAL_STORAGE_KEY
+    `${COLUMNS_LOCAL_STORAGE_KEY}-${currentWorkspace?.id}`
   );
-  const {
-    catalog,
-    loading,
-    error,
-    setFilter,
-    setSearchPhrase,
-    pagination,
-    //sorting,
-  } = useCatalog();
+  const { catalog, loading, error, setFilter, setSearchPhrase, pagination } =
+    useCatalogContext();
 
   const errorMessage = formatError(error);
 
@@ -97,19 +64,10 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
     pagination.triggerLoadMore();
   }, [pagination]);
 
-  // const onSortColumnsChange = useCallback(
-  //   (sortColumns: DataGridSortColumn[]) => {
-  //     pagination.setPageNumber(1);
-  //     const [sortColumn] = sortColumns;
-  //     if (!sortColumn) {
-  //       sorting.setOrderBy(undefined);
-  //       return;
-  //     }
-
-  //     sorting.setOrderBy([sortColumn]);
-  //   },
-  //   [sorting, pagination]
-  // );
+  // Reset page number on initial load
+  useEffect(() => {
+    pagination.setPageNumber(1);
+  }, []);
 
   return (
     <div className={`${CLASS_NAME}__wrapper`}>
@@ -149,30 +107,30 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
             </FlexItem>
           }
         ></FlexItem>
-        <HorizontalRule doubleSpacing />
-        <DataGridFilters
-          columns={columns}
-          onChange={setFilter}
-          fixedFilters={fixedFilters}
-        />
+        <HorizontalRule />
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <DataGridFilters
+            columns={columns}
+            onChange={setFilter}
+            fixedFilters={fixedFilters}
+          />
+        </FlexItem>
       </div>
       <div className={`${CLASS_NAME}__grid-container`}>
-        {isEmpty(catalog) && !loading ? (
+        <DataGrid
+          columns={columns}
+          rows={catalog}
+          onColumnsReorder={onColumnsReorder}
+          onScrollToBottom={handleLoadMore}
+        ></DataGrid>
+        {isEmpty(catalog) && !loading && (
           <EmptyState
             message="There are no items to show with the current filters"
             image={EnumImages.AddResource}
           />
-        ) : (
-          <DataGrid
-            columns={columns}
-            rows={catalog}
-            onColumnsReorder={onColumnsReorder}
-            onScrollToBottom={handleLoadMore}
-            // onSortColumnsChange={onSortColumnsChange}
-            // clientSideSort={false}
-          ></DataGrid>
         )}
       </div>
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

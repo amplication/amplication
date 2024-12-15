@@ -1,15 +1,46 @@
 import { useCallback, useEffect, useState } from "react";
 import { MetaQueryPayload } from "../models";
+import { set } from "lodash";
 
 type Props = {
   onLoadMore?: () => void;
+  initialPageSize?: number;
 };
 
-export function useQueryPagination<T, R = undefined>(props?: Props) {
-  const { onLoadMore } = props || {};
+export type Pagination = {
+  pageNumber: number;
+  setPageNumber: (pageNumber: number) => void;
+  pageSize: number;
+  setPageSize: (pageSize: number) => void;
+  pageCount: number;
+  recordCount: number;
+  triggerLoadMore: () => void;
+};
+
+export type Sorting<R> = {
+  orderBy: R;
+  setOrderBy: (orderBy: R) => void;
+};
+
+export type QueryPagination<T, R extends any[]> = {
+  pagination: Pagination;
+  sorting: Sorting<R>;
+  queryPaginationParams: {
+    take: number;
+    skip: number;
+  };
+  setCurrentPageData: (data: T[]) => void;
+  currentPageData: T[];
+  setMeta: (meta: MetaQueryPayload) => void;
+};
+
+export function useQueryPagination<T, R extends any[] = undefined>(
+  props?: Props
+): QueryPagination<T, R> {
+  const { onLoadMore, initialPageSize } = props || {};
 
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(20);
+  const [pageSize, setPageSize] = useState<number>(initialPageSize || 20);
 
   const [currentPageData, setCurrentPageData] = useState<T[]>([]);
   const [meta, setMeta] = useState<MetaQueryPayload>({ count: 0 });
@@ -24,6 +55,21 @@ export function useQueryPagination<T, R = undefined>(props?: Props) {
   };
 
   const pageCount = meta.count > 0 ? Math.ceil(meta.count / pageSize) : 1;
+
+  const handleOrderBy = useCallback((orderBy: R) => {
+    const preparedOrderBy = [] as R;
+
+    //iterate over orderBy and replace keys with . notation to object
+
+    orderBy?.forEach((item) => {
+      const key = Object.keys(item)[0];
+      const value = item[key];
+      preparedOrderBy.push(set({}, key, value));
+    });
+
+    setOrderBy(preparedOrderBy);
+    setPageNumber(1);
+  }, []);
 
   const triggerLoadMore = useCallback(() => {
     if (isLoadingMore) {
@@ -67,7 +113,7 @@ export function useQueryPagination<T, R = undefined>(props?: Props) {
     },
     sorting: {
       orderBy,
-      setOrderBy,
+      setOrderBy: handleOrderBy,
     },
     queryPaginationParams,
     setCurrentPageData: setCurrentPageDataInternal,

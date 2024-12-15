@@ -1740,7 +1740,7 @@ type Mutation {
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
-  setResourceOwner(data: ResourceSetOwnerInput!): Ownership!
+  setResourceOwner(data: ResourceSetOwnerInput!): Resource!
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
@@ -1830,10 +1830,6 @@ input OutdatedVersionAlertWhereInput {
 }
 
 union Owner = Team | User
-
-type Ownership {
-  owner: Owner!
-}
 
 input OwnershipWhereInput {
   teamId: String
@@ -2288,7 +2284,7 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
-  resourceSettings(where: WhereUniqueInput!): ResourceSettings!
+  resourceSettings(where: WhereUniqueInput!): ResourceSettings
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
@@ -2628,7 +2624,7 @@ type ResourceVersionsDiffBlock {
 
 input ResourceWhereInput {
   blueprint: BlueprintWhereInput
-  blueprintId: String
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2643,7 +2639,7 @@ input ResourceWhereInput {
 
 input ResourceWhereInputWithPropertiesFilter {
   blueprint: BlueprintWhereInput
-  blueprintId: String
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2651,6 +2647,7 @@ input ResourceWhereInputWithPropertiesFilter {
   ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
+  projectIdFilter: StringFilter
   properties: JsonPathStringFilter
   resourceType: EnumResourceTypeFilter
   serviceTemplateId: String

@@ -1,7 +1,10 @@
 import { gql } from "@apollo/client";
 
-export const GET_RESOURCES = gql`
-  query getResources($projectId: String!, $whereName: StringFilter) {
+export const GET_RESOURCES_FOR_MODE_ORGANIZER = gql`
+  query getResourcesForModelOrganizer(
+    $projectId: String!
+    $whereName: StringFilter
+  ) {
     resources(
       where: {
         project: { id: $projectId }
