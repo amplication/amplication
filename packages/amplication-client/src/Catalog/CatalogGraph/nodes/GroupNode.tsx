@@ -2,6 +2,7 @@ import {
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -9,7 +10,7 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { memo, useCallback, type FC } from "react";
-import { useStore, type NodeProps } from "reactflow";
+import { NodeToolbar, Position, useStore, type NodeProps } from "reactflow";
 import { GroupNode as GroupNodeType, GroupNodePayload } from "../types";
 import "./GroupNode.scss";
 import { useAppContext } from "../../../context/appContext";
@@ -52,8 +53,19 @@ const GroupNode: FC<ModelProps> = memo(({ id }) => {
         color={data.color}
         className={classNames(`${CLASS_NAME}`, {
           [`${CLASS_NAME}--highlight`]: data.highlight,
+          [`${CLASS_NAME}--selected`]: sourceNode.selected,
         })}
       >
+        <NodeToolbar position={Position.Top} isVisible={sourceNode.selected}>
+          <div className="catalog-graph-group-node__toolbar">
+            <Text
+              textStyle={EnumTextStyle.Description}
+              textColor={EnumTextColor.White}
+            >
+              {`${data.payload.fieldName}: ${data.payload.name}`}
+            </Text>
+          </div>
+        </NodeToolbar>
         <FlexItem
           itemsAlign={EnumItemsAlign.Start}
           contentAlign={EnumContentAlign.Start}
