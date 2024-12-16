@@ -94,6 +94,7 @@ export const CatalogGroupBySelector = ({ onChange, selectedValue }: Props) => {
         if (customPropertiesMap[field]) {
           return {
             fieldKey: field,
+            fieldName: customPropertiesMap[field].name,
             namePath: `properties.${field}`,
             idPath: `properties.${field}`,
           };
