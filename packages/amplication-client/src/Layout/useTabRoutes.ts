@@ -26,7 +26,7 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
         exact: route.exactPath,
       };
     });
-  }, [tabRoutes, currentPath]);
+  }, [tabRoutes, currentUrl, currentPath]);
 
   const currentRouteIsTab = tabRoutes?.some((def) =>
     location.pathname
