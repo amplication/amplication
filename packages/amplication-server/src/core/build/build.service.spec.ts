@@ -378,6 +378,7 @@ describe("BuildService", () => {
           useClass: jest.fn(() => ({
             resource: resourceServiceFindOneMock,
             resources: resourceServiceFindManyMock,
+            getRelations: jest.fn(() => []),
             getPluginRepositoryGitSettingsByResource:
               resourceServiceGetPluginRepositoryGitSettingsByResourceMock,
           })),
