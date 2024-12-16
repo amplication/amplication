@@ -29,7 +29,7 @@ function ResourceList() {
       {currentProject && (
         <CatalogGrid
           fixedFilters={{
-            projectId: currentProject?.id,
+            projectIdFilter: [currentProject?.id],
           }}
           HeaderActions={
             <>

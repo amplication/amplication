@@ -36,7 +36,7 @@ export type DataGridRenderFilterProps = {
   label: string;
   onChange: (key: string, filter: any) => void;
   onRemove: (key: string) => void;
-  selectedValue: string | null;
+  selectedValue: string | string[] | null;
   disabled: boolean;
 };
 

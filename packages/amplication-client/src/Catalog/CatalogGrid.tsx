@@ -38,7 +38,7 @@ const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 
 type Props = {
   HeaderActions?: React.ReactNode;
-  fixedFilters?: Record<string, string | null>;
+  fixedFilters?: Record<string, string | string[] | null>;
 };
 
 function CatalogGrid({ HeaderActions, fixedFilters }: Props) {

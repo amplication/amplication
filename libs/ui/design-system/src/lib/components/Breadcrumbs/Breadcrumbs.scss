@@ -1,8 +1,6 @@
 @import "../../style/index.scss";
 
 .amp-breadcrumbs {
-  margin-left: var(--default-spacing);
-
   &__link {
     color: var(--gray-20);
     text-decoration: none !important;
@@ -24,14 +22,5 @@
     color: var(--gray-20);
     margin-left: var(--icon-spacing);
     margin-right: var(--icon-spacing);
-  }
-
-  &__first-separator {
-    width: 1px;
-    height: var(--double-spacing);
-    background: var(--gray-70);
-    border: none;
-    margin-left: var(--default-spacing-small);
-    margin-right: var(--default-spacing-small);
   }
 }
