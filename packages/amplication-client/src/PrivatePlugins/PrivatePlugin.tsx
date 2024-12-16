@@ -1,6 +1,5 @@
 import {
-  EnumContentAlign,
-  EnumFlexDirection,
+  EnumItemsAlign,
   FlexItem,
   HorizontalRule,
   Snackbar,
@@ -17,6 +16,7 @@ import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import PrivatePluginEditCodeButton from "./PrivatePluginEditCodeButton";
 import PrivatePluginForm from "./PrivatePluginForm";
 
 type Props = {
@@ -108,28 +108,33 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.privatePlugin?.displayName}
+          title={data?.privatePlugin?.displayName || "Loading..."}
           subTitle={data?.privatePlugin?.description}
         />
-        <FlexItem.FlexEnd
-          direction={EnumFlexDirection.Row}
-          alignSelf={EnumContentAlign.Start}
-        >
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={
-              data?.privatePlugin?.enabled
-                ? data?.privatePlugin?.enabled
-                : false
-            }
-          ></Toggle>
-          {data?.privatePlugin && (
-            <DeletePrivatePlugin
-              privatePlugin={data?.privatePlugin}
-              onDelete={handleDeletePrivatePlugin}
-            />
-          )}
+        <FlexItem.FlexEnd>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            {data?.privatePlugin && (
+              <>
+                <PrivatePluginEditCodeButton
+                  privatePlugin={data.privatePlugin}
+                />
+
+                <Toggle
+                  name={"enabled"}
+                  onValueChange={onEnableChanged}
+                  checked={
+                    data?.privatePlugin?.enabled
+                      ? data?.privatePlugin?.enabled
+                      : false
+                  }
+                ></Toggle>
+                <DeletePrivatePlugin
+                  privatePlugin={data?.privatePlugin}
+                  onDelete={handleDeletePrivatePlugin}
+                />
+              </>
+            )}
+          </FlexItem>
         </FlexItem.FlexEnd>
       </FlexItem>
 
