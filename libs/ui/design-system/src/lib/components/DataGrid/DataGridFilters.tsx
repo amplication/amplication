@@ -102,17 +102,13 @@ export function DataGridFilters<T>({
   useEffect(() => {
     //reset the filters on first load
 
-    if (!fixedFilters || Object.keys(fixedFilters).length === 0) {
-      return;
-    }
-
     setVisibleFilters(Object.keys(fixedFilters));
     setSelectedValues(() => {
       onChange(fixedFilters);
 
       return fixedFilters;
     });
-  }, [fixedFilters, onChange]);
+  }, []);
 
   //get the filterable properties that are not currently visible for the "add filter" menu
   const filterableColumns = useMemo(() => {
