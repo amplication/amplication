@@ -73,6 +73,7 @@ class DsgContext implements types.blueprintTypes.DsgContext {
   public moduleContainers: types.ModuleContainer[] = [];
   public moduleDtos: types.ModuleDto[] = [];
   public resourceSettings?: types.ResourceSettings;
+  public relations: types.Relation[] = [];
 
   public otherResources?: types.DSGResourceData[] | undefined;
 }

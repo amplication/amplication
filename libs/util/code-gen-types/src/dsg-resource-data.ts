@@ -10,6 +10,7 @@ import {
   Topic,
   Package,
   ResourceSettings,
+  Relation,
 } from "./code-gen-types";
 import { EnumResourceType } from "./models";
 
@@ -26,6 +27,7 @@ export class DSGResourceData {
   moduleActions?: ModuleAction[];
   moduleDtos?: ModuleDto[];
   resourceSettings?: ResourceSettings;
+  relations?: Relation[];
 
   //#region Blocks
   serviceTopics?: ServiceTopics[];
