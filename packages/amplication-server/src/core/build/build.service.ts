@@ -1363,6 +1363,8 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const relations = await this.resourceService.getRelations(resourceId);
+
     const resourceSettings =
       await this.resourceSettingsService.getResourceSettingsBlock({
         where: { id: resourceId },
@@ -1420,6 +1422,7 @@ export class BuildService {
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
       resourceSettings: resourceSettings,
+      relations: relations,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,
