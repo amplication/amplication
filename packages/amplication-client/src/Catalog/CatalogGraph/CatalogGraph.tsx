@@ -174,6 +174,7 @@ export default function CatalogGraph() {
                 <DataGridFilters
                   columns={columnsWithAllProps}
                   onChange={setFilter}
+                  fixedFiltersKey="catalog-graph"
                 />
               </GraphToolbarItem>
               <GraphToolbarItem>

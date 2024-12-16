@@ -32,12 +32,14 @@ type Props<T> = {
   onChange: (filters: Record<string, string | string[] | null> | null) => void;
   columns: DataGridColumn<T>[];
   fixedFilters?: Record<string, string | string[] | null>;
+  fixedFiltersKey: string; //this must be a unique key to describe the fixed filters (e.g. {currentProjectId})
 };
 
 export function DataGridFilters<T>({
   onChange,
   columns,
   fixedFilters = {},
+  fixedFiltersKey,
 }: Props<T>) {
   //the selected values for each filter
   const [selectedValues, setSelectedValues] = useState<
@@ -108,7 +110,9 @@ export function DataGridFilters<T>({
 
       return fixedFilters;
     });
-  }, []);
+    //do not other deps to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixedFiltersKey]);
 
   //get the filterable properties that are not currently visible for the "add filter" menu
   const filterableColumns = useMemo(() => {

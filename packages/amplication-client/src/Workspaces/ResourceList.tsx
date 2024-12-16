@@ -31,6 +31,7 @@ function ResourceList() {
           fixedFilters={{
             projectIdFilter: [currentProject?.id],
           }}
+          fixedFiltersKey={currentProject?.id}
           HeaderActions={
             <>
               <Link to={`${platformProjectBaseUrl}`}>
