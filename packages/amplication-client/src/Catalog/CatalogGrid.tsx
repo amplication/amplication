@@ -39,9 +39,10 @@ const COLUMNS_LOCAL_STORAGE_KEY = "resource-list-columns";
 type Props = {
   HeaderActions?: React.ReactNode;
   fixedFilters?: Record<string, string | string[] | null>;
+  fixedFiltersKey: string;
 };
 
-function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
+function CatalogGrid({ HeaderActions, fixedFilters, fixedFiltersKey }: Props) {
   const { customPropertiesMap, currentWorkspace } = useAppContext();
 
   const columnsWithAllProps = useMemo<DataGridColumn<models.Resource>[]>(() => {
@@ -113,6 +114,7 @@ function CatalogGrid({ HeaderActions, fixedFilters }: Props) {
             columns={columns}
             onChange={setFilter}
             fixedFilters={fixedFilters}
+            fixedFiltersKey={fixedFiltersKey}
           />
         </FlexItem>
       </div>
