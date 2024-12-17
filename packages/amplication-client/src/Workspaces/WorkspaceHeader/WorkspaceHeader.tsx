@@ -1,6 +1,10 @@
 import {
   Breadcrumbs,
   Dialog,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  FlexItem,
   Icon,
   Tooltip,
 } from "@amplication/ui/design-system";
@@ -15,12 +19,11 @@ import {
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
-import { isMacOs } from "react-device-detect";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import AskJovuButton from "../../Assistant/AskJovuButton";
 import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
-import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
+import ProjectSelector from "../../Components/ProjectSelector";
 import UserBadge from "../../Components/UserBadge";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
@@ -49,7 +52,9 @@ export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
 const WorkspaceHeader: React.FC = () => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const { baseUrl } = useProjectBaseUrl();
+  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
+
+  const history = useHistory();
 
   const apolloClient = useApolloClient();
   const { stigg } = useStiggContext();
@@ -118,6 +123,17 @@ const WorkspaceHeader: React.FC = () => {
     </div>
   );
 
+  const handleProjectSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const projectUrl = `/${currentWorkspace?.id}${platformPath}/${value}`;
+
+      history.push(projectUrl);
+    },
+    [currentWorkspace?.id, history, isPlatformConsole]
+  );
+
   return (
     <>
       <Dialog
@@ -148,16 +164,29 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-
           <ConsoleNavigationButton />
 
-          <Breadcrumbs>
-            {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-              <Breadcrumbs.Item key={item.url} to={item.url}>
-                {item.name}
-              </Breadcrumbs.Item>
-            ))}
-          </Breadcrumbs>
+          {currentProject && (
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Large}
+              itemsAlign={EnumItemsAlign.Center}
+            >
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              <ProjectSelector
+                onChange={handleProjectSelected}
+                selectedValue={currentProject?.id}
+              />
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              <Breadcrumbs>
+                {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+                  <Breadcrumbs.Item key={item.url} to={item.url}>
+                    {item.name}
+                  </Breadcrumbs.Item>
+                ))}
+              </Breadcrumbs>
+            </FlexItem>
+          )}
         </div>
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>

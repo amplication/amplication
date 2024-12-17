@@ -9,6 +9,8 @@ const AZURE_DEVOPS_URL = "https://dev.azure.com";
 type GitRepositoryDetails = {
   repositoryFullName: string | null;
   repositoryUrl: string | null;
+  webIdeUrl: string | null;
+  webIdeName: string | null;
 };
 
 export type GitSyncDetails = {
@@ -36,6 +38,8 @@ export function getGitRepositoryDetails({
     return {
       repositoryFullName: null,
       repositoryUrl: null,
+      webIdeUrl: null,
+      webIdeName: null,
     };
   }
   const {
@@ -62,8 +66,37 @@ export function getGitRepositoryDetails({
     [EnumGitProvider.AzureDevOps]: `${AZURE_DEVOPS_URL}/${organizationName}/${groupName}/_git/${repositoryName}`,
   };
 
+  const webIdeUrlMap: {
+    [key in EnumGitProvider]: {
+      webIdeUrl: string;
+      webIdeName: string;
+    };
+  } = {
+    [EnumGitProvider.Github]: {
+      webIdeUrl: `https://codespaces.new/${repositoryFullName}?quickstart=1`,
+      webIdeName: "Codespaces",
+    },
+    [EnumGitProvider.Bitbucket]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
+    [EnumGitProvider.AwsCodeCommit]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
+    [EnumGitProvider.GitLab]: {
+      webIdeUrl: `${GITLAB_URL}/-/ide/project/${repositoryFullName}`,
+      webIdeName: "Web IDE",
+    },
+    [EnumGitProvider.AzureDevOps]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
+  };
+
   return {
     repositoryFullName: repositoryFullName,
     repositoryUrl: gitRepositoryUrlMap[provider],
+    ...webIdeUrlMap[provider],
   };
 }

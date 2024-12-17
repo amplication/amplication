@@ -1,39 +1,11 @@
-import { EnumGitProvider, GitProviderProperties } from "@amplication/util/git";
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  ValidateNested,
-  IsArray,
-} from "class-validator";
-
-export class PluginDownloadItem {
-  @IsString()
-  pluginId!: string;
-  @IsString()
-  @IsOptional()
-  pluginVersion?: string;
-}
+import { IsArray, IsString } from "class-validator";
+import { RepositoryPlugins } from "./types";
 
 export class Value {
   @IsString()
   resourceId!: string;
   @IsString()
   buildId!: string;
-  @IsEnum(EnumGitProvider)
-  gitProvider!: EnumGitProvider;
-  @ValidateNested()
-  gitProviderProperties!: GitProviderProperties;
-  @IsString()
-  gitOrganizationName!: string;
-  @IsString()
-  gitRepositoryName!: string;
   @IsArray()
-  pluginsToDownload!: PluginDownloadItem[];
-  @IsString()
-  @IsOptional()
-  repositoryGroupName?: string;
-  @IsString()
-  @IsOptional()
-  baseBranchName?: string;
+  repositoryPlugins!: RepositoryPlugins[];
 }

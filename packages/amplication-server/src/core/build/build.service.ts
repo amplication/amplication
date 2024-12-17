@@ -56,6 +56,7 @@ import {
   DownloadPrivatePluginsFailure,
   CodeGenerationFailure,
   PluginNotifyVersion,
+  DownloadPrivatePluginsRequestTypes,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -612,15 +613,44 @@ export class BuildService {
         });
 
         try {
-          const pluginRepoGitSettings =
-            await this.resourceService.getPluginRepositoryGitSettingsByResource(
-              resourceId
-            );
-
+          //get the specific version number needed for each plugin based on the installation settings
           const pluginVersions = await this.getPrivatePluginsWithVersion(
             resourceId,
             privatePlugins
           );
+
+          //prepare the list of plugins grouped by the plugin repository
+          const pluginRepositoryResourceIds = pluginVersions.map(
+            (pluginVersion) => pluginVersion.pluginRepositoryResourceId
+          );
+
+          const uniqueResourceIds = Array.from(
+            new Set(pluginRepositoryResourceIds)
+          );
+
+          const repositoryPlugins: DownloadPrivatePluginsRequestTypes.RepositoryPlugins[] =
+            [];
+
+          for (const pluginRepositoryResourceId of uniqueResourceIds) {
+            const pluginRepoGitSettings =
+              await this.resourceService.getPluginRepositoryGitSettingsByResource(
+                pluginRepositoryResourceId
+              );
+
+            repositoryPlugins.push({
+              ...pluginRepoGitSettings,
+              pluginsToDownload: pluginVersions
+                .filter(
+                  (pluginVersion) =>
+                    pluginVersion.pluginRepositoryResourceId ===
+                    pluginRepositoryResourceId
+                )
+                .map((pluginVersion) => ({
+                  pluginId: pluginVersion.pluginId,
+                  pluginVersion: pluginVersion.pluginVersion,
+                })),
+            });
+          }
 
           //report the private plugins build version
           const buildPluginPromises = pluginVersions.map((pluginVersion) =>
@@ -640,13 +670,9 @@ export class BuildService {
                 resourceId,
               },
               value: {
-                ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginsToDownload: pluginVersions.map((pluginVersion) => ({
-                  pluginId: pluginVersion.pluginId,
-                  pluginVersion: pluginVersion.pluginVersion,
-                })),
+                repositoryPlugins: repositoryPlugins,
               },
             };
 
@@ -686,10 +712,12 @@ export class BuildService {
   ): Promise<
     (PluginDownloadItem & {
       requestedFullPackageName: string;
+      pluginRepositoryResourceId: string;
     })[]
   > {
     const pluginsToDownload: (PluginDownloadItem & {
       requestedFullPackageName: string;
+      pluginRepositoryResourceId: string;
     })[] = [];
 
     const privatePluginBlocks =
@@ -702,18 +730,19 @@ export class BuildService {
       });
 
     for (const privatePlugin of privatePlugins) {
+      const privatePluginBlock = privatePluginBlocks.find(
+        (block) => block.pluginId === privatePlugin.pluginId
+      );
+
       if (privatePlugin.version !== "latest") {
         pluginsToDownload.push({
           pluginId: privatePlugin.pluginId,
           pluginVersion: privatePlugin.version,
           requestedFullPackageName: `${privatePlugin.pluginId}@${privatePlugin.version}`,
+          pluginRepositoryResourceId: privatePluginBlock.resourceId,
         });
         continue;
       }
-
-      const privatePluginBlock = privatePluginBlocks.find(
-        (block) => block.pluginId === privatePlugin.pluginId
-      );
 
       const sortedEnabledVersions = privatePluginBlock.versions
         .filter(
@@ -733,6 +762,7 @@ export class BuildService {
         pluginId: privatePlugin.pluginId,
         pluginVersion: pluginVersion.version,
         requestedFullPackageName: `${privatePlugin.pluginId}@latest`,
+        pluginRepositoryResourceId: privatePluginBlock.resourceId,
       });
     }
 
@@ -1363,6 +1393,8 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const relations = await this.resourceService.getRelations(resourceId);
+
     const resourceSettings =
       await this.resourceSettingsService.getResourceSettingsBlock({
         where: { id: resourceId },
@@ -1420,6 +1452,7 @@ export class BuildService {
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
       resourceSettings: resourceSettings,
+      relations: relations,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,

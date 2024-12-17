@@ -29,8 +29,9 @@ function ResourceList() {
       {currentProject && (
         <CatalogGrid
           fixedFilters={{
-            projectId: currentProject?.id,
+            projectIdFilter: [currentProject?.id],
           }}
+          fixedFiltersKey={currentProject?.id}
           HeaderActions={
             <>
               <Link to={`${platformProjectBaseUrl}`}>

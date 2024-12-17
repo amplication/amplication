@@ -13,7 +13,7 @@ function Catalog() {
       pageWidth={EnumPageWidth.Full}
     >
       <NewServiceFromTemplateDialogWithUrlTrigger />
-      <CatalogGrid />
+      <CatalogGrid fixedFiltersKey="workspace-catalog" />
     </PageContent>
   );
 }

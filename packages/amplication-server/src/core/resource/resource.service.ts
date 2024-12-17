@@ -78,6 +78,7 @@ import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/t
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ResourceInclude } from "./dto/ResourceInclude";
+import { Relation } from "../relation/dto/Relation";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -2062,6 +2063,16 @@ export class ResourceService {
 
       return ownerShip;
     }
+  }
+
+  async getRelations(resourceId: string): Promise<Relation[]> {
+    return await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
   }
 
   async getRelatedResource(resourceId: string): Promise<Resource[]> {
