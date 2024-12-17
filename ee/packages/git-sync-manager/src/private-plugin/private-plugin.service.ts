@@ -1,7 +1,8 @@
 import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 import {
-  DownloadPrivatePluginsRequest,
+  DownloadPrivatePluginsRequestTypes,
   KAFKA_TOPICS,
+  DownloadPrivatePluginsRequest,
 } from "@amplication/schema-registry";
 import {
   GitClientService,
@@ -116,19 +117,54 @@ export class PrivatePluginService {
     );
   }
 
-  async downloadPrivatePlugins({
-    resourceId,
-    buildId,
-    gitProvider,
-    gitProviderProperties,
-    gitOrganizationName: owner,
-    gitRepositoryName: repo,
-    repositoryGroupName,
-    baseBranchName,
-    pluginsToDownload,
-  }: DownloadPrivatePluginsRequest.Value): Promise<{
+  async downloadPrivatePlugins(
+    downloadPrivatePluginsRequest: DownloadPrivatePluginsRequest.Value
+  ): Promise<{
     pluginPaths: string[];
   }> {
+    const {
+      resourceId,
+      buildId,
+      repositoryPlugins: repositories,
+    } = downloadPrivatePluginsRequest;
+
+    const newPluginPaths: string[] = [];
+
+    //we execute each "plugin repo" in sequence to avoid override or conflicts when multiple "plugin repos" are connected to the same repository in git
+    for (const repositoryPlugins of repositories) {
+      const results = await this.downloadPrivatePluginsFromSingleRepo({
+        resourceId,
+        buildId,
+        repositoryPlugins: repositoryPlugins,
+      });
+
+      newPluginPaths.push(...results.pluginPaths);
+    }
+
+    return { pluginPaths: newPluginPaths };
+  }
+
+  async downloadPrivatePluginsFromSingleRepo({
+    resourceId,
+    buildId,
+    repositoryPlugins,
+  }: {
+    resourceId: string;
+    buildId: string;
+    repositoryPlugins: DownloadPrivatePluginsRequestTypes.RepositoryPlugins;
+  }): Promise<{
+    pluginPaths: string[];
+  }> {
+    const {
+      gitProvider,
+      gitProviderProperties,
+      gitOrganizationName: owner,
+      gitRepositoryName: repo,
+      repositoryGroupName,
+      baseBranchName,
+      pluginsToDownload,
+    } = repositoryPlugins;
+
     const logger = this.logger.child({ resourceId });
     const gitClientService = TraceWrapper.trace(
       await new GitClientService().create(

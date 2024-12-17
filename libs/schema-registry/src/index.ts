@@ -68,3 +68,5 @@ export enum KAFKA_TOPICS {
   PACKAGE_MANAGER_CREATE_SUCCESS = "package.manager.create-packages.success.0",
   PACKAGE_MANAGER_CREATE_FAILURE = "package.manager.create-packages.failure.0",
 }
+
+export * as DownloadPrivatePluginsRequestTypes from "./lib/download-private-plugins-request/types";
