@@ -586,17 +586,21 @@ describe("BuildService", () => {
             resourceId: EXAMPLE_RESOURCE_ID,
           },
           value: {
-            ...EXAMPLE_GIT_SETTINGS,
             buildId: EXAMPLE_BUILD_ID,
             resourceId: EXAMPLE_RESOURCE_ID,
-            pluginsToDownload: [
+            repositoryPlugins: [
               {
-                pluginId: EXAMPLE_PRIVATE_PLUGIN_ID,
-                pluginVersion: "1.1.0",
-              },
-              {
-                pluginId: EXAMPLE_PRIVATE_PLUGIN_ID_2,
-                pluginVersion: "1.0.0",
+                ...EXAMPLE_GIT_SETTINGS,
+                pluginsToDownload: [
+                  {
+                    pluginId: EXAMPLE_PRIVATE_PLUGIN_ID,
+                    pluginVersion: "1.1.0",
+                  },
+                  {
+                    pluginId: EXAMPLE_PRIVATE_PLUGIN_ID_2,
+                    pluginVersion: "1.0.0",
+                  },
+                ],
               },
             ],
           },
