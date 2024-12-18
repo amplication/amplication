@@ -12,17 +12,13 @@ const ResourceSelectField = (props: Props) => {
   const { blueprintId, ...rest } = props;
 
   const {
-    blueprintsMap: { blueprintsMap },
+    blueprintsMap: { blueprintsMapById },
   } = useAppContext();
 
-  const { catalog, setFilter, pagination } = useCatalog();
+  const { catalog, setFilter } = useCatalog({ initialPageSize: 200 });
 
   useEffect(() => {
-    if (pagination.pageSize !== 200) pagination.setPageSize(200);
-  }, [pagination]);
-
-  useEffect(() => {
-    const blueprint = Object.values(blueprintsMap).find(
+    const blueprint = Object.values(blueprintsMapById).find(
       (blueprint) => blueprint.id === blueprintId
     );
 
@@ -33,10 +29,10 @@ const ResourceSelectField = (props: Props) => {
       });
     } else {
       setFilter({
-        blueprintId: blueprintId,
+        blueprintId: [blueprintId],
       });
     }
-  }, [blueprintId, blueprintsMap, setFilter]);
+  }, [blueprintId, blueprintsMapById, setFilter]);
 
   const options = useMemo(() => {
     return catalog?.map((catalog) => ({

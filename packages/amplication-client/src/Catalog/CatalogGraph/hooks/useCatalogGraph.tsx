@@ -39,7 +39,7 @@ const useCatalogGraph = ({ onMessage }: Props) => {
   const { persistData, loadPersistentData, clearPersistentData } =
     useLocalStorageData<GraphPersistedData>(storageKey);
 
-  const { catalog, setFilter, setSearchPhrase } = useCatalog({
+  const { catalog, setFilter, setSearchPhrase, reloadCatalog } = useCatalog({
     initialPageSize: 1000,
   });
 
@@ -149,6 +149,7 @@ const useCatalogGraph = ({ onMessage }: Props) => {
     setPartialLayoutOptions,
     layoutOptions,
     saveState,
+    reloadCatalog,
   };
 };
 
