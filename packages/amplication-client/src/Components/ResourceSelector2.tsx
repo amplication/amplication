@@ -6,32 +6,43 @@ import {
 } from "@amplication/ui/design-system";
 import { useMemo } from "react";
 import { useAppContext } from "../context/appContext";
+import { EnumResourceType } from "../models";
 
 type Props = {
   onChange: (value: string) => void;
   selectedValue: string;
-  allProjectsItem?: OptionItem;
+  allResourcesItem?: OptionItem;
+  isPlatformConsole?: boolean;
 };
 
-const ProjectSelector = ({
+const ResourceSelector = ({
   onChange,
   selectedValue,
-  allProjectsItem,
+  allResourcesItem,
+  isPlatformConsole,
 }: Props) => {
-  const { projectsList } = useAppContext();
+  const { resources } = useAppContext();
 
   const options = useMemo(() => {
-    const projects = projectsList?.map((project) => ({
-      value: project.id,
-      label: project.name,
-    }));
+    const projects = resources
+      ?.filter((resource) => {
+        if (isPlatformConsole) {
+          return resource.resourceType === EnumResourceType.ServiceTemplate;
+        } else {
+          return resource.resourceType !== EnumResourceType.ServiceTemplate;
+        }
+      })
+      .map((resource) => ({
+        value: resource.id,
+        label: resource.name,
+      }));
 
-    if (allProjectsItem) {
-      return [allProjectsItem, ...projects];
+    if (allResourcesItem) {
+      return [allResourcesItem, ...projects];
     } else {
       return projects;
     }
-  }, [projectsList, allProjectsItem]);
+  }, [resources, allResourcesItem]);
 
   return (
     <SelectPanel
@@ -39,7 +50,7 @@ const ProjectSelector = ({
       isMulti={false}
       onChange={onChange}
       options={options}
-      label="Project"
+      label="Resource"
       openButtonProps={{
         icon: "chevron_up",
       }}
@@ -52,4 +63,4 @@ const ProjectSelector = ({
   );
 };
 
-export default ProjectSelector;
+export default ResourceSelector;
