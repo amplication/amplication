@@ -6,6 +6,7 @@ import {
   EnumItemsAlign,
   FlexItem,
   Icon,
+  OptionItem,
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -43,15 +44,28 @@ import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
+import ResourceSelector from "../../Components/ResourceSelector2";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
+
+const ALL_VALUE = "-1";
+
+const ALL_PROJECTS_ITEM: OptionItem = {
+  label: "All Projects",
+  value: ALL_VALUE,
+};
+const ALL_RESOURCES_ITEM: OptionItem = {
+  label: "All Resources",
+  value: ALL_VALUE,
+};
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
 const WorkspaceHeader: React.FC = () => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, currentResource, resources } =
+    useContext(AppContext);
   const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
 
   const history = useHistory();
@@ -127,11 +141,28 @@ const WorkspaceHeader: React.FC = () => {
     (value: string) => {
       const platformPath = isPlatformConsole ? "/platform" : "";
 
-      const projectUrl = `/${currentWorkspace?.id}${platformPath}/${value}`;
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${value}`;
 
-      history.push(projectUrl);
+      history.push(url);
     },
     [currentWorkspace?.id, history, isPlatformConsole]
+  );
+
+  const handleResourceSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${value}`;
+
+      history.push(url);
+    },
+    [currentProject?.id, currentWorkspace?.id, history, isPlatformConsole]
   );
 
   return (
@@ -176,8 +207,20 @@ const WorkspaceHeader: React.FC = () => {
               <ProjectSelector
                 onChange={handleProjectSelected}
                 selectedValue={currentProject?.id}
+                allProjectsItem={ALL_PROJECTS_ITEM}
               />
               <hr className={`${CLASS_NAME}__vertical_border`} />
+              {/* {currentResource && ( */}
+              <>
+                <ResourceSelector
+                  onChange={handleResourceSelected}
+                  selectedValue={currentResource?.id || ALL_VALUE}
+                  allResourcesItem={ALL_RESOURCES_ITEM}
+                  isPlatformConsole={isPlatformConsole}
+                />
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+              </>
+              {/* )} */}
               <Breadcrumbs>
                 {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
                   <Breadcrumbs.Item key={item.url} to={item.url}>
