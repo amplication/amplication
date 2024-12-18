@@ -35,14 +35,15 @@ const ResourceSelector = ({
       .map((resource) => ({
         value: resource.id,
         label: resource.name,
-      }));
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
 
     if (allResourcesItem) {
       return [allResourcesItem, ...projects];
     } else {
       return projects;
     }
-  }, [resources, allResourcesItem]);
+  }, [resources, allResourcesItem, isPlatformConsole]);
 
   return (
     <SelectPanel

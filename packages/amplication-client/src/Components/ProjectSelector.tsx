@@ -21,10 +21,12 @@ const ProjectSelector = ({
   const { projectsList } = useAppContext();
 
   const options = useMemo(() => {
-    const projects = projectsList?.map((project) => ({
-      value: project.id,
-      label: project.name,
-    }));
+    const projects = projectsList
+      ?.map((project) => ({
+        value: project.id,
+        label: project.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
 
     if (allProjectsItem) {
       return [allProjectsItem, ...projects];
