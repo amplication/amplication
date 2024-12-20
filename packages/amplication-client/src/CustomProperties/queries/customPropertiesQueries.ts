@@ -8,6 +8,9 @@ export const CUSTOM_PROPERTY_FIELDS_FRAGMENT = gql`
     key
     enabled
     type
+    required
+    validationRule
+    validationMessage
     options {
       value
       color
