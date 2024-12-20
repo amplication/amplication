@@ -1,15 +1,14 @@
-import { Injectable, Inject, forwardRef } from "@nestjs/common";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 import { Analytics, TrackParams } from "@segment/analytics-node";
-import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
+import { Account, PrismaService, User } from "../../prisma";
+import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import {
   ContextEventProperties,
   EventTrackData,
   IdentifyData,
 } from "./segmentAnalytics.types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Account, PrismaService, User } from "../../prisma";
-import { BillingService } from "../../core/billing/billing.service";
 @Injectable()
 export class SegmentAnalyticsService {
   private analytics: Analytics;
@@ -19,9 +18,7 @@ export class SegmentAnalyticsService {
     @Inject("SEGMENT_ANALYTICS_OPTIONS")
     options: SegmentAnalyticsOptions,
     private readonly logger: AmplicationLogger,
-    private readonly prismaService: PrismaService,
-    @Inject(forwardRef(() => BillingService))
-    private readonly billingService: BillingService
+    private readonly prismaService: PrismaService
   ) {
     if (options && options.segmentWriteKey && options.segmentWriteKey.length) {
       this.analytics = new Analytics({
@@ -68,7 +65,6 @@ export class SegmentAnalyticsService {
   ): Promise<ContextEventProperties> {
     let projectId = properties?.projectId;
     const resourceId = properties?.resourceId;
-    const subscription = await this.billingService.getSubscription(workspaceId);
 
     if (!projectId && resourceId) {
       const resource = await this.prismaService.resource.findUnique({
@@ -89,7 +85,6 @@ export class SegmentAnalyticsService {
       },
       projectId,
       resourceId,
-      planType: subscription.subscriptionPlan,
     };
 
     return eventProperties;
