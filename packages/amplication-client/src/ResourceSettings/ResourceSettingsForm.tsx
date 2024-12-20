@@ -6,11 +6,10 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { useCallback } from "react";
-import CustomPropertiesFormField from "../CustomProperties/CustomPropertiesFormField";
-import useBlueprintCustomPropertiesMap from "../CustomProperties/hooks/useBlueprintCustomPropertiesMap";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useResourceSettings from "./hooks/useResourceSettings";
+import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
 
 type Props = {
   resource: models.Resource;
@@ -19,10 +18,6 @@ type Props = {
 const CLASS_NAME = "resource-form";
 
 function ResourceSettingsForm({ resource }: Props) {
-  const { customPropertiesMap } = useBlueprintCustomPropertiesMap(
-    resource?.blueprintId
-  );
-
   const {
     resourceSettings,
     updateResourceSettings,
@@ -58,12 +53,11 @@ function ResourceSettingsForm({ resource }: Props) {
           return (
             <>
               <Form>
-                {Object.values(customPropertiesMap).map((customProperty) => (
-                  <CustomPropertiesFormField
-                    key={customProperty.key}
-                    property={customProperty}
-                  />
-                ))}
+                <ResourceSettingsFormFields
+                  fieldNamePrefix="settings."
+                  blueprintId={resource?.blueprintId}
+                />
+
                 <div>
                   <FlexItem
                     end={

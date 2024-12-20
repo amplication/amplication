@@ -21,7 +21,7 @@ import ProjectSelectField from "../../Components/ProjectSelectField";
 import CustomPropertiesFormFields from "../../CustomProperties/CustomPropertiesFormFields";
 import { validate } from "../../util/formikValidateJsonSchema";
 import ResourceGitSettingsWithOverrideWizard from "../git/ResourceGitSettingsWithOverrideWizard";
-import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
+import { CreateResourceFormResourceSettings } from "./CreateResourceFormResourceSettings";
 import * as models from "../../models";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import useCreateComponent from "./hooks/useCreateComponent";
@@ -259,8 +259,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
               </Panel>
             </div>
 
-            <ResourceSettingsFormFields
-              fieldNamePrefix="settings."
+            <CreateResourceFormResourceSettings
               blueprintId={formik.values.blueprint.connect.id}
             />
             <div>

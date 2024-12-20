@@ -7,23 +7,21 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import CustomPropertiesFormField from "../../CustomProperties/CustomPropertiesFormField";
-import useBlueprintCustomPropertiesMap from "../../CustomProperties/hooks/useBlueprintCustomPropertiesMap";
 import { useEffect, useMemo } from "react";
 import { CreateResourceType } from "./CreateResourceForm";
 import { useFormikContext } from "formik";
 import { useAppContext } from "../../context/appContext";
+import { ResourceSettingsFormFields } from "../../ResourceSettings/ResourceSettingsFormFields";
 
 type Props = {
   blueprintId: string;
   fieldNamePrefix?: string;
 };
 
-export const ResourceSettingsFormFields = ({
+export const CreateResourceFormResourceSettings = ({
   blueprintId,
   fieldNamePrefix,
 }: Props) => {
-  const { customPropertiesMap } = useBlueprintCustomPropertiesMap(blueprintId);
   const {
     blueprintsMap: { blueprintsMap },
   } = useAppContext();
@@ -44,11 +42,8 @@ export const ResourceSettingsFormFields = ({
     [blueprintsMap, blueprintId]
   );
 
-  const hasProperties = Object.values(customPropertiesMap).length > 0;
-
   return (
-    blueprint &&
-    hasProperties && (
+    blueprint && (
       <div>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <Text textStyle={EnumTextStyle.H4}>
@@ -57,14 +52,7 @@ export const ResourceSettingsFormFields = ({
         </FlexItem>
         <Panel panelStyle={EnumPanelStyle.Bordered}>
           <FormColumns>
-            {blueprintId &&
-              Object.values(customPropertiesMap).map((customProperty) => (
-                <CustomPropertiesFormField
-                  key={customProperty.key}
-                  property={customProperty}
-                  fieldNamePrefix={fieldNamePrefix}
-                />
-              ))}
+            <ResourceSettingsFormFields blueprintId={blueprintId} />
           </FormColumns>
         </Panel>
       </div>
