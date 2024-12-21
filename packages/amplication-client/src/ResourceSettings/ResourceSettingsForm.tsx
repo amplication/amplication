@@ -57,12 +57,7 @@ function ResourceSettingsForm({ resource }: Props) {
 
     const schema = {
       properties: {
-        settings: {
-          type: "object",
-          properties: {
-            properties: settingsSchema.schema,
-          },
-        },
+        properties: settingsSchema.schema,
       },
     };
 
@@ -85,7 +80,7 @@ function ResourceSettingsForm({ resource }: Props) {
             <>
               <Form>
                 <ResourceSettingsFormFields
-                  fieldNamePrefix="settings."
+                  fieldNamePrefix=""
                   blueprintId={resource?.blueprintId}
                 />
 
