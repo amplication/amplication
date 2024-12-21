@@ -6,9 +6,11 @@ import {
 } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { OwnerSelector } from "../Components/OwnerSelector";
+import { useAppContext } from "../context/appContext";
 import CustomPropertiesFormFields from "../CustomProperties/CustomPropertiesFormFields";
+import getPropertiesValidationSchemaUtil from "../CustomProperties/getPropertiesValidationSchemaUtil";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -18,7 +20,6 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import {
   GET_RESOURCE,
   UPDATE_RESOURCE,
@@ -63,6 +64,8 @@ function ResourceForm({ resourceId }: Props) {
     },
   });
 
+  const { customPropertiesMap } = useAppContext();
+
   const { trackEvent } = useTracking();
 
   const [updateResource, { error: updateError }] =
@@ -88,13 +91,47 @@ function ResourceForm({ resourceId }: Props) {
     [updateResource, resourceId, trackEvent]
   );
 
+  const propertiesSchema = useMemo(() => {
+    return getPropertiesValidationSchemaUtil(
+      Object.values(customPropertiesMap)
+    );
+  }, [customPropertiesMap]);
+
+  const validationSchema = {
+    ...FORM_SCHEMA,
+    properties: {
+      ...FORM_SCHEMA.properties,
+      properties: propertiesSchema.schema,
+    },
+  };
+
+  const initialValue = useMemo(() => {
+    //in case properties were disabled - we need to remove them from the form to avoid validation errors
+    const properties = Object.keys(data?.resource.properties || {}).reduce(
+      (acc, key) => {
+        if (propertiesSchema.schema.properties?.[key]) {
+          acc[key] = data?.resource.properties[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...data?.resource,
+      properties,
+    };
+  }, [data?.resource, propertiesSchema]);
+
   const errorMessage = formatError(error || updateError);
   return (
     <div className={CLASS_NAME}>
       {data?.resource && (
         <Formik
-          initialValues={data.resource}
-          validate={(values: models.Resource) => validate(values, FORM_SCHEMA)}
+          initialValues={initialValue}
+          validate={(values: models.Resource) =>
+            validate(values, validationSchema)
+          }
           enableReinitialize
           onSubmit={handleSubmit}
         >

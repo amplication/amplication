@@ -5,12 +5,14 @@ import {
   Snackbar,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { useCallback } from "react";
-import CustomPropertiesFormField from "../CustomProperties/CustomPropertiesFormField";
-import useBlueprintCustomPropertiesMap from "../CustomProperties/hooks/useBlueprintCustomPropertiesMap";
+import { useCallback, useMemo } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useResourceSettings from "./hooks/useResourceSettings";
+import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
+import { validate } from "../util/formikValidateJsonSchema";
+import { useAppContext } from "../context/appContext";
+import getPropertiesValidationSchemaUtil from "../CustomProperties/getPropertiesValidationSchemaUtil";
 
 type Props = {
   resource: models.Resource;
@@ -19,16 +21,16 @@ type Props = {
 const CLASS_NAME = "resource-form";
 
 function ResourceSettingsForm({ resource }: Props) {
-  const { customPropertiesMap } = useBlueprintCustomPropertiesMap(
-    resource?.blueprintId
-  );
-
   const {
     resourceSettings,
     updateResourceSettings,
     updateError: error,
     loading,
   } = useResourceSettings(resource?.id);
+
+  const {
+    blueprintsMap: { blueprintsMapById },
+  } = useAppContext();
 
   const handleSubmit = useCallback(
     (data: models.ResourceSettings) => {
@@ -46,24 +48,60 @@ function ResourceSettingsForm({ resource }: Props) {
     [updateResourceSettings, resource]
   );
 
+  const validationSchema = useMemo(() => {
+    const blueprint = blueprintsMapById[resource?.blueprintId];
+
+    const settingsSchema =
+      blueprint &&
+      getPropertiesValidationSchemaUtil(Object.values(blueprint.properties));
+
+    const schema = {
+      properties: {
+        properties: settingsSchema.schema,
+      },
+    };
+
+    return schema;
+  }, [blueprintsMapById, resource?.blueprintId]);
+
+  const initialValue = useMemo(() => {
+    //in case properties were disabled - we need to remove them from the form to avoid validation errors
+    const properties = Object.keys(resourceSettings?.properties || {}).reduce(
+      (acc, key) => {
+        if (validationSchema?.properties?.properties?.properties[key]) {
+          acc[key] = resourceSettings.properties[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...resourceSettings,
+      properties,
+    };
+  }, [resourceSettings, validationSchema]);
+
   const errorMessage = formatError(error);
   return (
     <div className={CLASS_NAME}>
       <Formik
-        initialValues={resourceSettings || { properties: {} }}
+        initialValues={initialValue}
         enableReinitialize
         onSubmit={handleSubmit}
+        validate={(values: models.ResourceSettings) =>
+          validate(values, validationSchema)
+        }
       >
         {(formik) => {
           return (
             <>
               <Form>
-                {Object.values(customPropertiesMap).map((customProperty) => (
-                  <CustomPropertiesFormField
-                    key={customProperty.key}
-                    property={customProperty}
-                  />
-                ))}
+                <ResourceSettingsFormFields
+                  fieldNamePrefix=""
+                  blueprintId={resource?.blueprintId}
+                />
+
                 <div>
                   <FlexItem
                     end={

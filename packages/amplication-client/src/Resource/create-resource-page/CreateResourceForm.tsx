@@ -14,20 +14,22 @@ import {
   TextField,
 } from "@amplication/ui/design-system";
 import { Formik } from "formik";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import BlueprintSelectField from "../../Blueprints/BlueprintSelectField";
 import { DisplayNameField } from "../../Components/DisplayNameField";
 import ProjectSelectField from "../../Components/ProjectSelectField";
 import CustomPropertiesFormFields from "../../CustomProperties/CustomPropertiesFormFields";
 import { validate } from "../../util/formikValidateJsonSchema";
 import ResourceGitSettingsWithOverrideWizard from "../git/ResourceGitSettingsWithOverrideWizard";
-import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
+import { CreateResourceFormResourceSettings } from "./CreateResourceFormResourceSettings";
 import * as models from "../../models";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import useCreateComponent from "./hooks/useCreateComponent";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import { useHistory } from "react-router-dom";
 import { useCatalogContext } from "../../Catalog/CatalogContext";
+import { useAppContext } from "../../context/appContext";
+import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -140,12 +142,52 @@ const CreateResourceForm = ({ projectId }: Props) => {
   const history = useHistory();
   const { reloadCatalog } = useCatalogContext();
 
+  const {
+    customPropertiesMap,
+    blueprintsMap: { blueprintsMapById },
+  } = useAppContext();
+
   const handleComponentCreated = useCallback(
     (component: models.Resource) => {
       reloadCatalog();
       history.push(`${baseUrl}/${component.id}`);
     },
     [baseUrl, history, reloadCatalog]
+  );
+
+  const propertiesSchema = useMemo(() => {
+    return getPropertiesValidationSchemaUtil(
+      Object.values(customPropertiesMap)
+    );
+  }, [customPropertiesMap]);
+
+  const getValidationSchema = useCallback(
+    (blueprintId: string) => {
+      const blueprint = blueprintsMapById[blueprintId];
+
+      const settingsSchema =
+        blueprint &&
+        getPropertiesValidationSchemaUtil(Object.values(blueprint.properties));
+
+      const schema: any = {
+        ...FORM_SCHEMA,
+        properties: {
+          ...FORM_SCHEMA.properties,
+          properties: propertiesSchema.schema,
+        },
+      };
+
+      if (settingsSchema) {
+        schema.properties.settings = {
+          type: "object",
+          properties: {
+            properties: settingsSchema.schema,
+          },
+        };
+      }
+      return schema;
+    },
+    [blueprintsMapById, propertiesSchema.schema]
   );
 
   const { createComponent, loadingCreateComponent } = useCreateComponent({
@@ -194,19 +236,27 @@ const CreateResourceForm = ({ projectId }: Props) => {
     [createComponent]
   );
 
-  const initialValue: Partial<CreateResourceFormType> = {
-    ...DEFAULT_VALUES,
-    project: {
-      connect: {
-        id: projectId,
+  const initialValue: Partial<CreateResourceFormType> = useMemo(
+    () => ({
+      ...DEFAULT_VALUES,
+      properties: Object.values(customPropertiesMap).reduce((acc, property) => {
+        acc[property.key] = "";
+        return acc;
+      }, {}),
+
+      project: {
+        connect: {
+          id: projectId,
+        },
       },
-    },
-    blueprint: {
-      connect: {
-        id: "",
+      blueprint: {
+        connect: {
+          id: "",
+        },
       },
-    },
-  };
+    }),
+    [projectId, customPropertiesMap]
+  );
 
   return (
     <>
@@ -221,7 +271,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
       <Formik
         initialValues={initialValue}
         validate={(values: CreateResourceFormType) =>
-          validate(values, FORM_SCHEMA)
+          validate(values, getValidationSchema(values.blueprint?.connect?.id))
         }
         enableReinitialize
         onSubmit={handleSubmit}
@@ -259,8 +309,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
               </Panel>
             </div>
 
-            <ResourceSettingsFormFields
-              fieldNamePrefix="settings."
+            <CreateResourceFormResourceSettings
               blueprintId={formik.values.blueprint.connect.id}
             />
             <div>

@@ -6,6 +6,7 @@ import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { EnumCustomPropertyType } from "./dto/EnumCustomPropertyType";
 import { CustomPropertyService } from "./customProperty.service";
+import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 
 const EXAMPLE_CUSTOM_PROPERTY_ID = "exampleCustomPropertyId";
 const EXAMPLE_CUSTOM_PROPERTY_KEY = "exampleCustomPropertyKey";
@@ -32,6 +33,9 @@ const EXAMPLE_CUSTOM_PROPERTY: CustomProperty = {
   enabled: true,
   type: EnumCustomPropertyType.Select,
   options: null,
+  validationMessage: null,
+  validationRule: null,
+  required: false,
 };
 
 const prismaCustomPropertyUpdateMock = jest.fn(() => {
@@ -65,6 +69,7 @@ describe("CustomPropertyService", () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [JsonSchemaValidationModule],
       providers: [
         CustomPropertyService,
 

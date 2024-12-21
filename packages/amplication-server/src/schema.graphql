@@ -481,8 +481,11 @@ type CustomProperty {
   key: String!
   name: String!
   options: [CustomPropertyOption!]
+  required: Boolean!
   type: EnumCustomPropertyType!
   updatedAt: DateTime!
+  validationMessage: String
+  validationRule: String
 }
 
 input CustomPropertyCreateInput {
@@ -516,13 +519,17 @@ input CustomPropertyUpdateInput {
   enabled: Boolean
   key: String
   name: String
+  required: Boolean
   type: EnumCustomPropertyType
+  validationMessage: String
+  validationRule: String
 }
 
 input CustomPropertyWhereInput {
   blueprint: BlueprintWhereInput
   blueprintId: String
   deletedAt: DateTimeFilter
+  enabled: Boolean
   id: String
   name: StringFilter
 }
