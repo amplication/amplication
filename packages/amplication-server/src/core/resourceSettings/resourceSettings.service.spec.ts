@@ -6,6 +6,9 @@ import { PrismaService } from "../../prisma";
 import { BlockService } from "../block/block.service";
 import { ResourceSettings } from "./dto";
 import { ResourceSettingsService } from "./resourceSettings.service";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
+import { ResourceService } from "..";
+import { BlueprintService } from "../blueprint/blueprint.service";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -64,15 +67,24 @@ const EXAMPLE_RESOURCE: Resource = {
   description: "",
   gitRepositoryOverride: false,
   licensed: false,
+  blueprintId: "ExampleBlueprint",
 };
 
-const prismaBlueprintFindFirstMock = jest.fn(() => {
+const prismaResourceFindFirstMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 
+const resourceServiceResourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
+
+const customPropertyServiceValidateCustomPropertiesMock = jest.fn(() =>
+  Promise.resolve({ isValid: true })
+);
+
 const prismaMock = {
   resource: {
-    findUnique: prismaBlueprintFindFirstMock,
+    findUnique: prismaResourceFindFirstMock,
   },
 };
 
@@ -93,6 +105,25 @@ describe("ResourceSettingsService", () => {
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
             update: updateMock,
+          })),
+        },
+        {
+          provide: ResourceService,
+          useClass: jest.fn(() => ({
+            resource: resourceServiceResourceMock,
+          })),
+        },
+        {
+          provide: BlueprintService,
+          useClass: jest.fn(() => ({
+            properties: jest.fn(() => []),
+          })),
+        },
+        {
+          provide: CustomPropertyService,
+          useClass: jest.fn(() => ({
+            validateCustomProperties:
+              customPropertyServiceValidateCustomPropertiesMock,
           })),
         },
         {
@@ -136,5 +167,8 @@ describe("ResourceSettingsService", () => {
     ).toEqual(EXAMPLE_RESOURCE_SETTINGS);
     expect(findManyByBlockTypeMock).toHaveBeenCalledTimes(1);
     expect(updateMock).toHaveBeenCalledTimes(1);
+    expect(
+      customPropertyServiceValidateCustomPropertiesMock
+    ).toHaveBeenCalledTimes(1);
   });
 });
