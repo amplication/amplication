@@ -105,12 +105,30 @@ function ResourceForm({ resourceId }: Props) {
     },
   };
 
+  const initialValue = useMemo(() => {
+    //in case properties were disabled - we need to remove them from the form to avoid validation errors
+    const properties = Object.keys(data?.resource.properties || {}).reduce(
+      (acc, key) => {
+        if (propertiesSchema.schema.properties?.[key]) {
+          acc[key] = data?.resource.properties[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...data?.resource,
+      properties,
+    };
+  }, [data?.resource, propertiesSchema]);
+
   const errorMessage = formatError(error || updateError);
   return (
     <div className={CLASS_NAME}>
       {data?.resource && (
         <Formik
-          initialValues={data.resource}
+          initialValues={initialValue}
           validate={(values: models.Resource) =>
             validate(values, validationSchema)
           }

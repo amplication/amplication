@@ -64,11 +64,29 @@ function ResourceSettingsForm({ resource }: Props) {
     return schema;
   }, [blueprintsMapById, resource?.blueprintId]);
 
+  const initialValue = useMemo(() => {
+    //in case properties were disabled - we need to remove them from the form to avoid validation errors
+    const properties = Object.keys(resourceSettings?.properties || {}).reduce(
+      (acc, key) => {
+        if (validationSchema?.properties?.properties?.properties[key]) {
+          acc[key] = resourceSettings.properties[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...resourceSettings,
+      properties,
+    };
+  }, [resourceSettings, validationSchema]);
+
   const errorMessage = formatError(error);
   return (
     <div className={CLASS_NAME}>
       <Formik
-        initialValues={resourceSettings || { properties: {} }}
+        initialValues={initialValue}
         enableReinitialize
         onSubmit={handleSubmit}
         validate={(values: models.ResourceSettings) =>
