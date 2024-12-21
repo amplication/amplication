@@ -32,6 +32,9 @@ const EXAMPLE_CUSTOM_PROPERTY: CustomProperty = {
   enabled: true,
   type: EnumCustomPropertyType.Select,
   options: null,
+  validationMessage: null,
+  validationRule: null,
+  required: false,
 };
 
 const prismaCustomPropertyUpdateMock = jest.fn(() => {
