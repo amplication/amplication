@@ -36,6 +36,15 @@ export function validate<T>(
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
+
+  ajv.addKeyword("isNotEmpty", {
+    type: "string",
+    validate: function (schema, data) {
+      return typeof data === "string" && data.trim() !== "";
+    },
+    errors: true,
+  });
+
   ajvErrors(ajv);
 
   const isValid = ajv.validate(validationSchema, values);

@@ -26,9 +26,6 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "__typename",
   "options",
-  "validation",
-  "validationMessage",
-  "required",
 ];
 
 const NON_VALIDATED_TYPES = [

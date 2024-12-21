@@ -77,7 +77,7 @@ export const FIND_CUSTOM_PROPERTIES = gql`
 
 export const GET_CUSTOM_PROPERTIES_MAP = gql`
   ${CUSTOM_PROPERTY_FIELDS_FRAGMENT}
-  query customProperties(
+  query customPropertiesMap(
     $where: CustomPropertyWhereInput
     $orderBy: CustomPropertyOrderByInput
   ) {
