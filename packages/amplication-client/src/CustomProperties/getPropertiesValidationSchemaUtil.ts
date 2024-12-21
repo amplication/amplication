@@ -1,41 +1,66 @@
-import { isEmpty } from "lodash";
 import * as models from "../models";
+import type { JSONSchema7 as JSONSchema } from "json-schema";
 
 //return a JSON Schema object that can be used to validate the custom properties
 const getPropertiesValidationSchemaUtil = (
   customProperties: models.CustomProperty[]
 ) => {
-  const schema = customProperties.reduce(
-    (acc, property) => {
-      acc.properties[property.key] = {
-        type: "string",
-      };
+  const properties: Record<string, JSONSchema> = {};
+  const required: string[] = [];
+  const errorMessage = {
+    properties: {},
+  };
 
-      if (property.required) {
-        acc.required.push(property.key);
-        acc.properties[property.key].isNotEmpty = true;
-        acc.errorMessage.properties[property.key] = "Field cannot be empty";
-      }
+  for (const customProperty of customProperties) {
+    const key = customProperty.key;
+    const schema: JSONSchema & {
+      isNotEmpty?: boolean;
+    } = {
+      title: customProperty.name,
+      type: "string",
+    };
 
-      if (!isEmpty(property.validationRule)) {
-        acc.properties[property.key].pattern = property.validationRule;
-      }
-      if (!isEmpty(property.validationMessage)) {
-        acc.errorMessage.properties[property.key] = property.validationMessage;
-      }
-      return acc;
-    },
-    {
-      required: [],
-      properties: {},
-      errorMessage: {
-        properties: {},
-      },
+    if (customProperty.type === models.EnumCustomPropertyType.Select) {
+      schema.enum = customProperty.options.map((option) => option.value);
     }
-  );
+
+    if (customProperty.type === models.EnumCustomPropertyType.MultiSelect) {
+      schema.type = "array";
+      schema.items = {
+        type: "string",
+        enum: customProperty.options.map((option) => option.value),
+      };
+    }
+
+    if (customProperty.required) {
+      required.push(key);
+      schema.isNotEmpty = true;
+      errorMessage.properties[key] = `${customProperty.name} is required`;
+
+      if (customProperty.type === models.EnumCustomPropertyType.MultiSelect) {
+        schema.minItems = 1;
+        errorMessage.properties[
+          key
+        ] = `At least one ${customProperty.name} is required`;
+      }
+    }
+
+    if (customProperty.validationRule) {
+      schema.pattern = customProperty.validationRule;
+      errorMessage.properties[key] = customProperty.validationMessage;
+    }
+
+    properties[key] = schema;
+  }
 
   return {
-    schema,
+    schema: {
+      additionalProperties: false, //do not allow additional properties
+      type: "object",
+      required,
+      errorMessage,
+      properties,
+    },
   };
 };
 
