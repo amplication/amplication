@@ -86,10 +86,23 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
                   title="Validation"
                   subTitle="Use regex to validate the property value"
                 />
-                <TextField name="validationRule" label="Validation (Regex)" />
+                <TextField
+                  name="validationRule"
+                  label="Validation (Regex)"
+                  placeholder="^.{4}$"
+                  inputToolTip={{
+                    content:
+                      "Use regex to validate the property value. For example, ^.{4}$ will require the field to be 4 characters long.",
+                  }}
+                />
                 <TextField
                   name="validationMessage"
                   label="Validation Message"
+                  placeholder="Field must be 4 characters long"
+                  inputToolTip={{
+                    content:
+                      "The message that will be displayed if the validation fails.",
+                  }}
                 />
               </>
             )}
