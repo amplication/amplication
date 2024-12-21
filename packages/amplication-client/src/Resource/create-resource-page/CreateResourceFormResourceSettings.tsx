@@ -52,7 +52,10 @@ export const CreateResourceFormResourceSettings = ({
         </FlexItem>
         <Panel panelStyle={EnumPanelStyle.Bordered}>
           <FormColumns>
-            <ResourceSettingsFormFields blueprintId={blueprintId} />
+            <ResourceSettingsFormFields
+              blueprintId={blueprintId}
+              fieldNamePrefix="settings."
+            />
           </FormColumns>
         </Panel>
       </div>

@@ -5,7 +5,7 @@ import useBlueprintCustomPropertiesMap from "../CustomProperties/hooks/useBluepr
 
 type Props = {
   blueprintId: string;
-  fieldNamePrefix?: string;
+  fieldNamePrefix: string;
 };
 
 export const ResourceSettingsFormFields = ({

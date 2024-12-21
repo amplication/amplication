@@ -5,11 +5,14 @@ import {
   Snackbar,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useResourceSettings from "./hooks/useResourceSettings";
 import { ResourceSettingsFormFields } from "./ResourceSettingsFormFields";
+import { validate } from "../util/formikValidateJsonSchema";
+import { useAppContext } from "../context/appContext";
+import getPropertiesValidationSchemaUtil from "../CustomProperties/getPropertiesValidationSchemaUtil";
 
 type Props = {
   resource: models.Resource;
@@ -24,6 +27,10 @@ function ResourceSettingsForm({ resource }: Props) {
     updateError: error,
     loading,
   } = useResourceSettings(resource?.id);
+
+  const {
+    blueprintsMap: { blueprintsMapById },
+  } = useAppContext();
 
   const handleSubmit = useCallback(
     (data: models.ResourceSettings) => {
@@ -41,6 +48,27 @@ function ResourceSettingsForm({ resource }: Props) {
     [updateResourceSettings, resource]
   );
 
+  const validationSchema = useMemo(() => {
+    const blueprint = blueprintsMapById[resource?.blueprintId];
+
+    const settingsSchema =
+      blueprint &&
+      getPropertiesValidationSchemaUtil(Object.values(blueprint.properties));
+
+    const schema = {
+      properties: {
+        settings: {
+          type: "object",
+          properties: {
+            properties: settingsSchema.schema,
+          },
+        },
+      },
+    };
+
+    return schema;
+  }, [blueprintsMapById, resource?.blueprintId]);
+
   const errorMessage = formatError(error);
   return (
     <div className={CLASS_NAME}>
@@ -48,6 +76,9 @@ function ResourceSettingsForm({ resource }: Props) {
         initialValues={resourceSettings || { properties: {} }}
         enableReinitialize
         onSubmit={handleSubmit}
+        validate={(values: models.ResourceSettings) =>
+          validate(values, validationSchema)
+        }
       >
         {(formik) => {
           return (

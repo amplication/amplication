@@ -29,7 +29,7 @@ import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import { useHistory } from "react-router-dom";
 import { useCatalogContext } from "../../Catalog/CatalogContext";
 import { useAppContext } from "../../context/appContext";
-import useCustomPropertiesValidationSchema from "../../CustomProperties/hooks/useCustomPropertiesValidationSchema";
+import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -142,7 +142,10 @@ const CreateResourceForm = ({ projectId }: Props) => {
   const history = useHistory();
   const { reloadCatalog } = useCatalogContext();
 
-  const { customPropertiesMap } = useAppContext();
+  const {
+    customPropertiesMap,
+    blueprintsMap: { blueprintsMapById },
+  } = useAppContext();
 
   const handleComponentCreated = useCallback(
     (component: models.Resource) => {
@@ -152,17 +155,40 @@ const CreateResourceForm = ({ projectId }: Props) => {
     [baseUrl, history, reloadCatalog]
   );
 
-  const propertiesSchema = useCustomPropertiesValidationSchema({
-    customProperties: Object.values(customPropertiesMap),
-  });
+  const propertiesSchema = useMemo(() => {
+    return getPropertiesValidationSchemaUtil(
+      Object.values(customPropertiesMap)
+    );
+  }, [customPropertiesMap]);
 
-  const formSchema = {
-    ...FORM_SCHEMA,
-    properties: {
-      ...FORM_SCHEMA.properties,
-      properties: propertiesSchema.schema,
+  const getValidationSchema = useCallback(
+    (blueprintId: string) => {
+      const blueprint = blueprintsMapById[blueprintId];
+
+      const settingsSchema =
+        blueprint &&
+        getPropertiesValidationSchemaUtil(Object.values(blueprint.properties));
+
+      const schema: any = {
+        ...FORM_SCHEMA,
+        properties: {
+          ...FORM_SCHEMA.properties,
+          properties: propertiesSchema.schema,
+        },
+      };
+
+      if (settingsSchema) {
+        schema.properties.settings = {
+          type: "object",
+          properties: {
+            properties: settingsSchema.schema,
+          },
+        };
+      }
+      return schema;
     },
-  };
+    [blueprintsMapById, propertiesSchema.schema]
+  );
 
   const { createComponent, loadingCreateComponent } = useCreateComponent({
     onComponentCreated: handleComponentCreated,
@@ -245,7 +271,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
       <Formik
         initialValues={initialValue}
         validate={(values: CreateResourceFormType) =>
-          validate(values, formSchema)
+          validate(values, getValidationSchema(values.blueprint?.connect?.id))
         }
         enableReinitialize
         onSubmit={handleSubmit}

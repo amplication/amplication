@@ -1,13 +1,10 @@
 import { isEmpty } from "lodash";
-import * as models from "../../models";
+import * as models from "../models";
 
-type Props = {
-  customProperties: models.CustomProperty[];
-};
 //return a JSON Schema object that can be used to validate the custom properties
-const useCustomPropertiesValidationSchema = (props: Props) => {
-  const { customProperties } = props;
-
+const getPropertiesValidationSchemaUtil = (
+  customProperties: models.CustomProperty[]
+) => {
   const schema = customProperties.reduce(
     (acc, property) => {
       acc.properties[property.key] = {
@@ -42,4 +39,4 @@ const useCustomPropertiesValidationSchema = (props: Props) => {
   };
 };
 
-export default useCustomPropertiesValidationSchema;
+export default getPropertiesValidationSchemaUtil;
