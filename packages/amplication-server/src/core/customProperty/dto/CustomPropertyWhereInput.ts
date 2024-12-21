@@ -32,5 +32,10 @@ export class CustomPropertyWhereInput {
   })
   blueprint?: BlueprintWhereInput | null;
 
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  enabled?: boolean | null;
+
   workspace?: WorkspaceWhereInput | null;
 }
