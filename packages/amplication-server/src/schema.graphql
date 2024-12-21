@@ -529,6 +529,7 @@ input CustomPropertyWhereInput {
   blueprint: BlueprintWhereInput
   blueprintId: String
   deletedAt: DateTimeFilter
+  enabled: Boolean
   id: String
   name: StringFilter
 }
