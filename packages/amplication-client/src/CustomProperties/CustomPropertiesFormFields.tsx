@@ -1,4 +1,3 @@
-import { EnumFlexItemMargin, FlexItem } from "@amplication/ui/design-system";
 import { useAppContext } from "../context/appContext";
 import CustomPropertiesFormField from "./CustomPropertiesFormField";
 
@@ -14,7 +13,6 @@ function CustomPropertiesFormFields() {
           fieldNamePrefix=""
         />
       ))}
-      <FlexItem margin={EnumFlexItemMargin.Both} />
     </>
   );
 }

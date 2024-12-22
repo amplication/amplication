@@ -145,6 +145,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
   const {
     customPropertiesMap,
     blueprintsMap: { blueprintsMapById },
+    currentWorkspace,
   } = useAppContext();
 
   const handleComponentCreated = useCallback(
@@ -258,6 +259,13 @@ const CreateResourceForm = ({ projectId }: Props) => {
     [projectId, customPropertiesMap]
   );
 
+  const handleProjectChange = useCallback(
+    (projectId: string) => {
+      history.push(`/${currentWorkspace?.id}/${projectId}/new-resource`);
+    },
+    [currentWorkspace?.id, history]
+  );
+
   return (
     <>
       <Text textStyle={EnumTextStyle.H3}>
@@ -281,21 +289,35 @@ const CreateResourceForm = ({ projectId }: Props) => {
             <HorizontalRule />
             <div>
               <FlexItem margin={EnumFlexItemMargin.Both}>
-                <Text textStyle={EnumTextStyle.H4}>General</Text>
+                <Text textStyle={EnumTextStyle.H4}>Project and Blueprint</Text>
               </FlexItem>
               <Panel panelStyle={EnumPanelStyle.Bordered}>
                 <FormColumns>
-                  <DisplayNameField name="name" label="Name" minLength={1} />
+                  <ProjectSelectField
+                    name="project.connect.id"
+                    label="Project"
+                    onChange={handleProjectChange}
+                  />
                   <BlueprintSelectField
                     name="blueprint.connect.id"
                     label="Blueprint"
                     isMulti={false}
                   />
-                  <ProjectSelectField
-                    name="project.connect.id"
-                    label="Project"
-                  />
+                </FormColumns>
+              </Panel>
+            </div>
+
+            <div>
+              <FlexItem margin={EnumFlexItemMargin.Both}>
+                <Text textStyle={EnumTextStyle.H4}>Resource</Text>
+              </FlexItem>
+              <Panel panelStyle={EnumPanelStyle.Bordered}>
+                <FormColumns>
+                  <DisplayNameField name="name" label="Name" minLength={1} />
+
                   <SelectField name="Owner" label="owner" options={[]} />
+
+                  <CustomPropertiesFormFields />
                   <TextField
                     name={"description"}
                     label={"Description"}
@@ -314,22 +336,10 @@ const CreateResourceForm = ({ projectId }: Props) => {
             />
             <div>
               <FlexItem margin={EnumFlexItemMargin.Both}>
-                <Text textStyle={EnumTextStyle.H4}>
-                  Connect to Git Repository
-                </Text>
+                <Text textStyle={EnumTextStyle.H4}>Git Repository</Text>
               </FlexItem>
               <Panel panelStyle={EnumPanelStyle.Bordered}>
                 <ResourceGitSettingsWithOverrideWizard formik={formik} />
-              </Panel>
-            </div>
-            <div>
-              <FlexItem margin={EnumFlexItemMargin.Both}>
-                <Text textStyle={EnumTextStyle.H4}>Catalog Properties</Text>
-              </FlexItem>
-              <Panel panelStyle={EnumPanelStyle.Bordered}>
-                <FormColumns>
-                  <CustomPropertiesFormFields />
-                </FormColumns>
               </Panel>
             </div>
             <HorizontalRule />

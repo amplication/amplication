@@ -149,17 +149,15 @@ export const SelectPanel: React.FC<Props> = ({
           type="button"
           disabled={disabled}
         >
-          {selectedItems.length > 0 ? (
-            selectedItems.map((item) => (
-              <SelectPanelItemContent
-                key={item.value}
-                item={item}
-                isMulti={isMulti}
-              />
-            ))
-          ) : (
-            <Text textStyle={EnumTextStyle.Description}>{label}</Text>
-          )}
+          {selectedItems.length > 0
+            ? selectedItems.map((item) => (
+                <SelectPanelItemContent
+                  key={item.value}
+                  item={item}
+                  isMulti={isMulti}
+                />
+              ))
+            : label}
         </Button>
       </Popover>
     </div>
