@@ -11,12 +11,16 @@ type Props = {
   onChange: (value: string) => void;
   selectedValue: string;
   allProjectsItem?: OptionItem;
+  buttonStyle?: EnumButtonStyle;
+  label?: string;
 };
 
 const ProjectSelector = ({
   onChange,
   selectedValue,
   allProjectsItem,
+  buttonStyle = EnumButtonStyle.Text,
+  label = "Project",
 }: Props) => {
   const { projectsList } = useAppContext();
 
@@ -41,12 +45,12 @@ const ProjectSelector = ({
       isMulti={false}
       onChange={onChange}
       options={options}
-      label="Project"
+      label={label}
       openButtonProps={{
         icon: "chevron_up",
       }}
       buttonProps={{
-        buttonStyle: EnumButtonStyle.Text,
+        buttonStyle: buttonStyle,
         icon: "chevron_down",
         iconPosition: EnumIconPosition.Right,
       }}

@@ -29,6 +29,7 @@ export type Props = {
   isCreatable?: boolean;
   disabled?: boolean;
   inputToolTip?: InputToolTipProps | undefined;
+  onChange?: (value: string | string[]) => void;
 };
 
 export const SelectField = ({
@@ -40,22 +41,29 @@ export const SelectField = ({
   isCreatable,
   disabled,
   inputToolTip,
+  onChange,
 }: Props) => {
   const [field, meta, { setValue }] = useField<string | string[]>(name);
 
   const handleChange = useCallback(
     (selected: MultiValue<OptionItem> | SingleValue<OptionItem>) => {
       // React Select emits values instead of event onChange
+      let newValue;
+
       if (!selected) {
-        setValue([]);
+        newValue = isMulti ? [] : "";
       } else {
-        const values = isMulti
+        newValue = isMulti
           ? (selected as OptionItem[]).map((option: OptionItem) => option.value)
           : (selected as OptionItem).value;
-        setValue(values);
+      }
+      setValue(newValue);
+
+      if (onChange) {
+        onChange(newValue);
       }
     },
-    [setValue, isMulti]
+    [onChange, setValue, isMulti]
   );
 
   const value = useMemo(() => {
