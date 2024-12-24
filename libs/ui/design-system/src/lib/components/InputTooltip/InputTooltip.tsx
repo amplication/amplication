@@ -15,6 +15,7 @@ export function InputTooltip({
   return (
     <span className={CLASS_NAME}>
       <Popover
+        disableHoverListener={false}
         className={classNames(`${CLASS_NAME}__popover`, className)}
         placement={placement}
         {...rest}

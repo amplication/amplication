@@ -33,6 +33,7 @@ import { OwnershipModule } from "../ownership/ownership.module";
 import { BlueprintModule } from "../blueprint/blueprint.module";
 import { RelationModule } from "../relation/relation.module";
 import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
+import { CustomPropertyModule } from "../customProperty/customProperty.module";
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.mod
     BlueprintModule,
     RelationModule,
     ResourceSettingsModule,
+    CustomPropertyModule,
   ],
   providers: [
     ResourceService,

@@ -223,9 +223,10 @@ export class ResourceResolver {
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async updateResource(
-    @Args() args: UpdateOneResourceArgs
+    @Args() args: UpdateOneResourceArgs,
+    @UserEntity() user: User
   ): Promise<Resource | null> {
-    return this.resourceService.updateResource(args);
+    return this.resourceService.updateResource(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

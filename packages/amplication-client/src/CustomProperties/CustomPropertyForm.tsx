@@ -1,4 +1,9 @@
-import { Form, TextField, SelectField } from "@amplication/ui/design-system";
+import {
+  Form,
+  TextField,
+  ToggleField,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
@@ -23,9 +28,15 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "options",
 ];
 
+const NON_VALIDATED_TYPES = [
+  models.EnumCustomPropertyType.Select,
+  models.EnumCustomPropertyType.MultiSelect,
+];
+
 export const INITIAL_VALUES: Partial<models.CustomProperty> = {
   name: "",
   description: "",
+  required: false,
 };
 
 const FORM_SCHEMA = {
@@ -56,16 +67,47 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
         enableReinitialize
         onSubmit={onSubmit}
       >
-        <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
+        {(formik) => (
+          <Form childrenAsBlocks>
+            <FormikAutoSave debounceMS={1000} />
 
-          <DisplayNameField name="name" label="Name" minLength={1} />
-          <TextField name="key" label="Key" />
+            <DisplayNameField name="name" label="Name" minLength={1} />
+            <TextField name="key" label="Key" />
 
-          <OptionalDescriptionField name="description" label="Description" />
+            <OptionalDescriptionField name="description" label="Description" />
+            <div>
+              <ToggleField name="required" label="Required" />
+            </div>
+            <CustomPropertyTypeSelectField name="type" label="Type" />
 
-          <CustomPropertyTypeSelectField name="type" label="Type" />
-        </Form>
+            {!NON_VALIDATED_TYPES.includes(formik.values.type) && (
+              <>
+                <TabContentTitle
+                  title="Validation"
+                  subTitle="Use regex to validate the property value"
+                />
+                <TextField
+                  name="validationRule"
+                  label="Validation (Regex)"
+                  placeholder="^.{4}$"
+                  inputToolTip={{
+                    content:
+                      "Use regex to validate the property value. For example, ^.{4}$ will require the field to be 4 characters long.",
+                  }}
+                />
+                <TextField
+                  name="validationMessage"
+                  label="Validation Message"
+                  placeholder="Field must be 4 characters long"
+                  inputToolTip={{
+                    content:
+                      "The message that will be displayed if the validation fails.",
+                  }}
+                />
+              </>
+            )}
+          </Form>
+        )}
       </Formik>
     </>
   );

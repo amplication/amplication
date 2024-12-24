@@ -49,6 +49,21 @@ export class CustomProperty {
   })
   options?: CustomPropertyOption[] | null | undefined;
 
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  required: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  validationRule?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  validationMessage?: string;
+
   @Field(() => String, {
     nullable: true,
   })

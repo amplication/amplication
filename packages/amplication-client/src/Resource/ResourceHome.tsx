@@ -2,7 +2,6 @@ import { TabItem } from "@amplication/ui/design-system";
 import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -83,8 +82,6 @@ const ResourceHome = ({
     currentWorkspace,
     currentProject,
   ]);
-
-  useBreadcrumbs(currentResource?.name, match.url);
 
   const { build, buildPluginVersionMap } = useLastSuccessfulGitBuild(
     currentResource?.id

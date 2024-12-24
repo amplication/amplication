@@ -7,8 +7,8 @@ import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
-import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { BillingModule } from "../billing/billing.module";
 @Module({
   imports: [
     UserModule,
@@ -18,8 +18,9 @@ import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentA
     ModuleActionModule,
     ModuleDtoModule,
     SegmentAnalyticsModule,
+    BillingModule,
   ],
-  providers: [ModuleService, BillingService, ModuleResolver],
+  providers: [ModuleService, ModuleResolver],
   exports: [ModuleService, ModuleResolver],
 })
 export class ModuleModule {}

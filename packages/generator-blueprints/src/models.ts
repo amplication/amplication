@@ -495,8 +495,11 @@ export type CustomProperty = {
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
   options?: Maybe<Array<CustomPropertyOption>>;
+  required: Scalars['Boolean']['output'];
   type: EnumCustomPropertyType;
   updatedAt: Scalars['DateTime']['output'];
+  validationMessage?: Maybe<Scalars['String']['output']>;
+  validationRule?: Maybe<Scalars['String']['output']>;
 };
 
 export type CustomPropertyCreateInput = {
@@ -530,7 +533,10 @@ export type CustomPropertyUpdateInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
   type?: InputMaybe<EnumCustomPropertyType>;
+  validationMessage?: InputMaybe<Scalars['String']['input']>;
+  validationRule?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CustomPropertyWhereInput = {

@@ -17,4 +17,13 @@ export class CustomPropertyUpdateInput {
 
   @Field(() => EnumCustomPropertyType, { nullable: true })
   type?: keyof typeof EnumCustomPropertyType | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  required?: boolean | undefined;
+
+  @Field(() => String, { nullable: true })
+  validationRule?: string | undefined;
+
+  @Field(() => String, { nullable: true })
+  validationMessage?: string | undefined;
 }

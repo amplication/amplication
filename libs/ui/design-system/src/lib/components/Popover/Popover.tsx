@@ -15,11 +15,12 @@ export function Popover({
   content,
   children,
   onClose,
+  disableHoverListener = true,
   ...props
 }: Props) {
   return (
     <Tooltip
-      disableHoverListener
+      disableHoverListener={disableHoverListener}
       onClose={(event) => {
         //raise the onclose event if it is a keyboard event
         if (event.type === "keydown") {

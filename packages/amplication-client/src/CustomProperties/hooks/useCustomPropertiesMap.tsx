@@ -14,6 +14,11 @@ const useCustomPropertiesMap = () => {
   useQuery<TFindData>(GET_CUSTOM_PROPERTIES_MAP, {
     fetchPolicy: "no-cache",
     notifyOnNetworkStatusChange: true,
+    variables: {
+      where: {
+        enabled: true,
+      },
+    },
     onCompleted: (data) => {
       if (data) {
         const customPropertiesMap = data.customProperties.reduce(
