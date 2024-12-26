@@ -49,7 +49,7 @@ function DeleteResourceButton({ resource }: Props) {
         id: cache.identify({ __typename: "Resource", id: deletedResourceId }),
       });
 
-      // Optional: Run garbage collection to remove any dangling references
+      // Run garbage collection to remove any dangling references
       cache.gc();
     },
   });
