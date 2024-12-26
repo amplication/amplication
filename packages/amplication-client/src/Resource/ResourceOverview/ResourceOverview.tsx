@@ -17,22 +17,22 @@ import {
 import { useStiggContext } from "@stigg/react-sdk";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
-import ResourceTypeBadge from "../Components/ResourceTypeBadge";
-import PageContent from "../Layout/PageContent";
-import ResourceRelations from "../Relation/ResourceRelations";
-import ResourceOwner from "../Workspaces/ResourceOwner";
-import { useAppContext } from "../context/appContext";
-import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
-import APIsTile from "./APIsTile";
-import AddResourceFunctionalityButton from "./AddResourceFunctionalityButton";
-import EntitiesTile from "./EntitiesTile";
-import { PluginsTile } from "./PluginsTile";
+import { CodeGeneratorImage } from "../../Components/CodeGeneratorImage";
+import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
+import PageContent from "../../Layout/PageContent";
+import ResourceRelations from "../../Relation/ResourceRelations";
+import ResourceOwner from "../../Workspaces/ResourceOwner";
+import { useAppContext } from "../../context/appContext";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
+import APIsTile from "../APIsTile";
+import AddResourceFunctionalityButton from "../AddResourceFunctionalityButton";
+import EntitiesTile from "../EntitiesTile";
+import { PluginsTile } from "../PluginsTile";
 import "./ResourceOverview.scss";
-import { ServicesTile } from "./ServicesTile";
-import { TopicsTile } from "./TopicsTile";
-import ResourceGitStatusPanel from "./git/ResourceGitStatusPanel";
-import { useResourceSummary } from "./hooks/useResourceSummary";
+import { ServicesTile } from "../ServicesTile";
+import { TopicsTile } from "../TopicsTile";
+import ResourceGitStatusPanel from "../git/ResourceGitStatusPanel";
+import { useResourceSummary } from "../hooks/useResourceSummary";
 
 const PAGE_TITLE = "Resource Overview";
 
