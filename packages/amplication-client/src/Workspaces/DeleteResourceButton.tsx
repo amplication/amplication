@@ -27,7 +27,6 @@ function DeleteResourceButton({ resource }: Props) {
   const { name, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { trackEvent } = useTracking();
-  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error | null>(null);
 
   const { addEntity } = useAppContext();
@@ -45,23 +44,13 @@ function DeleteResourceButton({ resource }: Props) {
       if (!data) return;
       const deletedResourceId = data.deleteResource.id;
 
-      cache.modify({
-        fields: {
-          resources(existingResourceRefs, { readField }) {
-            return existingResourceRefs.filter(
-              (resourceRef: Reference) =>
-                deletedResourceId !== readField("id", resourceRef)
-            );
-          },
-          serviceTemplates(existingResourceRefs, { readField }) {
-            return existingResourceRefs.filter(
-              (resourceRef: Reference) =>
-                deletedResourceId !== readField("id", resourceRef)
-            );
-          },
-        },
+      // Evict the deleted item from the cache
+      cache.evict({
+        id: cache.identify({ __typename: "Resource", id: deletedResourceId }),
       });
-      refreshData();
+
+      // Optional: Run garbage collection to remove any dangling references
+      cache.gc();
     },
   });
 
