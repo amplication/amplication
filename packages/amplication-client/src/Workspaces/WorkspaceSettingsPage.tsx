@@ -2,12 +2,11 @@ import React, { useMemo } from "react";
 
 import { TabItem } from "@amplication/ui/design-system";
 import { match } from "react-router-dom";
-import InnerPageLayout from "../Layout/InnerPageLayout";
+import InnerTabLink from "../Layout/InnerTabLink";
+import PageContent from "../Layout/PageContent";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppRouteProps } from "../routes/routesUtil";
 import WorkspaceForm from "./WorkspaceForm";
-import PageContent from "../Layout/PageContent";
-import InnerTabLink from "../Layout/InnerTabLink";
 
 const OVERVIEW = "General";
 
