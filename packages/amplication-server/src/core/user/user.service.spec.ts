@@ -1,6 +1,6 @@
 import { Prisma, PrismaService } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Role } from "../../enums/EnumRole";
+import { EnumRole } from "../../enums/EnumRole";
 import { Account, User, UserRole } from "../../models";
 import { UserService } from "./user.service";
 import { BillingService } from "../billing/billing.service";
@@ -12,13 +12,13 @@ import { PreviewUserService } from "../auth/previewUser.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
-const EXISTING_ROLE = Role.User;
-const NON_EXISTING_ROLE = Role.Admin;
+const EXISTING_ROLE = EnumRole.User;
+const NON_EXISTING_ROLE = EnumRole.Admin;
 const EXAMPLE_USER_ROLE: UserRole = {
   id: EXAMPLE_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  role: Role.User,
+  role: EnumRole.User,
 };
 
 const EXAMPLE_FIRST_NAME = "ExampleFirstName";
