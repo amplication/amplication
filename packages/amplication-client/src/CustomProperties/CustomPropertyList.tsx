@@ -1,7 +1,6 @@
 import {
   CircularProgress,
   EnabledIndicator,
-  EnumFlexItemMargin,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -11,6 +10,7 @@ import {
   ListItem,
   SearchField,
   Snackbar,
+  TabContentTitle,
   Text,
 } from "@amplication/ui/design-system";
 import React, { useCallback } from "react";
@@ -81,9 +81,9 @@ export const CustomPropertyList = React.memo(() => {
 
   return (
     <div className={CLASS_NAME}>
+      <TabContentTitle title="Catalog Properties" />
       <FlexItem
-        margin={EnumFlexItemMargin.Bottom}
-        itemsAlign={EnumItemsAlign.Center}
+        itemsAlign={EnumItemsAlign.End}
         end={
           <SearchField
             label="search"

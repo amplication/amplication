@@ -30,6 +30,7 @@ const WorkspaceSettingsPage: React.FC<Props> = ({
         name: OVERVIEW,
         to: match.url,
         exact: true,
+        iconName: "app-settings",
       },
       ...(tabs || []),
     ];
@@ -41,7 +42,7 @@ const WorkspaceSettingsPage: React.FC<Props> = ({
       sideContent={
         <>
           {tabItems.map((tab) => (
-            <InnerTabLink to={tab.to} icon="app-settings" exact={tab.exact}>
+            <InnerTabLink to={tab.to} icon={tab.iconName} exact={tab.exact}>
               {tab.name}
             </InnerTabLink>
           ))}

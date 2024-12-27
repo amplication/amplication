@@ -1,20 +1,20 @@
 import {
   CircularProgress,
-  EnumFlexDirection,
-  EnumFlexItemMargin,
-  EnumGapSize,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
+  Icon,
+  List,
+  ListItem,
   SearchField,
   Snackbar,
+  TabContentTitle,
   Text,
 } from "@amplication/ui/design-system";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
-import InnerTabLink from "../Layout/InnerTabLink";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
@@ -55,31 +55,36 @@ export const RoleList = React.memo(() => {
 
   return (
     <div className={CLASS_NAME}>
+      <TabContentTitle title="Roles" />
       <FlexItem
-        margin={EnumFlexItemMargin.Bottom}
-        end={loading && <CircularProgress centerToParent />}
+        itemsAlign={EnumItemsAlign.End}
+        end={
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        }
       >
         <Text textStyle={EnumTextStyle.Tag}>
           {data?.roles.length || "0"}{" "}
           {pluralize(data?.roles.length, "Role", "Roles")}
         </Text>
+        {loading && <CircularProgress />}
       </FlexItem>
-      {<NewRole disabled={!data?.roles} onRoleAdd={handleRoleChange} />}
-      <HorizontalRule />
-      <SearchField
-        label="search"
-        placeholder="search"
-        onChange={handleSearchChange}
-      />
 
-      <FlexItem
-        margin={EnumFlexItemMargin.Top}
-        direction={EnumFlexDirection.Column}
-        itemsAlign={EnumItemsAlign.Stretch}
-        gap={EnumGapSize.None}
+      <HorizontalRule />
+
+      <List
+        headerContent={
+          <NewRole disabled={!data?.roles} onRoleAdd={handleRoleChange} />
+        }
       >
         {data?.roles?.map((role) => (
-          <InnerTabLink icon="roles" to={`${baseUrl}/roles/${role.id}`}>
+          <ListItem
+            to={`${baseUrl}/roles/${role.id}`}
+            start={<Icon icon="roles_outline" />}
+          >
             <FlexItem
               singeChildWithEllipsis
               itemsAlign={EnumItemsAlign.Center}
@@ -96,9 +101,9 @@ export const RoleList = React.memo(() => {
             >
               <span>{role.name}</span>
             </FlexItem>
-          </InnerTabLink>
+          </ListItem>
         ))}
-      </FlexItem>
+      </List>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

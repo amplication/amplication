@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import {
   CircularProgress,
   EnumTextStyle,
@@ -8,27 +7,24 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
+import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
-import * as models from "../models";
-import { formatError } from "../util/error";
-import InviteMember from "./InviteMember";
-import MemberListItem from "./MemberListItem";
-import { pluralize } from "../util/pluralize";
-import PageContent from "../Layout/PageContent";
+import { useCallback, useState } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { useStiggContext } from "@stigg/react-sdk";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import { pluralize } from "../util/pluralize";
+import InviteMember from "./InviteMember";
+import MemberListItem from "./MemberListItem";
 
 export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
 };
 
 const CLASS_NAME = "member-list";
-const PAGE_TITLE = "Members";
 
 function MemberList() {
-  const { refreshData } = useStiggContext();
   const [error, setError] = useState<Error>();
   const {
     data,
@@ -43,14 +39,10 @@ function MemberList() {
     refetch();
   }, [refetch]);
 
-  useEffect(() => {
-    refreshData();
-  }, []);
-
   return (
     <div className={CLASS_NAME}>
       <FlexItem end={<InviteMember />}>
-        <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
+        <Text textStyle={EnumTextStyle.H4}>Users</Text>
       </FlexItem>
 
       <HorizontalRule />

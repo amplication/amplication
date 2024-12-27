@@ -15,6 +15,7 @@ export interface RouteDef {
   routeTrackType?: string;
   permission?: boolean;
   isAnalytics?: boolean;
+  iconName?: string;
 }
 
 export const Routes: RouteDef[] = [
@@ -73,15 +74,15 @@ export const Routes: RouteDef[] = [
             Component: lazy(
               () => import("../Workspaces/WorkspaceSettingsPage")
             ),
-            moduleName: "",
+            moduleName: "app-settings",
             displayName: "Settings",
             exactPath: false,
             tabRoutes: [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/members",
                 Component: lazy(() => import("../Workspaces/MemberList")),
-                moduleName: "",
-                displayName: "Members",
+                iconName: "user",
+                displayName: "Users",
                 exactPath: true,
                 routes: [],
                 isAnalytics: true,
@@ -89,14 +90,13 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams",
                 Component: lazy(() => import("../Teams/TeamsPage")),
-                moduleName: "",
+                iconName: "users",
                 displayName: "Teams",
                 exactPath: false,
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams/:team([A-Za-z0-9-]{20,})",
                     Component: lazy(() => import("../Teams/Team")),
-                    moduleName: "",
                     displayName: "Team",
                     exactPath: true,
                     routes: [],
@@ -108,7 +108,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles",
                 Component: lazy(() => import("../Roles/RolesPage")),
-                moduleName: "",
+                iconName: "roles_outline",
                 displayName: "Roles",
                 exactPath: false,
                 routes: [
@@ -130,7 +130,7 @@ export const Routes: RouteDef[] = [
                 Component: lazy(
                   () => import("../CustomProperties/CustomPropertiesPage")
                 ),
-                moduleName: "",
+                iconName: "multi_select_option_set",
                 displayName: "Catalog Properties",
                 exactPath: false,
                 routes: [
