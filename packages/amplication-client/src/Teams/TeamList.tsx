@@ -25,11 +25,7 @@ import { TeamInfo } from "../Components/TeamInfo";
 
 const CLASS_NAME = "team-list";
 
-type Props = {
-  selectFirst?: boolean;
-};
-
-export const TeamList = React.memo(({ selectFirst = false }: Props) => {
+export const TeamList = React.memo(() => {
   const { currentWorkspace } = useAppContext();
 
   const baseUrl = `/${currentWorkspace?.id}/settings`;
@@ -58,14 +54,6 @@ export const TeamList = React.memo(({ selectFirst = false }: Props) => {
     },
     [history, baseUrl]
   );
-
-  useEffect(() => {
-    if (selectFirst && data && !isEmpty(data.teams)) {
-      const team = data.teams[0];
-      const fieldUrl = `${baseUrl}/teams/${team.id}`;
-      history.push(fieldUrl);
-    }
-  }, [data, selectFirst, history, baseUrl]);
 
   return (
     <div className={CLASS_NAME}>

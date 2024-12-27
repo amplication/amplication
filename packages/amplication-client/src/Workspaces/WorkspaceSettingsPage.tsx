@@ -6,6 +6,8 @@ import InnerPageLayout from "../Layout/InnerPageLayout";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppRouteProps } from "../routes/routesUtil";
 import WorkspaceForm from "./WorkspaceForm";
+import PageContent from "../Layout/PageContent";
+import InnerTabLink from "../Layout/InnerTabLink";
 
 const OVERVIEW = "General";
 
@@ -34,7 +36,18 @@ const WorkspaceSettingsPage: React.FC<Props> = ({
   }, [tabs, match.url]);
 
   return (
-    <InnerPageLayout tabs={tabItems}>
+    <PageContent
+      pageTitle={"Settings"}
+      sideContent={
+        <>
+          {tabItems.map((tab) => (
+            <InnerTabLink to={tab.to} icon="app-settings" exact={tab.exact}>
+              {tab.name}
+            </InnerTabLink>
+          ))}
+        </>
+      }
+    >
       {match.isExact ? (
         <>
           <WorkspaceForm />
@@ -42,7 +55,7 @@ const WorkspaceSettingsPage: React.FC<Props> = ({
       ) : (
         tabRoutes
       )}
-    </InnerPageLayout>
+    </PageContent>
   );
 };
 

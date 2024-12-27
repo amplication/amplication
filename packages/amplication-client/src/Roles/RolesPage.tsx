@@ -1,10 +1,7 @@
 import React from "react";
-import { match, useRouteMatch } from "react-router-dom";
-import { isEmpty } from "lodash";
-import PageContent from "../Layout/PageContent";
-import Role from "./Role";
-import { RoleList } from "./RoleList";
+import { match } from "react-router-dom";
 import { AppRouteProps } from "../routes/routesUtil";
+import { RoleList } from "./RoleList";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -13,25 +10,8 @@ type Props = AppRouteProps & {
 };
 
 const RolesPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
-  const pageTitle = "Roles";
-
-  const roleMatch = useRouteMatch<{ roleId: string }>([
-    "/:workspace/settings/roles/:roleId",
-  ]);
-
-  let roleId = null;
-  if (roleMatch) {
-    roleId = roleMatch.params.roleId;
-  }
-
   return (
-    <PageContent
-      pageTitle={pageTitle}
-      className="roles"
-      sideContent={<RoleList selectFirst={null === roleId} />}
-    >
-      {match.isExact ? !isEmpty(roleId) && <Role /> : innerRoutes}
-    </PageContent>
+    <div className="roles">{match.isExact ? <RoleList /> : innerRoutes}</div>
   );
 };
 

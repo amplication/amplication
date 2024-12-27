@@ -11,8 +11,7 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
@@ -24,11 +23,7 @@ import NewRole from "./NewRole";
 
 const CLASS_NAME = "role-list";
 
-type Props = {
-  selectFirst?: boolean;
-};
-
-export const RoleList = React.memo(({ selectFirst = false }: Props) => {
+export const RoleList = React.memo(() => {
   const { currentWorkspace } = useAppContext();
 
   const baseUrl = `/${currentWorkspace?.id}/settings`;
@@ -57,14 +52,6 @@ export const RoleList = React.memo(({ selectFirst = false }: Props) => {
     },
     [history, baseUrl]
   );
-
-  useEffect(() => {
-    if (selectFirst && data && !isEmpty(data.roles)) {
-      const role = data.roles[0];
-      const fieldUrl = `${baseUrl}/roles/${role.id}`;
-      history.push(fieldUrl);
-    }
-  }, [data, selectFirst, history, baseUrl]);
 
   return (
     <div className={CLASS_NAME}>
