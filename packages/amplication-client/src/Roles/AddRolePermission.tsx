@@ -12,8 +12,7 @@ import {
   SearchField,
   Text,
 } from "@amplication/ui/design-system";
-import { useEffect, useMemo, useState } from "react";
-import { UserInfo } from "../Components/UserInfo";
+import { useMemo, useState } from "react";
 import * as models from "../models";
 import useRoles from "./hooks/useRoles";
 
@@ -24,16 +23,12 @@ type Props = {
 
 const CLASS_NAME = "add-role-permission";
 
-const AVAILABLE_WORKSPACE_PERMISSIONS = [
-  "permission1",
-  "permission2",
-  "permission3",
-];
-
 const AddRolePermission = ({ role, onAddPermissions }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  const { rolesPermissionsList } = useRoles(role?.id);
 
   const handleSelectPermission = (userId: string) => {
     const checked = !selectedPermissions.includes(userId);
@@ -50,16 +45,20 @@ const AddRolePermission = ({ role, onAddPermissions }: Props) => {
   };
 
   const availableWorkspacePermissionsFiltered = useMemo(() => {
+    const unusedPermissions = rolesPermissionsList.filter(
+      (permission) => !role.permissions.includes(permission)
+    );
+
     if (!searchPhrase) {
-      return AVAILABLE_WORKSPACE_PERMISSIONS;
+      return unusedPermissions;
     }
 
     const lowerSearchPhrase = searchPhrase.toLowerCase();
 
-    return AVAILABLE_WORKSPACE_PERMISSIONS.filter((permission) =>
+    return unusedPermissions.filter((permission) =>
       permission.toLowerCase().includes(lowerSearchPhrase)
     );
-  }, [searchPhrase]);
+  }, [searchPhrase, rolesPermissionsList, role]);
 
   return (
     <>

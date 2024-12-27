@@ -1,5 +1,8 @@
 import {
+  Chip,
   CircularProgress,
+  EnumChipStyle,
+  EnumFlexDirection,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -89,14 +92,22 @@ export const RoleList = React.memo(() => {
               singeChildWithEllipsis
               itemsAlign={EnumItemsAlign.Center}
               end={
-                <Text textStyle={EnumTextStyle.Description}>
-                  {role.permissions.length}{" "}
-                  {pluralize(
-                    role.permissions.length,
-                    "Permission",
-                    "Permissions"
+                <FlexItem
+                  direction={EnumFlexDirection.Row}
+                  itemsAlign={EnumItemsAlign.Center}
+                >
+                  {role.permissions.includes("*") && (
+                    <Chip chipStyle={EnumChipStyle.ThemeBlue}>Admin</Chip>
                   )}
-                </Text>
+                  <Text textStyle={EnumTextStyle.Description}>
+                    {role.permissions.length}{" "}
+                    {pluralize(
+                      role.permissions.length,
+                      "Permission",
+                      "Permissions"
+                    )}
+                  </Text>
+                </FlexItem>
               }
             >
               <span>{role.name}</span>

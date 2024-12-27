@@ -11,7 +11,7 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useMemo } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
@@ -53,6 +53,10 @@ const RolePermissionList = React.memo(
     const loading =
       addPermissionsToRoleLoading || removePermissionsFromRoleLoading;
 
+    const orderedPermissions = useMemo(() => {
+      return role?.permissions?.sort((a, b) => a.localeCompare(b));
+    }, [role?.permissions]);
+
     return (
       <>
         <FlexItem
@@ -76,7 +80,7 @@ const RolePermissionList = React.memo(
           {loading && <CircularProgress />}
         </FlexItem>
         <List>
-          {role?.permissions?.map((permission) => (
+          {orderedPermissions?.map((permission) => (
             <ListItem
               end={
                 <Button
