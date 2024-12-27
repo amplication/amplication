@@ -105,6 +105,25 @@ export const Routes: RouteDef[] = [
                 ],
                 isAnalytics: true,
               },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles",
+                Component: lazy(() => import("../Roles/RolesPage")),
+                moduleName: "",
+                displayName: "Roles",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles/:role([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../Roles/Role")),
+                    moduleName: "",
+                    displayName: "Role",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
 
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
