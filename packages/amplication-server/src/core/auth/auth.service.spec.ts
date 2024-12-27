@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
-import { Role } from "../../enums/Role";
+import { EnumRole } from "../../enums/EnumRole";
 import { Env } from "../../env";
 import { Account, Project, Resource, User, Workspace } from "../../models";
 import { PrismaService, UserRole } from "../../prisma";
@@ -110,7 +110,7 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
 
 const EXAMPLE_USER_ROLE: UserRole = {
   id: "admin",
-  role: Role.Admin,
+  role: EnumRole.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_USER.id,
@@ -126,7 +126,7 @@ const EXAMPLE_OTHER_USER: User = {
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
   id: "otherAdmin",
-  role: Role.Admin,
+  role: EnumRole.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_OTHER_USER.id,

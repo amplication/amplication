@@ -1156,6 +1156,13 @@ enum EnumResourceTypeGroup {
   Services
 }
 
+enum EnumRole {
+  Admin
+  OrganizationAdmin
+  ProjectAdmin
+  User
+}
+
 enum EnumSchemaNames {
   Abby
   CalDotCom
@@ -1659,6 +1666,7 @@ input ModuleWhereInput {
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
   addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
@@ -1696,6 +1704,7 @@ type Mutation {
   createRelation(data: RelationCreateInput!): Relation!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  createRole(data: RoleCreateInput!): Role!
   createService(data: ResourceCreateInput!): Resource!
   createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
@@ -1726,6 +1735,7 @@ type Mutation {
   deleteRelation(where: WhereUniqueInput!): Relation!
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  deleteRole(where: WhereUniqueInput!): Role
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   deleteTeam(where: WhereUniqueInput!): Team
   deleteTopic(where: WhereUniqueInput!): Topic!
@@ -1741,6 +1751,7 @@ type Mutation {
   redeemCoupon(data: RedeemCouponInput!): Coupon!
   redesignProject(data: RedesignProjectInput!): UserAction!
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  removeRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
@@ -1785,6 +1796,7 @@ type Mutation {
   updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   updateResourceSettings(data: ResourceSettingsUpdateInput!, where: WhereUniqueInput!): ResourceSettings
+  updateRole(data: RoleUpdateInput!, where: WhereUniqueInput!): Role!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
@@ -2295,6 +2307,8 @@ type Query {
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
+  role(where: WhereUniqueInput!): Role
+  roles(orderBy: RoleOrderByInput, skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
@@ -2661,11 +2675,41 @@ input ResourceWhereInputWithPropertiesFilter {
   updatedAt: DateTimeFilter
 }
 
-enum Role {
-  Admin
-  OrganizationAdmin
-  ProjectAdmin
-  User
+type Role {
+  createdAt: DateTime!
+  description: String
+  id: String!
+  key: String!
+  name: String!
+  permissions: [String!]
+  updatedAt: DateTime!
+}
+
+input RoleAddRemovePermissionsInput {
+  permissions: [String!]!
+}
+
+input RoleCreateInput {
+  name: String!
+}
+
+input RoleOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input RoleUpdateInput {
+  description: String
+  key: String
+  name: String
+}
+
+input RoleWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  key: String
+  name: StringFilter
 }
 
 input ScaffoldServiceFromTemplateInput {
@@ -2982,7 +3026,7 @@ type UserAction {
 type UserRole {
   createdAt: DateTime!
   id: String!
-  role: Role!
+  role: EnumRole!
   updatedAt: DateTime!
 }
 

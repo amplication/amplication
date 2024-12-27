@@ -1,10 +1,9 @@
-import React, { useMemo } from "react";
+import { Form, TextField } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
-import * as models from "../models";
+import { useMemo } from "react";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import NameField from "../Components/NameField";
-import { TextField, Form } from "@amplication/ui/design-system";
+import * as models from "../models";
 import {
   validate,
   validationErrorMessages,
@@ -13,8 +12,8 @@ import {
 import FormikAutoSave from "../util/formikAutoSave";
 
 type Props = {
-  onSubmit: (values: models.ResourceRole) => void;
-  defaultValues?: models.ResourceRole;
+  onSubmit: (values: models.Role) => void;
+  defaultValues?: models.Role;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -22,32 +21,33 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "createdAt",
   "updatedAt",
   "__typename",
+  "permissions",
 ];
 
-export const INITIAL_VALUES: Partial<models.ResourceRole> = {
+export const INITIAL_VALUES: Partial<models.Role> = {
   name: "",
-  displayName: "",
+  key: "",
   description: "",
 };
 
 const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
-  required: ["displayName", "name"],
+  required: ["name", "key"],
   properties: {
-    displayName: {
+    name: {
       type: "string",
       minLength: 2,
     },
-    name: {
+    key: {
       type: "string",
       minLength: 2,
     },
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARACTERS,
       name: AT_LEAST_TWO_CHARACTERS,
+      key: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -61,30 +61,27 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
-    } as models.ResourceRole;
+    } as models.Role;
   }, [defaultValues]);
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validate={(values: models.ResourceRole) => validate(values, FORM_SCHEMA)}
-      enableReinitialize
-      onSubmit={onSubmit}
-    >
-      <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
+    <>
+      <Formik
+        initialValues={initialValues}
+        validate={(values: models.Role) => validate(values, FORM_SCHEMA)}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        <Form childrenAsBlocks>
+          <FormikAutoSave debounceMS={1000} />
 
-        <NameField name="name" />
+          <DisplayNameField name="name" label="Name" minLength={1} />
+          <DisplayNameField name="key" label="Key" minLength={1} />
 
-        <DisplayNameField
-          name="displayName"
-          label="Display Name"
-          minLength={1}
-        />
-
-        <TextField name="description" label="Description" textarea rows={3} />
-      </Form>
-    </Formik>
+          <TextField name="description" label="Description" textarea rows={3} />
+        </Form>
+      </Formik>
+    </>
   );
 };
 

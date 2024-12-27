@@ -1,22 +1,21 @@
 import {
   CircularProgress,
   EnabledIndicator,
-  EnumFlexDirection,
-  EnumFlexItemMargin,
-  EnumGapSize,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
+  Icon,
+  List,
+  ListItem,
   SearchField,
   Snackbar,
+  TabContentTitle,
   Text,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
-import InnerTabLink from "../Layout/InnerTabLink";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
@@ -50,99 +49,88 @@ export const CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON: {
   },
 };
 
-type Props = {
-  selectFirst?: boolean;
-};
+export const CustomPropertyList = React.memo(() => {
+  const { currentWorkspace } = useAppContext();
 
-export const CustomPropertyList = React.memo(
-  ({ selectFirst = false }: Props) => {
-    const { currentWorkspace } = useAppContext();
+  const baseUrl = `/${currentWorkspace?.id}/settings`;
 
-    const baseUrl = `/${currentWorkspace?.id}/settings`;
+  const {
+    setSearchPhrase,
+    findCustomPropertiesData: data,
+    findCustomPropertiesError: error,
+    findCustomPropertiesLoading: loading,
+  } = useCustomProperties();
 
-    const {
-      setSearchPhrase,
-      findCustomPropertiesData: data,
-      findCustomPropertiesError: error,
-      findCustomPropertiesLoading: loading,
-    } = useCustomProperties();
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
+  const history = useHistory();
 
-    const handleSearchChange = useCallback(
-      (value) => {
-        setSearchPhrase(value);
-      },
-      [setSearchPhrase]
-    );
-    const history = useHistory();
+  const errorMessage = formatError(error);
 
-    const errorMessage = formatError(error);
+  const handleCustomPropertyChange = useCallback(
+    (customProperty: models.CustomProperty) => {
+      const fieldUrl = `${baseUrl}/properties/${customProperty.id}`;
+      history.push(fieldUrl);
+    },
+    [history, baseUrl]
+  );
 
-    const handleCustomPropertyChange = useCallback(
-      (customProperty: models.CustomProperty) => {
-        const fieldUrl = `${baseUrl}/properties/${customProperty.id}`;
-        history.push(fieldUrl);
-      },
-      [history, baseUrl]
-    );
-
-    useEffect(() => {
-      if (selectFirst && data && !isEmpty(data.customProperties)) {
-        const customProperty = data.customProperties[0];
-        const fieldUrl = `${baseUrl}/properties/${customProperty.id}`;
-        history.push(fieldUrl);
-      }
-    }, [data, selectFirst, history, baseUrl]);
-
-    return (
-      <div className={CLASS_NAME}>
-        <FlexItem
-          margin={EnumFlexItemMargin.Bottom}
-          end={loading && <CircularProgress centerToParent />}
-        >
-          <Text textStyle={EnumTextStyle.Tag}>
-            {data?.customProperties.length || "0"}{" "}
-            {pluralize(data?.customProperties.length, "Property", "Properties")}
-          </Text>
-        </FlexItem>
-        {
+  return (
+    <div className={CLASS_NAME}>
+      <TabContentTitle title="Catalog Properties" />
+      <FlexItem
+        itemsAlign={EnumItemsAlign.End}
+        end={
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        }
+      >
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.customProperties.length || "0"}{" "}
+          {pluralize(data?.customProperties.length, "Property", "Properties")}
+        </Text>
+        {loading && <CircularProgress />}
+      </FlexItem>
+      <HorizontalRule />
+      <List
+        headerContent={
           <NewCustomProperty
-            disabled={!data?.customProperties}
+            //disabled={!data?.customProperties}
             onCustomPropertyAdd={handleCustomPropertyChange}
           />
         }
-        <HorizontalRule />
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-
-        <FlexItem
-          margin={EnumFlexItemMargin.Top}
-          direction={EnumFlexDirection.Column}
-          itemsAlign={EnumItemsAlign.Stretch}
-          gap={EnumGapSize.None}
-        >
-          {data?.customProperties?.map((customProperty) => (
-            <InnerTabLink
-              icon={
-                CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON[customProperty.type].icon
-              }
-              to={`${baseUrl}/properties/${customProperty.id}`}
-              key={customProperty.id}
+      >
+        {data?.customProperties?.map((customProperty) => (
+          <ListItem
+            to={`${baseUrl}/properties/${customProperty.id}`}
+            key={customProperty.id}
+            start={
+              <Icon
+                icon={
+                  CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON[customProperty.type]
+                    .icon
+                }
+              />
+            }
+          >
+            <FlexItem
+              singeChildWithEllipsis
+              itemsAlign={EnumItemsAlign.Center}
+              end={<EnabledIndicator enabled={customProperty.enabled} />}
             >
-              <FlexItem
-                singeChildWithEllipsis
-                itemsAlign={EnumItemsAlign.Center}
-                end={<EnabledIndicator enabled={customProperty.enabled} />}
-              >
-                <span>{customProperty.name}</span>
-              </FlexItem>
-            </InnerTabLink>
-          ))}
-        </FlexItem>
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </div>
-    );
-  }
-);
+              <span>{customProperty.name}</span>
+            </FlexItem>
+          </ListItem>
+        ))}
+      </List>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
+    </div>
+  );
+});

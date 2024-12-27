@@ -196,10 +196,12 @@ const useTeams = (teamId?: string) => {
             userIds: userIds,
           },
         },
-      }).then(() => {
-        refetchAvailableMembers();
-        getTeamRefetch();
-      });
+      })
+        .then(() => {
+          refetchAvailableMembers();
+          getTeamRefetch();
+        })
+        .catch(console.error);
     },
     [addMembersToTeamInternal, teamId, refetchAvailableMembers, getTeamRefetch]
   );
@@ -223,10 +225,12 @@ const useTeams = (teamId?: string) => {
             userIds: userIds,
           },
         },
-      }).then(() => {
-        refetchAvailableMembers();
-        getTeamRefetch();
-      });
+      })
+        .then(() => {
+          refetchAvailableMembers();
+          getTeamRefetch();
+        })
+        .catch(console.error);
     },
     [
       removeMembersFromTeamInternal,

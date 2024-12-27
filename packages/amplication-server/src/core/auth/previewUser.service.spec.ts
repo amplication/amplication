@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
 import { anyString } from "jest-mock-extended";
-import { Role } from "../../enums/Role";
+import { EnumRole } from "../../enums/EnumRole";
 import { Account, Project, Resource, User, Workspace } from "../../models";
 import { PrismaService, UserRole } from "../../prisma";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
@@ -89,7 +89,7 @@ const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
 
 const EXAMPLE_USER_ROLE: UserRole = {
   id: "admin",
-  role: Role.Admin,
+  role: EnumRole.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_USER.id,

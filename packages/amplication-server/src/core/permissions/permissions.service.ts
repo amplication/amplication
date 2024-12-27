@@ -90,6 +90,18 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (originType === AuthorizableOriginParameter.RoleId) {
+      const matching = await this.prisma.role.count({
+        where: {
+          deletedAt: null,
+          id: originId,
+          workspace: {
+            id: workspace.id,
+          },
+        },
+      });
+      return matching === 1;
+    }
     if (originType === AuthorizableOriginParameter.BlueprintId) {
       const matching = await this.prisma.blueprint.count({
         where: {

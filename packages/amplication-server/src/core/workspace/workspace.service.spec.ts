@@ -8,7 +8,7 @@ import { AccountService } from "../account/account.service";
 import { ResourceService } from "../resource/resource.service";
 import { MailService } from "../mail/mail.service";
 import { Workspace, Account, User, Project } from "../../models";
-import { Role } from "../../enums/Role";
+import { EnumRole } from "../../enums/EnumRole";
 import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
@@ -350,7 +350,7 @@ describe("WorkspaceService", () => {
               account: { connect: { id: args.accountId } },
               userRoles: {
                 create: {
-                  role: Role.OrganizationAdmin,
+                  role: EnumRole.OrganizationAdmin,
                 },
               },
               isOwner: true,
@@ -417,7 +417,7 @@ describe("WorkspaceService", () => {
               account: { connect: { id: args.accountId } },
               userRoles: {
                 create: {
-                  role: Role.OrganizationAdmin,
+                  role: EnumRole.OrganizationAdmin,
                 },
               },
               isOwner: true,
@@ -459,7 +459,7 @@ describe("WorkspaceService", () => {
               account: { connect: { id: args.accountId } },
               userRoles: {
                 create: {
-                  role: Role.OrganizationAdmin,
+                  role: EnumRole.OrganizationAdmin,
                 },
               },
               isOwner: true,
@@ -511,7 +511,7 @@ describe("WorkspaceService", () => {
               account: { connect: { id: args.accountId } },
               userRoles: {
                 create: {
-                  role: Role.OrganizationAdmin,
+                  role: EnumRole.OrganizationAdmin,
                 },
               },
               isOwner: true,
@@ -548,7 +548,7 @@ describe("WorkspaceService", () => {
             account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin,
+                role: EnumRole.OrganizationAdmin,
               },
             },
             isOwner: true,
