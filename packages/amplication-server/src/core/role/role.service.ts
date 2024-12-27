@@ -10,6 +10,7 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { RoleCreateArgs } from "./dto/RoleCreateArgs";
 import { RoleFindManyArgs } from "./dto/RoleFindManyArgs";
 import { UpdateRoleArgs } from "./dto/UpdateRoleArgs";
+import { RoleAddRemovePermissionsArgs } from "./dto/RoleAddRemovePermissionsArgs";
 
 export const INVALID_ROLE_ID = "Invalid roleId";
 
@@ -100,6 +101,56 @@ export class RoleService {
     await this.analytics.trackWithContext({
       event: EnumEventType.RoleUpdate,
       properties: {
+        name: role.name,
+      },
+    });
+
+    return role;
+  }
+
+  async addPermission(args: RoleAddRemovePermissionsArgs): Promise<Role> {
+    const role = await this.prisma.role.update({
+      where: { ...args.where },
+      data: {
+        permissions: {
+          push: args.data.permissions,
+        },
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.RoleUpdate,
+      properties: {
+        action: "addPermissions",
+        name: role.name,
+      },
+    });
+
+    return role;
+  }
+
+  async removePermission(args: RoleAddRemovePermissionsArgs): Promise<Role> {
+    const existingRole = await this.role({
+      where: args.where,
+    });
+
+    const newPermissions = existingRole.permissions.filter(
+      (permission) => !args.data.permissions.includes(permission)
+    );
+
+    const role = await this.prisma.role.update({
+      where: { ...args.where },
+      data: {
+        permissions: {
+          set: newPermissions,
+        },
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.RoleUpdate,
+      properties: {
+        action: "removePermissions",
         name: role.name,
       },
     });

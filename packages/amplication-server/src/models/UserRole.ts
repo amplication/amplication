@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "./User";
-import { Role } from "../enums/Role";
+import { EnumRole } from "../enums/EnumRole";
 
 @ObjectType({
   isAbstract: true,
@@ -23,7 +23,7 @@ export class UserRole {
 
   user?: User;
 
-  @Field(() => Role, {
+  @Field(() => EnumRole, {
     nullable: false,
   })
   role!: string;

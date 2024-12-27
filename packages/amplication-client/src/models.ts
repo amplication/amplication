@@ -546,6 +546,7 @@ export type CustomPropertyWhereInput = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
   blueprintId?: InputMaybe<Scalars['String']['input']>;
   deletedAt?: InputMaybe<DateTimeFilter>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
 };
@@ -1188,6 +1189,13 @@ export enum EnumResourceTypeGroup {
   Services = 'Services'
 }
 
+export enum EnumRole {
+  Admin = 'Admin',
+  OrganizationAdmin = 'OrganizationAdmin',
+  ProjectAdmin = 'ProjectAdmin',
+  User = 'User'
+}
+
 export enum EnumSchemaNames {
   Abby = 'Abby',
   CalDotCom = 'CalDotCom',
@@ -1681,6 +1689,7 @@ export type ModuleWhereInput = {
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   addMembersToTeam: Team;
+  addRolePermissions: Role;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1718,6 +1727,7 @@ export type Mutation = {
   createRelation: Relation;
   createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
+  createRole: Role;
   createService: Resource;
   createServiceFromTemplate: Resource;
   createServiceTemplate: Resource;
@@ -1748,6 +1758,7 @@ export type Mutation = {
   deleteRelation: Relation;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
+  deleteRole?: Maybe<Role>;
   deleteServiceTopics: ServiceTopics;
   deleteTeam?: Maybe<Team>;
   deleteTopic: Topic;
@@ -1763,6 +1774,7 @@ export type Mutation = {
   redeemCoupon: Coupon;
   redesignProject: UserAction;
   removeMembersFromTeam: Team;
+  removeRolePermissions: Role;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   scaffoldServiceFromTemplate: Resource;
@@ -1804,6 +1816,7 @@ export type Mutation = {
   updateResourceRelation: Relation;
   updateResourceRole?: Maybe<ResourceRole>;
   updateResourceSettings?: Maybe<ResourceSettings>;
+  updateRole: Role;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
   updateTeam: Team;
@@ -1821,6 +1834,12 @@ export type MutationAddEntityPermissionFieldArgs = {
 
 export type MutationAddMembersToTeamArgs = {
   data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolePermissionsArgs = {
+  data: RoleAddRemovePermissionsInput;
   where: WhereUniqueInput;
 };
 
@@ -2013,6 +2032,11 @@ export type MutationCreateResourceRoleArgs = {
 };
 
 
+export type MutationCreateRoleArgs = {
+  data: RoleCreateInput;
+};
+
+
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
 };
@@ -2164,6 +2188,11 @@ export type MutationDeleteResourceRoleArgs = {
 };
 
 
+export type MutationDeleteRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type MutationDeleteServiceTopicsArgs = {
   where: WhereUniqueInput;
 };
@@ -2236,6 +2265,12 @@ export type MutationRedesignProjectArgs = {
 
 export type MutationRemoveMembersFromTeamArgs = {
   data: TeamUpdateMembersInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationRemoveRolePermissionsArgs = {
+  data: RoleAddRemovePermissionsInput;
   where: WhereUniqueInput;
 };
 
@@ -2466,6 +2501,12 @@ export type MutationUpdateResourceRoleArgs = {
 
 export type MutationUpdateResourceSettingsArgs = {
   data: ResourceSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateRoleArgs = {
+  data: RoleUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -3005,6 +3046,8 @@ export type Query = {
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
+  role?: Maybe<Role>;
+  roles: Array<Role>;
   serviceSettings: ServiceSettings;
   serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
@@ -3391,6 +3434,19 @@ export type QueryResourcesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
+};
+
+
+export type QueryRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryRolesArgs = {
+  orderBy?: InputMaybe<RoleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RoleWhereInput>;
 };
 
 
@@ -3819,12 +3875,42 @@ export type ResourceWhereInputWithPropertiesFilter = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
-export enum Role {
-  Admin = 'Admin',
-  OrganizationAdmin = 'OrganizationAdmin',
-  ProjectAdmin = 'ProjectAdmin',
-  User = 'User'
-}
+export type Role = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  permissions?: Maybe<Array<Scalars['String']['output']>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type RoleAddRemovePermissionsInput = {
+  permissions: Array<Scalars['String']['input']>;
+};
+
+export type RoleCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type RoleOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type RoleUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RoleWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+};
 
 export type ScaffoldServiceFromTemplateInput = {
   name: Scalars['String']['input'];
@@ -4142,7 +4228,7 @@ export type UserAction = {
 export type UserRole = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
-  role: Role;
+  role: EnumRole;
   updatedAt: Scalars['DateTime']['output'];
 };
 

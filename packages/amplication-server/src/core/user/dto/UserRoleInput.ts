@@ -1,12 +1,12 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { Role } from "../../../enums/Role";
+import { EnumRole } from "../../../enums/EnumRole";
 
 @InputType({
   isAbstract: true,
 })
 export class UserRoleInput {
-  @Field(() => Role, {
+  @Field(() => EnumRole, {
     nullable: false,
   })
-  role: Role;
+  role: EnumRole;
 }

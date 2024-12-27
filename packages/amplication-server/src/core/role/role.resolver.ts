@@ -10,13 +10,11 @@ import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Role, User } from "../../models";
-import { RoleService } from "./role.service";
+import { RoleAddRemovePermissionsArgs } from "./dto/RoleAddRemovePermissionsArgs";
 import { RoleCreateArgs } from "./dto/RoleCreateArgs";
 import { RoleFindManyArgs } from "./dto/RoleFindManyArgs";
 import { UpdateRoleArgs } from "./dto/UpdateRoleArgs";
-import { CreateRoleOptionArgs } from "./dto/CreateRoleOptionArgs";
-import { UpdateRoleOptionArgs } from "./dto/UpdateRoleOptionArgs";
-import { DeleteRoleOptionArgs } from "./dto/DeleteRoleOptionArgs.ts";
+import { RoleService } from "./role.service";
 
 @Resolver(() => Role)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -66,5 +64,23 @@ export class RoleResolver {
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async updateRole(@Args() args: UpdateRoleArgs): Promise<Role> {
     return this.roleService.updateRole(args);
+  }
+
+  @Mutation(() => Role, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  async addRolePermissions(
+    @Args() args: RoleAddRemovePermissionsArgs
+  ): Promise<Role> {
+    return this.roleService.addPermission(args);
+  }
+
+  @Mutation(() => Role, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  async removeRolePermissions(
+    @Args() args: RoleAddRemovePermissionsArgs
+  ): Promise<Role> {
+    return this.roleService.removePermission(args);
   }
 }

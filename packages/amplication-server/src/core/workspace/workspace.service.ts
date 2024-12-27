@@ -8,7 +8,7 @@ import cuid from "cuid";
 import { addDays } from "date-fns";
 import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { Role } from "../../enums/Role";
+import { EnumRole } from "../../enums/EnumRole";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Account, Project, Resource, User, Workspace } from "../../models";
@@ -107,7 +107,7 @@ export class WorkspaceService {
             isOwner: true,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin,
+                role: EnumRole.OrganizationAdmin,
               },
             },
           },
@@ -197,7 +197,7 @@ export class WorkspaceService {
             isOwner: true,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin,
+                role: EnumRole.OrganizationAdmin,
               },
             },
           },
@@ -376,7 +376,7 @@ export class WorkspaceService {
             isOwner: false,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin,
+                role: EnumRole.OrganizationAdmin,
               },
             },
           },

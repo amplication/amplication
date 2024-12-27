@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/EnumRole";
 import { Env } from "../../env";
 import { Account, Project, Resource, User, Workspace } from "../../models";
 import { PrismaService, UserRole } from "../../prisma";

@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
 import { anyString } from "jest-mock-extended";
-import { Role } from "../../enums/Role";
+import { Role } from "../../enums/EnumRole";
 import { Account, Project, Resource, User, Workspace } from "../../models";
 import { PrismaService, UserRole } from "../../prisma";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
