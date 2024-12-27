@@ -12,6 +12,8 @@ import {
   UPDATE_ROLE,
 } from "../queries/rolesQueries";
 
+import { rolesPermissionsList } from "@amplication/util-roles-types";
+
 type TDeleteData = {
   deleteRole: models.Role;
 };
@@ -203,6 +205,7 @@ const useRoles = (roleId?: string) => {
     removePermissionsFromRole,
     removePermissionsFromRoleError,
     removePermissionsFromRoleLoading,
+    rolesPermissionsList,
   };
 };
 
