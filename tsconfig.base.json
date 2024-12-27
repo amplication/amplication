@@ -47,6 +47,7 @@
       "@amplication/util-billing-types": [
         "libs/util/billing-types/src/index.ts"
       ],
+      "@amplication/util-roles-types": ["libs/util/roles-types/src/index.ts"],
       "@amplication/util/git": ["libs/util/git/src/index.ts"],
       "@amplication/util/json": ["libs/util/json/src/index.ts"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],

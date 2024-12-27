@@ -1,10 +1,7 @@
 import React from "react";
-import { match, useRouteMatch } from "react-router-dom";
-import { isEmpty } from "lodash";
-import PageContent from "../Layout/PageContent";
-import Team from "./Team";
-import { TeamList } from "./TeamList";
+import { match } from "react-router-dom";
 import { AppRouteProps } from "../routes/routesUtil";
+import { TeamList } from "./TeamList";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -13,25 +10,8 @@ type Props = AppRouteProps & {
 };
 
 const TeamsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
-  const pageTitle = "Teams";
-
-  const teamMatch = useRouteMatch<{ teamId: string }>([
-    "/:workspace/settings/teams/:teamId",
-  ]);
-
-  let teamId = null;
-  if (teamMatch) {
-    teamId = teamMatch.params.teamId;
-  }
-
   return (
-    <PageContent
-      pageTitle={pageTitle}
-      className="teams"
-      sideContent={<TeamList selectFirst={null === teamId} />}
-    >
-      {match.isExact ? !isEmpty(teamId) && <Team /> : innerRoutes}
-    </PageContent>
+    <div className="teams">{match.isExact ? <TeamList /> : innerRoutes}</div>
   );
 };
 

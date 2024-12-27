@@ -1,6 +1,8 @@
 @import "../style/index.scss";
 
 .new-team {
+  flex: 1;
+  width: 100%;
   .text-input input {
     border-style: dashed;
 
