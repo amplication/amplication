@@ -5,7 +5,7 @@ import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
 import usePlugins, {
   SortedPluginInstallation,
 } from "../../Plugins/hooks/usePlugins";
-import { GET_ROLES } from "../../Roles/RoleList";
+import { GET_ROLES } from "../../ResourceRoles/RoleList";
 import * as models from "../../models";
 import { GET_CATEGORIES } from "./categoriesQueries";
 
