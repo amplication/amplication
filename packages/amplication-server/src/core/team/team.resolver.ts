@@ -113,7 +113,7 @@ export class TeamResolver {
     return this.teamService.removeRolesFromTeam(args);
   }
 
-  @ResolveField(() => [User], { nullable: false })
+  @ResolveField(() => [Role], { nullable: false })
   async roles(@Parent() parent: Team): Promise<Role[]> {
     return this.teamService.roles(parent.id);
   }

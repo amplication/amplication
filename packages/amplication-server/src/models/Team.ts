@@ -44,7 +44,7 @@ export class Team {
   })
   color?: string;
 
-  @Field(() => [User], {
+  @Field(() => [Role], {
     nullable: true,
   })
   roles?: Role[];

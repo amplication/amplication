@@ -4114,7 +4114,7 @@ export type Team = {
   id: Scalars['String']['output'];
   members?: Maybe<Array<User>>;
   name: Scalars['String']['output'];
-  roles?: Maybe<Array<User>>;
+  roles?: Maybe<Array<Role>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 

@@ -2897,7 +2897,7 @@ type Team {
   id: String!
   members: [User!]
   name: String!
-  roles: [User!]
+  roles: [Role!]
   updatedAt: DateTime!
 }
 
