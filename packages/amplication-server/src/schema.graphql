@@ -10,8 +10,6 @@ type Account {
   id: String!
   lastName: String!
   password: String!
-  previewAccountEmail: String
-  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -95,13 +93,6 @@ type AssistantThread {
 type Auth {
   """JWT Bearer token"""
   token: String!
-}
-
-type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String
-  token: String!
-  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -1129,12 +1120,6 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
-enum EnumPreviewAccountType {
-  BreakingTheMonolith
-  None
-  PreviewOnboarding
-}
-
 enum EnumResourceType {
   Component
   MessageBroker
@@ -1154,13 +1139,6 @@ input EnumResourceTypeFilter {
 enum EnumResourceTypeGroup {
   Platform
   Services
-}
-
-enum EnumRole {
-  Admin
-  OrganizationAdmin
-  ProjectAdmin
-  User
 }
 
 enum EnumSchemaNames {
@@ -1673,7 +1651,6 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  completeSignupWithBusinessEmail: String!
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
@@ -1762,7 +1739,6 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   setResourceOwner(data: ResourceSetOwnerInput!): Resource!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
   startRedesign(data: WhereUniqueInput!): Resource
 
@@ -2857,11 +2833,6 @@ input SignupInput {
   workspaceName: String!
 }
 
-input SignupPreviewAccountInput {
-  previewAccountEmail: String!
-  previewAccountType: EnumPreviewAccountType!
-}
-
 input SignupWithBusinessEmailInput {
   email: String!
 }
@@ -3011,7 +2982,6 @@ type User {
   isOwner: Boolean!
   lastActive: DateTime
   updatedAt: DateTime!
-  userRoles: [UserRole!]
   workspace: Workspace
 }
 
@@ -3028,13 +2998,6 @@ type UserAction {
   user: User!
   userActionType: EnumUserActionType!
   userId: String!
-}
-
-type UserRole {
-  createdAt: DateTime!
-  id: String!
-  role: EnumRole!
-  updatedAt: DateTime!
 }
 
 input WhereBlueprintRelationUniqueInput {

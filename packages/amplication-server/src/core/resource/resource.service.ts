@@ -116,27 +116,6 @@ const DEFAULT_DOTNET_DB_PLUGIN: PluginInstallationCreateInput = {
   isPrivate: false,
 };
 
-const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
-  {
-    displayName: "Auth-core",
-    pluginId: "auth-core",
-    npm: "@amplication/plugin-auth-core",
-    version: "latest",
-    enabled: true,
-    resource: undefined,
-    isPrivate: false,
-  },
-  {
-    displayName: "Auth-jwt",
-    pluginId: "auth-jwt",
-    npm: "@amplication/plugin-auth-jwt",
-    version: "latest",
-    enabled: true,
-    resource: undefined,
-    isPrivate: false,
-  },
-];
-
 const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [key in EnumResourceType]: EnumEventType;
 } = {
@@ -700,61 +679,6 @@ export class ResourceService {
     );
 
     return userEntity;
-  }
-
-  async createPreviewService(
-    args: CreateOneResourceArgs,
-    user: User,
-    nonDefaultPluginsToInstall: PluginInstallationCreateInput[],
-    requireAuthenticationEntity: boolean
-  ): Promise<Resource> {
-    const { serviceSettings, ...rest } = args.data;
-    const resource = await this.createResource(
-      {
-        data: {
-          ...rest,
-          resourceType: EnumResourceType.Service,
-        },
-      },
-      user
-    );
-
-    await this.prisma.resourceRole.create({
-      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
-    });
-
-    if (requireAuthenticationEntity) {
-      const [userEntity] = await this.entityService.createDefaultUserEntity(
-        resource.id,
-        user
-      );
-      serviceSettings.authEntityName = userEntity.name;
-    }
-
-    await this.serviceSettingsService.createDefaultServiceSettings(
-      resource.id,
-      user,
-      serviceSettings
-    );
-
-    const plugins = [
-      DEFAULT_NODEJS_DB_PLUGIN,
-      ...(requireAuthenticationEntity ? DEFAULT_AUTH_PLUGINS : []),
-      ...nonDefaultPluginsToInstall,
-    ];
-
-    await this.installPlugins(resource.id, plugins, user);
-
-    const project = await this.projectService.findUnique({
-      where: { id: resource.projectId },
-    });
-
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Services
-    );
-
-    return resource;
   }
 
   private createMovedEntitiesByResourceMapping(movedEntities): {

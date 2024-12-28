@@ -8,7 +8,6 @@ import {
 } from "./gql-auth.guard";
 import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
 import { User } from "../models/User";
-import { UserRole } from "../models/UserRole";
 import { Workspace } from "../models/Workspace";
 
 const EXAMPLE_WORKSPACE_ID = "Example Workspace Id";
@@ -20,14 +19,10 @@ const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
 };
 const EXAMPLE_HANDLER = () => null;
 
-const EXAMPLE_USER_ROLE = new UserRole();
-EXAMPLE_USER_ROLE.role = EXAMPLE_ROLE;
-
 const EXAMPLE_WORKSPACE = new Workspace();
 EXAMPLE_WORKSPACE.id = EXAMPLE_WORKSPACE_ID;
 
 const EXAMPLE_USER = new User();
-EXAMPLE_USER.userRoles = [EXAMPLE_USER_ROLE];
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
 const EXAMPLE_FIND_REQUEST_ARGS = {

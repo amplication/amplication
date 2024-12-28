@@ -26,7 +26,6 @@ import { EnumResourceType, Prisma, PrismaService } from "../../prisma";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BillingService } from "../billing/billing.service";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
@@ -215,8 +214,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -796,44 +793,6 @@ describe("ResourceService", () => {
           },
         },
       },
-    });
-  });
-
-  describe("createPreviewService", () => {
-    it("should create a preview service", async () => {
-      const createResourceArgs = {
-        args: {
-          data: {
-            name: EXAMPLE_RESOURCE_NAME,
-            description: EXAMPLE_RESOURCE_DESCRIPTION,
-            color: DEFAULT_RESOURCE_COLORS.service,
-            resourceType: EnumResourceType.Service,
-            codeGenerator: EnumCodeGenerator.NodeJs,
-            wizardType: "create resource",
-            project: {
-              connect: {
-                id: EXAMPLE_PROJECT_ID,
-              },
-            },
-            serviceSettings: EXAMPLE_SERVICE_SETTINGS,
-            gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
-          },
-        },
-        user: EXAMPLE_USER,
-      };
-      const user = EXAMPLE_USER;
-      const nonDefaultPluginsToInstall = [];
-      const requireAuthenticationEntity = true;
-
-      const result = await service.createPreviewService(
-        createResourceArgs.args,
-        user,
-        nonDefaultPluginsToInstall,
-        requireAuthenticationEntity
-      );
-
-      expect(result).toEqual(EXAMPLE_RESOURCE);
-      expect(prismaResourceCreateMock).toBeCalledTimes(1);
     });
   });
 

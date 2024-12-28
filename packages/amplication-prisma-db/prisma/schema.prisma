@@ -29,8 +29,6 @@ model Account {
   githubId                  String?
   currentUser               User?                      @relation(fields: [currentUserId], references: [id])
   users                     User[]                     @relation("AccountOnUser")
-  previewAccountEmail       String?
-  previewAccountType        PreviewAccountType         @default(None)
   AwsMarketplaceIntegration AwsMarketplaceIntegration?
 }
 
@@ -115,7 +113,6 @@ model User {
   commits               Commit[]
   deployments           Deployment[]
   lockedEntitis         Entity[]
-  userRoles             UserRole[]
   sentInvitations       Invitation[]      @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   createdFromCoupon     Coupon?
@@ -127,17 +124,6 @@ model User {
   ownerships            Ownership[]
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
-}
-
-model UserRole {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  role      String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, role], map: "UserRole.userId_role_unique")
 }
 
 model Role {
@@ -812,12 +798,6 @@ enum CodeGeneratorVersionStrategy {
   LatestMajor
   LatestMinor
   Specific
-}
-
-enum PreviewAccountType {
-  None
-  BreakingTheMonolith
-  PreviewOnboarding
 }
 
 model CustomProperty {
