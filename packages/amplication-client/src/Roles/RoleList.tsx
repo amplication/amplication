@@ -110,7 +110,7 @@ export const RoleList = React.memo(() => {
                 </FlexItem>
               }
             >
-              <span>{role.name}</span>
+              <Text textStyle={EnumTextStyle.Description}>{role.name}</Text>
             </FlexItem>
           </ListItem>
         ))}

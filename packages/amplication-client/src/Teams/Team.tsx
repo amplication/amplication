@@ -1,5 +1,6 @@
 import {
   FlexItem,
+  HorizontalRule,
   Snackbar,
   TabContentTitle,
 } from "@amplication/ui/design-system";
@@ -12,6 +13,7 @@ import TeamForm from "./TeamForm";
 import { DeleteTeam } from "./DeleteTeam";
 import { useAppContext } from "../context/appContext";
 import TeamMemberList from "./Members/TeamMemberList";
+import TeamRoleList from "./Roles/TeamRoleList";
 
 const Team = () => {
   const match = useRouteMatch<{
@@ -71,6 +73,9 @@ const Team = () => {
       )}
       <TabContentTitle title="Members" subTitle="Add or remove team members" />
       <TeamMemberList team={data?.team} />
+      <HorizontalRule />
+      <TabContentTitle title="Roles" subTitle="Add or remove roles" />
+      <TeamRoleList team={data?.team} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

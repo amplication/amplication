@@ -3,12 +3,14 @@ import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
   ADD_MEMBERS_TO_TEAM,
+  ADD_ROLES_TO_TEAM,
   CREATE_TEAM,
   DELETE_TEAM,
   FIND_TEAMS,
   GET_TEAM,
   GET_WORKSPACE_USERS,
   REMOVE_MEMBERS_FROM_TEAM,
+  REMOVE_ROLES_FROM_TEAM,
   TEAM_FIELDS_FRAGMENT,
   UPDATE_TEAM,
 } from "../queries/teamsQueries";
@@ -180,6 +182,8 @@ const useTeams = (teamId?: string) => {
     }
   );
 
+  //Team members
+
   const [
     addMembersToTeamInternal,
     { error: addMembersToTeamError, loading: addMembersToTeamLoading },
@@ -240,6 +244,58 @@ const useTeams = (teamId?: string) => {
     ]
   );
 
+  //Team Roles
+
+  const [
+    addRolesToTeamInternal,
+    { error: addRolesToTeamError, loading: addRolesToTeamLoading },
+  ] = useMutation<TUpdateData>(ADD_ROLES_TO_TEAM, {});
+
+  const addRolesToTeam = useCallback(
+    (roleIds: string[]) => {
+      addRolesToTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            roleIds: roleIds,
+          },
+        },
+      })
+        .then(() => {
+          getTeamRefetch();
+        })
+        .catch(console.error);
+    },
+    [addRolesToTeamInternal, teamId, getTeamRefetch]
+  );
+
+  const [
+    removeRolesFromTeamInternal,
+    { error: removeRolesFromTeamError, loading: removeRolesFromTeamLoading },
+  ] = useMutation<TUpdateData>(REMOVE_ROLES_FROM_TEAM, {});
+
+  const removeRolesFromTeam = useCallback(
+    (roleIds: string[]) => {
+      removeRolesFromTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            roleIds: roleIds,
+          },
+        },
+      })
+        .then(() => {
+          getTeamRefetch();
+        })
+        .catch(console.error);
+    },
+    [removeRolesFromTeamInternal, teamId, getTeamRefetch]
+  );
+
   return {
     getAvailableWorkspaceMembers,
     availableWorkspaceMembers,
@@ -270,6 +326,12 @@ const useTeams = (teamId?: string) => {
     removeMembersFromTeam,
     removeMembersFromTeamError,
     removeMembersFromTeamLoading,
+    addRolesToTeam,
+    addRolesToTeamError,
+    addRolesToTeamLoading,
+    removeRolesFromTeam,
+    removeRolesFromTeamError,
+    removeRolesFromTeamLoading,
   };
 };
 
