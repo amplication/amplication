@@ -92,6 +92,7 @@ const useTeams = (teamId?: string) => {
             const newTeamRef = cache.writeFragment({
               data: newTeam,
               fragment: TEAM_FIELDS_FRAGMENT,
+              fragmentName: "TeamFields",
             });
 
             if (
