@@ -103,13 +103,7 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
-    const isFromPreviewPlan = location.search.includes("preview-user-login=1");
-
     const isSignupCookieExist = getCookie("signup");
-    const isFromPreviewPlanCookieExist = getCookie("isFromPreviewPlan");
-
-    !isFromPreviewPlanCookieExist &&
-      setCookie("isFromPreviewPlan", isFromPreviewPlan ? "1" : "0");
 
     !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);

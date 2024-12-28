@@ -13,7 +13,6 @@ interface UpgradeButtonData {
   showUpgradeTrialButton: boolean;
   showUpgradeDefaultButton: boolean;
   isCompleted?: boolean;
-  isPreviewPlan?: boolean;
 }
 
 export const useUpgradeButtonData = (
@@ -25,7 +24,6 @@ export const useUpgradeButtonData = (
     {
       showUpgradeTrialButton: false,
       showUpgradeDefaultButton: true,
-      isPreviewPlan: false,
     }
   );
 
@@ -48,16 +46,6 @@ export const useUpgradeButtonData = (
           showUpgradeTrialButton: false,
           showUpgradeDefaultButton: true,
           isCompleted: true,
-        });
-        return;
-      }
-
-      if (isPreviewPlan(subscription.plan.id)) {
-        setUpgradeButtonData({
-          showUpgradeTrialButton: false,
-          showUpgradeDefaultButton: false,
-          isCompleted: true,
-          isPreviewPlan: true,
         });
         return;
       }
@@ -110,7 +98,3 @@ export const useUpgradeButtonData = (
 
   return upgradeButtonData;
 };
-
-function isPreviewPlan(planId: string) {
-  return planId.includes("preview");
-}

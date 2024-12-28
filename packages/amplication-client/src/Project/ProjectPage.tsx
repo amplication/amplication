@@ -1,19 +1,11 @@
-import { Dialog, EnumTextColor, TabItem } from "@amplication/ui/design-system";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { EnumTextColor, TabItem } from "@amplication/ui/design-system";
+import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
 import useTabRoutes from "../Layout/useTabRoutes";
 import ResourceList from "../Workspaces/ResourceList";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import { expireCookie, getCookie } from "../util/cookie";
-import PreviewUserLoginModal from "./ArchitectureConsole/PreviewUserLoginModal";
 import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
@@ -32,22 +24,6 @@ const ProjectPage: React.FC<Props> = ({
   tabRoutesDef,
 }) => {
   const { pendingChanges } = useContext(AppContext);
-  const [fromPreviewUserDialog, setFromPreviewUserDialog] =
-    useState<boolean>(false);
-
-  useEffect(() => {
-    const isFromPreviewPlanCookieExist = getCookie("isFromPreviewPlan");
-
-    if (isFromPreviewPlanCookieExist === "1") {
-      setFromPreviewUserDialog(true);
-    }
-
-    isFromPreviewPlanCookieExist && expireCookie("isFromPreviewPlan");
-  }, []);
-
-  const handleFromPreviewUserDialogDismiss = useCallback(() => {
-    setFromPreviewUserDialog(false);
-  }, [setFromPreviewUserDialog]);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
@@ -78,20 +54,7 @@ const ProjectPage: React.FC<Props> = ({
   return match.isExact || currentRouteIsTab ? (
     <>
       <PageLayout className={moduleClass} tabs={tabItems}>
-        {match.isExact ? (
-          <>
-            <Dialog
-              isOpen={fromPreviewUserDialog}
-              onDismiss={handleFromPreviewUserDialogDismiss}
-              title={"Welcome Aboard! 🚀"}
-            >
-              <PreviewUserLoginModal />
-            </Dialog>
-            <ResourceList />
-          </>
-        ) : (
-          tabRoutes
-        )}
+        {match.isExact ? <ResourceList /> : tabRoutes}
       </PageLayout>
     </>
   ) : (

@@ -43,7 +43,6 @@ export enum EnumButtonLocation {
   Resource = "Resource",
   EntityList = "EntityList",
   SchemaUpload = "SchemaUpload",
-  PreviewBtm = "PreviewBtm",
   Architecture = "Architecture",
 }
 
@@ -78,7 +77,6 @@ export const BtmButton: React.FC<Props> = ({
     resources,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
   } = useAppContext();
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -131,10 +129,9 @@ export const BtmButton: React.FC<Props> = ({
 
     if (
       hasRedesignArchitectureFeature &&
-      (((subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
         subscriptionPlan === EnumSubscriptionPlan.Team) &&
-        subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
-        isPreviewPlan)
+      subscriptionStatus !== EnumSubscriptionStatus.Trailing
     ) {
       setTooltipTextStart(FULL_ACCESS_TEXT);
       setShowTooltipLink(false);
@@ -142,7 +139,6 @@ export const BtmButton: React.FC<Props> = ({
   }, [
     allowLLMFeature,
     hasRedesignArchitectureFeature,
-    isPreviewPlan,
     subscriptionPlan,
     subscriptionStatus,
     upgradeCtaVariationData?.linkMessage,
@@ -198,9 +194,6 @@ export const BtmButton: React.FC<Props> = ({
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
       selectResourceToBreak(itemData);
-      const previewPlanCookie = getCookie("preview-user-break-monolith");
-      !previewPlanCookie &&
-        setCookie("changesConfirmationMessageType", "aiProcess");
     },
     [selectResourceToBreak]
   );
@@ -301,7 +294,7 @@ export const BtmButton: React.FC<Props> = ({
           open
           onCloseEvent={toggleIsOpen}
           fullScreen={true}
-          showCloseButton={!isPreviewPlan}
+          showCloseButton={true}
         >
           <BreakTheMonolith
             resource={selectedResource}

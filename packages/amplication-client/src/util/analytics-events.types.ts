@@ -171,9 +171,6 @@ export enum AnalyticsEventNames {
   ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
   ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
 
-  // break the monolith preview user
-  PreviewUser_GenerateCode = "PreviewUser_GenerateCode",
-
   ChangedToDotNet = "ChangedToDotNet",
   ChoseDotNetUsage = "ChoseDotNetUsage",
   BookDotNetDemo = "BookDotNetDemo",

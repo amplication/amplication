@@ -41,8 +41,6 @@ import {
 } from "./types";
 import ModelOrganizerPreviousChangesExistConfirmation from "./ModelOrganizerPreviousChangesExistConfirmation";
 import { useHistory, useLocation } from "react-router-dom";
-import PreviewUserBTMModal from "./PreviewUserBTMModal";
-import { expireCookie, getCookie } from "../../util/cookie";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -68,8 +66,7 @@ type Props = {
 };
 
 export default function ModelOrganizer({ restrictedMode = false }: Props) {
-  const { currentProject, resetPendingChangesIndicator, isPreviewPlan } =
-    useAppContext();
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
@@ -115,8 +112,6 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
 
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
-  const [showPreviewUserDialog, setShowPreviewUserDialog] =
-    useState<boolean>(false);
 
   const fitViewTimerRef = useRef(null);
 
@@ -125,18 +120,6 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
     resetChanges();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetPendingChangesIndicator]);
-
-  useEffect(() => {
-    if (!isPreviewPlan) return;
-    //is preview user from demo schema
-    else {
-      if (getCookie("preview-user-break-monolith") && !restrictedMode) {
-        expireCookie("preview-user-break-monolith");
-
-        setShowPreviewUserDialog(true);
-      }
-    }
-  }, [isPreviewPlan, setShowPreviewUserDialog, restrictedMode]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -182,10 +165,6 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
   const handleCreateResourceState = useCallback(() => {
     setIsValidResourceName(true);
   }, [setIsValidResourceName]);
-
-  const handleShowPreviewUserDismiss = useCallback(() => {
-    setShowPreviewUserDialog(false);
-  }, [setShowPreviewUserDialog]);
 
   const onRedesignClick = useCallback(
     (resource: models.Resource) => {
@@ -386,12 +365,6 @@ export default function ModelOrganizer({ restrictedMode = false }: Props) {
               </FlexItem>
             </Dialog>
 
-            <Dialog
-              isOpen={showPreviewUserDialog}
-              onDismiss={handleShowPreviewUserDismiss}
-            >
-              <PreviewUserBTMModal changes={changes}></PreviewUserBTMModal>
-            </Dialog>
             <ConfirmationDialog
               isOpen={errorMessage !== null}
               onDismiss={clearDuplicateEntityError}
