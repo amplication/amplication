@@ -8,7 +8,7 @@ async function main() {
   console.log(workspaces.length);
   let index = 1;
 
-  const chunks = chunkArrayInGroups(workspaces, 500);
+  const chunks = chunkArrayInGroups(workspaces, 50);
 
   for (const chunk of chunks) {
     console.log(index++);
@@ -27,6 +27,18 @@ async function main() {
 
           console.log(`Workspace: ${workspace.id}, Users: ${users.length}`);
           //return;
+
+          const roleExists = await client.role.findFirst({
+            where: {
+              key: "ADMINS",
+              workspaceId: workspace.id,
+            },
+          });
+
+          if (roleExists) {
+            console.log(`Role already exists for workspace: ${workspace.id}`);
+            return;
+          }
 
           const role = await client.role.create({
             data: {
