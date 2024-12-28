@@ -10,7 +10,7 @@ import {
 import { EntityService, ResourceService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
+import { Permissions } from "../../decorators/permissions.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
@@ -70,7 +70,6 @@ export class ResourceResolver {
   ) {}
 
   @Query(() => Resource, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
@@ -79,7 +78,6 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
@@ -91,7 +89,7 @@ export class ResourceResolver {
   @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
+  @Permissions("resource.*.edit")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
@@ -105,7 +103,6 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async messageBrokerConnectedServices(
     @Args() args: FindOneArgs
@@ -143,7 +140,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -156,7 +152,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -169,7 +164,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -182,7 +176,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -195,7 +188,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.resource.project.connect.id"
@@ -249,7 +241,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => UserAction, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
   async redesignProject(
     @Args() args: RedesignProjectArgs,

@@ -1,7 +1,6 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -22,7 +21,6 @@ export class ServiceTemplateResolver {
   constructor(private readonly service: ServiceTemplateService) {}
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.resource.project.connect.id"
@@ -37,7 +35,6 @@ export class ServiceTemplateResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.project.id")
   async serviceTemplates(
     @Args() args: FindManyResourceArgs
@@ -48,7 +45,6 @@ export class ServiceTemplateResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
   async availableTemplatesForProject(
     @Args() args: FindAvailableTemplatesForProjectArgs,
@@ -58,7 +54,6 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -71,7 +66,6 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -88,7 +82,6 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async upgradeServiceToLatestTemplateVersion(
     @Args() args: FindOneArgs,
