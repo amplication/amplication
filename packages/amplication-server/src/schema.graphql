@@ -2266,6 +2266,7 @@ type Query {
   package(where: WhereUniqueInput!): Package
   packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  permissions: [String!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!

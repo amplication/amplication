@@ -17,6 +17,7 @@ import { CustomPropertyOption } from "../../models/CustomPropertyOption";
 import { CreateCustomPropertyOptionArgs } from "./dto/CreateCustomPropertyOptionArgs";
 import { UpdateCustomPropertyOptionArgs } from "./dto/UpdateCustomPropertyOptionArgs";
 import { DeleteCustomPropertyOptionArgs } from "./dto/DeleteCustomPropertyOptionArgs.ts";
+import { Permissions } from "../../decorators/permissions.decorator";
 
 @Resolver(() => CustomProperty)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -48,6 +49,7 @@ export class CustomPropertyResolver {
     InjectableOriginParameter.WorkspaceId,
     "data.workspace.connect.id"
   )
+  @Permissions("property.create")
   async createCustomProperty(
     @Args() args: CustomPropertyCreateArgs,
     @UserEntity() user: User
@@ -57,6 +59,7 @@ export class CustomPropertyResolver {
 
   @Mutation(() => CustomProperty, { nullable: true })
   @AuthorizeContext(AuthorizableOriginParameter.CustomPropertyId, "where.id")
+  @Permissions("property.delete")
   async deleteCustomProperty(
     @Args() args: FindOneArgs
   ): Promise<CustomProperty | null> {
@@ -65,6 +68,7 @@ export class CustomPropertyResolver {
 
   @Mutation(() => CustomProperty, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.CustomPropertyId, "where.id")
+  @Permissions("property.edit")
   async updateCustomProperty(
     @Args() args: UpdateCustomPropertyArgs
   ): Promise<CustomProperty> {
@@ -78,6 +82,7 @@ export class CustomPropertyResolver {
     AuthorizableOriginParameter.CustomPropertyId,
     "data.customProperty.connect.id"
   )
+  @Permissions("property.edit")
   async createCustomPropertyOption(
     @Args() args: CreateCustomPropertyOptionArgs
   ): Promise<CustomPropertyOption> {
@@ -91,6 +96,7 @@ export class CustomPropertyResolver {
     AuthorizableOriginParameter.CustomPropertyId,
     "where.customProperty.id"
   )
+  @Permissions("property.edit")
   async updateCustomPropertyOption(
     @Args() args: UpdateCustomPropertyOptionArgs
   ): Promise<CustomPropertyOption> {
@@ -104,6 +110,7 @@ export class CustomPropertyResolver {
     AuthorizableOriginParameter.CustomPropertyId,
     "where.customProperty.id"
   )
+  @Permissions("property.edit")
   async deleteCustomPropertyOption(
     @Args() args: DeleteCustomPropertyOptionArgs
   ): Promise<CustomPropertyOption> {

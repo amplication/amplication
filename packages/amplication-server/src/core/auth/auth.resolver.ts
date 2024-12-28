@@ -20,6 +20,7 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { AuthService } from "./auth.service";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
+import { AuthUser } from "./types";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -30,6 +31,12 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   async me(@UserEntity() user: User): Promise<User> {
     return user;
+  }
+
+  @Query(() => [String])
+  @UseGuards(GqlAuthGuard)
+  async permissions(@UserEntity() user: AuthUser): Promise<string[]> {
+    return user.permissions;
   }
 
   @Mutation(() => Boolean)

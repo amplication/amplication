@@ -3009,6 +3009,7 @@ export type Query = {
   package?: Maybe<Package>;
   packageList: Array<Package>;
   pendingChanges: Array<PendingChange>;
+  permissions: Array<Scalars['String']['output']>;
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
