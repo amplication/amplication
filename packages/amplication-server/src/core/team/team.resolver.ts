@@ -9,7 +9,6 @@ import {
 } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -33,7 +32,6 @@ export class TeamResolver {
   constructor(private teamService: TeamService) {}
 
   @Query(() => [Team], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -43,14 +41,12 @@ export class TeamResolver {
   }
 
   @Query(() => Team, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async team(@Args() args: FindOneArgs): Promise<Team | null> {
     return this.teamService.team(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "data.workspace.connect.id"
@@ -63,28 +59,24 @@ export class TeamResolver {
   }
 
   @Mutation(() => Team, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async deleteTeam(@Args() args: FindOneArgs): Promise<Team | null> {
     return this.teamService.deleteTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async updateTeam(@Args() args: UpdateTeamArgs): Promise<Team> {
     return this.teamService.updateTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async addMembersToTeam(@Args() args: AddMembersToTeamArgs): Promise<Team> {
     return this.teamService.addMembersToTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async removeMembersFromTeam(
     @Args() args: RemoveMembersFromTeamArgs
@@ -98,14 +90,12 @@ export class TeamResolver {
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async addRolesToTeam(@Args() args: AddRolesToTeamArgs): Promise<Team> {
     return this.teamService.addRolesToTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async removeRolesFromTeam(
     @Args() args: RemoveRolesFromTeamArgs

@@ -17,6 +17,8 @@ import { AuthService } from "./auth.service";
 import { IdentityProvider } from "./auth.types";
 import { EnumTokenType } from "./dto";
 import { AuthProfile, AuthUser } from "./types";
+import { RolesPermissions } from "@amplication/util-roles-types";
+
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -84,16 +86,24 @@ const EXAMPLE_OTHER_USER: User = {
   lastActive: null,
 };
 
+const EXAMPLE_PERMISSIONS: RolesPermissions[] = [
+  "git.org.create",
+  "git.org.delete",
+  "privatePlugin.delete",
+];
+
 const EXAMPLE_AUTH_USER: AuthUser = {
   ...EXAMPLE_USER,
   workspace: EXAMPLE_WORKSPACE,
   account: EXAMPLE_ACCOUNT,
+  permissions: EXAMPLE_PERMISSIONS,
 };
 
 const EXAMPLE_OTHER_AUTH_USER: AuthUser = {
   ...EXAMPLE_OTHER_USER,
   workspace: EXAMPLE_OTHER_WORKSPACE,
   account: EXAMPLE_ACCOUNT,
+  permissions: EXAMPLE_PERMISSIONS,
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
@@ -323,6 +333,7 @@ describe("AuthService", () => {
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
       roles: [],
+      permissions: ["*"],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
@@ -354,6 +365,7 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
+      permissions: EXAMPLE_PERMISSIONS,
       roles: [],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
@@ -361,27 +373,15 @@ describe("AuthService", () => {
   });
 
   it("sets current workspace for existing user and existing workspace", async () => {
+    getAuthUserMock.mockResolvedValueOnce(EXAMPLE_OTHER_AUTH_USER);
+
     const result = await service.setCurrentWorkspace(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_OTHER_WORKSPACE.id
     );
+
     expect(result).toBe(EXAMPLE_TOKEN);
-    expect(findUsersMock).toHaveBeenCalledTimes(1);
-    expect(findUsersMock).toHaveBeenCalledWith({
-      where: {
-        workspace: {
-          id: EXAMPLE_OTHER_WORKSPACE.id,
-        },
-        account: {
-          id: EXAMPLE_ACCOUNT.id,
-        },
-      },
-      include: {
-        account: true,
-        workspace: true,
-      },
-      take: 1,
-    });
+
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
@@ -391,6 +391,7 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_OTHER_WORKSPACE.id,
+      permissions: EXAMPLE_PERMISSIONS,
       roles: [],
       userId: EXAMPLE_OTHER_AUTH_USER.id,
       type: EnumTokenType.User,
@@ -600,6 +601,7 @@ describe("AuthService", () => {
           updatedAt: undefined,
           workspace: new Workspace(),
           isOwner: false,
+          permissions: ["privatePlugin.create"],
         },
         false
       );

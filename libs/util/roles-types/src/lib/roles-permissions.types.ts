@@ -40,11 +40,6 @@ const ProjectPermissions = [
   "project.git.repo.disconnect",
   "project.git.repo.select",
   "project.platformSettings.edit",
-  "project.resource.create",
-  "project.resource.createFromTemplate",
-  "project.resource.createMessageBroker",
-  "project.resource.createService",
-  "project.resource.createTemplate",
   "project.settings.edit",
   "project.view",
 ] as const;
@@ -58,6 +53,12 @@ const ResourcePermissions = [
   "resource.git.repo.overrideProjectSettings",
   "resource.git.repo.select",
   "resource.view",
+  "resource.delete",
+  "resource.create",
+  "resource.createFromTemplate",
+  "resource.createMessageBroker",
+  "resource.createService",
+  "resource.createTemplate",
 ] as const;
 
 // Private Plugin Permissions

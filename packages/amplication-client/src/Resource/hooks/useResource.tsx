@@ -37,13 +37,15 @@ const useResource = (resourceId: string) => {
       },
     });
 
-  const [setResourceOwner] = useMutation<setOwnerData>(SET_RESOURCE_OWNER, {});
+  const [setResourceOwner, { error: setResourceOwnerError }] =
+    useMutation<setOwnerData>(SET_RESOURCE_OWNER, {});
 
   return {
     serviceSettings,
     updateServiceSettings,
     updateServiceSettingsError,
     setResourceOwner,
+    setResourceOwnerError,
   };
 };
 

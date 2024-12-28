@@ -39,9 +39,10 @@ const useCatalogGraph = ({ onMessage }: Props) => {
   const { persistData, loadPersistentData, clearPersistentData } =
     useLocalStorageData<GraphPersistedData>(storageKey);
 
-  const { catalog, setFilter, setSearchPhrase, reloadCatalog } = useCatalog({
-    initialPageSize: 1000,
-  });
+  const { catalog, setFilter, setSearchPhrase, reloadCatalog, error } =
+    useCatalog({
+      initialPageSize: 1000,
+    });
 
   const {
     blueprintsMap: { blueprintsMapById, ready: blueprintsReady },
@@ -53,6 +54,12 @@ const useCatalogGraph = ({ onMessage }: Props) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const [errorMessage, setErrorMessage] = useState<string>(null);
+
+  useEffect(() => {
+    if (error) {
+      onMessage(error.message, EnumMessageType.Error);
+    }
+  }, [error, onMessage]);
 
   const setSelectRelatedNodes = useCallback(
     (node: Node) => {

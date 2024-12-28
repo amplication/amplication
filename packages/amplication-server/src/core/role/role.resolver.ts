@@ -2,7 +2,6 @@ import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -23,7 +22,6 @@ export class RoleResolver {
   constructor(private roleService: RoleService) {}
 
   @Query(() => [Role], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -33,14 +31,12 @@ export class RoleResolver {
   }
 
   @Query(() => Role, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async role(@Args() args: FindOneArgs): Promise<Role | null> {
     return this.roleService.role(args);
   }
 
   @Mutation(() => Role, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "data.workspace.connect.id"
@@ -53,21 +49,18 @@ export class RoleResolver {
   }
 
   @Mutation(() => Role, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async deleteRole(@Args() args: FindOneArgs): Promise<Role | null> {
     return this.roleService.deleteRole(args);
   }
 
   @Mutation(() => Role, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async updateRole(@Args() args: UpdateRoleArgs): Promise<Role> {
     return this.roleService.updateRole(args);
   }
 
   @Mutation(() => Role, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async addRolePermissions(
     @Args() args: RoleAddRemovePermissionsArgs
@@ -76,7 +69,6 @@ export class RoleResolver {
   }
 
   @Mutation(() => Role, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
   async removeRolePermissions(
     @Args() args: RoleAddRemovePermissionsArgs

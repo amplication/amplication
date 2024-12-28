@@ -9,7 +9,6 @@ import {
 } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -32,7 +31,6 @@ export class BlueprintResolver {
   constructor(private blueprintService: BlueprintService) {}
 
   @Query(() => [Blueprint], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -42,14 +40,12 @@ export class BlueprintResolver {
   }
 
   @Query(() => Blueprint, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
   async blueprint(@Args() args: FindOneArgs): Promise<Blueprint | null> {
     return this.blueprintService.blueprint(args);
   }
 
   @Mutation(() => Blueprint, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "data.workspace.connect.id"
@@ -62,14 +58,12 @@ export class BlueprintResolver {
   }
 
   @Mutation(() => Blueprint, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
   async deleteBlueprint(@Args() args: FindOneArgs): Promise<Blueprint | null> {
     return this.blueprintService.deleteBlueprint(args);
   }
 
   @Mutation(() => Blueprint, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
   async updateBlueprint(@Args() args: UpdateBlueprintArgs): Promise<Blueprint> {
     return this.blueprintService.updateBlueprint(args);

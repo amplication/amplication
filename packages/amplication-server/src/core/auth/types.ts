@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Request } from "express";
 import { Account, User, Workspace } from "../../models";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export type GitHubRequest = Request & { isNew: boolean | undefined };
 
@@ -31,4 +32,5 @@ interface AuthProfileCustomClaims {
 export type AuthUser = User & {
   account: Account;
   workspace: Workspace;
+  permissions: RolesPermissions[];
 };

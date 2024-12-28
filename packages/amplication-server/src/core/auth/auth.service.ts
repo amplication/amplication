@@ -318,49 +318,41 @@ export class AuthService {
       throw new AmplicationError("Invalid password");
     }
 
-    return this.prepareToken(account.currentUser);
+    const authUser = await this.getAuthUser({
+      id: account.currentUser.id,
+    });
+
+    return this.prepareToken(authUser);
   }
 
   async setCurrentWorkspace(
     accountId: string,
     workspaceId: string
   ): Promise<string> {
-    const users = (await this.userService.findUsers({
-      where: {
-        workspace: {
-          id: workspaceId,
-        },
-        account: {
-          id: accountId,
-        },
+    const authUser = await this.getAuthUser({
+      workspace: {
+        id: workspaceId,
       },
-      include: {
-        account: true,
-        workspace: true,
+      account: {
+        id: accountId,
       },
-      take: 1,
-    })) as AuthUser[];
+    });
 
-    if (!users.length) {
+    if (!authUser) {
       throw new AmplicationError(
         `This account does not have an active user records in the selected workspace or workspace not found ${workspaceId}`
       );
     }
 
-    const [user] = users;
+    await this.accountService.setCurrentUser(accountId, authUser.id);
 
-    await this.accountService.setCurrentUser(accountId, user.id);
-
-    return this.prepareToken(user);
+    return this.prepareToken(authUser);
   }
 
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
-    const user = await this.prismaService.user.findFirst({
-      where: {
-        id: args.data.user.connect.id,
-        deletedAt: null,
-      },
-      include: { workspace: true, account: true },
+    const user = await this.getAuthUser({
+      id: args.data.user.connect.id,
+      deletedAt: null,
     });
 
     if (!user) {
@@ -489,6 +481,7 @@ export class AuthService {
       accountId: user.account.id,
       userId: user.id,
       roles: [],
+      permissions: user.permissions,
       workspaceId: user.workspace.id,
       type: EnumTokenType.User,
     };
@@ -505,6 +498,7 @@ export class AuthService {
       accountId: user.account.id,
       userId: user.id,
       roles: [],
+      permissions: user.permissions,
       workspaceId: user.workspace.id,
       type: EnumTokenType.ApiToken,
       tokenId: tokenId,
@@ -534,7 +528,19 @@ export class AuthService {
       true
     );
 
-    return workspace as unknown as Workspace & { users: AuthUser[] };
+    const owner = workspace.users[0];
+
+    return {
+      ...workspace,
+      users: [
+        {
+          ...owner,
+          account: owner.account,
+          workspace: workspace,
+          permissions: ["*"], //the first user is the owner of the workspace
+        },
+      ],
+    };
   }
 
   async loginOrSignUp(profile: AuthProfile, response: Response): Promise<void> {
