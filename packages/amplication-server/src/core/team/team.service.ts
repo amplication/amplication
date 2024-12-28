@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { Team, User } from "../../models";
+import { Role, Team, User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
@@ -12,9 +12,12 @@ import { UpdateTeamArgs } from "./dto/UpdateTeamArgs";
 import { AddMembersToTeamArgs } from "./dto/AddMembersToTeamArgs";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { RemoveMembersFromTeamArgs } from "./dto/RemoveMembersFromTeamArgs";
+import { AddRolesToTeamArgs } from "./dto/AddRolesToTeamArgs";
+import { RemoveRolesFromTeamArgs } from "./dto/RemoveRolesFromTeamArgs";
 
 export const INVALID_TEAM_ID = "Invalid teamId";
 export const INVALID_MEMBERS = "Invalid members";
+export const INVALID_ROLES = "Invalid roles";
 
 @Injectable()
 export class TeamService {
@@ -213,5 +216,114 @@ export class TeamService {
         },
       })
       .members();
+  }
+
+  async addRolesToTeam(args: AddRolesToTeamArgs): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (!team) {
+      throw new AmplicationError(INVALID_TEAM_ID);
+    }
+
+    const roleIds = args.data.roleIds;
+
+    const invalidRoles = await this.prisma.role.findMany({
+      where: {
+        id: {
+          in: roleIds,
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            deletedAt: {
+              not: null,
+            },
+          },
+          {
+            workspaceId: {
+              not: team.workspaceId,
+            },
+          },
+        ],
+      },
+    });
+
+    if (invalidRoles && invalidRoles.length > 0) {
+      throw new AmplicationError(INVALID_ROLES);
+    }
+
+    const updatedTeam = await this.prisma.team.update({
+      where: {
+        id: args.where.id,
+      },
+      data: {
+        roles: {
+          connect: roleIds.map((roleId) => ({
+            id: roleId,
+          })),
+        },
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.TeamAddRoles,
+      properties: {
+        teamName: team.name,
+        rolesAdded: roleIds.length,
+      },
+    });
+
+    return updatedTeam;
+  }
+
+  async removeRolesFromTeam(args: RemoveRolesFromTeamArgs): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (!team) {
+      throw new AmplicationError(INVALID_TEAM_ID);
+    }
+
+    const roleIds = args.data.roleIds;
+
+    const updatedTeam = await this.prisma.team.update({
+      where: {
+        id: args.where.id,
+      },
+      data: {
+        roles: {
+          disconnect: roleIds.map((roleId) => ({
+            id: roleId,
+          })),
+        },
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.TeamRemoveRoles,
+      properties: {
+        teamName: team.name,
+        rolesRemoved: roleIds.length,
+      },
+    });
+
+    return updatedTeam;
+  }
+
+  async roles(teamId: string): Promise<Role[]> {
+    return this.prisma.team
+      .findUnique({
+        where: {
+          id: teamId,
+        },
+      })
+      .roles();
   }
 }

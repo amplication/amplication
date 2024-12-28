@@ -1,18 +1,18 @@
 import { Button, Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useState } from "react";
-import * as models from "../models";
-import AddTeamMember from "./AddTeamMember";
+import * as models from "../../models";
+import AddTeamRole from "./AddTeamRole";
 
 type Props = {
   team: models.Team;
-  onAddMembers: (userIds: string[]) => void;
+  onAddRoles: (userIds: string[]) => void;
 };
 
-const AddTeamMemberButton = ({ team, onAddMembers }: Props) => {
+const AddTeamRoleButton = ({ team, onAddRoles }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleAddTeamMember = (userIds: string[]) => {
-    onAddMembers(userIds);
+  const handleAddTeamRole = (userIds: string[]) => {
+    onAddRoles(userIds);
     setIsOpen(false);
   };
 
@@ -21,11 +21,9 @@ const AddTeamMemberButton = ({ team, onAddMembers }: Props) => {
       <Dialog
         isOpen={isOpen}
         onDismiss={() => setIsOpen(false)}
-        title="Add Member"
+        title="Add Role"
       >
-        {isOpen && (
-          <AddTeamMember team={team} onAddMembers={handleAddTeamMember} />
-        )}
+        {isOpen && <AddTeamRole team={team} onAddRoles={handleAddTeamRole} />}
       </Dialog>
 
       <Button
@@ -34,10 +32,10 @@ const AddTeamMemberButton = ({ team, onAddMembers }: Props) => {
           setIsOpen(true);
         }}
       >
-        Add Member
+        Add Roles
       </Button>
     </>
   );
 };
 
-export default AddTeamMemberButton;
+export default AddTeamRoleButton;

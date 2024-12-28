@@ -13,9 +13,9 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { useEffect, useMemo, useState } from "react";
-import { UserInfo } from "../Components/UserInfo";
-import * as models from "../models";
-import useTeams from "./hooks/useTeams";
+import { UserInfo } from "../../Components/UserInfo";
+import * as models from "../../models";
+import useTeams from "../hooks/useTeams";
 
 type Props = {
   team: models.Team;

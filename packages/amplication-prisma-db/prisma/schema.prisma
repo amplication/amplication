@@ -151,6 +151,7 @@ model Role {
   permissions String[]
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teams       Team[]
 
   @@unique([workspaceId, key], map: "Role.workspaceId_key_unique")
   @@unique([workspaceId, name], map: "Role.workspaceId_name_unique")
@@ -168,6 +169,7 @@ model Team {
   deletedAt   DateTime?
   ownerships  Ownership[]
   color       String?
+  roles       Role[]
 
   @@unique([workspaceId, name], map: "Team.workspaceId_name_unique")
 }

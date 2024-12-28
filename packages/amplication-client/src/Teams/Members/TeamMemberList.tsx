@@ -12,12 +12,12 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import React from "react";
-import { UserInfo } from "../Components/UserInfo";
-import * as models from "../models";
-import { formatError } from "../util/error";
-import { pluralize } from "../util/pluralize";
+import { UserInfo } from "../../Components/UserInfo";
+import * as models from "../../models";
+import { formatError } from "../../util/error";
+import { pluralize } from "../../util/pluralize";
 import AddTeamMember from "./AddTeamMemberButton";
-import useTeams from "./hooks/useTeams";
+import useTeams from "../hooks/useTeams";
 
 type Props = {
   team: models.Team;

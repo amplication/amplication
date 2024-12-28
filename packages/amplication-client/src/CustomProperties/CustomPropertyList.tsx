@@ -125,7 +125,9 @@ export const CustomPropertyList = React.memo(() => {
               itemsAlign={EnumItemsAlign.Center}
               end={<EnabledIndicator enabled={customProperty.enabled} />}
             >
-              <span>{customProperty.name}</span>
+              <Text textStyle={EnumTextStyle.Description}>
+                {customProperty.name}
+              </Text>
             </FlexItem>
           </ListItem>
         ))}
