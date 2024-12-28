@@ -6,7 +6,7 @@ import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { AccountService } from "../account/account.service";
 import { MailService } from "../mail/mail.service";
-import { Workspace, Account, User, Project } from "../../models";
+import { Workspace, Account, User, Project, Role, Team } from "../../models";
 import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
@@ -73,6 +73,21 @@ const EXAMPLE_PROJECT: Project = {
   licensed: true,
 };
 
+const EXAMPLE_ROLE: Role = {
+  id: "exampleRoleId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleRoleName",
+  key: "exampleRoleKey",
+};
+
+const EXAMPLE_TEAM: Team = {
+  id: "exampleTeamId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleTeamName",
+};
+
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
 const prismaWorkspaceFindOneMock = jest.fn(() => {
@@ -116,6 +131,13 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
 });
 const createProjectMock = jest.fn(() => {
   return EXAMPLE_PROJECT;
+});
+
+const prismaRoleCreateMock = jest.fn(() => {
+  return EXAMPLE_ROLE;
+});
+const prismaTeamCreateMock = jest.fn(() => {
+  return EXAMPLE_TEAM;
 });
 
 const billingServiceIsBillingEnabledMock = jest.fn();
@@ -206,6 +228,12 @@ describe("WorkspaceService", () => {
               findMany: prismaUserFindManyMock,
               create: prismaUserCreateMock,
             },
+            role: {
+              create: prismaRoleCreateMock,
+            },
+            team: {
+              create: prismaTeamCreateMock,
+            },
           })),
         },
         {
@@ -254,22 +282,22 @@ describe("WorkspaceService", () => {
   it("should find one workspace", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.getWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
-    expect(prismaWorkspaceFindOneMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceFindOneMock).toBeCalledWith(args);
+    expect(prismaWorkspaceFindOneMock).toHaveBeenCalledTimes(1);
+    expect(prismaWorkspaceFindOneMock).toHaveBeenCalledWith(args);
   });
 
   it("should find many workspaces", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.getWorkspaces(args)).toEqual([EXAMPLE_WORKSPACE]);
-    expect(prismaWorkspaceFindManyMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceFindManyMock).toBeCalledWith(args);
+    expect(prismaWorkspaceFindManyMock).toHaveBeenCalledTimes(1);
+    expect(prismaWorkspaceFindManyMock).toHaveBeenCalledWith(args);
   });
 
   it("should delete an workspace", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.deleteWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
-    expect(prismaWorkspaceDeleteMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceDeleteMock).toBeCalledWith(args);
+    expect(prismaWorkspaceDeleteMock).toHaveBeenCalledTimes(1);
+    expect(prismaWorkspaceDeleteMock).toHaveBeenCalledWith(args);
   });
 
   it("should update an workspace", async () => {
@@ -278,8 +306,8 @@ describe("WorkspaceService", () => {
       where: { id: EXAMPLE_WORKSPACE_ID },
     };
     expect(await service.updateWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
-    expect(prismaWorkspaceUpdateMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceUpdateMock).toBeCalledWith(args);
+    expect(prismaWorkspaceUpdateMock).toHaveBeenCalledTimes(1);
+    expect(prismaWorkspaceUpdateMock).toHaveBeenCalledWith(args);
   });
 
   it("should not delete a workspace owner", async () => {
@@ -326,9 +354,9 @@ describe("WorkspaceService", () => {
       expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
         EXAMPLE_WORKSPACE
       );
-      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
-      expect(createDemoRepoMock).toBeCalledTimes(0);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toHaveBeenCalledTimes(0);
     });
 
     it("should throw a billing limitation error if the allow workspace creation entitlement is false", async () => {
@@ -354,7 +382,7 @@ describe("WorkspaceService", () => {
         )
       );
 
-      expect(prismaWorkspaceCreateMock).toBeCalledTimes(0);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(0);
     });
 
     it("should create a workspace even if allow workspace creation is false when it's the first workspace for a new user", async () => {
@@ -388,12 +416,12 @@ describe("WorkspaceService", () => {
       expect(
         await service.createWorkspace(args.accountId, args.args, true)
       ).toEqual(EXAMPLE_WORKSPACE);
-      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
-      expect(createDemoRepoMock).toBeCalledTimes(0);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toHaveBeenCalledTimes(0);
     });
 
-    it("should create a demo repo when creating a workspace ", async () => {
+    it("should create default objects when creating a workspace ", async () => {
       billingServiceMock.getBooleanEntitlement.mockReset();
       billingServiceMock.getBooleanEntitlement.mockReturnValueOnce({
         hasAccess: true,
@@ -431,9 +459,11 @@ describe("WorkspaceService", () => {
           true
         )
       ).toEqual(EXAMPLE_WORKSPACE);
-      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
-      expect(createDemoRepoMock).toBeCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
+      expect(createDemoRepoMock).toHaveBeenCalledTimes(1);
+      expect(prismaTeamCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaRoleCreateMock).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -472,8 +502,8 @@ describe("WorkspaceService", () => {
       expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
         EXAMPLE_WORKSPACE
       );
-      expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-      expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
     });
   });
 
@@ -492,11 +522,11 @@ describe("WorkspaceService", () => {
     ).rejects.toThrow(
       `User with email ${functionArgs.args.data.email} already exist in the workspace.`
     );
-    expect(accountServiceFindAccountMock).toBeCalledTimes(1);
-    expect(accountServiceFindAccountMock).toBeCalledWith(accountArgs);
+    expect(accountServiceFindAccountMock).toHaveBeenCalledTimes(1);
+    expect(accountServiceFindAccountMock).toHaveBeenCalledWith(accountArgs);
     /**@todo test prisma user calls */
-    // expect(prismaUserFindManyMock).toBeCalledTimes(1);
-    // expect(prismaUserFindManyMock).toBeCalledWith(existingUsersArgs);
+    // expect(prismaUserFindManyMock).toHaveBeenCalledTimes(1);
+    // expect(prismaUserFindManyMock).toHaveBeenCalledWith(existingUsersArgs);
   });
   /**@todo fix test */
   it.skip("should create an account and invite user to workspace", async () => {
@@ -526,18 +556,20 @@ describe("WorkspaceService", () => {
     expect(
       await service.inviteUser(functionArgs.currentUser, functionArgs.args)
     ).toEqual(EXAMPLE_USER);
-    expect(accountServiceFindAccountMock).toBeCalledTimes(1);
-    expect(accountServiceFindAccountMock).toBeCalledWith(accountArgs);
-    expect(passwordServiceGeneratePasswordMock).toBeCalledTimes(1);
-    expect(passwordServiceGeneratePasswordMock).toBeCalledWith();
-    expect(passwordServiceHashPasswordMock).toBeCalledTimes(1);
-    expect(passwordServiceHashPasswordMock).toBeCalledWith(
+    expect(accountServiceFindAccountMock).toHaveBeenCalledTimes(1);
+    expect(accountServiceFindAccountMock).toHaveBeenCalledWith(accountArgs);
+    expect(passwordServiceGeneratePasswordMock).toHaveBeenCalledTimes(1);
+    expect(passwordServiceGeneratePasswordMock).toHaveBeenCalledWith();
+    expect(passwordServiceHashPasswordMock).toHaveBeenCalledTimes(1);
+    expect(passwordServiceHashPasswordMock).toHaveBeenCalledWith(
       EXAMPLE_NEW_PASSWORD
     );
-    expect(accountServiceCreateAccountMock).toBeCalledTimes(1);
-    expect(accountServiceCreateAccountMock).toBeCalledWith(createAccountArgs);
-    expect(prismaUserCreateMock).toBeCalledTimes(1);
-    expect(prismaUserCreateMock).toBeCalledWith(userCreateArgs);
+    expect(accountServiceCreateAccountMock).toHaveBeenCalledTimes(1);
+    expect(accountServiceCreateAccountMock).toHaveBeenCalledWith(
+      createAccountArgs
+    );
+    expect(prismaUserCreateMock).toHaveBeenCalledTimes(1);
+    expect(prismaUserCreateMock).toHaveBeenCalledWith(userCreateArgs);
   });
 
   describe("bulkUpdateWorkspaceProjectsAndResourcesLicensed", () => {
