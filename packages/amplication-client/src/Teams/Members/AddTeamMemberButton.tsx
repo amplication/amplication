@@ -1,6 +1,6 @@
 import { Button, Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useState } from "react";
-import * as models from "../models";
+import * as models from "../../models";
 import AddTeamMember from "./AddTeamMember";
 
 type Props = {

@@ -11,7 +11,7 @@ import useTeams from "./hooks/useTeams";
 import TeamForm from "./TeamForm";
 import { DeleteTeam } from "./DeleteTeam";
 import { useAppContext } from "../context/appContext";
-import TeamMemberList from "./TeamMemberList";
+import TeamMemberList from "./Members/TeamMemberList";
 
 const Team = () => {
   const match = useRouteMatch<{
