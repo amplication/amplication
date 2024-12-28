@@ -6,12 +6,14 @@ type Props = {
   name: string;
   label?: string;
   iconOnlyMode?: boolean;
+  disabled?: boolean;
 };
 
 export const ColorPickerField: React.FC<Props> = ({
   name,
   label,
   iconOnlyMode,
+  disabled,
 }) => {
   const [field, , { setValue }] = useField<string>(name);
 
@@ -24,6 +26,7 @@ export const ColorPickerField: React.FC<Props> = ({
 
   return (
     <ColorPicker
+      disabled={disabled}
       onChange={handleChange}
       selectedColor={field.value || "#ffffff"}
       label={label}

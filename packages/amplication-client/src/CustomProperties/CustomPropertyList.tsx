@@ -50,7 +50,7 @@ export const CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON: {
 };
 
 export const CustomPropertyList = React.memo(() => {
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
 
   const baseUrl = `/${currentWorkspace?.id}/settings`;
 
@@ -102,7 +102,7 @@ export const CustomPropertyList = React.memo(() => {
       <List
         headerContent={
           <NewCustomProperty
-            //disabled={!data?.customProperties}
+            disabled={!permissions.allowedTasks["property.create"]}
             onCustomPropertyAdd={handleCustomPropertyChange}
           />
         }

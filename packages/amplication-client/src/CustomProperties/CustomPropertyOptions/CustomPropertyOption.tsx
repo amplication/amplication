@@ -18,6 +18,7 @@ type Props = {
   customPropertyOption: models.CustomPropertyOption;
   onOptionDelete?: (option: models.CustomPropertyOption) => void;
   onOptionChanged?: (option: models.CustomPropertyOption) => void;
+  disabled?: boolean;
 };
 
 const CustomPropertyOption = ({
@@ -25,6 +26,7 @@ const CustomPropertyOption = ({
   customPropertyOption,
   onOptionDelete,
   onOptionChanged,
+  disabled,
 }: Props) => {
   const [originalValue, setOriginalValue] = useState<string>(
     customPropertyOption.value
@@ -74,6 +76,7 @@ const CustomPropertyOption = ({
           <CustomPropertyOptionForm
             onSubmit={handleSubmit}
             defaultValues={customPropertyOption}
+            disabled={disabled}
           />
           <FlexItem.FlexEnd
             direction={EnumFlexDirection.Row}
@@ -83,6 +86,7 @@ const CustomPropertyOption = ({
               customProperty={customProperty}
               customPropertyOption={customPropertyOption}
               onOptionDelete={onOptionDelete}
+              disabled={disabled}
             />
           </FlexItem.FlexEnd>
         </FlexItem>

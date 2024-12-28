@@ -22,7 +22,7 @@ const CustomProperty = () => {
     customPropertyId: string;
   }>(["/:workspace/settings/properties/:customPropertyId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
   const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
@@ -69,6 +69,8 @@ const CustomProperty = () => {
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
 
+  const disabled = !permissions.allowedTasks["property.edit"];
+
   return (
     <>
       <FlexItem>
@@ -83,6 +85,7 @@ const CustomProperty = () => {
           {data?.customProperty && (
             <>
               <Toggle
+                disabled={disabled}
                 name={"enabled"}
                 onValueChange={onEnableChanged}
                 checked={data?.customProperty?.enabled}
@@ -101,6 +104,7 @@ const CustomProperty = () => {
           handleSubmit={handleSubmit}
           customProperty={data?.customProperty}
           onOptionListChanged={onOptionListChanged}
+          disabled={disabled}
         ></CustomPropertyFormAndOptions>
       )}
 
