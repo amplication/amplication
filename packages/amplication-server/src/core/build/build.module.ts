@@ -13,7 +13,6 @@ import { BuildService } from "./build.service";
 import { BuildResolver } from "./build.resolver";
 import { BuildController } from "./build.controller";
 import { ActionModule } from "../action/action.module";
-import { BuildFilesSaver } from "./utils";
 import { CommitModule } from "../commit/commit.module";
 import { TopicModule } from "../topic/topic.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
@@ -57,7 +56,7 @@ import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.mod
     PrivatePluginModule,
     ResourceSettingsModule,
   ],
-  providers: [BuildService, BuildResolver, BuildFilesSaver],
+  providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController],
 })

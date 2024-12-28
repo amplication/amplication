@@ -4,14 +4,13 @@ import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
 import { Env } from "../../env";
-import { Account, Project, Resource, User, Workspace } from "../../models";
+import { Account, Project, User, Workspace } from "../../models";
 import { PrismaService } from "../../prisma";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { Auth0Service } from "../idp/auth0.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { UserService } from "../user/user.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { AuthService } from "./auth.service";
@@ -19,7 +18,6 @@ import { IdentityProvider } from "./auth.types";
 import { EnumTokenType } from "./dto";
 import { AuthProfile, AuthUser } from "./types";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
-const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const EXAMPLE_ACCOUNT: Account = {
   id: "alice",
@@ -42,17 +40,6 @@ const EXAMPLE_PROJECT: Project = {
   useDemoRepo: false,
   demoRepoName: null,
   licensed: true,
-};
-const NOW = new Date();
-const EXAMPLE_RESOURCE: Resource = {
-  id: "exampleResourceId",
-  resourceType: EnumResourceType.Service,
-  name: "Example Resource",
-  description: null,
-  licensed: true,
-  createdAt: NOW,
-  updatedAt: NOW,
-  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
@@ -335,6 +322,7 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
+      roles: [],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
@@ -366,6 +354,7 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
+      roles: [],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
@@ -402,6 +391,7 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_OTHER_WORKSPACE.id,
+      roles: [],
       userId: EXAMPLE_OTHER_AUTH_USER.id,
       type: EnumTokenType.User,
     });
@@ -609,7 +599,6 @@ describe("AuthService", () => {
           createdAt: undefined,
           updatedAt: undefined,
           workspace: new Workspace(),
-          userRoles: [],
           isOwner: false,
         },
         false

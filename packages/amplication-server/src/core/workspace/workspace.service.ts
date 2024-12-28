@@ -18,7 +18,6 @@ import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { ResourceService } from "../resource/resource.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { Subscription } from "../subscription/dto/Subscription";
 import { SubscriptionService } from "../subscription/subscription.service";

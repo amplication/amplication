@@ -5,7 +5,6 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
 import { AccountService } from "../account/account.service";
-import { ResourceService } from "../resource/resource.service";
 import { MailService } from "../mail/mail.service";
 import { Workspace, Account, User, Project } from "../../models";
 import { DeleteUserArgs } from "./dto";
