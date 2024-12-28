@@ -82,6 +82,7 @@ export class ResourceResolver {
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
   )
+  @Permissions("resource.view")
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
@@ -89,11 +90,11 @@ export class ResourceResolver {
   @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
-  @Permissions("resource.*.edit")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
   )
+  @Permissions("resource.view")
   async catalog(
     @Args() args: FindManyResourceArgs
   ): Promise<PaginatedResourceQueryResult> {
@@ -104,6 +105,7 @@ export class ResourceResolver {
     nullable: false,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @Permissions("resource.view")
   async messageBrokerConnectedServices(
     @Args() args: FindOneArgs
   ): Promise<Resource[]> {
@@ -111,6 +113,7 @@ export class ResourceResolver {
   }
 
   @ResolveField(() => [Entity])
+  @Permissions("resource.view")
   async entities(
     @Parent() resource: Resource,
     @Args() args: FindManyEntityArgs
@@ -122,6 +125,7 @@ export class ResourceResolver {
   }
 
   @ResolveField(() => [Build])
+  @Permissions("resource.view")
   async builds(
     @Parent() resource: Resource,
     @Args() args: FindManyBuildArgs
@@ -144,6 +148,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
+  @Permissions("resource.createMessageBroker")
   async createMessageBroker(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
@@ -168,6 +173,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
+  @Permissions("resource.create")
   async createComponent(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
@@ -180,6 +186,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
+  @Permissions("resource.createService")
   async createService(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
@@ -192,6 +199,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     "data.resource.project.connect.id"
   )
+  @Permissions("resource.createService")
   async createServiceWithEntities(
     @Args() args: CreateServiceWithEntitiesArgs,
     @UserEntity() user: User
@@ -203,6 +211,7 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @Permissions("resource.delete")
   async deleteResource(
     @Args() args: FindOneArgs,
     @UserEntity() user: User
@@ -214,6 +223,7 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @Permissions("resource.*.edit")
   async updateResource(
     @Args() args: UpdateOneResourceArgs,
     @UserEntity() user: User
@@ -223,6 +233,7 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  @Permissions("resource.*.edit")
   async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
@@ -242,6 +253,7 @@ export class ResourceResolver {
 
   @Mutation(() => UserAction, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
+  @Permissions("resource.*.edit")
   async redesignProject(
     @Args() args: RedesignProjectArgs,
     @UserEntity() user: User
@@ -253,6 +265,7 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @Permissions("resource.*.edit")
   async updateCodeGeneratorVersion(
     @Args() args: UpdateCodeGeneratorVersionArgs,
     @UserEntity() user: User
