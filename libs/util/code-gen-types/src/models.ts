@@ -28,8 +28,6 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
-  previewAccountEmail?: Maybe<Scalars['String']['output']>;
-  previewAccountType: EnumPreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -113,13 +111,6 @@ export type AssistantThread = {
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
-};
-
-export type AuthPreviewAccount = {
-  projectId: Scalars['String']['output'];
-  resourceId?: Maybe<Scalars['String']['output']>;
-  token: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -1159,12 +1150,6 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
-export enum EnumPreviewAccountType {
-  BreakingTheMonolith = 'BreakingTheMonolith',
-  None = 'None',
-  PreviewOnboarding = 'PreviewOnboarding'
-}
-
 export enum EnumResourceType {
   Component = 'Component',
   MessageBroker = 'MessageBroker',
@@ -1184,13 +1169,6 @@ export type EnumResourceTypeFilter = {
 export enum EnumResourceTypeGroup {
   Platform = 'Platform',
   Services = 'Services'
-}
-
-export enum EnumRole {
-  Admin = 'Admin',
-  OrganizationAdmin = 'OrganizationAdmin',
-  ProjectAdmin = 'ProjectAdmin',
-  User = 'User'
 }
 
 export enum EnumSchemaNames {
@@ -1693,7 +1671,6 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
-  completeSignupWithBusinessEmail: Scalars['String']['output'];
   connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
@@ -1782,7 +1759,6 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   setResourceOwner: Resource;
   signup: Auth;
-  signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
   startRedesign?: Maybe<Resource>;
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
@@ -2325,11 +2301,6 @@ export type MutationSetResourceOwnerArgs = {
 
 export type MutationSignupArgs = {
   data: SignupInput;
-};
-
-
-export type MutationSignupPreviewAccountArgs = {
-  data: SignupPreviewAccountInput;
 };
 
 
@@ -4066,11 +4037,6 @@ export type SignupInput = {
   workspaceName: Scalars['String']['input'];
 };
 
-export type SignupPreviewAccountInput = {
-  previewAccountEmail: Scalars['String']['input'];
-  previewAccountType: EnumPreviewAccountType;
-};
-
 export type SignupWithBusinessEmailInput = {
   email: Scalars['String']['input'];
 };
@@ -4222,7 +4188,6 @@ export type User = {
   isOwner: Scalars['Boolean']['output'];
   lastActive?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
-  userRoles?: Maybe<Array<UserRole>>;
   workspace?: Maybe<Workspace>;
 };
 
@@ -4239,13 +4204,6 @@ export type UserAction = {
   user: User;
   userActionType: EnumUserActionType;
   userId: Scalars['String']['output'];
-};
-
-export type UserRole = {
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['String']['output'];
-  role: EnumRole;
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type WhereBlueprintRelationUniqueInput = {

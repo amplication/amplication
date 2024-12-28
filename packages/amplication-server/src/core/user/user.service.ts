@@ -1,23 +1,19 @@
-import { Prisma, PrismaService } from "../../prisma";
-import { ConflictException, Injectable } from "@nestjs/common";
-import { Account, User, UserRole } from "../../models";
-import { UserRoleArgs } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
-  CreatePrProcessCompleted,
   KAFKA_TOPICS,
   UserAction,
   UserFeatureAnnouncement,
 } from "@amplication/schema-registry";
-import { encryptString } from "../../util/encryptionUtil";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { PreviewUserService } from "../auth/previewUser.service";
+import { Account, User } from "../../models";
+import { Prisma, PrismaService } from "../../prisma";
+import { encryptString } from "../../util/encryptionUtil";
 import { AuthUser } from "../auth/types";
-import { EnumPreviewAccountType } from "@amplication/code-gen-types";
+import { BillingService } from "../billing/billing.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Injectable()
@@ -27,8 +23,7 @@ export class UserService {
     private readonly logger: AmplicationLogger,
     private readonly billingService: BillingService,
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
-    private readonly previewUserService: PreviewUserService
+    private readonly configService: ConfigService
   ) {}
 
   findUser(
@@ -59,7 +54,6 @@ export class UserService {
       where,
       include: {
         account: true,
-        userRoles: true,
         workspace: true,
       },
       take: 1,
@@ -69,71 +63,6 @@ export class UserService {
     }
     const [user] = matchingUsers;
     return user as AuthUser;
-  }
-
-  async assignRole(args: UserRoleArgs): Promise<User> {
-    const existingRole = await this.prisma.userRole.findMany({
-      where: {
-        user: {
-          id: args.where.id,
-        },
-        role: args.data.role,
-      },
-    });
-
-    //if the role already exist do nothing and return the user
-    if (!existingRole || !existingRole.length) {
-      const roleData: Prisma.UserRoleCreateArgs = {
-        data: {
-          role: args.data.role,
-          user: { connect: { id: args.where.id } },
-        },
-      };
-
-      await this.prisma.userRole.create(roleData);
-    }
-
-    return this.findUser({
-      where: {
-        id: args.where.id,
-      },
-    });
-  }
-
-  async removeRole(args: UserRoleArgs): Promise<User> {
-    const existingRole = await this.prisma.userRole.findMany({
-      where: {
-        user: {
-          id: args.where.id,
-        },
-        role: args.data.role,
-      },
-    });
-
-    //if the role already exist do nothing and return the user
-    if (existingRole && existingRole.length) {
-      await this.prisma.userRole.delete({
-        where: {
-          id: existingRole[0].id,
-        },
-      });
-    }
-
-    return this.findUser({
-      where: {
-        id: args.where.id,
-      },
-    });
-  }
-
-  async getRoles(id: string): Promise<UserRole[]> {
-    return this.prisma.userRole.findMany({
-      where: {
-        user: {
-          id,
-        },
-      },
-    });
   }
 
   async getAccount(userId: string): Promise<Account> {
@@ -151,7 +80,7 @@ export class UserService {
 
     return {
       ...account,
-      email: account.previewAccountEmail ?? account.email,
+      email: account.email,
     };
   }
 
@@ -284,55 +213,5 @@ export class UserService {
     }
 
     return true;
-  }
-
-  async handleUserPullRequestCompleted(
-    userId: string,
-    buildId: string,
-    pullRequestUrl: string
-  ): Promise<void> {
-    try {
-      const user = await this.getAuthUser({ id: userId });
-
-      //In case this is a preview onboarding, we'll complete the signup and send the password reset link
-      if (
-        user.account.previewAccountType ===
-        EnumPreviewAccountType.PreviewOnboarding
-      ) {
-        user.account.email =
-          user.account.previewAccountEmail ?? user.account.email;
-        const resetPasswordUrl =
-          await this.previewUserService.completeSignupPreviewAccount(
-            user,
-            false
-          );
-
-        await this.setNotificationRegistry(user);
-
-        //send the password reset link and pull request link to the user via novu
-        this.kafkaProducerService
-          .emitMessage(KAFKA_TOPICS.USER_PREVIEW_GENERATION_COMPLETED_TOPIC, <
-            CreatePrProcessCompleted.KafkaEvent
-          >{
-            key: {},
-            value: {
-              externalId: encryptString(userId),
-              resetPasswordUrl,
-              pullRequestUrl,
-            },
-          })
-          .catch((error) =>
-            this.logger.error(
-              `Failed to que CreatePrProcessCompleted for build ID ${buildId}`,
-              error
-            )
-          );
-      }
-    } catch (error) {
-      this.logger.error(
-        `Failed to handle pull request completed for user ${userId} and build ID ${buildId}`,
-        error
-      );
-    }
   }
 }

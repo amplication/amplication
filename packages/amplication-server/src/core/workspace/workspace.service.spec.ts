@@ -8,7 +8,6 @@ import { AccountService } from "../account/account.service";
 import { ResourceService } from "../resource/resource.service";
 import { MailService } from "../mail/mail.service";
 import { Workspace, Account, User, Project } from "../../models";
-import { EnumRole } from "../../enums/EnumRole";
 import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
@@ -16,7 +15,6 @@ import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -45,20 +43,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
-};
-
-const EXAMPLE_PREVIEW_ACCOUNT: Account = {
-  id: EXAMPLE_ACCOUNT_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: EXAMPLE_EMAIL,
-  firstName: EXAMPLE_FIRST_NAME,
-  lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
-  previewAccountEmail: "example@amplicaion.com",
 };
 
 const EXAMPLE_USER: User = {
@@ -92,9 +76,6 @@ const EXAMPLE_PROJECT: Project = {
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
-const prismaAccountFindUniqueMock = jest.fn(() => {
-  return EXAMPLE_PREVIEW_ACCOUNT;
-});
 const prismaWorkspaceFindOneMock = jest.fn(() => {
   return EXAMPLE_WORKSPACE;
 });
@@ -158,16 +139,12 @@ const billingServiceMock = {
   provisionCustomer: jest.fn(() => {
     return {};
   }),
-  provisionPreviewCustomer: jest.fn(() => {
-    return {};
-  }),
 };
 // This is important to mock the getter!!!
 Object.defineProperty(billingServiceMock, "isBillingEnabled", {
   get: billingServiceIsBillingEnabledMock,
 });
 
-const createPreviewServiceMock = jest.fn();
 const mockUpdateProjectLicensed = jest.fn();
 const mockUpdateServiceLicensed = jest.fn();
 
@@ -230,15 +207,6 @@ describe("WorkspaceService", () => {
               findMany: prismaUserFindManyMock,
               create: prismaUserCreateMock,
             },
-            account: {
-              findUnique: prismaAccountFindUniqueMock,
-            },
-          })),
-        },
-        {
-          provide: ResourceService,
-          useClass: jest.fn().mockImplementation(() => ({
-            createPreviewService: createPreviewServiceMock,
           })),
         },
         {
@@ -348,11 +316,6 @@ describe("WorkspaceService", () => {
           users: {
             create: {
               account: { connect: { id: args.accountId } },
-              userRoles: {
-                create: {
-                  role: EnumRole.OrganizationAdmin,
-                },
-              },
               isOwner: true,
             },
           },
@@ -415,11 +378,6 @@ describe("WorkspaceService", () => {
           users: {
             create: {
               account: { connect: { id: args.accountId } },
-              userRoles: {
-                create: {
-                  role: EnumRole.OrganizationAdmin,
-                },
-              },
               isOwner: true,
             },
           },
@@ -457,11 +415,6 @@ describe("WorkspaceService", () => {
           users: {
             create: {
               account: { connect: { id: args.accountId } },
-              userRoles: {
-                create: {
-                  role: EnumRole.OrganizationAdmin,
-                },
-              },
               isOwner: true,
             },
           },
@@ -509,11 +462,6 @@ describe("WorkspaceService", () => {
           users: {
             create: {
               account: { connect: { id: args.accountId } },
-              userRoles: {
-                create: {
-                  role: EnumRole.OrganizationAdmin,
-                },
-              },
               isOwner: true,
             },
           },
@@ -528,42 +476,6 @@ describe("WorkspaceService", () => {
       expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
       expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
     });
-  });
-
-  it("should create a preview workspace", async () => {
-    const args = {
-      accountId: EXAMPLE_ACCOUNT_ID,
-      args: {
-        data: {
-          name: EXAMPLE_WORKSPACE_NAME,
-        },
-      },
-    };
-    const prismaArgs = {
-      ...args.args,
-      data: {
-        ...args.args.data,
-        users: {
-          create: {
-            account: { connect: { id: args.accountId } },
-            userRoles: {
-              create: {
-                role: EnumRole.OrganizationAdmin,
-              },
-            },
-            isOwner: true,
-          },
-        },
-      },
-      include: {
-        users: true,
-      },
-    };
-    expect(
-      await service.createPreviewWorkspace(args.args, args.accountId)
-    ).toEqual(EXAMPLE_WORKSPACE);
-    expect(prismaWorkspaceCreateMock).toBeCalledTimes(1);
-    expect(prismaWorkspaceCreateMock).toBeCalledWith(prismaArgs);
   });
 
   /**@todo fix test*/

@@ -35,7 +35,6 @@ import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
@@ -93,8 +92,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {

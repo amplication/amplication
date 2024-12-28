@@ -1,6 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "./User";
-import { EnumPreviewAccountType } from "../core/auth/dto/EnumPreviewAccountType";
 
 @ObjectType({
   isAbstract: true,
@@ -49,14 +48,4 @@ export class Account {
     nullable: true,
   })
   githubId?: string | null;
-
-  @Field(() => EnumPreviewAccountType, {
-    nullable: false,
-  })
-  previewAccountType!: keyof typeof EnumPreviewAccountType;
-
-  @Field(() => String, {
-    nullable: true,
-  })
-  previewAccountEmail: string | null;
 }

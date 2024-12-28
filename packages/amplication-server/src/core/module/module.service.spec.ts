@@ -4,7 +4,6 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, User } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BlockService } from "../block/block.service";
 import { EntityService } from "../entity/entity.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
@@ -45,8 +44,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {

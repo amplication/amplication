@@ -1,4 +1,3 @@
-import { EnumAuthProviderType } from "@amplication/code-gen-types";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConflictException, Inject, Injectable } from "@nestjs/common";
@@ -8,22 +7,16 @@ import cuid from "cuid";
 import { addDays } from "date-fns";
 import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { EnumRole } from "../../enums/EnumRole";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { Account, Project, Resource, User, Workspace } from "../../models";
+import { User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { generateRandomString } from "../auth/auth-utils";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
-import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
 import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
-import { CreateOneResourceArgs } from "../resource/dto";
-import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
@@ -47,14 +40,6 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
-type PreviewAccountEnvironment = {
-  workspace: Workspace & {
-    users: AuthUser[];
-  };
-  project: Project;
-  resource?: Resource;
-};
-
 @Injectable()
 export class WorkspaceService {
   private userLastActiveDays: number;
@@ -64,7 +49,6 @@ export class WorkspaceService {
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
-    private readonly resourceService: ResourceService,
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly configService: ConfigService,
@@ -91,58 +75,6 @@ export class WorkspaceService {
     args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.prisma.workspace.update(args);
-  }
-
-  async createPreviewWorkspace(
-    args: Prisma.WorkspaceCreateArgs,
-    accountId: string
-  ): Promise<Workspace> {
-    const workspace = await this.prisma.workspace.create({
-      ...args,
-      data: {
-        ...args.data,
-        users: {
-          create: {
-            account: { connect: { id: accountId } },
-            isOwner: true,
-            userRoles: {
-              create: {
-                role: EnumRole.OrganizationAdmin,
-              },
-            },
-          },
-        },
-      },
-      include: {
-        ...args.include,
-        // Include users by default, allow to bypass it for including additional user links
-        users: args?.include?.users || true,
-      },
-    });
-
-    const account = await this.prisma.account.findUnique({
-      where: {
-        id: accountId,
-      },
-    });
-
-    await this.billingService.provisionPreviewCustomer(
-      workspace.id,
-      EnumPreviewAccountType[account.previewAccountType]
-    );
-
-    await this.billingService.reportUsage(
-      workspace.id,
-      BillingFeature.TeamMembers
-    );
-
-    return workspace;
-  }
-
-  async convertPreviewSubscriptionToFreeWithTrial(workspaceId: string) {
-    await this.billingService.provisionNewSubscriptionForPreviewAccount(
-      workspaceId
-    );
   }
 
   private async shouldAllowWorkspaceCreation(
@@ -195,11 +127,6 @@ export class WorkspaceService {
           create: {
             account: { connect: { id: accountId } },
             isOwner: true,
-            userRoles: {
-              create: {
-                role: EnumRole.OrganizationAdmin,
-              },
-            },
           },
         },
       },
@@ -374,11 +301,6 @@ export class WorkspaceService {
           create: {
             account: { connect: { id: account.id } },
             isOwner: false,
-            userRoles: {
-              create: {
-                role: EnumRole.OrganizationAdmin,
-              },
-            },
           },
         },
       },
@@ -681,129 +603,5 @@ export class WorkspaceService {
       this.logger.error(error);
       return false;
     }
-  }
-
-  /**
-   * workspace, project and service creation for preview account
-   */
-
-  async createPreviewEnvironment(
-    account: Account
-  ): Promise<PreviewAccountEnvironment> {
-    const workspaceName = `Amplication-${generateRandomString()}`;
-    const projectName = account.previewAccountType;
-
-    const workspace = (await this.createPreviewWorkspace(
-      {
-        data: {
-          name: workspaceName,
-        },
-        include: {
-          users: {
-            include: {
-              account: true,
-              userRoles: true,
-              workspace: true,
-            },
-          },
-        },
-      },
-      account.id
-    )) as unknown as Workspace & { users: AuthUser[] };
-    const [user] = workspace.users as AuthUser[];
-
-    const project = await this.projectService.createProject(
-      {
-        data: {
-          name: projectName,
-          workspace: {
-            connect: {
-              id: workspace.id,
-            },
-          },
-        },
-      },
-      user.id
-    );
-
-    let resource: Resource | undefined;
-
-    if (
-      account.previewAccountType === EnumPreviewAccountType.BreakingTheMonolith
-    ) {
-      resource = await this.createPreviewServiceWithPredefinedSettings(
-        project.id,
-        user
-      );
-    }
-
-    return {
-      workspace,
-      project,
-      resource,
-    };
-  }
-
-  private async createPreviewServiceWithPredefinedSettings(
-    projectId: string,
-    user: User
-  ): Promise<Resource> {
-    const serviceName = "Monolith";
-    const previewServiceSettings = this.createPreviewServiceSettings({
-      projectId: projectId,
-      name: serviceName,
-      description: "Monolith Service",
-      adminUIPath: "",
-      serverPath: `./apps/${serviceName}`,
-      generateAdminUI: false,
-      generateGraphQL: true,
-      generateRestApi: true,
-    });
-
-    const resource = await this.resourceService.createPreviewService(
-      previewServiceSettings,
-      user,
-      [],
-      false
-    );
-
-    return resource;
-  }
-
-  private createPreviewServiceSettings({
-    name,
-    description,
-    adminUIPath,
-    serverPath,
-    generateAdminUI,
-    generateGraphQL,
-    generateRestApi,
-    projectId,
-  }: CreatePreviewServiceSettingsArgs): CreateOneResourceArgs {
-    return {
-      data: {
-        name,
-        description,
-        resourceType: EnumResourceType.Service,
-        project: {
-          connect: {
-            id: projectId,
-          },
-        },
-        codeGenerator: EnumCodeGenerator.NodeJs,
-        serviceSettings: {
-          authProvider: EnumAuthProviderType.Jwt,
-          adminUISettings: {
-            adminUIPath,
-            generateAdminUI,
-          },
-          serverSettings: {
-            generateGraphQL,
-            generateRestApi,
-            serverPath,
-          },
-        },
-      },
-    };
   }
 }
