@@ -117,7 +117,7 @@ export class WorkspaceService {
     }
 
     // Create a new user and link it to the account
-    // Assign the user an "ORGANIZATION_ADMIN" role
+    // Assign the user as the owner of the workspace
     const workspace = await this.prisma.workspace.create({
       ...args,
       data: {

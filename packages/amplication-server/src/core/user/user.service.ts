@@ -15,6 +15,7 @@ import { encryptString } from "../../util/encryptionUtil";
 import { AuthUser } from "../auth/types";
 import { BillingService } from "../billing/billing.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 @Injectable()
 export class UserService {
@@ -62,7 +63,43 @@ export class UserService {
       return null;
     }
     const [user] = matchingUsers;
-    return user as AuthUser;
+    return {
+      ...user,
+      account: user.account,
+      workspace: user.workspace,
+      permissions: await this.getUserPermissions(user.id),
+    };
+  }
+
+  async getUserPermissions(userId: string): Promise<RolesPermissions[]> {
+    const user = await this.findUser({
+      where: {
+        id: userId,
+      },
+    });
+
+    // If the user is an owner, return all permissions
+    if (user.isOwner) {
+      return ["*"];
+    }
+
+    const userRoles = await this.prisma.role.findMany({
+      where: {
+        teams: {
+          some: {
+            members: {
+              some: {
+                id: userId,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return Array.from(
+      new Set(userRoles.flatMap((role) => role.permissions))
+    ) as RolesPermissions[];
   }
 
   async getAccount(userId: string): Promise<Account> {

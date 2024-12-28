@@ -6,6 +6,7 @@ import { get } from "lodash";
 import { User } from "../models";
 import { PermissionsService } from "../core/permissions/permissions.service";
 import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { AuthUser } from "../core/auth/types";
 
 export const AUTHORIZE_CONTEXT = "authorizeContext";
 
@@ -40,14 +41,20 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
     const requestArgs = ctx.getArgByIndex(1);
 
     return (
-      this.canActivateRoles(handler, currentUser) &&
+      this.canPerformTask(handler, currentUser) &&
       (await this.authorizeContext(handler, requestArgs, currentUser))
     );
   }
 
   // Checks if any of the required roles exist in the user role list
-  private matchRoles(rolesToMatch: string[], userRoles: string[]): boolean {
-    return rolesToMatch.some((r) => userRoles.includes(r));
+  private matchPermissions(
+    permissionsToMatch: string[],
+    userPermissions: string[]
+  ): boolean {
+    return (
+      userPermissions.includes("*") ||
+      permissionsToMatch.some((r) => userPermissions.includes(r))
+    );
   }
 
   // This method is required for the interface - do not delete it.
@@ -57,17 +64,17 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
   }
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
-  private getExpectedRoles(handler: Function): string[] {
-    return this.reflector.get<string[]>("roles", handler);
+  private getRequiredPermissions(handler: Function): string[] {
+    return this.reflector.get<string[]>("permissions", handler);
   }
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
-  canActivateRoles(handler: Function, currentUser: User): boolean {
-    const expectedRoles = this.getExpectedRoles(handler);
+  canPerformTask(handler: Function, currentUser: AuthUser): boolean {
+    const requiredPermissions = this.getRequiredPermissions(handler);
 
-    if (expectedRoles) {
-      const currentUserRoles = expectedRoles; // currentUser.userRoles.map((r) => r.role);
-      return this.matchRoles(expectedRoles, currentUserRoles);
+    if (requiredPermissions) {
+      const currentUserPermissions = currentUser.permissions;
+      return this.matchPermissions(requiredPermissions, currentUserPermissions);
     }
 
     return true;
