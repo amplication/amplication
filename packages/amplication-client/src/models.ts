@@ -1690,6 +1690,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   addMembersToTeam: Team;
   addRolePermissions: Role;
+  addRolesToTeam: Team;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1775,6 +1776,7 @@ export type Mutation = {
   redesignProject: UserAction;
   removeMembersFromTeam: Team;
   removeRolePermissions: Role;
+  removeRolesFromTeam: Team;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   scaffoldServiceFromTemplate: Resource;
@@ -1840,6 +1842,12 @@ export type MutationAddMembersToTeamArgs = {
 
 export type MutationAddRolePermissionsArgs = {
   data: RoleAddRemovePermissionsInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolesToTeamArgs = {
+  data: TeamUpdateRolesInput;
   where: WhereUniqueInput;
 };
 
@@ -2271,6 +2279,12 @@ export type MutationRemoveMembersFromTeamArgs = {
 
 export type MutationRemoveRolePermissionsArgs = {
   data: RoleAddRemovePermissionsInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationRemoveRolesFromTeamArgs = {
+  data: TeamUpdateRolesInput;
   where: WhereUniqueInput;
 };
 
@@ -4100,6 +4114,7 @@ export type Team = {
   id: Scalars['String']['output'];
   members?: Maybe<Array<User>>;
   name: Scalars['String']['output'];
+  roles?: Maybe<Array<User>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -4121,6 +4136,10 @@ export type TeamUpdateInput = {
 
 export type TeamUpdateMembersInput = {
   userIds: Array<Scalars['String']['input']>;
+};
+
+export type TeamUpdateRolesInput = {
+  roleIds: Array<Scalars['String']['input']>;
 };
 
 export type TeamWhereInput = {

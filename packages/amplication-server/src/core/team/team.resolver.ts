@@ -16,13 +16,15 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Team, User } from "../../models";
+import { Role, Team, User } from "../../models";
 import { TeamCreateArgs } from "./dto/TeamCreateArgs";
 import { TeamFindManyArgs } from "./dto/TeamFindManyArgs";
 import { UpdateTeamArgs } from "./dto/UpdateTeamArgs";
 import { TeamService } from "./team.service";
 import { AddMembersToTeamArgs } from "./dto/AddMembersToTeamArgs";
 import { RemoveMembersFromTeamArgs } from "./dto/RemoveMembersFromTeamArgs";
+import { AddRolesToTeamArgs } from "./dto/AddRolesToTeamArgs";
+import { RemoveRolesFromTeamArgs } from "./dto/RemoveRolesFromTeamArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -93,5 +95,26 @@ export class TeamResolver {
   @ResolveField(() => [User], { nullable: false })
   async members(@Parent() parent: Team): Promise<User[]> {
     return this.teamService.members(parent.id);
+  }
+
+  @Mutation(() => Team, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  async addRolesToTeam(@Args() args: AddRolesToTeamArgs): Promise<Team> {
+    return this.teamService.addRolesToTeam(args);
+  }
+
+  @Mutation(() => Team, { nullable: false })
+  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  async removeRolesFromTeam(
+    @Args() args: RemoveRolesFromTeamArgs
+  ): Promise<Team> {
+    return this.teamService.removeRolesFromTeam(args);
+  }
+
+  @ResolveField(() => [User], { nullable: false })
+  async roles(@Parent() parent: Team): Promise<Role[]> {
+    return this.teamService.roles(parent.id);
   }
 }

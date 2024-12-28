@@ -1667,6 +1667,7 @@ type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
   addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  addRolesToTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
@@ -1752,6 +1753,7 @@ type Mutation {
   redesignProject(data: RedesignProjectInput!): UserAction!
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   removeRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  removeRolesFromTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
@@ -2895,6 +2897,7 @@ type Team {
   id: String!
   members: [User!]
   name: String!
+  roles: [User!]
   updatedAt: DateTime!
 }
 
@@ -2916,6 +2919,10 @@ input TeamUpdateInput {
 
 input TeamUpdateMembersInput {
   userIds: [String!]!
+}
+
+input TeamUpdateRolesInput {
+  roleIds: [String!]!
 }
 
 input TeamWhereInput {
