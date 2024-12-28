@@ -9,7 +9,7 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { User, Workspace } from "../../models";
+import { Team, User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -38,6 +38,19 @@ import { Invitation } from "./dto/Invitation";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 const INVITATION_EXPIRATION_DAYS = 7;
+
+const DEFAULT_ADMINS_TEAM = {
+  name: "Admins",
+  description: "Admins team",
+  color: "#ACD371",
+};
+
+const DEFAULT_ADMINS_ROLE = {
+  name: "Admins",
+  key: "ADMINS",
+  description: "Can access and manage all resources",
+  permissions: ["*"],
+};
 
 @Injectable()
 export class WorkspaceService {
@@ -139,6 +152,9 @@ export class WorkspaceService {
     await this.billingService.provisionCustomer(workspace.id);
 
     const [user] = workspace.users;
+
+    await this.createDefaultTeam(workspace, user);
+
     const newProject = await this.projectService.createProject(
       {
         data: {
@@ -159,6 +175,45 @@ export class WorkspaceService {
     );
 
     return workspace;
+  }
+
+  private async createDefaultTeam(
+    workspace: Workspace,
+    owner: User
+  ): Promise<Team> {
+    const role = await this.prisma.role.create({
+      data: {
+        ...DEFAULT_ADMINS_ROLE,
+        workspace: {
+          connect: {
+            id: workspace.id,
+          },
+        },
+      },
+    });
+
+    const team = await this.prisma.team.create({
+      data: {
+        ...DEFAULT_ADMINS_TEAM,
+        members: {
+          connect: {
+            id: owner.id,
+          },
+        },
+        roles: {
+          connect: {
+            id: role.id,
+          },
+        },
+        workspace: {
+          connect: {
+            id: workspace.id,
+          },
+        },
+      },
+    });
+
+    return team;
   }
 
   private async canInvite(workspaceId: string): Promise<boolean> {
