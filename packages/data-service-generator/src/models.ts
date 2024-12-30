@@ -1666,6 +1666,7 @@ export type Mutation = {
   addMembersToTeam: Team;
   addRolePermissions: Role;
   addRolesToTeam: Team;
+  addRolesToTeamAssignment: TeamAssignment;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -1736,6 +1737,7 @@ export type Mutation = {
   deleteRole?: Maybe<Role>;
   deleteServiceTopics: ServiceTopics;
   deleteTeam?: Maybe<Team>;
+  deleteTeamAssignment: TeamAssignment;
   deleteTopic: Topic;
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
@@ -1751,6 +1753,7 @@ export type Mutation = {
   removeMembersFromTeam: Team;
   removeRolePermissions: Role;
   removeRolesFromTeam: Team;
+  removeRolesFromTeamAssignment: TeamAssignment;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   scaffoldServiceFromTemplate: Resource;
@@ -1822,6 +1825,12 @@ export type MutationAddRolePermissionsArgs = {
 export type MutationAddRolesToTeamArgs = {
   data: TeamUpdateRolesInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolesToTeamAssignmentArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereTeamAssignmentInput;
 };
 
 
@@ -2184,6 +2193,11 @@ export type MutationDeleteTeamArgs = {
 };
 
 
+export type MutationDeleteTeamAssignmentArgs = {
+  where: WhereTeamAssignmentInput;
+};
+
+
 export type MutationDeleteTopicArgs = {
   where: WhereUniqueInput;
 };
@@ -2259,6 +2273,12 @@ export type MutationRemoveRolePermissionsArgs = {
 export type MutationRemoveRolesFromTeamArgs = {
   data: TeamUpdateRolesInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationRemoveRolesFromTeamAssignmentArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereTeamAssignmentInput;
 };
 
 
@@ -4082,6 +4102,15 @@ export type Team = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type TeamAssignment = {
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  resourceId: Scalars['String']['output'];
+  roles?: Maybe<Array<Role>>;
+  teamId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type TeamCreateInput = {
   name: Scalars['String']['input'];
 };
@@ -4234,6 +4263,11 @@ export type WherePrivatePluginVersionUniqueInput = {
 export type WherePropertyUniqueInput = {
   moduleDto: WhereUniqueInput;
   propertyName: Scalars['String']['input'];
+};
+
+export type WhereTeamAssignmentInput = {
+  resourceId: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
 };
 
 export type WhereUniqueInput = {

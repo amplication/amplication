@@ -127,37 +127,52 @@ model User {
 }
 
 model Role {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  name        String
-  key         String
-  deletedAt   DateTime?
-  description String?
-  permissions String[]
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  teams       Team[]
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  name            String
+  key             String
+  deletedAt       DateTime?
+  description     String?
+  permissions     String[]
+  workspaceId     String
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teams           Team[]
+  teamAssignments TeamAssignment[]
 
   @@unique([workspaceId, key], map: "Role.workspaceId_key_unique")
   @@unique([workspaceId, name], map: "Role.workspaceId_name_unique")
 }
 
 model Team {
-  id          String      @id @default(cuid())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  name        String
-  description String?
-  members     User[]
-  workspaceId String
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  deletedAt   DateTime?
-  ownerships  Ownership[]
-  color       String?
-  roles       Role[]
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  name           String
+  description    String?
+  members        User[]
+  workspaceId    String
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  deletedAt      DateTime?
+  ownerships     Ownership[]
+  color          String?
+  roles          Role[]
+  teamAssignment TeamAssignment[]
 
   @@unique([workspaceId, name], map: "Team.workspaceId_name_unique")
+}
+
+model TeamAssignment {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  resourceId String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  roles      Role[]
+
+  @@unique([teamId, resourceId], map: "TeamAssignment.teamId_resourceId_unique")
 }
 
 model Ownership {
@@ -238,6 +253,7 @@ model Resource {
   properties            Json?
   blueprintId           String?
   blueprint             Blueprint?                   @relation(fields: [blueprintId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  teamAssignments       TeamAssignment[]
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
   @@index([properties(ops: JsonbOps)], type: Gin)
