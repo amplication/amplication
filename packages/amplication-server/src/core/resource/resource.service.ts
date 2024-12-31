@@ -80,6 +80,7 @@ import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ResourceInclude } from "./dto/ResourceInclude";
 import { Relation } from "../relation/dto/Relation";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
+import { TeamAssignment } from "../../models/TeamAssignment";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -2053,5 +2054,18 @@ export class ResourceService {
     );
 
     return this.resourcesByIds(resourceIds);
+  }
+
+  async getTeamAssignments(resourceId: string): Promise<TeamAssignment[]> {
+    return this.prisma.teamAssignment.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+      include: {
+        roles: true,
+      },
+    });
   }
 }

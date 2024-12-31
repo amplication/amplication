@@ -21,14 +21,14 @@ const getPropertiesValidationSchemaUtil = (
     };
 
     if (customProperty.type === models.EnumCustomPropertyType.Select) {
-      schema.enum = customProperty.options.map((option) => option.value);
+      schema.enum = customProperty.options?.map((option) => option.value) || [];
     }
 
     if (customProperty.type === models.EnumCustomPropertyType.MultiSelect) {
       schema.type = "array";
       schema.items = {
         type: "string",
-        enum: customProperty.options.map((option) => option.value),
+        enum: customProperty.options?.map((option) => option.value) || [],
       };
     }
 

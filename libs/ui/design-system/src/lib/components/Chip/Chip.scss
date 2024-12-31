@@ -14,6 +14,7 @@ $padding: 6px;
   font-weight: 400;
   color: var(--gray-base);
   background-color: var(--theme-blue);
+  white-space: nowrap;
 
   &--theme-orange {
     color: var(--gray-full);

@@ -50,6 +50,7 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
+import { TeamAssignment } from "../../models/TeamAssignment";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -398,5 +399,16 @@ export class ResourceResolver {
         id: resource.id,
       },
     });
+  }
+
+  @ResolveField(() => [TeamAssignment], { nullable: true })
+  async teamAssignments(
+    @Parent() resource: Resource
+  ): Promise<TeamAssignment[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceService.getTeamAssignments(resource.id);
   }
 }

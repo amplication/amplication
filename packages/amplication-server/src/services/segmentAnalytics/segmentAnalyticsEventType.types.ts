@@ -61,6 +61,9 @@ export enum EnumEventType {
   TeamRemoveMembers = "TeamRemoveMembers",
   TeamAddRoles = "TeamAddRoles",
   TeamRemoveRoles = "TeamRemoveRoles",
+  TeamDeleteAssignment = "TeamDeleteAssignment",
+  TeamAssignmentAddRoles = "TeamAssignmentAddRoles",
+  TeamAssignmentRemoveRoles = "TeamAssignmentRemoveRoles",
 
   //Custom Properties
   CustomPropertyCreate = "CustomPropertyCreate",

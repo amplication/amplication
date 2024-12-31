@@ -19,6 +19,7 @@ export type Props = {
   onChange: (selectedValue: string | string[]) => void;
   buttonProps?: ButtonProps;
   openButtonProps?: Omit<ButtonProps, "onClick">;
+  showSelectedItemsInButton?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -30,6 +31,7 @@ export const SelectPanel: React.FC<Props> = ({
   onChange,
   buttonProps,
   openButtonProps,
+  showSelectedItemsInButton = true,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -149,7 +151,7 @@ export const SelectPanel: React.FC<Props> = ({
           type="button"
           disabled={disabled}
         >
-          {selectedItems.length > 0
+          {selectedItems.length > 0 && showSelectedItemsInButton
             ? selectedItems.map((item) => (
                 <SelectPanelItemContent
                   key={item.value}
