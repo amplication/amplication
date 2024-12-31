@@ -1,5 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Role } from "./Role";
+import { Team } from "./Team";
+import { Resource } from "./Resource";
 
 @ObjectType({
   isAbstract: true,
@@ -21,10 +23,20 @@ export class TeamAssignment {
   })
   resourceId!: string;
 
+  @Field(() => Resource, {
+    nullable: false,
+  })
+  resource?: Resource;
+
   @Field(() => String, {
     nullable: true,
   })
   teamId!: string;
+
+  @Field(() => Team, {
+    nullable: true,
+  })
+  team?: Team;
 
   @Field(() => [Role], {
     nullable: true,

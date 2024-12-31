@@ -462,6 +462,14 @@ input CreateGitRepositoryInput {
   resourceId: String
 }
 
+input CreateTeamAssignmentsInput {
+  teamIds: [String!]!
+}
+
+input CreateTeamAssignmentsWhereInput {
+  resourceId: String!
+}
+
 type CustomProperty {
   blueprint: String
   blueprintId: String
@@ -1690,6 +1698,7 @@ type Mutation {
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTeam(data: TeamCreateInput!): Team!
+  createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -2445,6 +2454,7 @@ type Resource {
   serviceTemplate: Resource
   serviceTemplateVersion: String
   settings: ResourceSettings
+  teamAssignments: [TeamAssignment!]
   updatedAt: DateTime!
   version: ResourceVersion
 }
@@ -2879,8 +2889,10 @@ type Team {
 type TeamAssignment {
   createdAt: DateTime!
   id: String!
+  resource: Resource!
   resourceId: String!
   roles: [Role!]
+  team: Team
   teamId: String
   updatedAt: DateTime!
 }

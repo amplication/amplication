@@ -28,6 +28,7 @@ import { TeamAssignment } from "../../models/TeamAssignment";
 import { AddRolesToTeamAssignmentArgs } from "./dto/AddRolesToTeamAssignmentArgs";
 import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
+import { CreateTeamAssignmentsArgs } from "./dto/createTeamAssignmentsArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -130,6 +131,14 @@ export class TeamResolver {
     @Args() args: DeleteTeamAssignmentArgs
   ): Promise<TeamAssignment> {
     return this.teamService.deleteTeamAssignment(args);
+  }
+
+  @Mutation(() => [TeamAssignment], { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resourceId")
+  async createTeamAssignments(
+    @Args() args: CreateTeamAssignmentsArgs
+  ): Promise<TeamAssignment[]> {
+    return this.teamService.createTeamAssignments(args);
   }
 
   @ResolveField(() => [Role], { nullable: false })

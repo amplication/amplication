@@ -19,11 +19,13 @@ import { TeamAssignment } from "../../models/TeamAssignment";
 import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
 import { WhereTeamAssignmentInput } from "./dto/WhereTeamAssignmentInput";
+import { CreateTeamAssignmentsArgs } from "./dto/createTeamAssignmentsArgs";
 
 export const INVALID_TEAM_ID = "Invalid teamId";
 export const INVALID_MEMBERS = "Invalid members";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_ROLES = "Invalid roles";
+export const INVALID_TEAMS = "Invalid teams";
 
 @Injectable()
 export class TeamService {
@@ -294,6 +296,52 @@ export class TeamService {
     }
   }
 
+  async validateTeams(resourceId: string, teamIds: string[]): Promise<void> {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      select: {
+        project: {
+          select: {
+            workspaceId: true,
+          },
+        },
+      },
+    });
+
+    if (!resource) {
+      throw new AmplicationError(INVALID_RESOURCE_ID);
+    }
+
+    const workspaceId = resource.project.workspaceId;
+
+    const invalidTeams = await this.prisma.team.findMany({
+      where: {
+        id: {
+          in: teamIds,
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            deletedAt: {
+              not: null,
+            },
+          },
+          {
+            workspaceId: {
+              not: workspaceId,
+            },
+          },
+        ],
+      },
+    });
+
+    if (invalidTeams && invalidTeams.length > 0) {
+      throw new AmplicationError(INVALID_TEAMS);
+    }
+  }
+
   async removeRolesFromTeam(args: RemoveRolesFromTeamArgs): Promise<Team> {
     const team = await this.prisma.team.findUnique({
       where: {
@@ -372,6 +420,10 @@ export class TeamService {
     });
 
     const roleIds = data.roleIds;
+
+    if (roleIds.length === 0) {
+      return teamAssignment;
+    }
 
     await this.validateRoles(
       teamAssignment.teamId,
@@ -486,6 +538,38 @@ export class TeamService {
     });
 
     return teamAssignment;
+  }
+
+  async createTeamAssignments(
+    args: CreateTeamAssignmentsArgs
+  ): Promise<TeamAssignment[]> {
+    const { where, data } = args;
+
+    await this.validateTeams(args.where.resourceId, args.data.teamIds);
+
+    const promises = data.teamIds.map(async (team) => {
+      return this.prisma.teamAssignment.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          teamId_resourceId: {
+            teamId: team,
+            resourceId: where.resourceId,
+          },
+        },
+        update: {},
+        create: {
+          teamId: team,
+          resourceId: where.resourceId,
+        },
+        include: {
+          team: true,
+        },
+      });
+    });
+
+    const teamAssignments = await Promise.all(promises);
+
+    return teamAssignments;
   }
 
   async validateAssignmentResource(resourceId: string, user: User) {

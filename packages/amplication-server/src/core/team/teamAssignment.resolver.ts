@@ -18,6 +18,10 @@ export class TeamAssignmentResolver {
 
   @ResolveField(() => [Role], { nullable: false })
   async roles(@Parent() parent: TeamAssignment): Promise<Role[]> {
+    if (parent.roles) {
+      return parent.roles;
+    }
+
     return this.teamService.getTeamAssignmentRoles({
       teamId: parent.teamId,
       resourceId: parent.resourceId,

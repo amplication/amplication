@@ -476,6 +476,14 @@ export type CreateGitRepositoryInput = {
   resourceId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateTeamAssignmentsInput = {
+  teamIds: Array<Scalars['String']['input']>;
+};
+
+export type CreateTeamAssignmentsWhereInput = {
+  resourceId: Scalars['String']['input'];
+};
+
 export type CustomProperty = {
   blueprint?: Maybe<Scalars['String']['output']>;
   blueprintId?: Maybe<Scalars['String']['output']>;
@@ -1710,6 +1718,7 @@ export type Mutation = {
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTeam: Team;
+  createTeamAssignments: Array<TeamAssignment>;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -2054,6 +2063,12 @@ export type MutationCreateServiceWithEntitiesArgs = {
 
 export type MutationCreateTeamArgs = {
   data: TeamCreateInput;
+};
+
+
+export type MutationCreateTeamAssignmentsArgs = {
+  data: CreateTeamAssignmentsInput;
+  where: CreateTeamAssignmentsWhereInput;
 };
 
 
@@ -3650,6 +3665,7 @@ export type Resource = {
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
   settings?: Maybe<ResourceSettings>;
+  teamAssignments?: Maybe<Array<TeamAssignment>>;
   updatedAt: Scalars['DateTime']['output'];
   version?: Maybe<ResourceVersion>;
 };
@@ -4105,8 +4121,10 @@ export type Team = {
 export type TeamAssignment = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
+  resource: Resource;
   resourceId: Scalars['String']['output'];
   roles?: Maybe<Array<Role>>;
+  team?: Maybe<Team>;
   teamId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
