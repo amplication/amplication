@@ -28,7 +28,7 @@ import { TeamAssignment } from "../../models/TeamAssignment";
 import { AddRolesToTeamAssignmentArgs } from "./dto/AddRolesToTeamAssignmentArgs";
 import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
-import { CreateTeamAssignmentsArgs } from "./dto/createTeamAssignmentsArgs";
+import { CreateTeamAssignmentsArgs } from "./dto/CreateTeamAssignmentsArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)

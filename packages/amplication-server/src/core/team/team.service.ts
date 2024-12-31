@@ -19,7 +19,7 @@ import { TeamAssignment } from "../../models/TeamAssignment";
 import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
 import { WhereTeamAssignmentInput } from "./dto/WhereTeamAssignmentInput";
-import { CreateTeamAssignmentsArgs } from "./dto/createTeamAssignmentsArgs";
+import { CreateTeamAssignmentsArgs } from "./dto/CreateTeamAssignmentsArgs";
 
 export const INVALID_TEAM_ID = "Invalid teamId";
 export const INVALID_MEMBERS = "Invalid members";
