@@ -9,18 +9,21 @@ type Props = {
   customProperty: models.CustomProperty;
   handleSubmit: (data: models.CustomProperty) => void;
   onOptionListChanged: () => void;
+  disabled?: boolean;
 };
 
 const CustomPropertyFormAndOptions = ({
   customProperty,
   handleSubmit,
   onOptionListChanged,
+  disabled,
 }: Props) => {
   return (
     <>
       <CustomPropertyForm
         onSubmit={handleSubmit}
         defaultValues={customProperty}
+        disabled={disabled}
       />
       {[
         EnumCustomPropertyType.Select,
@@ -32,6 +35,7 @@ const CustomPropertyFormAndOptions = ({
             customProperty={customProperty}
             onOptionDelete={onOptionListChanged}
             onOptionAdd={onOptionListChanged}
+            disabled={disabled}
           />
         </>
       )}

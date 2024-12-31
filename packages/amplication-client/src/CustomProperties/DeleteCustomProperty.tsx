@@ -4,6 +4,7 @@ import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import useCustomProperties from "./hooks/useCustomProperties";
 import { formatError } from "../util/error";
+import { useAppContext } from "../context/appContext";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -23,6 +24,7 @@ export const DeleteCustomProperty = ({
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
+  const { permissions } = useAppContext();
   const { deleteCustomProperty, deleteCustomPropertyError } =
     useCustomProperties();
 
@@ -69,6 +71,7 @@ export const DeleteCustomProperty = ({
 
       <div className={CLASS_NAME}>
         <Button
+          disabled={!permissions.allowedTasks["property.delete"]}
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleDelete}

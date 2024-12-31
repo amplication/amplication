@@ -12,12 +12,14 @@ type Props = {
   customProperty: models.CustomProperty;
   customPropertyOption: models.CustomPropertyOption;
   onOptionDelete?: (option: models.CustomPropertyOption) => void;
+  disabled?: boolean;
 };
 
 export const DeleteCustomPropertyOption = ({
   customProperty,
   customPropertyOption,
   onOptionDelete,
+  disabled,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -82,6 +84,7 @@ export const DeleteCustomPropertyOption = ({
         icon="trash_2"
         onClick={handleDelete}
         type="button"
+        disabled={disabled}
       ></Button>
       <Snackbar open={hasError} message={errorMessage} />
     </>

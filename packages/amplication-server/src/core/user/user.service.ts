@@ -85,8 +85,10 @@ export class UserService {
 
     const userRoles = await this.prisma.role.findMany({
       where: {
+        deletedAt: null,
         teams: {
           some: {
+            deletedAt: null,
             members: {
               some: {
                 id: userId,

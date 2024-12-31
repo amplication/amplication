@@ -26,6 +26,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "__typename",
   "members",
+  "roles",
 ];
 
 export const INITIAL_VALUES: Partial<models.Team> = {

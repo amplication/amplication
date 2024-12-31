@@ -462,6 +462,14 @@ input CreateGitRepositoryInput {
   resourceId: String
 }
 
+input CreateTeamAssignmentsInput {
+  teamIds: [String!]!
+}
+
+input CreateTeamAssignmentsWhereInput {
+  resourceId: String!
+}
+
 type CustomProperty {
   blueprint: String
   blueprintId: String
@@ -1646,6 +1654,7 @@ type Mutation {
   addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
   addRolesToTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  addRolesToTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
@@ -1689,6 +1698,7 @@ type Mutation {
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTeam(data: TeamCreateInput!): Team!
+  createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1716,6 +1726,7 @@ type Mutation {
   deleteRole(where: WhereUniqueInput!): Role
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   deleteTeam(where: WhereUniqueInput!): Team
+  deleteTeamAssignment(where: WhereTeamAssignmentInput!): TeamAssignment!
   deleteTopic(where: WhereUniqueInput!): Topic!
   deleteUser(where: WhereUniqueInput!): User
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1731,6 +1742,7 @@ type Mutation {
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   removeRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
   removeRolesFromTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  removeRolesFromTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
@@ -2266,6 +2278,7 @@ type Query {
   package(where: WhereUniqueInput!): Package
   packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  permissions: [String!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
@@ -2441,6 +2454,7 @@ type Resource {
   serviceTemplate: Resource
   serviceTemplateVersion: String
   settings: ResourceSettings
+  teamAssignments: [TeamAssignment!]
   updatedAt: DateTime!
   version: ResourceVersion
 }
@@ -2872,6 +2886,17 @@ type Team {
   updatedAt: DateTime!
 }
 
+type TeamAssignment {
+  createdAt: DateTime!
+  id: String!
+  resource: Resource!
+  resourceId: String!
+  roles: [Role!]
+  team: Team
+  teamId: String
+  updatedAt: DateTime!
+}
+
 input TeamCreateInput {
   name: String!
 }
@@ -3027,6 +3052,11 @@ input WherePrivatePluginVersionUniqueInput {
 input WherePropertyUniqueInput {
   moduleDto: WhereUniqueInput!
   propertyName: String!
+}
+
+input WhereTeamAssignmentInput {
+  resourceId: String!
+  teamId: String!
 }
 
 input WhereUniqueInput {

@@ -24,6 +24,11 @@ import { AddMembersToTeamArgs } from "./dto/AddMembersToTeamArgs";
 import { RemoveMembersFromTeamArgs } from "./dto/RemoveMembersFromTeamArgs";
 import { AddRolesToTeamArgs } from "./dto/AddRolesToTeamArgs";
 import { RemoveRolesFromTeamArgs } from "./dto/RemoveRolesFromTeamArgs";
+import { TeamAssignment } from "../../models/TeamAssignment";
+import { AddRolesToTeamAssignmentArgs } from "./dto/AddRolesToTeamAssignmentArgs";
+import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
+import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
+import { CreateTeamAssignmentsArgs } from "./dto/CreateTeamAssignmentsArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -101,6 +106,39 @@ export class TeamResolver {
     @Args() args: RemoveRolesFromTeamArgs
   ): Promise<Team> {
     return this.teamService.removeRolesFromTeam(args);
+  }
+
+  @Mutation(() => TeamAssignment, { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  async addRolesToTeamAssignment(
+    @Args() args: AddRolesToTeamAssignmentArgs,
+    @UserEntity() user: User
+  ): Promise<TeamAssignment> {
+    return this.teamService.addRolesToTeamAssignment(args, user);
+  }
+
+  @Mutation(() => TeamAssignment, { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  async removeRolesFromTeamAssignment(
+    @Args() args: RemoveRolesFromTeamAssignmentArgs
+  ): Promise<TeamAssignment> {
+    return this.teamService.removeRolesFromTeamAssignment(args);
+  }
+
+  @Mutation(() => TeamAssignment, { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  async deleteTeamAssignment(
+    @Args() args: DeleteTeamAssignmentArgs
+  ): Promise<TeamAssignment> {
+    return this.teamService.deleteTeamAssignment(args);
+  }
+
+  @Mutation(() => [TeamAssignment], { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resourceId")
+  async createTeamAssignments(
+    @Args() args: CreateTeamAssignmentsArgs
+  ): Promise<TeamAssignment[]> {
+    return this.teamService.createTeamAssignments(args);
   }
 
   @ResolveField(() => [Role], { nullable: false })

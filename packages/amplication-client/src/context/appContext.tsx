@@ -6,6 +6,8 @@ import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
 import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
 import { IBlueprintsMap } from "../Blueprints/hooks/useBlueprintsMap";
+import { IPermissions } from "../Workspaces/hooks/usePermissions";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -74,6 +76,7 @@ export interface AppContextInterface {
   errorCreateServiceFromTemplate: Error | undefined;
   customPropertiesMap: Record<string, models.CustomProperty>;
   blueprintsMap: IBlueprintsMap;
+  permissions: IPermissions;
 }
 
 const initialContext: AppContextInterface = {
@@ -153,6 +156,11 @@ const initialContext: AppContextInterface = {
     ready: false,
     blueprintsMap: {},
     blueprintsMapById: {},
+  },
+  permissions: {
+    allowedTasks: {} as Record<RolesPermissions, boolean>,
+    canPerformTask: () => false,
+    isAdmin: false,
   },
 };
 

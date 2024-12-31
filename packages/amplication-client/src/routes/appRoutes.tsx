@@ -429,6 +429,17 @@ export const Routes: RouteDef[] = [
                     exactPath: false,
                     isAnalytics: true,
                   },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/permissions",
+                    Component: lazy(
+                      () => import("../Teams/ResourceTeamAssignmentsPage")
+                    ),
+                    moduleName: "ProjectTeamAssignmentsPage",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
                 ],
               },
             ],
