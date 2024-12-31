@@ -34,6 +34,9 @@ const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
           <InnerTabLink to={`${baseUrl}/settings/directories`} icon="folder">
             Base Directory
           </InnerTabLink>
+          <InnerTabLink to={`${baseUrl}/settings/permissions`} icon="lock">
+            Permissions
+          </InnerTabLink>
         </>
       }
     >
