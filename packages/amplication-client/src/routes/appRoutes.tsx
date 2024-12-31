@@ -83,8 +83,18 @@ export const Routes: RouteDef[] = [
                 Component: lazy(() => import("../Workspaces/MemberList")),
                 iconName: "user",
                 displayName: "Users",
-                exactPath: true,
-                routes: [],
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/members/:user([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../User/User")),
+                    iconName: "user",
+                    displayName: "Users",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
                 isAnalytics: true,
               },
               {
