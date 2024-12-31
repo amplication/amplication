@@ -3074,6 +3074,7 @@ export type Query = {
   teams: Array<Team>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
+  user?: Maybe<User>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
@@ -3517,6 +3518,11 @@ export type QueryTopicsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TopicWhereInput>;
+};
+
+
+export type QueryUserArgs = {
+  where: WhereUniqueInput;
 };
 
 
@@ -4235,6 +4241,7 @@ export type User = {
   id: Scalars['String']['output'];
   isOwner: Scalars['Boolean']['output'];
   lastActive?: Maybe<Scalars['DateTime']['output']>;
+  teams: Array<Team>;
   updatedAt: Scalars['DateTime']['output'];
   workspace?: Maybe<Workspace>;
 };

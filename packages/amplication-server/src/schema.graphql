@@ -2308,6 +2308,7 @@ type Query {
   teams(orderBy: TeamOrderByInput, skip: Int, take: Int, where: TeamWhereInput): [Team!]!
   topic(where: WhereUniqueInput!): Topic
   topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
+  user(where: WhereUniqueInput!): User
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
@@ -3006,6 +3007,7 @@ type User {
   id: String!
   isOwner: Boolean!
   lastActive: DateTime
+  teams: [Team!]!
   updatedAt: DateTime!
   workspace: Workspace
 }
