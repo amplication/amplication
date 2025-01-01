@@ -3,16 +3,17 @@ import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { get } from "lodash";
-import { User } from "../models";
 import { PermissionsService } from "../core/permissions/permissions.service";
 import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
 import { AuthUser } from "../core/auth/types";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export const AUTHORIZE_CONTEXT = "authorizeContext";
 
 export type AuthorizeContextParameters = {
   parameterType: AuthorizableOriginParameter;
   parameterPath: string;
+  requiredPermissions?: RolesPermissions[];
 };
 
 @Injectable()
@@ -92,7 +93,7 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
     /* eslint-disable-next-line @typescript-eslint/ban-types */
     handler: Function,
     requestArgs: any,
-    user: User
+    user: AuthUser
   ): Promise<boolean> {
     const parameters = this.getAuthorizeContextParameters(handler);
 

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PermissionsService } from "./permissions.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { User, Workspace } from "../../models";
+import { Account, Workspace } from "../../models";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { AuthUser } from "../auth/types";
 
-const UNEXPECTED_ORIGIN_TYPE = -1;
 const UNEXPECTED_ORIGIN_ID = "unexpectedOriginId";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -26,12 +26,25 @@ const EXAMPLE_COUNT = 1;
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
-const EXAMPLE_USER: User = {
+const EXAMPLE_ACCOUNT: Account = {
+  id: "alice",
+  email: "example@amplication.com",
+  password: "PASSWORD",
+  firstName: "Alice",
+  lastName: "Appleseed",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  githubId: null,
+};
+
+const EXAMPLE_USER: AuthUser = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   workspace: EXAMPLE_WORKSPACE,
   isOwner: true,
+  permissions: [],
+  account: EXAMPLE_ACCOUNT,
 };
 
 const prismaResourceCountMock = jest.fn(() => {
@@ -135,14 +148,14 @@ describe("PermissionsService", () => {
     expect(prismaResourceRoleCountMock).toBeCalledWith(countArgs);
   });
 
-  it("should throw an error", async () => {
+  it("should return false when originType is an unauthorized origin id", async () => {
     const args = {
       user: EXAMPLE_USER,
-      originType: UNEXPECTED_ORIGIN_TYPE,
+      originType: AuthorizableOriginParameter.WorkspaceId,
       originId: UNEXPECTED_ORIGIN_ID,
     };
-    await expect(
-      service.validateAccess(args.user, args.originType, args.originId)
-    ).rejects.toThrow(`Unexpected origin type ${args.originType}`);
+    expect(
+      await service.validateAccess(args.user, args.originType, args.originId)
+    ).toEqual(false);
   });
 });
