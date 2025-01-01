@@ -17,6 +17,8 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import InviteMember from "./InviteMember";
 import MemberListItem from "./MemberListItem";
+import { AppRouteProps } from "../routes/routesUtil";
+import { match } from "react-router-dom";
 
 export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -24,7 +26,14 @@ export type TData = {
 
 const CLASS_NAME = "member-list";
 
-function MemberList() {
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    user: string;
+  }>;
+};
+
+function MemberList({ match, innerRoutes }: Props) {
   const [error, setError] = useState<Error>();
   const {
     data,
@@ -39,42 +48,49 @@ function MemberList() {
     refetch();
   }, [refetch]);
 
-  return (
-    <div className={CLASS_NAME}>
-      <FlexItem end={<InviteMember />}>
-        <Text textStyle={EnumTextStyle.H4}>Users</Text>
-      </FlexItem>
+  if (match.isExact) {
+    return (
+      <div className={CLASS_NAME}>
+        <FlexItem end={<InviteMember />}>
+          <Text textStyle={EnumTextStyle.H4}>Users</Text>
+        </FlexItem>
 
-      <HorizontalRule />
+        <HorizontalRule />
 
-      <Text textStyle={EnumTextStyle.Tag}>
-        {data?.workspaceMembers.length}{" "}
-        {pluralize(data?.workspaceMembers.length, "Member", "Members")}
-      </Text>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.workspaceMembers.length}{" "}
+          {pluralize(data?.workspaceMembers.length, "Member", "Members")}
+        </Text>
 
-      {loading && <CircularProgress centerToParent />}
+        {loading && <CircularProgress centerToParent />}
 
-      {isEmpty(data?.workspaceMembers) && !loading ? (
-        <EmptyState
-          image={EnumImages.CommitEmptyState}
-          message="There are no members to show"
+        {isEmpty(data?.workspaceMembers) && !loading ? (
+          <EmptyState
+            image={EnumImages.CommitEmptyState}
+            message="There are no members to show"
+          />
+        ) : (
+          <List>
+            {data?.workspaceMembers.map((member, index) => (
+              <MemberListItem
+                member={member}
+                key={index}
+                onDelete={handleDelete}
+                onError={setError}
+              />
+            ))}
+          </List>
+        )}
+
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
         />
-      ) : (
-        <List>
-          {data?.workspaceMembers.map((member, index) => (
-            <MemberListItem
-              member={member}
-              key={index}
-              onDelete={handleDelete}
-              onError={setError}
-            />
-          ))}
-        </List>
-      )}
-
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
-    </div>
-  );
+      </div>
+    );
+  } else {
+    return innerRoutes;
+  }
 }
 
 export default MemberList;

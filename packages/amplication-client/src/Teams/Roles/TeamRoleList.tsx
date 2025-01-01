@@ -13,12 +13,12 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import React from "react";
-import { UserInfo } from "../../Components/UserInfo";
 import * as models from "../../models";
 import { formatError } from "../../util/error";
 import { pluralize } from "../../util/pluralize";
 import AddTeamRole from "./AddTeamRoleButton";
 import useTeams from "../hooks/useTeams";
+import { useAppContext } from "../../context/appContext";
 
 type Props = {
   team: models.Team;
@@ -36,6 +36,9 @@ const TeamRoleList = React.memo(
       addRolesToTeamError,
       addRolesToTeamLoading,
     } = useTeams(team?.id);
+
+    const { currentWorkspace } = useAppContext();
+    const baseUrl = `/${currentWorkspace?.id}/settings`;
 
     const errorMessage = formatError(
       addRolesToTeamError || removeRolesFromTeamError
@@ -72,12 +75,15 @@ const TeamRoleList = React.memo(
           {team?.roles?.map((role) => (
             <ListItem
               start={<Icon icon="roles_outline" />}
+              to={`${baseUrl}/roles/${role.id}`}
               end={
                 <Button
                   icon="trash_2"
                   buttonStyle={EnumButtonStyle.Text}
-                  onClick={() => {
+                  onClick={(e) => {
                     handleRemoveRoles(role.id);
+                    e.stopPropagation();
+                    e.preventDefault();
                   }}
                 />
               }

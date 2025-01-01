@@ -188,7 +188,49 @@ const useTeams = (teamId?: string) => {
   const [
     addMembersToTeamInternal,
     { error: addMembersToTeamError, loading: addMembersToTeamLoading },
-  ] = useMutation<TUpdateData>(ADD_MEMBERS_TO_TEAM, {});
+  ] = useMutation<{
+    addMembersToTeam: models.Team;
+  }>(ADD_MEMBERS_TO_TEAM, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const updatedTeam = data.addMembersToTeam;
+
+      // Iterate over each member in the updated team
+      updatedTeam.members.forEach((member) => {
+        // Identify the user's cache entry
+        const userId = cache.identify({ __typename: "User", id: member.id });
+
+        if (!userId) return; // If the user is not in the cache, skip
+
+        // Modify the user's teams field
+        cache.modify({
+          id: userId,
+          fields: {
+            teams(existingTeamsRefs = [], { readField }) {
+              // Check if the team is already in the user's teams to avoid duplicates
+              const isAlreadyInTeams = existingTeamsRefs.some(
+                (teamRef: any) => readField("id", teamRef) === updatedTeam.id
+              );
+
+              if (isAlreadyInTeams) {
+                return existingTeamsRefs;
+              }
+
+              // Create a reference to the updated team
+              const newTeamRef = cache.writeFragment({
+                data: updatedTeam,
+                fragment: TEAM_FIELDS_FRAGMENT,
+                fragmentName: "TeamFields",
+              });
+
+              return [...existingTeamsRefs, newTeamRef];
+            },
+          },
+        });
+      });
+    },
+  });
 
   const addMembersToTeam = useCallback(
     (userIds: string[]) => {
@@ -217,7 +259,9 @@ const useTeams = (teamId?: string) => {
       error: removeMembersFromTeamError,
       loading: removeMembersFromTeamLoading,
     },
-  ] = useMutation<TUpdateData>(REMOVE_MEMBERS_FROM_TEAM, {});
+  ] = useMutation<{
+    removeMembersFromTeam: models.Team;
+  }>(REMOVE_MEMBERS_FROM_TEAM, {});
 
   const removeMembersFromTeam = useCallback(
     (userIds: string[]) => {
@@ -229,6 +273,31 @@ const useTeams = (teamId?: string) => {
           data: {
             userIds: userIds,
           },
+        },
+        update(cache, { data }) {
+          if (!data) return;
+
+          const updatedTeam = data.removeMembersFromTeam;
+
+          // Iterate over each removed member ID
+          userIds.forEach((memberId) => {
+            // Identify the user's cache entry
+            const userId = cache.identify({ __typename: "User", id: memberId });
+
+            if (!userId) return; // If the user is not in the cache, skip
+
+            // Modify the user's teams field to remove the team
+            cache.modify({
+              id: userId,
+              fields: {
+                teams(existingTeamsRefs: any[] = [], { readField }) {
+                  return existingTeamsRefs.filter(
+                    (teamRef) => readField("id", teamRef) !== updatedTeam.id
+                  );
+                },
+              },
+            });
+          });
         },
       })
         .then(() => {

@@ -19,6 +19,7 @@ import {
 import { gql, useMutation } from "@apollo/client";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { UserInfo } from "../Components/UserInfo";
+import { useAppContext } from "../context/appContext";
 
 type DType = {
   deleteUser: models.User;
@@ -36,6 +37,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 
 function MemberListItem({ member, onDelete, onError }: Props) {
   const { trackEvent } = useTracking();
+  const { currentWorkspace } = useAppContext();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -136,6 +138,11 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       />
       <ListItem
         direction={EnumFlexDirection.Row}
+        to={
+          member.type === models.EnumWorkspaceMemberType.User
+            ? `/${currentWorkspace?.id}/settings/members/${member.member.id}`
+            : undefined
+        }
         end={
           <FlexItem direction={EnumFlexDirection.Row}>
             {data.isInvitation && (

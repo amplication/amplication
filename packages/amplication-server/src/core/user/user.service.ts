@@ -9,7 +9,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { Account, User } from "../../models";
+import { Account, Team, User } from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
 import { encryptString } from "../../util/encryptionUtil";
 import { AuthUser } from "../auth/types";
@@ -121,6 +121,20 @@ export class UserService {
       ...account,
       email: account.email,
     };
+  }
+
+  async getTeams(userId: string): Promise<Team[]> {
+    return await this.prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .teams({
+        where: {
+          deletedAt: null,
+        },
+      });
   }
 
   async delete(userId: string): Promise<User> {
