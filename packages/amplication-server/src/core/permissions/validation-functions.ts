@@ -404,4 +404,19 @@ export const VALIDATION_FUNCTIONS: Record<
     });
     return matching === 1;
   },
+  [AuthorizableOriginParameter.UserId]: async (
+    prisma: PrismaService,
+    originId: string,
+    workspaceId: string
+  ) => {
+    const matching = await prisma.user.count({
+      where: {
+        id: originId,
+        workspace: {
+          id: workspaceId,
+        },
+      },
+    });
+    return matching === 1;
+  },
 };

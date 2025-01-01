@@ -5,6 +5,8 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 import { UseGuards, UseFilters } from "@nestjs/common";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { FindOneArgs } from "../../dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
 @Resolver(() => User)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -25,6 +27,7 @@ export class UserResolver {
   @Query(() => User, {
     nullable: true,
   })
+  @AuthorizeContext(AuthorizableOriginParameter.UserId, "where.id")
   async user(@Args() args: FindOneArgs): Promise<User> {
     return this.userService.findUser(args);
   }

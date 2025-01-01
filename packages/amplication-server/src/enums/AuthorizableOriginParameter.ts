@@ -29,4 +29,5 @@ export enum AuthorizableOriginParameter {
   CustomPropertyId,
   BlueprintId,
   RoleId,
+  UserId,
 }
