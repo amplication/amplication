@@ -18,6 +18,7 @@ import { formatError } from "../../util/error";
 import { pluralize } from "../../util/pluralize";
 import AddTeamMember from "./AddTeamMemberButton";
 import useTeams from "../hooks/useTeams";
+import { useAppContext } from "../../context/appContext";
 
 type Props = {
   team: models.Team;
@@ -27,6 +28,9 @@ type Props = {
 
 const TeamMemberList = React.memo(
   ({ team, onMemberRemoved, onMemberAdded }: Props) => {
+    const { currentWorkspace } = useAppContext();
+    const baseUrl = `/${currentWorkspace?.id}/settings`;
+
     const {
       removeMembersFromTeam,
       removeMembersFromTeamError,
@@ -74,12 +78,15 @@ const TeamMemberList = React.memo(
         <List>
           {team?.members?.map((member, index) => (
             <ListItem
+              to={`${baseUrl}/members/${member.id}`}
               end={
                 <Button
                   icon="trash_2"
                   buttonStyle={EnumButtonStyle.Text}
-                  onClick={() => {
+                  onClick={(e) => {
                     handleRemoveMembers(member.id);
+                    e.stopPropagation();
+                    e.preventDefault();
                   }}
                 />
               }
