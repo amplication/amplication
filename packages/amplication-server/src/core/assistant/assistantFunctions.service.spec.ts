@@ -6,7 +6,7 @@ import { MessageLoggerContext } from "./assistant.service";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 
 import { Env } from "../../env";
-import { Entity, Resource } from "../../models";
+import { Account, Entity, Resource } from "../../models";
 import { EntityService } from "../entity/entity.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
@@ -38,6 +38,17 @@ const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_THREAD_ID = "EXAMPLE_THREAD_ID";
 const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
 
+const EXAMPLE_ACCOUNT: Account = {
+  id: "alice",
+  email: "example@amplication.com",
+  password: "PASSWORD",
+  firstName: "Alice",
+  lastName: "Appleseed",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  githubId: null,
+};
+
 const EXAMPLE_ENTITY: Entity = {
   id: "exampleEntityId",
   createdAt: new Date(),
@@ -63,6 +74,8 @@ const EXAMPLE_ASSISTANT_CONTEXT: AssistantContext = {
     createdAt: new Date(),
     updatedAt: new Date(),
     isOwner: true,
+    permissions: [],
+    account: EXAMPLE_ACCOUNT,
   },
   workspaceId: EXAMPLE_WORKSPACE_ID,
 };
