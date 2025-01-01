@@ -74,7 +74,10 @@ const Team = () => {
       <TabContentTitle title="Members" subTitle="Add or remove team members" />
       <TeamMemberList team={data?.team} />
       <HorizontalRule />
-      <TabContentTitle title="Roles" subTitle="Add or remove roles" />
+      <TabContentTitle
+        title="Default Roles"
+        subTitle="Default team roles affect all projects and resources. Specific roles can be set per project if needed."
+      />
       <TeamRoleList team={data?.team} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
