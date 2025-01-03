@@ -4,6 +4,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { Account, Workspace } from "../../models";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { AuthUser } from "../auth/types";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 const UNEXPECTED_ORIGIN_ID = "unexpectedOriginId";
 
@@ -51,8 +52,10 @@ const prismaResourceCountMock = jest.fn(() => {
   return EXAMPLE_COUNT;
 });
 
-const prismaResourceRoleCountMock = jest.fn(() => {
-  return EXAMPLE_COUNT;
+const prismaResourceRoleFindFirstMock = jest.fn(() => {
+  return {
+    id: EXAMPLE_RESOURCE_ROLE_ID,
+  };
 });
 
 describe("PermissionsService", () => {
@@ -63,6 +66,7 @@ describe("PermissionsService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PermissionsService,
+        MockedAmplicationLoggerProvider,
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
@@ -70,7 +74,7 @@ describe("PermissionsService", () => {
               count: prismaResourceCountMock,
             },
             resourceRole: {
-              count: prismaResourceRoleCountMock,
+              findFirst: prismaResourceRoleFindFirstMock,
             },
           })),
         },
@@ -91,7 +95,12 @@ describe("PermissionsService", () => {
       originId: EXAMPLE_WORKSPACE_ID,
     };
     expect(
-      await service.validateAccess(args.user, args.originType, args.originId)
+      await service.validateAccess(
+        args.user,
+        args.originType,
+        args.originId,
+        undefined
+      )
     ).toEqual(true);
   });
 
@@ -116,10 +125,15 @@ describe("PermissionsService", () => {
       },
     };
     expect(
-      await service.validateAccess(args.user, args.originType, args.originId)
+      await service.validateAccess(
+        args.user,
+        args.originType,
+        args.originId,
+        undefined
+      )
     ).toEqual(true);
-    expect(prismaResourceCountMock).toBeCalledTimes(1);
-    expect(prismaResourceCountMock).toBeCalledWith(countArgs);
+    expect(prismaResourceCountMock).toHaveBeenCalledTimes(1);
+    expect(prismaResourceCountMock).toHaveBeenCalledWith(countArgs);
   });
 
   it("should return true if originType is an authorized instance of AuthorizableOriginParameter", async () => {
@@ -140,12 +154,20 @@ describe("PermissionsService", () => {
           },
         },
       },
+      select: {
+        resourceId: true,
+      },
     };
     expect(
-      await service.validateAccess(args.user, args.originType, args.originId)
+      await service.validateAccess(
+        args.user,
+        args.originType,
+        args.originId,
+        undefined
+      )
     ).toEqual(true);
-    expect(prismaResourceRoleCountMock).toBeCalledTimes(1);
-    expect(prismaResourceRoleCountMock).toBeCalledWith(countArgs);
+    expect(prismaResourceRoleFindFirstMock).toHaveBeenCalledTimes(1);
+    expect(prismaResourceRoleFindFirstMock).toHaveBeenCalledWith(countArgs);
   });
 
   it("should return false when originType is an unauthorized origin id", async () => {
@@ -155,7 +177,12 @@ describe("PermissionsService", () => {
       originId: UNEXPECTED_ORIGIN_ID,
     };
     expect(
-      await service.validateAccess(args.user, args.originType, args.originId)
+      await service.validateAccess(
+        args.user,
+        args.originType,
+        args.originId,
+        undefined
+      )
     ).toEqual(false);
   });
 });
