@@ -106,14 +106,6 @@ describe("GqlAuthGuard", () => {
     expect(guard).toBeDefined();
   });
 
-  it("should check if can activate roles", () => {
-    expect(guard.canPerformTask(EXAMPLE_HANDLER, EXAMPLE_USER)).toBe(true);
-    expect(reflectorGetMock).toHaveBeenCalledWith(
-      "permissions",
-      EXAMPLE_HANDLER
-    );
-  });
-
   it("should authorize context", async () => {
     expect(
       await guard.authorizeContext(

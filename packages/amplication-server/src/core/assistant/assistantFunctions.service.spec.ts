@@ -581,7 +581,8 @@ describe("AssistantFunctionsService", () => {
     expect(permissionsServiceValidateAccessMock).toHaveBeenCalledWith(
       EXAMPLE_ASSISTANT_CONTEXT.user,
       AuthorizableOriginParameter.ResourceId,
-      EXAMPLE_SERVICE_ID
+      EXAMPLE_SERVICE_ID,
+      []
     );
   });
 
