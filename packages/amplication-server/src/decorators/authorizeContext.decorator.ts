@@ -23,9 +23,11 @@ export const AuthorizeContext = (
   parameterPath: string,
   permissions?: RolesPermissions[] | RolesPermissions
 ): CustomDecorator<string> => {
-  const requiredPermissions = Array.isArray(permissions)
-    ? permissions
-    : [permissions];
+  const requiredPermissions = permissions
+    ? Array.isArray(permissions)
+      ? permissions
+      : [permissions]
+    : undefined;
 
   return SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {
     parameterType,

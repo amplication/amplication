@@ -41,44 +41,13 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
 
     const requestArgs = ctx.getArgByIndex(1);
 
-    return (
-      this.canPerformTask(handler, currentUser) &&
-      (await this.authorizeContext(handler, requestArgs, currentUser))
-    );
-  }
-
-  // Checks if any of the required roles exist in the user role list
-  private matchPermissions(
-    permissionsToMatch: string[],
-    userPermissions: string[]
-  ): boolean {
-    return (
-      userPermissions.includes("*") ||
-      permissionsToMatch.some((r) => userPermissions.includes(r))
-    );
+    return await this.authorizeContext(handler, requestArgs, currentUser);
   }
 
   // This method is required for the interface - do not delete it.
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext().req;
-  }
-
-  /* eslint-disable-next-line @typescript-eslint/ban-types */
-  private getRequiredPermissions(handler: Function): string[] {
-    return this.reflector.get<string[]>("permissions", handler);
-  }
-
-  /* eslint-disable-next-line @typescript-eslint/ban-types */
-  canPerformTask(handler: Function, currentUser: AuthUser): boolean {
-    const requiredPermissions = this.getRequiredPermissions(handler);
-
-    if (requiredPermissions) {
-      const currentUserPermissions = currentUser.permissions;
-      return this.matchPermissions(requiredPermissions, currentUserPermissions);
-    }
-
-    return true;
   }
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
@@ -101,18 +70,15 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
       return Promise.resolve(true);
     }
 
-    const { parameterType, parameterPath } = parameters;
+    const { parameterType, parameterPath, requiredPermissions } = parameters;
 
     const parameterValue = get(requestArgs, parameterPath);
-
-    if (!parameterValue) {
-      return Promise.resolve(false);
-    }
 
     return this.permissionsService.validateAccess(
       user,
       parameterType,
-      parameterValue
+      parameterValue,
+      requiredPermissions
     );
   }
 }
