@@ -15,7 +15,16 @@ const checkByResourceParameters = (originId: string, workspaceId: string) => {
         },
       },
     },
+    select: {
+      resourceId: true,
+    },
   };
+};
+
+export type ValidationResponse = {
+  canAccessWorkspace: boolean;
+  requestedProjectId?: string;
+  requestedResourceId?: string;
 };
 
 export const VALIDATION_FUNCTIONS: Record<
@@ -25,13 +34,20 @@ export const VALIDATION_FUNCTIONS: Record<
     originId: string,
     workspaceId: string,
     user: AuthUser
-  ) => Promise<boolean>
+  ) => Promise<ValidationResponse>
 > = {
+  [AuthorizableOriginParameter.None]: async () => {
+    return { canAccessWorkspace: true };
+  },
   [AuthorizableOriginParameter.WorkspaceId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
-  ) => originId === workspaceId,
+  ) => {
+    return {
+      canAccessWorkspace: originId === workspaceId,
+    };
+  },
   [AuthorizableOriginParameter.GitOrganizationId]: async (
     prisma: PrismaService,
     originId: string,
@@ -45,7 +61,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.GitRepositoryId]: async (
     prisma: PrismaService,
@@ -57,7 +73,7 @@ export const VALIDATION_FUNCTIONS: Record<
         id: originId,
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.ProjectId]: async (
     prisma: PrismaService,
@@ -73,7 +89,10 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching === 1,
+      requestedProjectId: originId,
+    };
   },
   [AuthorizableOriginParameter.TeamId]: async (
     prisma: PrismaService,
@@ -89,7 +108,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.CustomPropertyId]: async (
     prisma: PrismaService,
@@ -105,7 +124,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.RoleId]: async (
     prisma: PrismaService,
@@ -121,7 +140,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.BlueprintId]: async (
     prisma: PrismaService,
@@ -137,7 +156,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.ResourceId]: async (
     prisma: PrismaService,
@@ -156,7 +175,10 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching === 1,
+      requestedResourceId: originId,
+    };
   },
   [AuthorizableOriginParameter.InvitationId]: async (
     prisma: PrismaService,
@@ -171,7 +193,7 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.ApiTokenId]: async (
     prisma: PrismaService,
@@ -185,7 +207,7 @@ export const VALIDATION_FUNCTIONS: Record<
         userId: user.id,
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.ActionId]: async (
     prisma: PrismaService,
@@ -240,7 +262,7 @@ export const VALIDATION_FUNCTIONS: Record<
         ],
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.DeploymentId]: async (
     prisma: PrismaService,
@@ -260,14 +282,14 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
   [AuthorizableOriginParameter.EntityFieldId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.entityField.count({
+    const matching = await prisma.entityField.findFirst({
       where: {
         id: originId,
         entityVersion: {
@@ -281,15 +303,30 @@ export const VALIDATION_FUNCTIONS: Record<
           },
         },
       },
+      select: {
+        entityVersion: {
+          select: {
+            entity: {
+              select: {
+                resourceId: true,
+              },
+            },
+          },
+        },
+      },
     });
-    return matching === 1;
+
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching?.entityVersion?.entity?.resourceId,
+    };
   },
   [AuthorizableOriginParameter.EntityPermissionFieldId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.entityPermissionField.count({
+    const matching = await prisma.entityPermissionField.findFirst({
       where: {
         id: originId,
         field: {
@@ -305,95 +342,138 @@ export const VALIDATION_FUNCTIONS: Record<
           },
         },
       },
+      select: {
+        field: {
+          select: {
+            entityVersion: {
+              select: {
+                entity: {
+                  select: {
+                    resourceId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
-    return matching === 1;
+
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching?.field?.entityVersion?.entity?.resourceId,
+    };
   },
   [AuthorizableOriginParameter.EntityId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.entity.count(
+    const matching = await prisma.entity.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.BlockId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.block.count(
+    const matching = await prisma.block.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.BuildId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.build.count(
+    const matching = await prisma.build.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.ResourceVersionId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.resourceVersion.count(
+    const matching = await prisma.resourceVersion.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.UserActionId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.userAction.count(
+    const matching = await prisma.userAction.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.ResourceRoleId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.resourceRole.count(
+    const matching = await prisma.resourceRole.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.EnvironmentId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.environment.count(
+    const matching = await prisma.environment.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.OutdatedVersionAlertId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.outdatedVersionAlert.count(
+    const matching = await prisma.outdatedVersionAlert.findFirst(
       checkByResourceParameters(originId, workspaceId)
     );
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedResourceId: matching.resourceId,
+    };
   },
   [AuthorizableOriginParameter.CommitId]: async (
     prisma: PrismaService,
     originId: string,
     workspaceId: string
   ) => {
-    const matching = await prisma.commit.count({
+    const matching = await prisma.commit.findFirst({
       where: {
         id: originId,
         project: {
@@ -401,8 +481,14 @@ export const VALIDATION_FUNCTIONS: Record<
           workspaceId,
         },
       },
+      select: {
+        projectId: true,
+      },
     });
-    return matching === 1;
+    return {
+      canAccessWorkspace: matching !== null,
+      requestedProjectId: matching?.projectId,
+    };
   },
   [AuthorizableOriginParameter.UserId]: async (
     prisma: PrismaService,
@@ -417,6 +503,6 @@ export const VALIDATION_FUNCTIONS: Record<
         },
       },
     });
-    return matching === 1;
+    return { canAccessWorkspace: matching === 1 };
   },
 };

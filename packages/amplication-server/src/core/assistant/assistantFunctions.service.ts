@@ -258,7 +258,8 @@ export class AssistantFunctionsService {
     const hasAccess = await this.permissionsService.validateAccess(
       context.user,
       permissions.paramType,
-      parameterValue
+      parameterValue,
+      []
     );
 
     return hasAccess;
