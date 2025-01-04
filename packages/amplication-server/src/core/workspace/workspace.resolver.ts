@@ -101,15 +101,11 @@ export class WorkspaceResolver {
   @Mutation(() => Workspace, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
-  async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
-    return this.workspaceService.deleteWorkspace(args);
-  }
-
-  @Mutation(() => Workspace, {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.WorkspaceId,
+    "where.id",
+    "workspace.settings.edit"
+  )
   async updateWorkspace(
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
