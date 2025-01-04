@@ -16,9 +16,9 @@ const usePermissions = (): IPermissions => {
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-  const { data } = useQuery<{ permissions: string[] }>(GET_PERMISSIONS, {
+  useQuery<{ permissions: string[] }>(GET_PERMISSIONS, {
     onCompleted: (data) => {
-      setIsAdmin(data?.permissions.includes("admin") || false);
+      setIsAdmin(data?.permissions.includes("*") || false);
       setAllowedTasks(() => {
         if (!data || !data.permissions) {
           return {} as Record<RolesPermissions, boolean>;
@@ -33,7 +33,7 @@ const usePermissions = (): IPermissions => {
   });
 
   const canPerformTask = (task: string) => {
-    return isAdmin || data?.permissions.includes(task) || false;
+    return isAdmin || allowedTasks[task] || false;
   };
 
   return {

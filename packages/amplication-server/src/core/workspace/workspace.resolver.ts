@@ -134,6 +134,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.None,
+    "",
+    "workspace.member.invite"
+  )
   async inviteUser(
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
