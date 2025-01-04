@@ -6,7 +6,6 @@ const WorkspacePermissions = [
   "workspace.member.invite",
   "workspace.member.remove",
   "workspace.settings.edit",
-  "workspace.settings.view",
 ] as const;
 
 // Team Permissions
