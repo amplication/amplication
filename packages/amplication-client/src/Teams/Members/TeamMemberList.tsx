@@ -16,7 +16,7 @@ import { UserInfo } from "../../Components/UserInfo";
 import * as models from "../../models";
 import { formatError } from "../../util/error";
 import { pluralize } from "../../util/pluralize";
-import AddTeamMember from "./AddTeamMemberButton";
+import AddTeamMemberButton from "./AddTeamMemberButton";
 import useTeams from "../hooks/useTeams";
 import { useAppContext } from "../../context/appContext";
 
@@ -50,7 +50,7 @@ const TeamMemberList = React.memo(
     };
 
     const handleRemoveMembers = (userId: string) => {
-      removeMembersFromTeam([userId]);
+      removeMembersFromTeam(team.id, [userId]);
       onMemberRemoved && onMemberRemoved(team);
     };
 
@@ -69,7 +69,10 @@ const TeamMemberList = React.memo(
           }
           end={
             team && (
-              <AddTeamMember team={team} onAddMembers={handleAddMembers} />
+              <AddTeamMemberButton
+                team={team}
+                onAddMembers={handleAddMembers}
+              />
             )
           }
         >

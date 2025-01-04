@@ -2,6 +2,7 @@ import { Reference, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
+  ADD_MEMBER_TO_TEAMS,
   ADD_MEMBERS_TO_TEAM,
   ADD_ROLES_TO_TEAM,
   CREATE_TEAM,
@@ -18,6 +19,7 @@ import {
   GET_WORKSPACE_MEMBERS,
   TData as MemberListData,
 } from "../../Workspaces/MemberList";
+import { USER_FIELDS_FRAGMENT } from "../../User/queries/userQueries";
 
 export type WorkspaceUsersData = {
   workspaceUsers: Array<models.User>;
@@ -254,6 +256,70 @@ const useTeams = (teamId?: string) => {
   );
 
   const [
+    addMemberToTeamsInternal,
+    { error: addMemberToTeamsError, loading: addMemberToTeamsLoading },
+  ] = useMutation<{
+    addMemberToTeams: models.User;
+  }>(ADD_MEMBER_TO_TEAMS, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const updatedUser = data.addMemberToTeams;
+
+      // Iterate over each member in the updated team
+      updatedUser.teams.forEach((team) => {
+        // Identify the user's cache entry
+        const teamId = cache.identify({ __typename: "Team", id: team.id });
+
+        if (!teamId) return; // If the user is not in the cache, skip
+
+        // Modify the user's teams field
+        cache.modify({
+          id: teamId,
+          fields: {
+            members(existingMembersRefs = [], { readField }) {
+              // Check if the team is already in the user's teams to avoid duplicates
+              const isAlreadyInTeams = existingMembersRefs.some(
+                (memberRef: any) =>
+                  readField("id", memberRef) === updatedUser.id
+              );
+
+              if (isAlreadyInTeams) {
+                return existingMembersRefs;
+              }
+
+              // Create a reference to the updated team
+              const newMemberRef = cache.writeFragment({
+                data: updatedUser,
+                fragment: USER_FIELDS_FRAGMENT,
+                fragmentName: "UserFields",
+              });
+
+              return [...existingMembersRefs, newMemberRef];
+            },
+          },
+        });
+      });
+    },
+  });
+
+  const addMemberToTeams = useCallback(
+    (userId: string, teamIds: string[]) => {
+      addMemberToTeamsInternal({
+        variables: {
+          where: {
+            id: userId,
+          },
+          data: {
+            teamIds: teamIds,
+          },
+        },
+      }).catch(console.error);
+    },
+    [addMemberToTeamsInternal]
+  );
+
+  const [
     removeMembersFromTeamInternal,
     {
       error: removeMembersFromTeamError,
@@ -264,7 +330,7 @@ const useTeams = (teamId?: string) => {
   }>(REMOVE_MEMBERS_FROM_TEAM, {});
 
   const removeMembersFromTeam = useCallback(
-    (userIds: string[]) => {
+    (teamId: string, userIds: string[]) => {
       removeMembersFromTeamInternal({
         variables: {
           where: {
@@ -402,6 +468,9 @@ const useTeams = (teamId?: string) => {
     removeRolesFromTeam,
     removeRolesFromTeamError,
     removeRolesFromTeamLoading,
+    addMemberToTeams,
+    addMemberToTeamsError,
+    addMemberToTeamsLoading,
   };
 };
 
