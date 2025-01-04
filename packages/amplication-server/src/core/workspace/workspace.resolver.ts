@@ -163,7 +163,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.InvitationId,
+    "where.id",
+    "workspace.member.invite"
+  )
   async resendInvitation(
     @Args() args: ResendInvitationArgs
   ): Promise<Invitation> {
