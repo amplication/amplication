@@ -29,6 +29,7 @@ import { AddRolesToTeamAssignmentArgs } from "./dto/AddRolesToTeamAssignmentArgs
 import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssignmentArgs";
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
 import { CreateTeamAssignmentsArgs } from "./dto/CreateTeamAssignmentsArgs";
+import { AddMemberToTeamsArgs } from "./dto/AddMemberToTeamsArgs";
 
 @Resolver(() => Team)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -79,6 +80,12 @@ export class TeamResolver {
   @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
   async addMembersToTeam(@Args() args: AddMembersToTeamArgs): Promise<Team> {
     return this.teamService.addMembersToTeam(args);
+  }
+
+  @Mutation(() => User, { nullable: false })
+  @AuthorizeContext(AuthorizableOriginParameter.UserId, "where.id")
+  async addMemberToTeams(@Args() args: AddMemberToTeamsArgs): Promise<User> {
+    return this.teamService.addMemberToTeams(args);
   }
 
   @Mutation(() => Team, { nullable: false })

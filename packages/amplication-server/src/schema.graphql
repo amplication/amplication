@@ -37,6 +37,10 @@ type ActionStep {
   status: EnumActionStepStatus!
 }
 
+input AddMemberToTeamsInput {
+  teamIds: [String!]!
+}
+
 type AdminUISettings {
   adminUIPath: String!
   generateAdminUI: Boolean!
@@ -1651,6 +1655,7 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  addMemberToTeams(data: AddMemberToTeamsInput!, where: WhereUniqueInput!): User!
   addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
   addRolesToTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
