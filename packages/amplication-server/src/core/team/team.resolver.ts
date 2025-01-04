@@ -55,7 +55,8 @@ export class TeamResolver {
   @Mutation(() => Team, { nullable: false })
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "team.create"
   )
   async createTeam(
     @Args() args: TeamCreateArgs,
@@ -65,31 +66,47 @@ export class TeamResolver {
   }
 
   @Mutation(() => Team, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.TeamId,
+    "where.id",
+    "team.delete"
+  )
   async deleteTeam(@Args() args: FindOneArgs): Promise<Team | null> {
     return this.teamService.deleteTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id", "team.edit")
   async updateTeam(@Args() args: UpdateTeamArgs): Promise<Team> {
     return this.teamService.updateTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.TeamId,
+    "where.id",
+    "team.member.add"
+  )
   async addMembersToTeam(@Args() args: AddMembersToTeamArgs): Promise<Team> {
     return this.teamService.addMembersToTeam(args);
   }
 
   @Mutation(() => User, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.UserId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.UserId,
+    "where.id",
+    "team.member.add"
+  )
   async addMemberToTeams(@Args() args: AddMemberToTeamsArgs): Promise<User> {
     return this.teamService.addMemberToTeams(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.TeamId,
+    "where.id",
+    "team.member.remove"
+  )
   async removeMembersFromTeam(
     @Args() args: RemoveMembersFromTeamArgs
   ): Promise<Team> {
@@ -102,13 +119,13 @@ export class TeamResolver {
   }
 
   @Mutation(() => Team, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id", "team.edit")
   async addRolesToTeam(@Args() args: AddRolesToTeamArgs): Promise<Team> {
     return this.teamService.addRolesToTeam(args);
   }
 
   @Mutation(() => Team, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.id", "team.edit")
   async removeRolesFromTeam(
     @Args() args: RemoveRolesFromTeamArgs
   ): Promise<Team> {
