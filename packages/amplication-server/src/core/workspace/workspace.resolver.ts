@@ -149,6 +149,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.None,
+    "",
+    "workspace.member.remove"
+  )
   @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
@@ -169,6 +174,11 @@ export class WorkspaceResolver {
   @Mutation(() => User, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.None,
+    "",
+    "workspace.member.remove"
+  )
   async deleteUser(
     @UserEntity() currentUser: User,
     @Args() args: DeleteUserArgs
