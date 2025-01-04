@@ -28,8 +28,11 @@ type Props = {
 
 const TeamMemberList = React.memo(
   ({ team, onMemberRemoved, onMemberAdded }: Props) => {
-    const { currentWorkspace } = useAppContext();
+    const { currentWorkspace, permissions } = useAppContext();
     const baseUrl = `/${currentWorkspace?.id}/settings`;
+
+    const canAddMembers = permissions.canPerformTask("team.member.add");
+    const canRemoveMembers = permissions.canPerformTask("team.member.remove");
 
     const {
       removeMembersFromTeam,
@@ -68,7 +71,8 @@ const TeamMemberList = React.memo(
             </Text>
           }
           end={
-            team && (
+            team &&
+            canAddMembers && (
               <AddTeamMemberButton
                 team={team}
                 onAddMembers={handleAddMembers}
@@ -83,15 +87,17 @@ const TeamMemberList = React.memo(
             <ListItem
               to={`${baseUrl}/members/${member.id}`}
               end={
-                <Button
-                  icon="trash_2"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={(e) => {
-                    handleRemoveMembers(member.id);
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                />
+                canRemoveMembers && (
+                  <Button
+                    icon="trash_2"
+                    buttonStyle={EnumButtonStyle.Text}
+                    onClick={(e) => {
+                      handleRemoveMembers(member.id);
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  />
+                )
               }
               key={index}
             >

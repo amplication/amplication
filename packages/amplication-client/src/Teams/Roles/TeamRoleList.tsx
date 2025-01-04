@@ -37,8 +37,10 @@ const TeamRoleList = React.memo(
       addRolesToTeamLoading,
     } = useTeams(team?.id);
 
-    const { currentWorkspace } = useAppContext();
+    const { currentWorkspace, permissions } = useAppContext();
     const baseUrl = `/${currentWorkspace?.id}/settings`;
+
+    const canEditTeam = permissions.canPerformTask("team.edit");
 
     const errorMessage = formatError(
       addRolesToTeamError || removeRolesFromTeamError
@@ -67,7 +69,12 @@ const TeamRoleList = React.memo(
               {roleCount} {pluralize(roleCount, "Role", "Roles")}
             </Text>
           }
-          end={team && <AddTeamRole team={team} onAddRoles={handleAddRoles} />}
+          end={
+            team &&
+            canEditTeam && (
+              <AddTeamRole team={team} onAddRoles={handleAddRoles} />
+            )
+          }
         >
           {loading && <CircularProgress />}
         </FlexItem>
@@ -77,15 +84,17 @@ const TeamRoleList = React.memo(
               start={<Icon icon="roles_outline" />}
               to={`${baseUrl}/roles/${role.id}`}
               end={
-                <Button
-                  icon="trash_2"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={(e) => {
-                    handleRemoveRoles(role.id);
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                />
+                canEditTeam && (
+                  <Button
+                    icon="trash_2"
+                    buttonStyle={EnumButtonStyle.Text}
+                    onClick={(e) => {
+                      handleRemoveRoles(role.id);
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  />
+                )
               }
               key={role.id}
             >
