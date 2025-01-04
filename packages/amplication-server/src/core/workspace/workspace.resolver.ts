@@ -150,11 +150,10 @@ export class WorkspaceResolver {
     nullable: true,
   })
   @AuthorizeContext(
-    AuthorizableOriginParameter.None,
-    "",
+    AuthorizableOriginParameter.InvitationId,
+    "where.id",
     "workspace.member.remove"
   )
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
@@ -175,8 +174,8 @@ export class WorkspaceResolver {
     nullable: true,
   })
   @AuthorizeContext(
-    AuthorizableOriginParameter.None,
-    "",
+    AuthorizableOriginParameter.UserId,
+    "where.id",
     "workspace.member.remove"
   )
   async deleteUser(
