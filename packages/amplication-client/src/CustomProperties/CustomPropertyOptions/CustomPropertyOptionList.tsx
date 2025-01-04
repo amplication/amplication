@@ -20,11 +20,13 @@ const CustomPropertyOptionList = React.memo(
       <>
         <List
           headerContent={
-            <NewCustomPropertyOption
-              customProperty={customProperty}
-              onOptionAdd={onOptionAdd}
-              disabled={disabled}
-            />
+            !disabled && (
+              <NewCustomPropertyOption
+                customProperty={customProperty}
+                onOptionAdd={onOptionAdd}
+                disabled={disabled}
+              />
+            )
           }
         >
           {customProperty?.options?.map((property, index) => (

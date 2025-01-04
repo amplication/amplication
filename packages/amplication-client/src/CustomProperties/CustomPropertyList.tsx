@@ -52,6 +52,8 @@ export const CUSTOM_PROPERTY_TYPE_TO_LABEL_AND_ICON: {
 export const CustomPropertyList = React.memo(() => {
   const { currentWorkspace, permissions } = useAppContext();
 
+  const canCreate = permissions.canPerformTask("property.create");
+
   const baseUrl = `/${currentWorkspace?.id}/settings`;
 
   const {
@@ -101,10 +103,11 @@ export const CustomPropertyList = React.memo(() => {
       <HorizontalRule />
       <List
         headerContent={
-          <NewCustomProperty
-            disabled={!permissions.allowedTasks["property.create"]}
-            onCustomPropertyAdd={handleCustomPropertyChange}
-          />
+          canCreate && (
+            <NewCustomProperty
+              onCustomPropertyAdd={handleCustomPropertyChange}
+            />
+          )
         }
       >
         {data?.customProperties?.map((customProperty) => (

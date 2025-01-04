@@ -82,12 +82,14 @@ const CustomPropertyOption = ({
             direction={EnumFlexDirection.Row}
             alignSelf={EnumContentAlign.Center}
           >
-            <DeleteCustomPropertyOption
-              customProperty={customProperty}
-              customPropertyOption={customPropertyOption}
-              onOptionDelete={onOptionDelete}
-              disabled={disabled}
-            />
+            {!disabled && (
+              <DeleteCustomPropertyOption
+                customProperty={customProperty}
+                customPropertyOption={customPropertyOption}
+                onOptionDelete={onOptionDelete}
+                disabled={disabled}
+              />
+            )}
           </FlexItem.FlexEnd>
         </FlexItem>
       </ListItem>
