@@ -273,7 +273,7 @@ export class GitProviderService {
     );
   }
 
-  async connectGitRepository(
+  async connectResourceToNewRemoteGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<Resource | boolean> {
     const remoteRepository = await this.createRemoteGitRepository(args);

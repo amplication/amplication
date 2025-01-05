@@ -18,15 +18,11 @@ import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
 import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
-import {
-  RemoteGitRepos,
-  RemoteGitRepository,
-} from "./dto/objects/RemoteGitRepository";
+import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
-import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { GitRepository, User } from "../../models";
@@ -42,21 +38,10 @@ export class GitResolver {
     AuthorizableOriginParameter.GitOrganizationId,
     "data.gitOrganizationId"
   )
-  async connectGitRepository(
+  async connectResourceToNewRemoteGitRepository(
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource | boolean> {
-    return this.gitService.connectGitRepository(args.data);
-  }
-
-  @Mutation(() => RemoteGitRepository)
-  @AuthorizeContext(
-    AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
-  )
-  async createRemoteGitRepository(
-    @Args() args: CreateGitRepositoryBaseArgs
-  ): Promise<RemoteGitRepository> {
-    return this.gitService.createRemoteGitRepository(args.data);
+    return this.gitService.connectResourceToNewRemoteGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
@@ -75,6 +60,7 @@ export class GitResolver {
   ): Promise<Resource> {
     return await this.gitService.connectResourceGitRepository(args.data);
   }
+
   @Mutation(() => Resource)
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
   async connectResourceToProjectRepository(
