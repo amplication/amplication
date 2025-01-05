@@ -51,7 +51,11 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.resourceId",
+    "git.repo.select"
+  )
   async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
   ): Promise<Resource> {
