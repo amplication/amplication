@@ -51,10 +51,7 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(
-    AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
   async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
   ): Promise<Resource> {
@@ -121,7 +118,10 @@ export class GitResolver {
   async disconnectResourceGitRepository(
     @Args() args: DisconnectGitRepositoryArgs
   ): Promise<Resource> {
-    return this.gitService.disconnectResourceGitRepository(args.resourceId);
+    return this.gitService.disconnectResourceGitRepository(
+      args.resourceId,
+      args.overrideProjectSettings
+    );
   }
 
   @Mutation(() => AuthorizeResourceWithGitResult)

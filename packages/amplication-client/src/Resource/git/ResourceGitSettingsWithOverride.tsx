@@ -2,7 +2,6 @@ import {
   EnumItemsAlign,
   EnumPanelStyle,
   FlexItem,
-  HorizontalRule,
   Panel,
   TabContentTitle,
   Toggle,
@@ -12,13 +11,10 @@ import React, { useCallback, useState } from "react";
 import {
   CONNECT_RESOURCE_PROJECT_REPO,
   DISCONNECT_GIT_REPOSITORY,
-  UPDATE_RESOURCE,
 } from "../../Workspaces/queries/resourcesQueries";
 import * as models from "../../models";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import ResourceGitSettings from "./ResourceGitSettings";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
+import ResourceGitSettings from "./ResourceGitSettings";
 import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
@@ -45,8 +41,6 @@ const ResourceGitSettingsWithOverride: React.FC<Props> = ({
     resource.gitRepositoryOverride
   );
 
-  const { trackEvent } = useTracking();
-
   const [connectResourceToProjectRepository] = useMutation<TData>(
     CONNECT_RESOURCE_PROJECT_REPO,
     {
@@ -58,11 +52,17 @@ const ResourceGitSettingsWithOverride: React.FC<Props> = ({
     variables: { resourceId: resource.id },
   });
 
-  const handleDisconnectGitRepository = useCallback(() => {
-    disconnectGitRepository({
-      variables: { resourceId: resource.id },
-    }).catch(console.error);
-  }, [disconnectGitRepository, resource.id]);
+  const handleDisconnectGitRepository = useCallback(
+    (overrideProjectSettings: boolean) => {
+      disconnectGitRepository({
+        variables: {
+          resourceId: resource.id,
+          overrideProjectSettings,
+        },
+      }).catch(console.error);
+    },
+    [disconnectGitRepository, resource.id]
+  );
 
   const handleConnectProjectGitRepository = useCallback(() => {
     connectResourceToProjectRepository({
@@ -74,7 +74,7 @@ const ResourceGitSettingsWithOverride: React.FC<Props> = ({
     (isOverride: boolean) => {
       setIsOverride(isOverride);
       if (isOverride) {
-        handleDisconnectGitRepository();
+        handleDisconnectGitRepository(true);
       } else {
         handleConnectProjectGitRepository();
       }
@@ -82,27 +82,11 @@ const ResourceGitSettingsWithOverride: React.FC<Props> = ({
     [handleDisconnectGitRepository, handleConnectProjectGitRepository]
   );
 
-  const [updateResourceOverrideStatus] = useMutation<TData>(UPDATE_RESOURCE, {
-    onCompleted: (data) => {
-      handleResourceStatusChanged(data.updateResource.gitRepositoryOverride);
-    },
-  });
-
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.ResourceInfoUpdate,
-      });
-      updateResourceOverrideStatus({
-        variables: {
-          data: {
-            gitRepositoryOverride,
-          },
-          resourceId: resource.id,
-        },
-      }).catch(console.error);
+      handleResourceStatusChanged(gitRepositoryOverride);
     },
-    [resource.id, trackEvent, updateResourceOverrideStatus]
+    [handleResourceStatusChanged]
   );
 
   return (
