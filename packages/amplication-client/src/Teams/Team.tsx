@@ -20,7 +20,11 @@ const Team = () => {
     teamId: string;
   }>(["/:workspace/settings/teams/:teamId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canDeleteTeam = permissions.canPerformTask("team.delete");
+  const canEditTeam = permissions.canPerformTask("team.edit");
+
   const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
@@ -63,13 +67,17 @@ const Team = () => {
           subTitle={data?.team?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.team && (
+          {data?.team && canDeleteTeam && (
             <DeleteTeam team={data?.team} onDelete={handleDeleteModule} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
       {!loading && (
-        <TeamForm onSubmit={handleSubmit} defaultValues={data?.team} />
+        <TeamForm
+          onSubmit={handleSubmit}
+          defaultValues={data?.team}
+          disabled={!canEditTeam}
+        />
       )}
       <TabContentTitle title="Members" subTitle="Add or remove team members" />
       <TeamMemberList team={data?.team} />

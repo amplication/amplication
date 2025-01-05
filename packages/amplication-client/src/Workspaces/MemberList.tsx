@@ -19,6 +19,7 @@ import InviteMember from "./InviteMember";
 import MemberListItem from "./MemberListItem";
 import { AppRouteProps } from "../routes/routesUtil";
 import { match } from "react-router-dom";
+import { useAppContext } from "../context/appContext";
 
 export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -43,6 +44,10 @@ function MemberList({ match, innerRoutes }: Props) {
   } = useQuery<TData>(GET_WORKSPACE_MEMBERS);
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
+
+  const { permissions } = useAppContext();
+
+  const canRemoveUser = permissions.canPerformTask("workspace.member.remove");
 
   const handleDelete = useCallback(() => {
     refetch();
@@ -73,6 +78,7 @@ function MemberList({ match, innerRoutes }: Props) {
           <List>
             {data?.workspaceMembers.map((member, index) => (
               <MemberListItem
+                canDelete={canRemoveUser}
                 member={member}
                 key={index}
                 onDelete={handleDelete}

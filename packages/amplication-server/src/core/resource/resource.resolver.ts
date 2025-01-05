@@ -102,11 +102,7 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    "where.id",
-    "resource.view"
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async messageBrokerConnectedServices(
     @Args() args: FindOneArgs
   ): Promise<Resource[]> {

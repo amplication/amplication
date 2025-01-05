@@ -85,7 +85,13 @@ const CustomPropertyOptionForm = ({
               direction={EnumFlexDirection.Row}
             >
               <CustomPropertyOptionValueField disabled={disabled} />
-              <ColorPickerField name="color" iconOnlyMode disabled={disabled} />
+              {!disabled && (
+                <ColorPickerField
+                  name="color"
+                  iconOnlyMode
+                  disabled={disabled}
+                />
+              )}
             </FlexItem>
           </Form>
         </div>

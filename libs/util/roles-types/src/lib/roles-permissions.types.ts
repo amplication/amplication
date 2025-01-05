@@ -6,7 +6,6 @@ const WorkspacePermissions = [
   "workspace.member.invite",
   "workspace.member.remove",
   "workspace.settings.edit",
-  "workspace.settings.view",
 ] as const;
 
 // Team Permissions
@@ -41,7 +40,6 @@ const ProjectPermissions = [
   "project.git.repo.select",
   "project.platformSettings.edit",
   "project.settings.edit",
-  "project.view",
 ] as const;
 
 // Resource Permissions
@@ -52,7 +50,6 @@ const ResourcePermissions = [
   "resource.git.repo.disconnect",
   "resource.git.repo.overrideProjectSettings",
   "resource.git.repo.select",
-  "resource.view",
   "resource.delete",
   "resource.create",
   "resource.createFromTemplate",
@@ -71,7 +68,6 @@ const PrivatePluginPermissions = [
   "privatePlugin.git.repo.disconnect",
   "privatePlugin.git.repo.overrideProjectSettings",
   "privatePlugin.git.repo.select",
-  "privatePlugin.list.view",
   "privatePlugin.version.create",
   "privatePlugin.version.edit",
 ] as const;

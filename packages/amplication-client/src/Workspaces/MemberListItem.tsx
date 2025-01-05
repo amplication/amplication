@@ -29,13 +29,14 @@ type Props = {
   member: models.WorkspaceMember;
   onDelete?: () => void;
   onError: (error: Error) => void;
+  canDelete?: boolean;
 };
 
 const DIRECTION = "n";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function MemberListItem({ member, onDelete, onError }: Props) {
+function MemberListItem({ member, onDelete, onError, canDelete }: Props) {
   const { trackEvent } = useTracking();
   const { currentWorkspace } = useAppContext();
 
@@ -64,6 +65,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
   const handleDelete = useCallback(
     (event) => {
       event.stopPropagation();
+      event.preventDefault();
       setConfirmDelete(true);
     },
     [setConfirmDelete]
@@ -158,7 +160,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
                 />
               </Tooltip>
             )}
-            {!data.isOwner && !deleteLoading && !revokeLoading && (
+            {!data.isOwner && !deleteLoading && !revokeLoading && canDelete && (
               <Tooltip
                 aria-label={
                   data.isInvitation ? "Revoke invitation" : "Delete user"

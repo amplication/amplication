@@ -69,7 +69,8 @@ const CustomProperty = () => {
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
 
-  const disabled = !permissions.allowedTasks["property.edit"];
+  const canEdit = permissions.canPerformTask("property.edit");
+  const canDelete = permissions.canPerformTask("property.delete");
 
   return (
     <>
@@ -85,16 +86,18 @@ const CustomProperty = () => {
           {data?.customProperty && (
             <>
               <Toggle
-                disabled={disabled}
+                disabled={!canEdit}
                 name={"enabled"}
                 onValueChange={onEnableChanged}
                 checked={data?.customProperty?.enabled}
               ></Toggle>
-              <DeleteCustomProperty
-                customProperty={data?.customProperty}
-                showLabel={true}
-                onDelete={handleDeleteModule}
-              />
+              {canDelete && (
+                <DeleteCustomProperty
+                  customProperty={data?.customProperty}
+                  showLabel={true}
+                  onDelete={handleDeleteModule}
+                />
+              )}
             </>
           )}
         </FlexItem.FlexEnd>
@@ -104,7 +107,7 @@ const CustomProperty = () => {
           handleSubmit={handleSubmit}
           customProperty={data?.customProperty}
           onOptionListChanged={onOptionListChanged}
-          disabled={disabled}
+          disabled={!canEdit}
         ></CustomPropertyFormAndOptions>
       )}
 

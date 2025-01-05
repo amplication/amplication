@@ -293,13 +293,6 @@ describe("WorkspaceService", () => {
     expect(prismaWorkspaceFindManyMock).toHaveBeenCalledWith(args);
   });
 
-  it("should delete an workspace", async () => {
-    const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
-    expect(await service.deleteWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
-    expect(prismaWorkspaceDeleteMock).toHaveBeenCalledTimes(1);
-    expect(prismaWorkspaceDeleteMock).toHaveBeenCalledWith(args);
-  });
-
   it("should update an workspace", async () => {
     const args = {
       data: {},

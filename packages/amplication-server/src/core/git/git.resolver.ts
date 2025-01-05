@@ -86,7 +86,11 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization, {})
-  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "data.workspaceId",
+    "git.org.create"
+  )
   async createOrganization(
     @UserEntity() currentUser: User,
     @Args()
@@ -117,7 +121,8 @@ export class GitResolver {
   @Mutation(() => Boolean)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    "gitOrganizationId"
+    "gitOrganizationId",
+    "git.org.delete"
   )
   async deleteGitOrganization(
     @Args() args: DeleteGitOrganizationArgs

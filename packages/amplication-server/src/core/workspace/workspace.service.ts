@@ -79,10 +79,6 @@ export class WorkspaceService {
     return this.prisma.workspace.findMany(args);
   }
 
-  async deleteWorkspace(args: FindOneArgs): Promise<Workspace | null> {
-    return this.prisma.workspace.delete(args);
-  }
-
   async updateWorkspace(
     args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {

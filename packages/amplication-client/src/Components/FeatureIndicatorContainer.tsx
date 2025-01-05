@@ -54,6 +54,7 @@ export type Props = {
   ctaType?: EnumCtaType;
   actualUsage?: number | null;
   paidPlansExclusive?: boolean;
+  canPerformTask?: boolean; //set the disabled property to false based on the user specific permissions, even if the feature is enabled
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -69,6 +70,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   ctaType = EnumCtaType.Upgrade,
   actualUsage,
   paidPlansExclusive = true,
+  canPerformTask = true,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
@@ -193,7 +195,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }, [featureId, subscriptionPlan, status, disabled, paidPlansExclusive]);
 
   const renderProps = {
-    disabled: disabled,
+    disabled: disabled || !canPerformTask,
     icon: icon,
     reversePosition,
   };
@@ -243,7 +245,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             }
           />
         ))}
-      {!render && !icon && children}
+      {!render && !icon && React.cloneElement(children, renderProps)}
     </div>
   );
 };

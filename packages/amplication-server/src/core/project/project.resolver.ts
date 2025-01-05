@@ -59,7 +59,8 @@ export class ProjectResolver {
   @Mutation(() => Project, { nullable: false })
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "project.create"
   )
   async createProject(
     @Args() args: ProjectCreateArgs,
