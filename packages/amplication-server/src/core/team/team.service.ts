@@ -20,8 +20,10 @@ import { RemoveRolesFromTeamAssignmentArgs } from "./dto/RemoveRolesFromTeamAssi
 import { DeleteTeamAssignmentArgs } from "./dto/DeleteTeamAssignmentArgs";
 import { WhereTeamAssignmentInput } from "./dto/WhereTeamAssignmentInput";
 import { CreateTeamAssignmentsArgs } from "./dto/CreateTeamAssignmentsArgs";
+import { AddMemberToTeamsArgs } from "./dto/AddMemberToTeamsArgs";
 
 export const INVALID_TEAM_ID = "Invalid teamId";
+export const INVALID_USER_ID = "Invalid userId";
 export const INVALID_MEMBERS = "Invalid members";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_ROLES = "Invalid roles";
@@ -177,6 +179,68 @@ export class TeamService {
     });
 
     return updatedTeam;
+  }
+
+  async addMemberToTeams(args: AddMemberToTeamsArgs): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (!user) {
+      throw new AmplicationError(INVALID_USER_ID);
+    }
+
+    const teamIds = args.data.teamIds;
+
+    const invalidTeams = await this.prisma.team.findMany({
+      where: {
+        id: {
+          in: teamIds,
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            deletedAt: {
+              not: null,
+            },
+          },
+          {
+            workspaceId: {
+              not: user.workspaceId,
+            },
+          },
+        ],
+      },
+    });
+
+    if (invalidTeams && invalidTeams.length > 0) {
+      throw new AmplicationError(INVALID_TEAMS);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: args.where.id,
+      },
+      data: {
+        teams: {
+          connect: teamIds.map((teamId) => ({
+            id: teamId,
+          })),
+        },
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.TeamAddMembers,
+      properties: {
+        teamName: "multiple teams",
+        membersAdded: teamIds.length,
+      },
+    });
+
+    return updatedUser;
   }
 
   async removeMembersFromTeam(args: RemoveMembersFromTeamArgs): Promise<Team> {

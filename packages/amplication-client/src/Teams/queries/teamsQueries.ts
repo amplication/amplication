@@ -79,6 +79,27 @@ export const ADD_MEMBERS_TO_TEAM = gql`
   }
 `;
 
+export const ADD_MEMBER_TO_TEAMS = gql`
+  ${TEAM_FIELDS_FRAGMENT}
+  mutation addMemberToTeams(
+    $data: AddMemberToTeamsInput!
+    $where: WhereUniqueInput!
+  ) {
+    addMemberToTeams(data: $data, where: $where) {
+      id
+      account {
+        id
+        email
+        firstName
+        lastName
+      }
+      teams {
+        ...TeamFields
+      }
+    }
+  }
+`;
+
 export const REMOVE_MEMBERS_FROM_TEAM = gql`
   ${TEAM_FIELDS_FRAGMENT}
   mutation removeMembersFromTeam(

@@ -55,6 +55,10 @@ export type ActionStep = {
   status: EnumActionStepStatus;
 };
 
+export type AddMemberToTeamsInput = {
+  teamIds: Array<Scalars['String']['input']>;
+};
+
 export type AdminUiSettings = {
   adminUIPath: Scalars['String']['output'];
   generateAdminUI: Scalars['Boolean']['output'];
@@ -1671,6 +1675,7 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  addMemberToTeams: User;
   addMembersToTeam: Team;
   addRolePermissions: Role;
   addRolesToTeam: Team;
@@ -1816,6 +1821,12 @@ export type Mutation = {
 
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
+};
+
+
+export type MutationAddMemberToTeamsArgs = {
+  data: AddMemberToTeamsInput;
+  where: WhereUniqueInput;
 };
 
 
