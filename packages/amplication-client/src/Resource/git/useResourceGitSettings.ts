@@ -10,7 +10,7 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { ApolloError, useMutation } from "@apollo/client";
 import {
-  CONNECT_GIT_PROVIDER_REPOSITORY,
+  CONNECT_RESOURCE_TO_NEW_REMOTE_GIT_REPOSITORY,
   CONNECT_GIT_REPOSITORY,
   UPDATE_GIT_REPOSITORY,
 } from "./queries/gitProvider";
@@ -92,9 +92,9 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
 
   //************************ mutatios ************************
   const [
-    connectGitRepository,
+    connectResourceToNewRemoteGitRepository,
     { loading: connectGitRepoLoading, error: connectGitRepoError },
-  ] = useMutation<Resource>(CONNECT_GIT_PROVIDER_REPOSITORY);
+  ] = useMutation<Resource>(CONNECT_RESOURCE_TO_NEW_REMOTE_GIT_REPOSITORY);
 
   const [
     updateGitRepositoryMutation,
@@ -214,7 +214,7 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
   //after the repository is created - we close the dialog and call the gitRepositoryCreatedCb
   const handleRepoCreated = useCallback(
     (data: GitRepositoryCreatedData) => {
-      connectGitRepository({
+      connectResourceToNewRemoteGitRepository({
         variables: {
           name: data.name,
           gitOrganizationId: gitOrganization.id,
@@ -242,7 +242,7 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
       });
     },
     [
-      connectGitRepository,
+      connectResourceToNewRemoteGitRepository,
       gitOrganization,
       resource,
       trackEvent,
