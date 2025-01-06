@@ -30,14 +30,18 @@ const GitOrganizationPermissions = [
   "git.org.delete",
 ] as const;
 
+const GitRepositoryPermissions = [
+  "git.repo.settings.edit",
+  "git.repo.create",
+  "git.repo.disconnect",
+  "git.repo.select",
+] as const;
+
 // Project Permissions
 const ProjectPermissions = [
   "project.create",
   "project.delete",
-  "project.git.repo.baseBranch.edit",
-  "project.git.repo.create",
-  "project.git.repo.disconnect",
-  "project.git.repo.select",
+
   "project.platformSettings.edit",
   "project.settings.edit",
 ] as const;
@@ -75,6 +79,7 @@ const PrivatePluginPermissions = [
 const RolesPermissions = [
   ...AdminPermissions,
   ...GitOrganizationPermissions,
+  ...GitRepositoryPermissions,
   ...PrivatePluginPermissions,
   ...ProjectPermissions,
   ...PropertiesPermissions,

@@ -70,7 +70,11 @@ export class ProjectResolver {
   }
 
   @Mutation(() => Project, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.id",
+    "project.delete"
+  )
   async deleteProject(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.deleteProject(args);
   }
