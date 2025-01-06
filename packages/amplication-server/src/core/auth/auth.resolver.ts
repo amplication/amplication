@@ -21,11 +21,15 @@ import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { AuthService } from "./auth.service";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { AuthUser } from "./types";
+import { PermissionsService } from "../permissions/permissions.service";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly permissionsService: PermissionsService
+  ) {}
 
   @Query(() => User)
   @UseGuards(GqlAuthGuard)
@@ -37,6 +41,19 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   async permissions(@UserEntity() user: AuthUser): Promise<string[]> {
     return user.permissions;
+  }
+
+  @Query(() => [String])
+  @UseGuards(GqlAuthGuard)
+  async resourcePermissions(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: AuthUser
+  ): Promise<string[]> {
+    return this.permissionsService.getUserResourceOrProjectPermissions(
+      user,
+      args.where.id,
+      undefined
+    );
   }
 
   @Mutation(() => Boolean)

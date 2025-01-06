@@ -462,16 +462,6 @@ export type CreateEntitiesFromPredefinedSchemaInput = {
   schemaName: EnumSchemaNames;
 };
 
-export type CreateGitRepositoryBaseInput = {
-  gitOrganizationId: Scalars['String']['input'];
-  gitOrganizationType: EnumGitOrganizationType;
-  gitProvider: EnumGitProvider;
-  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
-  groupName?: InputMaybe<Scalars['String']['input']>;
-  isPublic: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-};
-
 export type CreateGitRepositoryInput = {
   gitOrganizationId: Scalars['String']['input'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -1688,8 +1678,8 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
-  connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
+  connectResourceToNewRemoteGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBlueprint: Blueprint;
@@ -1717,7 +1707,6 @@ export type Mutation = {
   createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
   createRelation: Relation;
-  createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createRole: Role;
   createService: Resource;
@@ -1757,7 +1746,6 @@ export type Mutation = {
   deleteTeamAssignment: TeamAssignment;
   deleteTopic: Topic;
   deleteUser?: Maybe<User>;
-  deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']['output']>;
   disconnectResourceGitRepository: Resource;
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -1882,13 +1870,13 @@ export type MutationCompleteInvitationArgs = {
 };
 
 
-export type MutationConnectGitRepositoryArgs = {
-  data: CreateGitRepositoryInput;
+export type MutationConnectResourceGitRepositoryArgs = {
+  data: ConnectGitRepositoryInput;
 };
 
 
-export type MutationConnectResourceGitRepositoryArgs = {
-  data: ConnectGitRepositoryInput;
+export type MutationConnectResourceToNewRemoteGitRepositoryArgs = {
+  data: CreateGitRepositoryInput;
 };
 
 
@@ -2032,11 +2020,6 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreateRelationArgs = {
   data: RelationCreateInput;
-};
-
-
-export type MutationCreateRemoteGitRepositoryArgs = {
-  data: CreateGitRepositoryBaseInput;
 };
 
 
@@ -2237,17 +2220,13 @@ export type MutationDeleteUserArgs = {
 };
 
 
-export type MutationDeleteWorkspaceArgs = {
-  where: WhereUniqueInput;
-};
-
-
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
 
 export type MutationDisconnectResourceGitRepositoryArgs = {
+  overrideProjectSettings?: InputMaybe<Scalars['Boolean']['input']>;
   resourceId: Scalars['String']['input'];
 };
 
@@ -3072,6 +3051,7 @@ export type Query = {
   relations: Array<Relation>;
   remoteGitRepositories: RemoteGitRepos;
   resource?: Maybe<Resource>;
+  resourcePermissions: Array<Scalars['String']['output']>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
   resourceSettings?: Maybe<ResourceSettings>;
@@ -3426,6 +3406,11 @@ export type QueryRemoteGitRepositoriesArgs = {
 
 
 export type QueryResourceArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryResourcePermissionsArgs = {
   where: WhereUniqueInput;
 };
 
@@ -3835,7 +3820,6 @@ export type ResourceSettingsUpdateInput = {
 
 export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
