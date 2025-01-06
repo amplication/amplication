@@ -62,6 +62,7 @@ const ResourceGitSettings: React.FC<Props> = ({
     openCreateNewRepo,
     closeCreateNewRepo,
     updateGitRepository,
+    updateGitRepositoryError,
     handleGitOrganizationConnected,
   } = useResourceGitSettings({
     resource,
@@ -84,8 +85,14 @@ const ResourceGitSettings: React.FC<Props> = ({
     setErrorMessage(errorMessage);
   }, []);
 
-  const errorMessageText = formatError(connectGitRepoError) || errorMessage;
-  const hasError = Boolean(connectGitRepoError) || Boolean(errorMessage);
+  const errorMessageText =
+    formatError(connectGitRepoError) ||
+    errorMessage ||
+    formatError(updateGitRepositoryError);
+  const hasError =
+    Boolean(connectGitRepoError) ||
+    Boolean(errorMessage) ||
+    Boolean(updateGitRepositoryError);
 
   return (
     <>

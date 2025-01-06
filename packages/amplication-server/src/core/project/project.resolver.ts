@@ -80,7 +80,11 @@ export class ProjectResolver {
   }
 
   @Mutation(() => Project, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.id",
+    "project.settings.edit"
+  )
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
     return this.projectService.updateProject(args);
   }

@@ -314,7 +314,7 @@ describe("AuthResolver", () => {
   });
 
   it("should throw error if user has no account", async () => {
-    mockCanActivate.mockImplementation(
+    mockCanActivate.mockImplementationOnce(
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
     const { data, errors } = await apolloClient.executeOperation({
