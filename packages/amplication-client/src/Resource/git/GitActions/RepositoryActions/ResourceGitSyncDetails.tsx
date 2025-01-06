@@ -12,6 +12,7 @@ import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { formatError } from "../../../../util/error";
 import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 import ResourceGitSyncDetailsContent from "./ResourceGitSyncDetailsContent";
+import { useResourceContext } from "../../../../context/resourceContext";
 
 type Props = {
   resourceWithRepository: Resource;
@@ -24,6 +25,9 @@ function ResourceGitSyncDetails({
   className,
   showGitRepositoryBtn = true,
 }: Props) {
+  const { permissions } = useResourceContext();
+  const canDisconnect = permissions.canPerformTask("git.repo.disconnect");
+
   const [disconnectGitRepository, { error: disconnectErrorUpdate }] =
     useMutation(DISCONNECT_GIT_REPOSITORY, {
       variables: { resourceId: resourceWithRepository.id },
@@ -53,6 +57,7 @@ function ResourceGitSyncDetails({
         end={
           showGitRepositoryBtn && (
             <Button
+              disabled={!canDisconnect}
               buttonStyle={EnumButtonStyle.Primary}
               eventData={{
                 eventName: AnalyticsEventNames.GithubRepositoryChange,
