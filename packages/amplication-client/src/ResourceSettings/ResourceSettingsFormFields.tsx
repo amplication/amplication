@@ -36,6 +36,7 @@ export const ResourceSettingsFormFields = ({
             key={customProperty.key}
             property={customProperty}
             fieldNamePrefix={fieldNamePrefix}
+            disabled={false}
           />
         ))}
       </>
