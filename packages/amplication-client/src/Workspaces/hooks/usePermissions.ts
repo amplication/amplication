@@ -32,7 +32,7 @@ const usePermissions = (): IPermissions => {
     },
   });
 
-  const canPerformTask = (task: string) => {
+  const canPerformTask = (task: RolesPermissions) => {
     return isAdmin || allowedTasks[task] || false;
   };
 
