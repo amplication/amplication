@@ -20,10 +20,14 @@ function ProjectFormPage() {
 
   const permissions = useResourcePermissions(currentProjectConfiguration?.id);
   const canDeleteProject = permissions.canPerformTask("project.delete");
+  const canEdit = permissions.canPerformTask("project.settings.edit");
 
   return (
     <>
-      <ResourceForm resourceId={currentProjectConfiguration?.id} />
+      <ResourceForm
+        resourceId={currentProjectConfiguration?.id}
+        disabled={!canEdit}
+      />
       {canDeleteProject && (
         <>
           <FlexItem margin={EnumFlexItemMargin.Both}>

@@ -4,11 +4,13 @@ import { CustomProperty } from "../models";
 type Props = {
   property: CustomProperty;
   fieldNamePrefix?: string;
+  disabled: boolean;
 };
 
 function CustomPropertiesFormFieldMultiSelect({
   property,
   fieldNamePrefix,
+  disabled,
 }: Props) {
   const options = property.options?.map((option) => ({
     value: option.value,
@@ -18,6 +20,7 @@ function CustomPropertiesFormFieldMultiSelect({
 
   return (
     <SelectField
+      disabled={disabled}
       isMulti
       label={property.name}
       name={`${fieldNamePrefix}properties.${property.key}`}

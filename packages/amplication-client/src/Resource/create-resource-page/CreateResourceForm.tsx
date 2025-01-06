@@ -323,7 +323,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
 
                   <SelectField name="Owner" label="owner" options={[]} />
 
-                  <CustomPropertiesFormFields />
+                  <CustomPropertiesFormFields disabled={false} />
                   <TextField
                     name={"description"}
                     label={"Description"}

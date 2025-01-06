@@ -8,7 +8,7 @@ type Props = {
 function ResourceFormPage({ match }: Props) {
   const resourceId = match.params.resource;
 
-  return <ResourceForm resourceId={resourceId} />;
+  return <ResourceForm resourceId={resourceId} disabled={false} />;
 }
 
 export default ResourceFormPage;
