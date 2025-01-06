@@ -35,8 +35,9 @@ export class GitResolver {
   constructor(private readonly gitService: GitProviderService) {}
   @Mutation(() => Resource)
   @AuthorizeContext(
-    AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
+    AuthorizableOriginParameter.ResourceId,
+    "data.resourceId",
+    "git.repo.create"
   )
   async connectResourceToNewRemoteGitRepository(
     @Args() args: CreateGitRepositoryArgs
@@ -63,7 +64,11 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resourceId",
+    "git.repo.select"
+  )
   async connectResourceToProjectRepository(
     @Args() args: ConnectToProjectGitRepositoryArgs
   ): Promise<Resource> {
@@ -89,7 +94,8 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitRepositoryId,
-    "gitRepositoryId"
+    "gitRepositoryId",
+    "git.repo.disconnect"
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
@@ -98,7 +104,11 @@ export class GitResolver {
   }
 
   @Mutation(() => GitRepository)
-  @AuthorizeContext(AuthorizableOriginParameter.GitRepositoryId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitRepositoryId,
+    "where.id",
+    "git.repo.settings.edit"
+  )
   async updateGitRepository(
     @Args() args: UpdateGitRepositoryArgs
   ): Promise<GitRepository> {
@@ -118,7 +128,11 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resourceId",
+    "git.repo.disconnect"
+  )
   async disconnectResourceGitRepository(
     @Args() args: DisconnectGitRepositoryArgs
   ): Promise<Resource> {

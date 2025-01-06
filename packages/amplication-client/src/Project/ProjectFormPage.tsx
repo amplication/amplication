@@ -12,16 +12,22 @@ import ResourceForm from "../Resource/ResourceForm";
 import { AppContext } from "../context/appContext";
 import { DeleteProject } from "./DeleteProject";
 import "./ProjectPage.scss";
+import useResourcePermissions from "../Resource/hooks/useResourcePermissions";
 
 function ProjectFormPage() {
-  const { currentProjectConfiguration, currentProject, permissions } =
+  const { currentProjectConfiguration, currentProject } =
     useContext(AppContext);
 
+  const permissions = useResourcePermissions(currentProjectConfiguration?.id);
   const canDeleteProject = permissions.canPerformTask("project.delete");
+  const canEdit = permissions.canPerformTask("project.settings.edit");
 
   return (
     <>
-      <ResourceForm resourceId={currentProjectConfiguration?.id} />
+      <ResourceForm
+        resourceId={currentProjectConfiguration?.id}
+        disabled={!canEdit}
+      />
       {canDeleteProject && (
         <>
           <FlexItem margin={EnumFlexItemMargin.Both}>

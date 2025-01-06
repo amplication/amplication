@@ -92,6 +92,22 @@ export class PermissionsService {
     requestedResourceId: string,
     requestedProjectId: string
   ) {
+    const permissions = await this.getUserResourceOrProjectPermissions(
+      user,
+      requestedResourceId,
+      requestedProjectId
+    );
+
+    return this.matchPermissions(requiredPermissions, permissions);
+  }
+
+  //This function accepts a resourceId or a projectId.
+  //The resourceId can also be a project configuration resource id
+  async getUserResourceOrProjectPermissions(
+    user: AuthUser,
+    requestedResourceId: string,
+    requestedProjectId: string
+  ): Promise<RolesPermissions[]> {
     const resourceIds: string[] = [];
 
     if (requestedProjectId) {
@@ -109,17 +125,40 @@ export class PermissionsService {
         this.logger.error(
           `Project configuration resource not found for project ${requestedProjectId}`
         );
-        return false;
+        return [];
       }
       resourceIds.push(projectResource.id);
     }
 
     if (requestedResourceId) {
+      const projectResource = await this.prisma.resource.findFirst({
+        where: {
+          project: {
+            resources: {
+              some: {
+                id: requestedResourceId,
+              },
+            },
+          },
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!projectResource) {
+        this.logger.error(
+          `Project configuration resource not found for resource ${requestedResourceId}`
+        );
+      } else {
+        resourceIds.push(projectResource.id);
+      }
+
       resourceIds.push(requestedResourceId);
     }
 
     if (resourceIds.length === 0) {
-      return false;
+      return [];
     }
 
     const teamAssignments = await this.prisma.teamAssignment.findMany({
@@ -156,7 +195,7 @@ export class PermissionsService {
       )
     ) as RolesPermissions[];
 
-    return this.matchPermissions(requiredPermissions, permissions);
+    return permissions;
   }
 
   private matchPermissions(

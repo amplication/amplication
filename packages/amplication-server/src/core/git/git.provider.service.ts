@@ -290,11 +290,67 @@ export class GitProviderService {
       : true;
   }
 
+  //validate that the organization exists and the resource is connected to the organization
+  async validateGitOrganization(
+    gitOrganizationId: string,
+    resourceId: string
+  ): Promise<boolean> {
+    const gitOrg = await this.prisma.gitOrganization.findUnique({
+      where: {
+        id: gitOrganizationId,
+        workspace: {
+          projects: {
+            some: {
+              resources: {
+                some: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        workspace: {
+          select: {
+            projects: {
+              where: {
+                resources: {
+                  some: {
+                    id: resourceId,
+                  },
+                },
+              },
+              select: {
+                resources: {
+                  where: {
+                    id: resourceId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!gitOrg.workspace.projects?.[0]?.resources?.length) {
+      throw new AmplicationError("Git Organization not found");
+    }
+
+    return true;
+  }
+
   async createRemoteGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<RemoteGitRepository> {
     // negate the isPublic flag to get the isPrivate flag
     const isPrivateRepository = args.isPublic ? !args.isPublic : true;
+
+    const { gitOrganizationId, resourceId } = args;
+
+    await this.validateGitOrganization(gitOrganizationId, resourceId);
+
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId,
@@ -488,50 +544,13 @@ export class GitProviderService {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
-    const gitOrg = await this.prisma.gitOrganization.findUnique({
+    await this.validateGitOrganization(gitOrganizationId, resourceId);
+
+    const resource = await this.resourceService.resource({
       where: {
-        id: gitOrganizationId,
-        workspace: {
-          projects: {
-            some: {
-              resources: {
-                some: {
-                  id: resourceId,
-                },
-              },
-            },
-          },
-        },
-      },
-      select: {
-        workspace: {
-          select: {
-            projects: {
-              where: {
-                resources: {
-                  some: {
-                    id: resourceId,
-                  },
-                },
-              },
-              select: {
-                resources: {
-                  where: {
-                    id: resourceId,
-                  },
-                },
-              },
-            },
-          },
-        },
+        id: resourceId,
       },
     });
-
-    if (!gitOrg.workspace.projects?.[0]?.resources?.length) {
-      throw new AmplicationError("Git Organization not found");
-    }
-
-    const resource = gitOrg.workspace.projects[0].resources[0];
 
     const resourcesToConnect = await this.getInheritProjectResources(
       resource.projectId,

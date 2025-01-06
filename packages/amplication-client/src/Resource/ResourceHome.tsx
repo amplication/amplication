@@ -18,6 +18,7 @@ import {
 } from "../context/resourceContext";
 import { useLastSuccessfulGitBuild } from "../VersionControl/hooks/useLastSuccessfulGitBuild";
 import OverviewContainer from "./ResourceOverview/OverviewContainer";
+import useResourcePermissions from "./hooks/useResourcePermissions";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -89,11 +90,14 @@ const ResourceHome = ({
 
   const { currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
+  const permissions = useResourcePermissions(currentResource?.id);
+
   const context: ResourceContextInterface = {
     resourceId: currentResource?.id,
     resource: currentResource,
     lastSuccessfulGitBuild: build,
     lastSuccessfulGitBuildPluginVersions: buildPluginVersionMap,
+    permissions,
   };
 
   return (

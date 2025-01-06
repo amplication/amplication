@@ -18,6 +18,7 @@ import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage"
 import "./RepositoryActions.scss";
 import ResourceGitSyncDetailsWizard from "./ResourceGitSyncDetailsWizard";
 import { EnumGitProvider } from "@amplication/code-gen-types";
+import { useResourceContext } from "../../../../context/resourceContext";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
@@ -33,6 +34,9 @@ export default function RepositoryActionsWizard({
   selectedGitRepository,
   onDisconnectGitRepository,
 }: Props) {
+  const { permissions } = useResourceContext();
+  const canCreateRepo = permissions.canPerformTask("git.repo.create");
+
   return (
     <Panel panelStyle={EnumPanelStyle.Bold}>
       {selectedGitRepository?.gitOrganizationId ? (
@@ -66,33 +70,37 @@ export default function RepositoryActionsWizard({
                   >
                     Select repository
                   </Button>
-                  {selectedGitOrganization.type ===
-                    EnumGitOrganizationType.Organization && (
-                    <Button
-                      type="button"
-                      buttonStyle={EnumButtonStyle.Primary}
-                      onClick={onCreateRepository}
-                    >
-                      Create repository
-                    </Button>
-                  )}
-                  {selectedGitOrganization.type ===
-                    EnumGitOrganizationType.User &&
-                    selectedGitOrganization.provider ===
-                      EnumGitProvider.Github && (
-                      <a
-                        href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                  {canCreateRepo && (
+                    <>
+                      {selectedGitOrganization.type ===
+                        EnumGitOrganizationType.Organization && (
                         <Button
                           type="button"
                           buttonStyle={EnumButtonStyle.Primary}
+                          onClick={onCreateRepository}
                         >
                           Create repository
                         </Button>
-                      </a>
-                    )}
+                      )}
+                      {selectedGitOrganization.type ===
+                        EnumGitOrganizationType.User &&
+                        selectedGitOrganization.provider ===
+                          EnumGitProvider.Github && (
+                          <a
+                            href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Button
+                              type="button"
+                              buttonStyle={EnumButtonStyle.Primary}
+                            >
+                              Create repository
+                            </Button>
+                          </a>
+                        )}
+                    </>
+                  )}
                 </FlexItem>
               )
             }

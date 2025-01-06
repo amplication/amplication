@@ -439,19 +439,6 @@ input CreateEntitiesFromPredefinedSchemaInput {
   schemaName: EnumSchemaNames!
 }
 
-input CreateGitRepositoryBaseInput {
-  gitOrganizationId: String!
-  gitOrganizationType: EnumGitOrganizationType!
-  gitProvider: EnumGitProvider!
-
-  """
-  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
-  """
-  groupName: String
-  isPublic: Boolean!
-  name: String!
-}
-
 input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -1665,8 +1652,8 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToNewRemoteGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBlueprint(data: BlueprintCreateInput!): Blueprint!
@@ -1694,7 +1681,6 @@ type Mutation {
   createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
   createRelation(data: RelationCreateInput!): Relation!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createRole(data: RoleCreateInput!): Role!
   createService(data: ResourceCreateInput!): Resource!
@@ -1734,9 +1720,8 @@ type Mutation {
   deleteTeamAssignment(where: WhereTeamAssignmentInput!): TeamAssignment!
   deleteTopic(where: WhereUniqueInput!): Topic!
   deleteUser(where: WhereUniqueInput!): User
-  deleteWorkspace(where: WhereUniqueInput!): Workspace
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  disconnectResourceGitRepository(resourceId: String!): Resource!
+  disconnectResourceGitRepository(overrideProjectSettings: Boolean, resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
   inviteUser(data: InviteUserInput!): Invitation
   lockEntity(where: WhereUniqueInput!): Entity
@@ -2297,6 +2282,7 @@ type Query {
   relations(orderBy: RelationOrderByInput, skip: Int, take: Int, where: RelationWhereInput): [Relation!]!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   resource(where: WhereUniqueInput!): Resource
+  resourcePermissions(where: WhereUniqueInput!): [String!]!
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resourceSettings(where: WhereUniqueInput!): ResourceSettings
@@ -2594,7 +2580,6 @@ input ResourceSettingsUpdateInput {
 
 input ResourceUpdateInput {
   description: String
-  gitRepositoryOverride: Boolean
   name: String
   properties: JSONObject
 }

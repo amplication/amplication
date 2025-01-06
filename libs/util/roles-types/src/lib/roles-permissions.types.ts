@@ -41,8 +41,6 @@ const GitRepositoryPermissions = [
 const ProjectPermissions = [
   "project.create",
   "project.delete",
-
-  "project.platformSettings.edit",
   "project.settings.edit",
 ] as const;
 

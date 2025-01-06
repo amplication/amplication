@@ -1,11 +1,14 @@
 import React from "react";
 import * as models from "../models";
+import { IPermissions } from "../Workspaces/hooks/usePermissions";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface ResourceContextInterface {
   resourceId: string;
   resource: models.Resource | null;
   lastSuccessfulGitBuild: models.Build | null;
   lastSuccessfulGitBuildPluginVersions: Record<string, string>;
+  permissions: IPermissions;
 }
 
 const initialContext: ResourceContextInterface = {
@@ -13,6 +16,11 @@ const initialContext: ResourceContextInterface = {
   resource: null,
   lastSuccessfulGitBuild: null,
   lastSuccessfulGitBuildPluginVersions: {},
+  permissions: {
+    allowedTasks: {} as Record<RolesPermissions, boolean>,
+    canPerformTask: () => false,
+    isAdmin: false,
+  },
 };
 
 export const ResourceContext =

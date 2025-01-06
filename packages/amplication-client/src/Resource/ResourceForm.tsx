@@ -27,6 +27,7 @@ import {
 
 type Props = {
   resourceId: string;
+  disabled: boolean;
 };
 
 type TData = {
@@ -55,7 +56,7 @@ const FORM_SCHEMA = {
 
 const CLASS_NAME = "resource-form";
 
-function ResourceForm({ resourceId }: Props) {
+function ResourceForm({ resourceId, disabled }: Props) {
   const { data, error } = useQuery<{
     resource: models.Resource;
   }>(GET_RESOURCE, {
@@ -148,9 +149,10 @@ function ResourceForm({ resourceId }: Props) {
                     } Settings`}
                   />
 
-                  <FormikAutoSave debounceMS={1000} />
-                  <TextField name="name" label="Name" />
+                  {!disabled && <FormikAutoSave debounceMS={1000} />}
+                  <TextField name="name" label="Name" disabled={disabled} />
                   <TextField
+                    disabled={disabled}
                     autoComplete="off"
                     textarea
                     rows={3}
@@ -158,11 +160,11 @@ function ResourceForm({ resourceId }: Props) {
                     label="Description"
                   />
                 </Form>
-                <OwnerSelector resource={data.resource} />
+                <OwnerSelector resource={data.resource} disabled={disabled} />
                 <HorizontalRule doubleSpacing />
 
                 <TabContentTitle title={`Catalog Properties`} />
-                <CustomPropertiesFormFields />
+                <CustomPropertiesFormFields disabled={disabled} />
               </>
             );
           }}
