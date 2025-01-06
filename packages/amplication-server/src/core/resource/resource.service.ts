@@ -2062,9 +2062,12 @@ export class ResourceService {
         resource: {
           id: resourceId,
         },
+        team: {
+          deletedAt: null,
+        },
       },
       include: {
-        roles: true,
+        roles: { where: { deletedAt: null } },
       },
     });
   }

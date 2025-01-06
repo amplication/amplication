@@ -361,7 +361,10 @@ export class GitProviderService {
     return this.prisma.gitRepository.update(args);
   }
 
-  async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {
+  async disconnectResourceGitRepository(
+    resourceId: string,
+    overrideProjectSettings?: boolean
+  ): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
@@ -372,6 +375,25 @@ export class GitProviderService {
     });
 
     if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
+
+    if (
+      resource.resourceType !== EnumResourceType.ProjectConfiguration &&
+      overrideProjectSettings
+    ) {
+      await this.prisma.resource.update({
+        where: {
+          id: resourceId,
+        },
+        data: {
+          gitRepositoryOverride: true,
+        },
+      });
+      return resource;
+    }
+
+    if (isEmpty(resource.gitRepositoryId)) {
+      return resource;
+    }
 
     const resourcesToDisconnect = await this.getInheritProjectResources(
       resource.projectId,
@@ -441,6 +463,7 @@ export class GitProviderService {
         id: resourceId,
       },
       data: {
+        gitRepositoryOverride: false,
         gitRepository: {
           connect: {
             id: projectConfigurationRepository.id,
@@ -465,11 +488,50 @@ export class GitProviderService {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
-    const resource = await this.resourceService.resource({
+    const gitOrg = await this.prisma.gitOrganization.findUnique({
       where: {
-        id: resourceId,
+        id: gitOrganizationId,
+        workspace: {
+          projects: {
+            some: {
+              resources: {
+                some: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        workspace: {
+          select: {
+            projects: {
+              where: {
+                resources: {
+                  some: {
+                    id: resourceId,
+                  },
+                },
+              },
+              select: {
+                resources: {
+                  where: {
+                    id: resourceId,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
+
+    if (!gitOrg.workspace.projects?.[0]?.resources?.length) {
+      throw new AmplicationError("Git Organization not found");
+    }
+
+    const resource = gitOrg.workspace.projects[0].resources[0];
 
     const resourcesToConnect = await this.getInheritProjectResources(
       resource.projectId,

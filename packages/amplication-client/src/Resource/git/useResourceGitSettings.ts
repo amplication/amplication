@@ -105,7 +105,10 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
     },
   });
 
-  const [connectSelectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
+  const [
+    connectSelectGitRepository,
+    { error: connectSelectGitRepositoryError },
+  ] = useMutation(CONNECT_GIT_REPOSITORY);
   //************************ mutatios ************************
 
   const closeSelectRepoDialog = useCallback(() => {
@@ -321,7 +324,7 @@ const useResourceGitSettings: UseResourceGitSettingsHook = ({
     popupFailed,
     setPopupFailed,
     connectGitRepoLoading,
-    connectGitRepoError,
+    connectGitRepoError: connectSelectGitRepositoryError || connectGitRepoError,
     handleRepoSelected,
     handleRepoCreated,
     handleOrganizationChange,
