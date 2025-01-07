@@ -12,7 +12,7 @@ import React, { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { GIT_PROVIDER_ICON_MAP } from "../Resource/git/constants";
 import useBuildGitUrl from "../VersionControl/useBuildGitUrl";
 import { AppContext } from "../context/appContext";
 import { Commit } from "../models";
@@ -80,7 +80,9 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
                 gap={EnumGapSize.Small}
               >
                 <Icon
-                  icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
+                  icon={
+                    GIT_PROVIDER_ICON_MAP[gitRepositoryOrganizationProvider]
+                  }
                   size="small"
                   color={EnumTextColor.Black20}
                 />

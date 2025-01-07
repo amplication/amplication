@@ -1,34 +1,62 @@
+import { BillingFeature } from "@amplication/util-billing-types";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import cuid from "cuid";
-import {
-  INVALID_RESOURCE_ID,
-  INVALID_DELETE_PROJECT_CONFIGURATION,
-  ResourceService,
-} from "./resource.service";
-import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
   BlockVersion,
   Commit,
   EntityVersion,
-  Project,
-  GitRepository,
   GitOrganization,
+  GitRepository,
+  Project,
 } from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
 import { Resource } from "../../models/Resource";
 import { User } from "../../models/User";
+import { EnumResourceType, Prisma, PrismaService } from "../../prisma";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { ActionService } from "../action/action.service";
+import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { BillingService } from "../billing/billing.service";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumOwnershipType } from "../ownership/dto/Ownership";
+import { OwnershipService } from "../ownership/ownership.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { RelationService } from "../relation/relation.service";
+import { ServiceSettings } from "../serviceSettings/dto";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
+import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { Topic } from "../topic/dto/Topic";
+import { TopicService } from "../topic/topic.service";
+import { UserActionService } from "../userAction/userAction.service";
+import { DEFAULT_RESOURCE_COLORS } from "./constants";
 import {
   CodeGeneratorVersionStrategy,
   EnumPendingChangeAction,
@@ -36,40 +64,14 @@ import {
   ResourceCreateInput,
   ResourceCreateWithEntitiesResult,
 } from "./dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { PendingChange } from "./dto/PendingChange";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import { ServiceSettings } from "../serviceSettings/dto";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { DEFAULT_RESOURCE_COLORS } from "./constants";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { Topic } from "../topic/dto/Topic";
-import { ConfigService } from "@nestjs/config";
-import { BillingService } from "../billing/billing.service";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
-import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
-import { ActionService } from "../action/action.service";
-import { UserActionService } from "../userAction/userAction.service";
-import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { GitProviderService } from "../git/git.provider.service";
-import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
-import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
-import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
-import { OwnershipService } from "../ownership/ownership.service";
-import { EnumOwnershipType } from "../ownership/dto/Ownership";
+import {
+  INVALID_DELETE_PROJECT_CONFIGURATION,
+  INVALID_RESOURCE_ID,
+  ResourceService,
+} from "./resource.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -564,6 +566,10 @@ describe("ResourceService", () => {
           useValue: {},
         },
         {
+          provide: CustomPropertyService,
+          useValue: {},
+        },
+        {
           provide: BuildService,
           useClass: jest.fn(() => ({
             create: buildServiceCreateMock,
@@ -667,6 +673,10 @@ describe("ResourceService", () => {
         },
         {
           provide: ActionService,
+          useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: RelationService,
           useClass: jest.fn(() => ({})),
         },
         {
@@ -1100,7 +1110,9 @@ describe("ResourceService", () => {
       data: { name: EXAMPLE_RESOURCE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID },
     };
-    expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(await service.updateResource(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_RESOURCE
+    );
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
   });
@@ -1215,7 +1227,7 @@ describe("ResourceService", () => {
         data: { name: EXAMPLE_RESOURCE_NAME },
         where: { id: EXAMPLE_RESOURCE_ID },
       };
-      await expect(service.updateResource(args)).rejects.toThrow(
+      await expect(service.updateResource(args, EXAMPLE_USER)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
     });

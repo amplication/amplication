@@ -21,7 +21,7 @@ type setOwnerData = {
 const useResource = (resourceId: string) => {
   const { addBlock, reloadResources } = useContext(AppContext);
 
-  const { data: resourceSettings } = useQuery<{
+  const { data: serviceSettings } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
@@ -30,23 +30,19 @@ const useResource = (resourceId: string) => {
     skip: !resourceId,
   });
 
-  const [updateResourceSettings, { error: updateResourceSettingsError }] =
+  const [updateServiceSettings, { error: updateServiceSettingsError }] =
     useMutation<TData>(UPDATE_SERVICE_SETTINGS, {
       onCompleted: (data) => {
         addBlock(data.updateServiceSettings.id);
       },
     });
 
-  const [setResourceOwner] = useMutation<setOwnerData>(SET_RESOURCE_OWNER, {
-    onCompleted: (data) => {
-      reloadResources();
-    },
-  });
+  const [setResourceOwner] = useMutation<setOwnerData>(SET_RESOURCE_OWNER, {});
 
   return {
-    resourceSettings,
-    updateResourceSettings,
-    updateResourceSettingsError,
+    serviceSettings,
+    updateServiceSettings,
+    updateServiceSettingsError,
     setResourceOwner,
   };
 };

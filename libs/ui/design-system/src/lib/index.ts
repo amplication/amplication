@@ -34,8 +34,10 @@ export {
   SelectMenuItem,
   SelectMenuList,
 } from "./components/SelectMenu/SelectMenu";
-
 export type { Props as SelectMenuProps } from "./components/SelectMenu/SelectMenu";
+
+export { SelectPanel } from "./components/SelectPanel/SelectPanel";
+export type { Props as SelectPanelProps } from "./components/SelectPanel/SelectPanel";
 
 export { SelectField } from "./components/SelectField/SelectField";
 
@@ -108,6 +110,7 @@ export { default as Page } from "./components/Page/Page";
 export type { Props as PageProps } from "./components/Page/Page";
 
 export { Form } from "./components/Form/Form";
+export { FormColumns } from "./components/FormColumns/FormColumns";
 
 export type { Props as FormProps } from "./components/Form/Form";
 
@@ -264,6 +267,7 @@ export { JumboButton } from "./components/JumboButton/JumboButton";
 
 export { NavigationFilter } from "./components/NavigationFilter/NavigationFilter";
 export { NavigationFilterItem } from "./components/NavigationFilter/NavigationFilterItem";
+export { NavigationHeader } from "./components/NavigationHeader/NavigationHeader";
 
 export type { Props as NavigationFilterItemProps } from "./components/NavigationFilter/NavigationFilterItem";
 
@@ -281,7 +285,6 @@ export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
 export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
 export { DataGridFilters } from "./components/DataGrid/DataGridFilters";
 export { DataGridFilter } from "./components/DataGrid/DataGridFilter";
-
 export {
   ToggleView,
   Props as ToggleViewProps,
@@ -313,3 +316,7 @@ export { ColorPicker } from "./components/ColorPicker/ColorPicker";
 export { ColorPickerField } from "./components/ColorPicker/ColorPickerField";
 export { useTagColorStyle } from "./components/ColorPicker/useTagColorStyle";
 export { Tag, Props as TagProps } from "./components/Tag/Tag";
+
+export { IconPicker } from "./components/IconPicker/IconPicker";
+export { IconPickerField } from "./components/IconPicker/IconPickerField";
+export { EnumIconFamily } from "./components/Icon/Icon";

@@ -1,4 +1,5 @@
 import {
+  DataGridColumn,
   EnumFlexDirection,
   EnumGapSize,
   EnumTextStyle,
@@ -7,14 +8,13 @@ import {
   VersionTag,
 } from "@amplication/ui/design-system";
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { EnumResourceType, Resource } from "../models";
-import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
-import ResourceNameLink from "../Workspaces/ResourceNameLink";
-import { DataGridColumn } from "@amplication/ui/design-system";
-import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
 import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
+import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
+import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import ResourceCodeEngineVersion from "../Workspaces/ResourceCodeEngineVersion";
+import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCount";
 
 export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
@@ -23,7 +23,7 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return <ResourceCircleBadge type={props.row.resourceType} size="small" />;
+      return <ResourceTypeBadge resource={props.row} size="small" />;
     },
   },
   {

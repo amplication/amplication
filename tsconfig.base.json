@@ -35,6 +35,9 @@
       "@amplication/ui/design-system/components/*": [
         "libs/ui/design-system/src/lib/components/*"
       ],
+      "@amplication/ui/design-system/custom-icons": [
+        "libs/ui/design-system/src/lib/custom-icons"
+      ],
       "@amplication/ui/design-system/icons": [
         "libs/ui/design-system/src/lib/icons"
       ],

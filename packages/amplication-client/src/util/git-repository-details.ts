@@ -1,12 +1,16 @@
-import { GitOrganizationFromGitRepository } from "../Resource/git/SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../Resource/git/ResourceGitSettingsPage";
 import { EnumGitProvider, GitOrganization } from "../models";
 
 const GITHUB_URL = "https://github.com";
 const BITBUCKET_URL = "https://bitbucket.org";
+const GITLAB_URL = "https://gitlab.com";
+const AZURE_DEVOPS_URL = "https://dev.azure.com";
 
 type GitRepositoryDetails = {
   repositoryFullName: string | null;
   repositoryUrl: string | null;
+  webIdeUrl: string | null;
+  webIdeName: string | null;
 };
 
 export type GitSyncDetails = {
@@ -34,6 +38,8 @@ export function getGitRepositoryDetails({
     return {
       repositoryFullName: null,
       repositoryUrl: null,
+      webIdeUrl: null,
+      webIdeName: null,
     };
   }
   const {
@@ -52,14 +58,45 @@ export function getGitRepositoryDetails({
     repositoryFullName = `${organizationName}/${repositoryName}`;
   }
 
-  const gitRepositoryUrlMap = {
+  const gitRepositoryUrlMap: { [key in EnumGitProvider]: string } = {
     [EnumGitProvider.Github]: `${GITHUB_URL}/${repositoryFullName}`,
     [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
     [EnumGitProvider.AwsCodeCommit]: `https://console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryFullName}/browse`,
+    [EnumGitProvider.GitLab]: `${GITLAB_URL}/${repositoryFullName}`,
+    [EnumGitProvider.AzureDevOps]: `${AZURE_DEVOPS_URL}/${organizationName}/${groupName}/_git/${repositoryName}`,
+  };
+
+  const webIdeUrlMap: {
+    [key in EnumGitProvider]: {
+      webIdeUrl: string;
+      webIdeName: string;
+    };
+  } = {
+    [EnumGitProvider.Github]: {
+      webIdeUrl: `https://codespaces.new/${repositoryFullName}?quickstart=1`,
+      webIdeName: "Codespaces",
+    },
+    [EnumGitProvider.Bitbucket]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
+    [EnumGitProvider.AwsCodeCommit]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
+    [EnumGitProvider.GitLab]: {
+      webIdeUrl: `${GITLAB_URL}/-/ide/project/${repositoryFullName}`,
+      webIdeName: "Web IDE",
+    },
+    [EnumGitProvider.AzureDevOps]: {
+      webIdeUrl: null,
+      webIdeName: null,
+    },
   };
 
   return {
     repositoryFullName: repositoryFullName,
     repositoryUrl: gitRepositoryUrlMap[provider],
+    ...webIdeUrlMap[provider],
   };
 }

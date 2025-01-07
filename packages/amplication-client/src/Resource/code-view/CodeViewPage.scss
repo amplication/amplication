@@ -15,7 +15,6 @@ $svg-img-height: 200px;
     box-sizing: border-box;
     overflow: hidden;
     height: calc(100% + var(--default-spacing));
-    margin-top: calc(var(--default-spacing) * -1);
   }
 
   &__empty-state {

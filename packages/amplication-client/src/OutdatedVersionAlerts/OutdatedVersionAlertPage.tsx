@@ -29,6 +29,7 @@ import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import { AlertStatusSelector } from "./AlertStatusSelector";
 import useOutdatedVersionAlert from "./hooks/useOutdatedVersionAlert";
 import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 
 const CLASS_NAME = "outdated-version-page";
 const PAGE_TITLE = "Tech Debt Alert";
@@ -89,10 +90,7 @@ function OutdatedVersionPage() {
               direction={EnumFlexDirection.Row}
               itemsAlign={EnumItemsAlign.Center}
             >
-              <ResourceCircleBadge
-                type={data.resource.resourceType}
-                size="small"
-              />
+              <ResourceTypeBadge resource={data.resource} size="small" />
               <ResourceNameLink resource={data.resource} />
             </FlexItem>
             <FlexItem

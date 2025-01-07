@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { EnumCustomPropertyType } from "../core/customProperty/dto/EnumCustomPropertyType";
 import { Workspace } from "./Workspace";
 import { CustomPropertyOption } from "./CustomPropertyOption";
+import { Blueprint } from "./Blueprint";
 
 @ObjectType({
   isAbstract: true,
@@ -47,6 +48,31 @@ export class CustomProperty {
     nullable: true,
   })
   options?: CustomPropertyOption[] | null | undefined;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  required: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  validationRule?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  validationMessage?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  blueprintId?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  blueprint?: Blueprint;
 
   workspace?: Workspace;
 

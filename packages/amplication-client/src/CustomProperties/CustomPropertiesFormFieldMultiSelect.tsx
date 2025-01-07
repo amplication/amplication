@@ -3,9 +3,13 @@ import { CustomProperty } from "../models";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
 };
 
-function CustomPropertiesFormFieldMultiSelect({ property }: Props) {
+function CustomPropertiesFormFieldMultiSelect({
+  property,
+  fieldNamePrefix,
+}: Props) {
   const options = property.options?.map((option) => ({
     value: option.value,
     label: option.value,
@@ -16,7 +20,7 @@ function CustomPropertiesFormFieldMultiSelect({ property }: Props) {
     <SelectField
       isMulti
       label={property.name}
-      name={`properties.${property.key}`}
+      name={`${fieldNamePrefix}properties.${property.key}`}
       options={options || []}
     />
   );

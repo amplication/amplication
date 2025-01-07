@@ -1,32 +1,42 @@
 import {
   EnumButtonStyle,
+  EnumItemsAlign,
+  FlexItem,
   SelectMenu,
+  SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
-import React, { useMemo } from "react";
-import * as models from "../models";
-import "./CreateResourceButton.scss";
-import CreateResourceButtonItem from "./CreateResourceButtonItem";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import React, { useMemo } from "react";
+import { useHistory } from "react-router-dom";
+import { CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL } from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
+import * as models from "../models";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
 } from "./FeatureIndicatorContainer";
-import { useStiggContext } from "@stigg/react-sdk";
-import { CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL } from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
+import ResourceCircleBadge from "./ResourceCircleBadge";
 
 const CLASS_NAME = "create-resource-button";
 
 export type CreateResourceButtonItemType = {
   type: models.EnumResourceType;
   label: string;
-  route: string;
+  route?: string;
   info: string;
   licenseRequired?: BillingFeature;
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
+  {
+    type: models.EnumResourceType.Component,
+    label: "Resource from Blueprint",
+    route: "new-resource",
+    info: "Create a resource from a blueprint",
+  },
   {
     type: models.EnumResourceType.Service,
     label: "Service",
@@ -45,25 +55,24 @@ const ITEMS: CreateResourceButtonItemType[] = [
     route: "create-broker",
     info: "Create a message broker to facilitate communication between services",
   },
-
-  {
-    type: models.EnumResourceType.Component,
-    label: "Connect Component",
-    route: "create-component",
-    info: "Map an existing software component or add a new one to your project",
-  },
 ];
 
-type Props = {
-  servicesLength: number;
-};
-
-const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
+const CreateResourceButton: React.FC = () => {
   const { stigg } = useStiggContext();
+  const history = useHistory();
 
   const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
     featureId: BillingFeature.PrivatePlugins,
   });
+
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
+
+  const handleResourceClick = (item: CreateResourceButtonItemType) => {
+    if (item.route) {
+      const to = `${baseUrl}/${item.route}`;
+      history.push(to);
+    }
+  };
 
   const licensedItems = useMemo(() => {
     const licenses = {
@@ -80,14 +89,30 @@ const CreateResourceButton: React.FC<Props> = ({ servicesLength }) => {
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
         limitationText="You have reached the maximum number of services allowed. "
-        actualUsage={servicesLength}
         paidPlansExclusive={false}
       >
-        <SelectMenu title="Add Component" buttonStyle={EnumButtonStyle.Primary}>
+        <SelectMenu
+          title={"Add Resource"}
+          buttonStyle={EnumButtonStyle.Primary}
+        >
           <SelectMenuModal align="right" withCaret>
             <SelectMenuList>
-              {licensedItems.map((item, index) => (
-                <CreateResourceButtonItem item={item} key={index} />
+              {licensedItems.map((item) => (
+                <SelectMenuItem
+                  closeAfterSelectionChange
+                  itemData={item}
+                  onSelectionChange={handleResourceClick}
+                  key={item.type}
+                >
+                  <FlexItem
+                    itemsAlign={EnumItemsAlign.Center}
+                    start={
+                      <ResourceCircleBadge type={item.type} size="small" />
+                    }
+                  >
+                    <span>{item.label}</span>
+                  </FlexItem>
+                </SelectMenuItem>
               ))}
             </SelectMenuList>
           </SelectMenuModal>

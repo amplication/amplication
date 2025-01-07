@@ -11,6 +11,15 @@ export const resourceSettingsRoutes = (resourceBasePath) => [
     isAnalytics: true,
   },
   {
+    path: `${resourceBasePath}/settings/resource-settings`,
+    Component: lazy(() => import("../ResourceSettings/ResourceSettingsPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
+    routes: [],
+    isAnalytics: true,
+  },
+  {
     path: `${resourceBasePath}/settings/generationSettings`,
     Component: lazy(
       () => import("../Resource/resourceSettings/GenerationSettingsForm")

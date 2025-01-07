@@ -82,6 +82,13 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         type: "Service Settings",
         pluralTypeName: "Service Settings",
       },
+      [models.EnumBlockType.ResourceSettings]: {
+        relativeUrl: `settings/resource-settings`,
+        icon: "settings",
+        displayName: "Settings",
+        type: "Settings",
+        pluralTypeName: "Settings",
+      },
       [models.EnumBlockType.Package]: {
         relativeUrl: `settings/packages`,
         icon: "ai",
@@ -164,6 +171,13 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         displayName: "Code Engine Version",
         type: "Code Engine Version",
         pluralTypeName: "Code Engine Version",
+      },
+      [models.EnumBlockType.Relation]: {
+        relativeUrl: ``,
+        icon: "relation",
+        displayName: "Relation",
+        type: "Relation",
+        pluralTypeName: "Relations",
       },
     };
     return blockTypeMap[(change as models.Block).blockType];

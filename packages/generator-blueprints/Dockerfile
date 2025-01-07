@@ -1,0 +1,20 @@
+ARG GIT_REF_NAME
+ARG GIT_SHA
+
+FROM node:18-alpine AS base
+ARG GIT_REF_NAME
+ARG GIT_SHA
+
+RUN apk add g++ make python3
+
+WORKDIR /workspace/packages/generator-blueprints
+COPY ./dist/packages/generator-blueprints .
+RUN npm i --omit-dev
+
+# Copy unpublished amplication libraries
+COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
+
+ENV GIT_REF_NAME=${GIT_REF_NAME}
+ENV GIT_SHA=${GIT_SHA}
+
+RUN echo "GIT_REF_NAME: ${GIT_REF_NAME}, GIT_SHA: ${GIT_SHA}"

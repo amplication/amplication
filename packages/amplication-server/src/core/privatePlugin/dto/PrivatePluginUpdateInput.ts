@@ -19,4 +19,15 @@ export class PrivatePluginUpdateInput extends BlockUpdateInput {
 
   //versions cannot be updated directly, only through the PrivatePluginVersionUpdateInput
   versions?: PrivatePluginVersion[];
+
+  @Field(() => [String], {
+    nullable: true,
+  })
+  blueprints?: string[];
+
+  @Field(() => String, { nullable: true })
+  icon?: string;
+
+  @Field(() => String, { nullable: true })
+  color?: string;
 }

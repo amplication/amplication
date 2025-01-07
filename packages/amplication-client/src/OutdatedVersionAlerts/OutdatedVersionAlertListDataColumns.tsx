@@ -6,12 +6,12 @@ import {
   TimeSince,
   VersionTag,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import { EnumResourceType, OutdatedVersionAlert } from "../models";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
+import { OutdatedVersionAlert } from "../models";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
-import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
-import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
 import AlertLink from "./AlertLink";
+import OutdatedVersionAlertStatus from "./OutdatedVersionAlertStatus";
+import OutdatedVersionAlertType from "./OutdatedVersionAlertType";
 
 export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
   {
@@ -19,12 +19,7 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return (
-        <ResourceCircleBadge
-          type={props.row.resource?.resourceType || EnumResourceType.Service}
-          size="small"
-        />
-      );
+      return <ResourceTypeBadge resource={props.row.resource} size="small" />;
     },
   },
   {
@@ -49,7 +44,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Created",
     resizable: true,
     sortable: true,
-    width: 100,
     renderCell: (props) => {
       return <TimeSince time={new Date(props.row.createdAt)} />;
     },
@@ -59,7 +53,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Alert Type",
     resizable: true,
     sortable: true,
-    width: 150,
     renderCell: (props) => {
       return <OutdatedVersionAlertType type={props.row.type} />;
     },
@@ -83,7 +76,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Outdated Version",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return (
         <VersionTag
@@ -98,7 +90,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Latest Version",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return (
         <VersionTag
@@ -114,7 +105,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Status",
     resizable: true,
     sortable: true,
-    width: 200,
     renderCell: (props) => {
       return <OutdatedVersionAlertStatus status={props.row.status} />;
     },
@@ -125,7 +115,6 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     name: "Action",
     resizable: false,
     sortable: false,
-    width: 100,
     renderCell: (props) => {
       return <AlertLink alert={props.row} />;
     },

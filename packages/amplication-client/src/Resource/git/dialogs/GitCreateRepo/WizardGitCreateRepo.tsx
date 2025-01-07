@@ -17,9 +17,9 @@ import { useCallback, useEffect, useState } from "react";
 import { EnumGitOrganizationType, GitGroup } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import { GET_GROUPS } from "../../queries/gitProvider";
-import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GitSelectGroup } from "../../select/GitSelectGroup";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
 import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
@@ -53,7 +53,7 @@ export default function WizardGitCreateRepo({
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData, loading: loadingGroups } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -129,14 +129,12 @@ export default function WizardGitCreateRepo({
       </div>
       {gitOrganization.useGroupingForRepositories && (
         <>
-          <div className={`${CLASS_NAME}__label`}>
-            <Label text="Change workspace" />
-          </div>
-          <GitSelectMenu
+          <GitSelectGroup
             gitProvider={gitOrganization?.provider}
             selectedItem={repositoryGroup}
             items={gitGroups}
             onSelect={handleSelectGroup}
+            loadingGroups={loadingGroups}
           />
         </>
       )}

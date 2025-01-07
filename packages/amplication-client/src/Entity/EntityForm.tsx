@@ -73,7 +73,7 @@ const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
 const CLASS_NAME = "entity-form";
 
 const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
-  const { resourceSettings } = useResource(resourceId);
+  const { serviceSettings } = useResource(resourceId);
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -111,7 +111,7 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                 <NameField
                   name="name"
                   disabled={
-                    resourceSettings?.serviceSettings?.authEntityName ===
+                    serviceSettings?.serviceSettings?.authEntityName ===
                     entity?.name
                   }
                   capitalized

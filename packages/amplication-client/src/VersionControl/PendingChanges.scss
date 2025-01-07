@@ -9,7 +9,8 @@ $resource-name-max-width: 180px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
   &__title {
     @include bold-14;

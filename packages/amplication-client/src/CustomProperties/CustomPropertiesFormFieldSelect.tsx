@@ -3,9 +3,10 @@ import { CustomProperty } from "../models";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
 };
 
-function CustomPropertiesFormFieldSelect({ property }: Props) {
+function CustomPropertiesFormFieldSelect({ property, fieldNamePrefix }: Props) {
   const options = property.options?.map((option) => ({
     value: option.value,
     label: option.value,
@@ -15,7 +16,7 @@ function CustomPropertiesFormFieldSelect({ property }: Props) {
   return (
     <SelectField
       label={property.name}
-      name={`properties.${property.key}`}
+      name={`${fieldNamePrefix}properties.${property.key}`}
       options={options || []}
     />
   );

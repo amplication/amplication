@@ -43,9 +43,7 @@ function ServiceTemplateList() {
     SERVICE_TEMPLATE_LIST_COLUMNS,
     COLUMNS_LOCAL_STORAGE_KEY
   );
-  const { baseUrl: servicesBaseUrl } = useProjectBaseUrl({
-    overrideIsPlatformConsole: false,
-  });
+
   const { baseUrl: templatesBaseUrl } = useProjectBaseUrl({
     overrideIsPlatformConsole: true,
   });
@@ -101,11 +99,6 @@ function ServiceTemplateList() {
               itemsAlign={EnumItemsAlign.Center}
               direction={EnumFlexDirection.Row}
             >
-              <Link to={servicesBaseUrl}>
-                <Button buttonStyle={EnumButtonStyle.Outline}>
-                  View Services
-                </Button>
-              </Link>
               <Link to={`${templatesBaseUrl}/create-service-template`}>
                 <Button buttonStyle={EnumButtonStyle.Primary}>
                   Create Template

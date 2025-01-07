@@ -7,5 +7,5 @@
   margin-bottom: var(--default-spacing-small);
   overflow-y: auto;
   min-height: 0;
-  @include scrollbars(16px, var(--gray-30), transparent);
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 }

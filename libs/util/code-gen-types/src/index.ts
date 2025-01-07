@@ -11,3 +11,7 @@ export * from "./files";
 export * as dotnetTypes from "./dotnet-plugins.types";
 export * as dotnetPluginEventsParams from "./dotnet-plugin-events-params.types";
 export * as dotnetPluginEventsTypes from "./dotnet-plugin-events.types";
+
+export * as blueprintTypes from "./blueprint-types/blueprint-plugins.types";
+export * as blueprintPluginEventsParams from "./blueprint-types/blueprint-plugin-events-params.types";
+export * as blueprintPluginEventsTypes from "./blueprint-types/blueprint-plugin-events.types";

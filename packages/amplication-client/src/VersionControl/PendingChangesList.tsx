@@ -8,13 +8,13 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
+import { EnumResourceTypeGroup } from "../models";
 import "./PendingChangesList.scss";
 import PendingChangesListGroup from "./PendingChangesListGroup";
-import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes-list";
 
@@ -35,8 +35,8 @@ const PendingChangesList = ({ resourceTypeGroup }: Props) => {
       {pendingChangesByResourceAndType.map((resourceGroup) => (
         <div key={resourceGroup.resource.id}>
           <div className={`${CLASS_NAME}__changes__resource`}>
-            <ResourceCircleBadge
-              type={resourceGroup.resource.resourceType}
+            <ResourceTypeBadge
+              resource={resourceGroup.resource}
               size="xsmall"
             />
             <span>{resourceGroup.resource.name}</span>

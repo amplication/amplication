@@ -13,6 +13,7 @@ export type PluginVersion = {
   id: string;
   pluginId: string;
   enabled: boolean;
+  deprecated: boolean;
 };
 
 export type Plugin = {
@@ -29,6 +30,8 @@ export type Plugin = {
   type: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
+  isPrivate?: boolean;
+  color?: string;
 };
 
 const usePluginCatalog = (codeGenerator: models.EnumCodeGenerator) => {
@@ -53,11 +56,12 @@ const usePluginCatalog = (codeGenerator: models.EnumCodeGenerator) => {
     },
     variables: {
       codeGeneratorName: codeGenerator,
-      where: {
-        deprecated: {
-          equals: null,
-        },
-      },
+      //@todo: handle deprecated versions in the settings page before adding this filter
+      // where: {
+      //   deprecated: {
+      //     equals: null,
+      //   },
+      // },
     },
   });
 
@@ -84,7 +88,7 @@ const usePluginCatalog = (codeGenerator: models.EnumCodeGenerator) => {
             ...plugin,
             versions: [
               {
-                ...latestVersion,
+                ...latestVersion, //copy the setting from the latest version to the "latest" version
                 id: `${latestVersion.id}-${LATEST_VERSION_TAG}`,
                 version: LATEST_VERSION_TAG,
               },

@@ -11,11 +11,16 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 type Props = {
   customProperty: models.CustomProperty;
   onDelete?: () => void;
+  showLabel: boolean;
 };
 
 const CLASS_NAME = "delete-custom-property";
 
-export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
+export const DeleteCustomProperty = ({
+  customProperty,
+  onDelete,
+  showLabel,
+}: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const { deleteCustomProperty, deleteCustomPropertyError } =
@@ -68,7 +73,7 @@ export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
           icon="trash_2"
           onClick={handleDelete}
         >
-          {"Delete"}
+          {showLabel && "Delete"}
         </Button>
       </div>
       <Snackbar open={hasError} message={errorMessage} />

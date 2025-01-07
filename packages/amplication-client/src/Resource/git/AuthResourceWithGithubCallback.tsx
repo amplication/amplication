@@ -11,7 +11,11 @@ const AuthResourceWithGithubCallback = () => {
 
   const [completeAuthWithGit] = useCreateOrganizationGitHubMutation({
     onCompleted: (data) => {
-      window.opener.postMessage({ completed: true });
+      window.opener.postMessage({
+        completed: true,
+        id: data.createOrganization.id,
+        name: data.createOrganization.name,
+      });
       // close the popup
       window.close();
     },

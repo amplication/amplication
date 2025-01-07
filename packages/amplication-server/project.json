@@ -126,7 +126,8 @@
         "{workspaceRoot}/libs/util/code-gen-types/src/models.ts",
         "{workspaceRoot}/packages/amplication-cli/src/models.ts",
         "{workspaceRoot}/packages/amplication-client/src/models.ts",
-        "{workspaceRoot}/packages/data-service-generator/src/models.ts"
+        "{workspaceRoot}/packages/data-service-generator/src/models.ts",
+        "{workspaceRoot}/packages/generator-blueprints/src/models.ts"
       ],
       "dependsOn": ["graphql:schema:generate"],
       "options": {

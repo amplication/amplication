@@ -28,7 +28,10 @@ import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersio
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
+import { EnumCommitStrategy } from "./dto/EnumCommitStrategy";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -94,6 +97,73 @@ export class ServiceTemplateService {
         },
       },
     });
+  }
+
+  async scaffoldServiceFromTemplate(
+    args: ScaffoldServiceFromTemplateArgs,
+    user: User
+  ): Promise<Resource> {
+    const { name, serviceTemplateName, project } = args.data;
+
+    const serviceTemplates = await this.availableServiceTemplatesForProject(
+      {
+        where: {
+          id: args.data.project.connect.id,
+        },
+      },
+      user
+    );
+
+    if (!serviceTemplates || serviceTemplates.length === 0) {
+      throw new AmplicationError(`Service template not found`);
+    }
+
+    const template = serviceTemplates.find(
+      (template) => template.name === serviceTemplateName
+    );
+
+    //check that the selected template belongs to the project and available for the user
+    if (template === undefined) {
+      throw new AmplicationError(`Service template not found`);
+    }
+
+    const newResource = await this.createServiceFromTemplate(
+      {
+        data: {
+          serviceTemplate: { id: template.id },
+          project: { connect: { id: project.connect.id } },
+          name,
+          description: "",
+        },
+      },
+      user
+    );
+
+    //commit new service
+
+    await this.projectService.commit(
+      {
+        data: {
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
+          message: `commit new scaffold service: ${name}`,
+          project: {
+            connect: {
+              id: project.connect.id,
+            },
+          },
+          commitStrategy: EnumCommitStrategy.Specific,
+          resourceIds: [newResource.id],
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      },
+      user
+    );
+
+    return newResource;
   }
 
   /**

@@ -1,8 +1,6 @@
 import {
-  Button,
   DataGrid,
   DataGridColumn,
-  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
@@ -20,6 +18,7 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import { inc as incrementVersion, ReleaseType, valid } from "semver";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import {
@@ -57,12 +56,7 @@ const TEMPLATE_COLUMNS: DataGridColumn<resourceWithVersions>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return (
-        <ResourceCircleBadge
-          type={props.row.resource.resourceType}
-          size="small"
-        />
-      );
+      return <ResourceTypeBadge resource={props.row.resource} size="small" />;
     },
   },
   {
@@ -147,12 +141,7 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
     name: "Type",
     width: 60,
     renderCell: (props) => {
-      return (
-        <ResourceCircleBadge
-          type={props.row.resource.resourceType}
-          size="small"
-        />
-      );
+      return <ResourceTypeBadge resource={props.row.resource} size="small" />;
     },
   },
   {
@@ -171,7 +160,6 @@ const OTHERS_COLUMNS: DataGridColumn<resourceWithChanges>[] = [
     sortable: false,
     width: 150,
     renderCell: (props) => {
-      console.log({ props });
       return (
         <Text textStyle={EnumTextStyle.Description}>
           {props.row.changes.length}{" "}

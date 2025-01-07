@@ -194,6 +194,61 @@ input BlockWhereInput {
   updatedAt: DateTimeFilter
 }
 
+type Blueprint {
+  color: String
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  properties: [CustomProperty!]
+  relations: [BlueprintRelation!]
+  updatedAt: DateTime!
+}
+
+input BlueprintCreateInput {
+  name: String!
+}
+
+input BlueprintOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+type BlueprintRelation {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
+}
+
+input BlueprintRelationUpsertInput {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
+}
+
+input BlueprintUpdateInput {
+  color: String
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+}
+
+input BlueprintWhereInput {
+  id: String
+  key: StringFilter
+  name: StringFilter
+}
+
 input BooleanFilter {
   equals: Boolean
   not: Boolean
@@ -229,6 +284,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String
+  buildPlugins: [BuildPlugin!]!
   codeGeneratorVersion: String
   commit: Commit
   commitId: String!
@@ -254,6 +310,16 @@ input BuildOrderByInput {
   status: SortOrder
   userId: SortOrder
   version: SortOrder
+}
+
+type BuildPlugin {
+  build: Build
+  buildId: String!
+  createdAt: DateTime!
+  id: String!
+  packageName: String!
+  packageVersion: String!
+  requestedFullPackageName: String!
 }
 
 input BuildWhereInput {
@@ -406,6 +472,8 @@ input CreateGitRepositoryInput {
 }
 
 type CustomProperty {
+  blueprint: String
+  blueprintId: String
   createdAt: DateTime!
   description: String
   enabled: Boolean!
@@ -413,11 +481,15 @@ type CustomProperty {
   key: String!
   name: String!
   options: [CustomPropertyOption!]
+  required: Boolean!
   type: EnumCustomPropertyType!
   updatedAt: DateTime!
+  validationMessage: String
+  validationRule: String
 }
 
 input CustomPropertyCreateInput {
+  blueprint: WhereParentIdInput
   name: String!
 }
 
@@ -447,11 +519,17 @@ input CustomPropertyUpdateInput {
   enabled: Boolean
   key: String
   name: String
+  required: Boolean
   type: EnumCustomPropertyType
+  validationMessage: String
+  validationRule: String
 }
 
 input CustomPropertyWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
   deletedAt: DateTimeFilter
+  enabled: Boolean
   id: String
   name: StringFilter
 }
@@ -797,6 +875,8 @@ enum EnumBlockType {
   PluginOrder
   PrivatePlugin
   ProjectConfigurationSettings
+  Relation
+  ResourceSettings
   ServiceSettings
   ServiceTopics
   Topic
@@ -842,6 +922,7 @@ input EnumBuildStatusFilter {
 }
 
 enum EnumCodeGenerator {
+  Blueprint
   DotNet
   NodeJs
 }
@@ -907,6 +988,12 @@ enum EnumEntityPermissionType {
   Public
 }
 
+enum EnumGitFolderContentItemType {
+  Dir
+  File
+  Other
+}
+
 enum EnumGitOrganizationType {
   Organization
   User
@@ -914,6 +1001,7 @@ enum EnumGitOrganizationType {
 
 enum EnumGitProvider {
   AwsCodeCommit
+  AzureDevOps
   Bitbucket
   GitLab
   Github
@@ -1135,8 +1223,19 @@ type EvaluationInsights {
   timeSaved: Int!
 }
 
+type GitFolderContent {
+  content: [GitFolderContentItem!]!
+}
+
+type GitFolderContentItem {
+  name: String!
+  path: String!
+  type: EnumGitFolderContentItemType!
+}
+
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 """Group of Repositories"""
@@ -1153,6 +1252,7 @@ input GitGroupInput {
 input GitOAuth2FlowInput {
   code: String!
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 type GitOrganization {
@@ -1195,6 +1295,12 @@ input GitOrganizationCreateInputGitHub {
   installationId: String!
 }
 
+input GitOrganizationOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  provider: SortOrder
+}
+
 input GitOrganizationWhereInput {
   id: String
 }
@@ -1208,6 +1314,15 @@ type GitRepository {
   id: String!
   name: String!
   updatedAt: DateTime
+}
+
+input GitRepositoryOrderByInput {
+  baseBranchName: SortOrder
+  gitOrganization: GitOrganizationOrderByInput
+  gitOrganizationId: SortOrder
+  groupName: SortOrder
+  id: SortOrder
+  name: SortOrder
 }
 
 input GitRepositoryUpdateInput {
@@ -1554,6 +1669,7 @@ type Mutation {
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  createBlueprint(data: BlueprintCreateInput!): Blueprint!
   createComponent(data: ResourceCreateInput!): Resource!
   createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
   createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
@@ -1577,6 +1693,7 @@ type Mutation {
   createPrivatePlugin(data: PrivatePluginCreateInput!): PrivatePlugin!
   createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
+  createRelation(data: RelationCreateInput!): Relation!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createService(data: ResourceCreateInput!): Resource!
@@ -1588,6 +1705,8 @@ type Mutation {
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  deleteBlueprint(where: WhereUniqueInput!): Blueprint
+  deleteBlueprintRelation(where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
   deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
   deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1604,6 +1723,7 @@ type Mutation {
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deletePrivatePlugin(where: WhereUniqueInput!): PrivatePlugin!
   deleteProject(where: WhereUniqueInput!): Project
+  deleteRelation(where: WhereUniqueInput!): Relation!
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
@@ -1623,10 +1743,11 @@ type Mutation {
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
+  scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
-  setResourceOwner(data: ResourceSetOwnerInput!): Ownership!
+  setResourceOwner(data: ResourceSetOwnerInput!): Resource!
   signup(data: SignupInput!): Auth!
   signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
@@ -1637,6 +1758,7 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
+  updateBlueprint(data: BlueprintUpdateInput!, where: WhereUniqueInput!): Blueprint!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
   updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
@@ -1658,14 +1780,18 @@ type Mutation {
   updatePrivatePluginVersion(data: PrivatePluginVersionUpdateInput!, where: WherePrivatePluginVersionUniqueInput!): PrivatePluginVersion!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  updateRelation(data: RelationUpdateInput!, where: WhereUniqueInput!): Relation!
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
+  updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateResourceSettings(data: ResourceSettingsUpdateInput!, where: WhereUniqueInput!): ResourceSettings
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
+  upsertBlueprintRelation(data: BlueprintRelationUpsertInput!, where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
 }
 
 type OutdatedVersionAlert {
@@ -1711,10 +1837,6 @@ input OutdatedVersionAlertWhereInput {
 }
 
 union Owner = Team | User
-
-type Ownership {
-  owner: Owner!
-}
 
 input OwnershipWhereInput {
   teamId: String
@@ -1788,6 +1910,11 @@ type PaginatedGitGroup {
 
   """Total number of groups"""
   total: Float!
+}
+
+type PaginatedResourceQueryResult {
+  data: [Resource!]
+  totalCount: Int!
 }
 
 type Pagination {
@@ -1919,11 +2046,14 @@ input PluginSetOrderInput {
 
 type PrivatePlugin implements IBlock {
   blockType: EnumBlockType!
+  blueprints: [String!]
   codeGenerator: EnumCodeGenerator!
+  color: String
   createdAt: DateTime!
   description: String
   displayName: String!
   enabled: Boolean!
+  icon: String
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
@@ -1961,10 +2091,13 @@ input PrivatePluginOrderByInput {
 }
 
 input PrivatePluginUpdateInput {
+  blueprints: [String!]
   codeGenerator: EnumCodeGenerator
+  color: String
   description: String
   displayName: String
   enabled: Boolean!
+  icon: String
 }
 
 type PrivatePluginVersion {
@@ -1988,6 +2121,7 @@ input PrivatePluginVersionUpdateInput {
 }
 
 input PrivatePluginWhereInput {
+  blue: EnumCodeGeneratorFilter
   codeGenerator: EnumCodeGeneratorFilter
   createdAt: DateTimeFilter
   description: StringFilter
@@ -2102,11 +2236,14 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   availablePrivatePluginsForResource(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
+  availableTemplatesForProject(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
+  blueprint(where: WhereUniqueInput!): Blueprint
+  blueprints(orderBy: BlueprintOrderByInput, skip: Int, take: Int, where: BlueprintWhereInput): [Blueprint!]!
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
-  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
+  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): PaginatedResourceQueryResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
   compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
@@ -2121,7 +2258,6 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
-  findProjectAvailableTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
   getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
@@ -2143,15 +2279,19 @@ type Query {
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  pluginRepositoryRemotePlugins(where: WhereUniqueInput!): GitFolderContent!
   privatePlugin(where: WhereUniqueInput!): PrivatePlugin
   privatePlugins(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   projects(orderBy: ProjectOrderByInput, skip: Int, take: Int, where: ProjectWhereInput): [Project!]!
+  relation(where: WhereUniqueInput!): Relation
+  relations(orderBy: RelationOrderByInput, skip: Int, take: Int, where: RelationWhereInput): [Relation!]!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   resource(where: WhereUniqueInput!): Resource
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
+  resourceSettings(where: WhereUniqueInput!): ResourceSettings
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
@@ -2198,6 +2338,62 @@ input RedesignProjectNewService {
   name: String!
 }
 
+type Relation implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  relatedResources: [String!]!
+  relationKey: String!
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input RelationCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  relatedResources: [String!]!
+  relationKey: String!
+  resource: WhereParentIdInput!
+}
+
+input RelationOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input RelationUpdateInput {
+  description: String
+  displayName: String
+  relatedResources: [String!]!
+}
+
+input RelationWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 type RemoteGitRepos {
   pagination: Pagination!
   repos: [RemoteGitRepository!]!
@@ -2217,7 +2413,6 @@ input RemoteGitRepositoriesWhereUniqueInput {
 }
 
 type RemoteGitRepository {
-  admin: Boolean!
   defaultBranch: String!
   fullName: String!
   groupName: String
@@ -2227,6 +2422,8 @@ type RemoteGitRepository {
 }
 
 type Resource {
+  blueprint: Blueprint
+  blueprintId: String
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
   codeGenerator: EnumCodeGenerator
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
@@ -2247,14 +2444,17 @@ type Resource {
   project: Project
   projectId: String
   properties: JSONObject
+  relations: [Relation!]
   resourceType: EnumResourceType!
   serviceTemplate: Resource
   serviceTemplateVersion: String
+  settings: ResourceSettings
   updatedAt: DateTime!
   version: ResourceVersion
 }
 
 input ResourceCreateInput {
+  blueprint: WhereParentIdInput
   codeGenerator: EnumCodeGenerator
   description: String!
   gitRepository: ConnectGitRepositoryInput
@@ -2295,10 +2495,17 @@ type ResourceCreateWithEntitiesResult {
 input ResourceOrderByInput {
   createdAt: SortOrder
   description: SortOrder
+  gitRepository: GitRepositoryOrderByInput
   id: SortOrder
   name: SortOrder
+  project: ProjectOrderByInput
   resourceType: SortOrder
   updatedAt: SortOrder
+}
+
+input ResourceRelationUpdateInput {
+  relatedResources: [String!]!
+  relationKey: String!
 }
 
 type ResourceRole {
@@ -2346,6 +2553,31 @@ input ResourceSetOwnerInput {
   resourceId: String!
   teamId: String
   userId: String
+}
+
+type ResourceSettings implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  properties: JSONObject
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ResourceSettingsUpdateInput {
+  description: String
+  displayName: String
+  properties: JSONObject
 }
 
 input ResourceUpdateInput {
@@ -2398,6 +2630,8 @@ type ResourceVersionsDiffBlock {
 }
 
 input ResourceWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2411,6 +2645,8 @@ input ResourceWhereInput {
 }
 
 input ResourceWhereInputWithPropertiesFilter {
+  blueprint: BlueprintWhereInput
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
@@ -2418,6 +2654,7 @@ input ResourceWhereInputWithPropertiesFilter {
   ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
+  projectIdFilter: StringFilter
   properties: JsonPathStringFilter
   resourceType: EnumResourceTypeFilter
   serviceTemplateId: String
@@ -2429,6 +2666,12 @@ enum Role {
   OrganizationAdmin
   ProjectAdmin
   User
+}
+
+input ScaffoldServiceFromTemplateInput {
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplateName: String!
 }
 
 input SendAssistantMessageInput {
@@ -2741,6 +2984,11 @@ type UserRole {
   id: String!
   role: Role!
   updatedAt: DateTime!
+}
+
+input WhereBlueprintRelationUniqueInput {
+  blueprint: WhereUniqueInput!
+  relationKey: String!
 }
 
 input WhereCustomPropertyOptionUniqueInput {

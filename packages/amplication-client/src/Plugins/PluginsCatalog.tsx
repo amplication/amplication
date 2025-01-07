@@ -69,7 +69,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const [pluginInstallationUpdateData, setPluginInstallationUpdateData] =
     useState<models.PluginInstallation>(null);
 
-  const { resourceSettings } = useResource(resource);
+  const { serviceSettings } = useResource(resource);
 
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
@@ -98,7 +98,11 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   }, [canUsePrivatePlugins, loadPrivatePluginsCatalog]);
 
   const filteredCatalog = useMemo(() => {
-    if (category === "undefined") return Object.values(pluginCatalog);
+    if (category === "undefined")
+      return [
+        ...Object.values(pluginCatalog),
+        ...Object.values(privatePluginCatalog),
+      ];
 
     if (category === PRIVATE_PLUGINS_CATEGORY)
       return Object.values(privatePluginCatalog);
@@ -117,13 +121,13 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { addEntity } = useContext(AppContext);
 
   const userEntity = useMemo(() => {
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
     if (!authEntity) {
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities?.entities, resourceSettings?.serviceSettings]);
+  }, [entities?.entities, serviceSettings?.serviceSettings]);
 
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
@@ -155,19 +159,12 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: resource } },
-            isPrivate: category === PRIVATE_PLUGINS_CATEGORY,
+            isPrivate: privatePluginCatalog[pluginId] ? true : false,
           },
         },
       }).catch(console.error);
     },
-    [
-      createPluginInstallation,
-      setConfirmInstall,
-      resource,
-      userEntity,
-      setPluginInstallationData,
-      category,
-    ]
+    [userEntity, createPluginInstallation, resource, privatePluginCatalog]
   );
 
   const handleDismissInstall = useCallback(() => {

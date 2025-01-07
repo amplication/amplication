@@ -5,6 +5,7 @@ import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
 import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
+import { IBlueprintsMap } from "../Blueprints/hooks/useBlueprintsMap";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -29,8 +30,6 @@ export interface AppContextInterface {
   ) => void;
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
-  handleSearchChange: (searchResults: string) => void;
-  setResourcePropertiesFilter: (filters: models.JsonPathStringFilter) => void;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
@@ -75,9 +74,7 @@ export interface AppContextInterface {
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;
   customPropertiesMap: Record<string, models.CustomProperty>;
-  createComponent: (data: models.ResourceCreateInput) => void;
-  loadingCreateComponent: boolean;
-  errorCreateComponent: Error | undefined;
+  blueprintsMap: IBlueprintsMap;
 }
 
 const initialContext: AppContextInterface = {
@@ -100,8 +97,6 @@ const initialContext: AppContextInterface = {
   setNewService: () => {},
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
-  handleSearchChange: () => {},
-  setResourcePropertiesFilter: () => {},
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},
@@ -156,9 +151,11 @@ const initialContext: AppContextInterface = {
   loadingCreateServiceFromTemplate: false,
   errorCreateServiceFromTemplate: undefined,
   customPropertiesMap: {},
-  createComponent: () => {},
-  loadingCreateComponent: false,
-  errorCreateComponent: undefined,
+  blueprintsMap: {
+    ready: false,
+    blueprintsMap: {},
+    blueprintsMapById: {},
+  },
 };
 
 export const AppContext =

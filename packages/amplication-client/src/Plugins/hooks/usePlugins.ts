@@ -13,7 +13,7 @@ import {
 import usePluginCatalog, { Plugin, PluginVersion } from "./usePluginCatalog";
 import usePrivatePlugin from "../../PrivatePlugins/hooks/usePrivatePlugin";
 import { LATEST_VERSION_TAG } from "../constant";
-import { compareBuild } from "semver";
+import { compareBuild, valid } from "semver";
 
 export interface SortedPluginInstallation extends models.PluginInstallation {
   categories?: string[];
@@ -32,6 +32,7 @@ const PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES: PluginVersion = {
   id: "",
   pluginId: "",
   enabled: true,
+  deprecated: false,
 };
 
 const PRIVATE_PLUGIN_DEFAULT_VALUES: Plugin = {
@@ -103,17 +104,28 @@ const usePlugins = (
               ? privatePlugin.displayName
               : `${privatePlugin.displayName} (Disabled)`,
             description: privatePlugin.description,
+            icon: privatePlugin.icon,
+            color: privatePlugin.color,
+            isPrivate: true,
             versions: [
               {
+                //add the "latest" version
                 ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
                 id: privatePlugin.id,
                 pluginId: privatePlugin.pluginId,
               },
               ...privatePlugin.versions
-                .sort((a, b) => compareBuild(b.version, a.version))
+                .sort((a, b) =>
+                  !valid(b.version)
+                    ? 1
+                    : !valid(a.version)
+                    ? -1
+                    : compareBuild(b.version, a.version)
+                )
                 .map((version) => ({
                   ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
                   ...version,
+                  isLatest: false,
                 })),
             ],
           };

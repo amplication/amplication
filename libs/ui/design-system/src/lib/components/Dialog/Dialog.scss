@@ -47,6 +47,16 @@ $modal-max-height: 80vh;
     background-color: transparent;
     box-sizing: border-box;
     color: var(--gray-base);
+
+    .amp-form {
+      .select-field {
+        max-width: none;
+      }
+
+      .text-input input {
+        max-width: none;
+      }
+    }
   }
 
   &--warning {

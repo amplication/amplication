@@ -38,6 +38,8 @@ const PrivatePluginVersionList = React.memo(
 
     return (
       <>
+        <TabContentTitle title="Versions" />
+
         <FlexItem
           itemsAlign={EnumItemsAlign.Stretch}
           contentAlign={EnumContentAlign.Space}
@@ -51,8 +53,6 @@ const PrivatePluginVersionList = React.memo(
             onChange={onVersionAdd}
           />
         </FlexItem>
-
-        <TabContentTitle title="Versions" />
 
         <List>
           {sortedVersions?.map((version, index) => (

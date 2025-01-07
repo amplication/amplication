@@ -225,13 +225,19 @@ export function preparePluginRepositoryObject(
 }
 
 export function prepareComponentObject(
-  projectId: string
+  projectId: string,
+  blueprint: models.Blueprint
 ): models.ResourceCreateInput {
   return {
-    name: "Component",
+    name: `${blueprint.name}-name`,
     description: "",
     resourceType: models.EnumResourceType.Component,
     codeGenerator: null,
+    blueprint: {
+      connect: {
+        id: blueprint.id,
+      },
+    },
     project: {
       connect: {
         id: projectId,
@@ -273,15 +279,8 @@ export const resourceThemeMap: {
     name: "Template",
   },
   [models.EnumResourceType.Component]: {
-    icon: "code",
+    icon: "blueprint",
     color: "#20A4F3",
     name: "Component",
   },
-};
-
-export const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
-  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
-  [EnumGitProvider.Bitbucket]: "Bitbucket",
-  [EnumGitProvider.Github]: "GitHub",
-  [EnumGitProvider.GitLab]: "GitLab",
 };

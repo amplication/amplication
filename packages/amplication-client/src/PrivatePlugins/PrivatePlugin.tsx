@@ -1,28 +1,23 @@
+import {
+  EnumItemsAlign,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  TabContentTitle,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import { formatError } from "../util/error";
-import PrivatePluginForm from "./PrivatePluginForm";
+import PrivatePluginVersionList from "../PrivatePluginVersion/PrivatePluginVersionList";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
-import {
-  Snackbar,
-  HorizontalRule,
-  FlexItem,
-  TabContentTitle,
-  EnumFlexDirection,
-  EnumContentAlign,
-  Toggle,
-  Panel,
-  EnumPanelStyle,
-  Text,
-  EnumTextStyle,
-  EnumTextColor,
-} from "@amplication/ui/design-system";
-import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import PrivatePluginVersionList from "../PrivatePluginVersion/PrivatePluginVersionList";
+import { DeletePrivatePlugin } from "./DeletePrivatePlugins";
+import usePrivatePlugin from "./hooks/usePrivatePlugin";
+import PrivatePluginEditCodeButton from "./PrivatePluginEditCodeButton";
+import PrivatePluginForm from "./PrivatePluginForm";
 
 type Props = {
   pluginRepositoryResourceId: string;
@@ -113,43 +108,35 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     <>
       <FlexItem>
         <TabContentTitle
-          title={data?.privatePlugin?.displayName}
+          title={data?.privatePlugin?.displayName || "Loading..."}
           subTitle={data?.privatePlugin?.description}
         />
-        <FlexItem.FlexEnd
-          direction={EnumFlexDirection.Row}
-          alignSelf={EnumContentAlign.Start}
-        >
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={
-              data?.privatePlugin?.enabled
-                ? data?.privatePlugin?.enabled
-                : false
-            }
-          ></Toggle>
-          {data?.privatePlugin && (
-            <DeletePrivatePlugin
-              privatePlugin={data?.privatePlugin}
-              onDelete={handleDeletePrivatePlugin}
-            />
-          )}
+        <FlexItem.FlexEnd>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            {data?.privatePlugin && (
+              <>
+                <PrivatePluginEditCodeButton
+                  privatePlugin={data.privatePlugin}
+                />
+
+                <Toggle
+                  name={"enabled"}
+                  onValueChange={onEnableChanged}
+                  checked={
+                    data?.privatePlugin?.enabled
+                      ? data?.privatePlugin?.enabled
+                      : false
+                  }
+                ></Toggle>
+                <DeletePrivatePlugin
+                  privatePlugin={data?.privatePlugin}
+                  onDelete={handleDeletePrivatePlugin}
+                />
+              </>
+            )}
+          </FlexItem>
         </FlexItem.FlexEnd>
       </FlexItem>
-      <Panel panelStyle={EnumPanelStyle.Bordered}>
-        <Text
-          textStyle={EnumTextStyle.Description}
-          textColor={EnumTextColor.ThemeOrange}
-        >
-          The plugin must be located in the connected git repository, in a
-          folder named "plugins" and in a subfolder with the plugin ID.
-        </Text>
-        <br />
-        <Text textStyle={EnumTextStyle.Description}>
-          e.g. './plugins/private-aws-terraform/'
-        </Text>
-      </Panel>
 
       <HorizontalRule />
       {!loading && (

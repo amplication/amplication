@@ -7,10 +7,8 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  Icon,
   Text,
 } from "@amplication/ui/design-system";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 type Props = {
   resource: models.Resource;
@@ -19,14 +17,7 @@ type Props = {
 function ResourceGitRepo({ resource }: Props) {
   const { gitRepository } = resource;
 
-  const provider = gitRepository?.gitOrganization?.provider;
-
-  const gitRepo =
-    gitRepository && provider === models.EnumGitProvider.Github
-      ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
-      : provider === models.EnumGitProvider.Bitbucket
-      ? `${gitRepository.groupName}/${gitRepository.name}`
-      : undefined;
+  const gitRepo = gitRepository?.name;
 
   return (
     <FlexItem
@@ -36,10 +27,6 @@ function ResourceGitRepo({ resource }: Props) {
     >
       {gitRepo ? (
         <>
-          <Icon
-            icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
-            size="xsmall"
-          />
           <Text
             textStyle={EnumTextStyle.Subtle}
             textColor={EnumTextColor.White}

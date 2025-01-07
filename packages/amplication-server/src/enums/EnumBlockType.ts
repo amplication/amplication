@@ -13,6 +13,8 @@ export enum EnumBlockType {
   Package = "Package",
   PrivatePlugin = "PrivatePlugin",
   CodeEngineVersion = "CodeEngineVersion",
+  Relation = "Relation",
+  ResourceSettings = "ResourceSettings",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

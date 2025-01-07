@@ -33,6 +33,9 @@ import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 import { OwnershipService } from "../ownership/ownership.service";
 import { EnumOwnershipType } from "../ownership/dto/Ownership";
 import { ProjectService } from "../project/project.service";
+import { BlueprintService } from "../blueprint/blueprint.service";
+import { RelationService } from "../relation/relation.service";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -406,6 +409,18 @@ describe("ResourceResolver", () => {
           })),
         },
         {
+          provide: BlueprintService,
+          useClass: jest.fn(() => ({
+            blueprint: jest.fn(),
+          })),
+        },
+        {
+          provide: RelationService,
+          useClass: jest.fn(() => ({
+            findMany: jest.fn(),
+          })),
+        },
+        {
           provide: EntityService,
           useClass: jest.fn(() => ({
             entities: entitiesMock,
@@ -454,6 +469,10 @@ describe("ResourceResolver", () => {
           useClass: jest.fn(() => ({
             getOwnership: ownershipServiceGetOwnershipMock,
           })),
+        },
+        {
+          provide: ResourceSettingsService,
+          useClass: jest.fn(() => ({})),
         },
       ],
       imports: [
@@ -508,8 +527,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(resourceMock).toBeCalledTimes(1);
-    expect(resourceMock).toBeCalledWith(args);
+    expect(resourceMock).toHaveBeenCalledTimes(1);
+    expect(resourceMock).toHaveBeenCalledWith(args);
   });
 
   it("should find many entities", async () => {
@@ -538,8 +557,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(entitiesMock).toBeCalledTimes(1);
-    expect(entitiesMock).toBeCalledWith(args);
+    expect(entitiesMock).toHaveBeenCalledTimes(1);
+    expect(entitiesMock).toHaveBeenCalledWith(args);
   });
 
   it("should find many builds", async () => {
@@ -561,8 +580,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(findManyBuildMock).toBeCalledTimes(1);
-    expect(findManyBuildMock).toBeCalledWith(args);
+    expect(findManyBuildMock).toHaveBeenCalledTimes(1);
+    expect(findManyBuildMock).toHaveBeenCalledWith(args);
   });
 
   it("should find many environments", async () => {
@@ -582,8 +601,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(findManyEnvironmentsMock).toBeCalledTimes(1);
-    expect(findManyEnvironmentsMock).toBeCalledWith({
+    expect(findManyEnvironmentsMock).toHaveBeenCalledTimes(1);
+    expect(findManyEnvironmentsMock).toHaveBeenCalledWith({
       where: { resource: { id: EXAMPLE_RESOURCE_ID } },
     });
   });
@@ -631,8 +650,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(createServiceMock).toBeCalledTimes(1);
-    expect(createServiceMock).toBeCalledWith(
+    expect(createServiceMock).toHaveBeenCalledTimes(1);
+    expect(createServiceMock).toHaveBeenCalledWith(
       {
         data: resourceCreateInput,
       },
@@ -675,8 +694,8 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(deleteResourceMock).toBeCalledTimes(1);
-    expect(deleteResourceMock).toBeCalledWith(
+    expect(deleteResourceMock).toHaveBeenCalledTimes(1);
+    expect(deleteResourceMock).toHaveBeenCalledWith(
       {
         where: { id: EXAMPLE_RESOURCE_ID },
       },
@@ -720,10 +739,13 @@ describe("ResourceResolver", () => {
         ],
       },
     });
-    expect(updateResourceMock).toBeCalledTimes(1);
-    expect(updateResourceMock).toBeCalledWith({
-      data: { name: EXAMPLE_NAME },
-      where: { id: EXAMPLE_RESOURCE_ID },
-    });
+    expect(updateResourceMock).toHaveBeenCalledTimes(1);
+    expect(updateResourceMock).toHaveBeenCalledWith(
+      {
+        data: { name: EXAMPLE_NAME },
+        where: { id: EXAMPLE_RESOURCE_ID },
+      },
+      EXAMPLE_USER
+    );
   });
 });

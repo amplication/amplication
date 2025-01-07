@@ -1,3 +1,4 @@
 packages/amplication-cli
 packages/data-service-generator/scripts
+packages/generator-blueprints/scripts
 packages/data-service-generator-catalog-admin

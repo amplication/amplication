@@ -7,44 +7,49 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
+import { EntityService, ResourceService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project, Team } from "../../models";
+import { Blueprint, Entity, Project, Resource, Team, User } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
-import { ResourceService, EntityService } from "..";
+import { BlueprintService } from "../blueprint/blueprint.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
 import { FindManyBuildArgs } from "../build/dto/FindManyBuildArgs";
 import { FindManyEntityArgs } from "../entity/dto";
 import { Environment } from "../environment/dto/Environment";
 import { EnvironmentService } from "../environment/environment.service";
-import {
-  CreateServiceWithEntitiesArgs,
-  CreateOneResourceArgs,
-  FindManyResourceArgs,
-  UpdateOneResourceArgs,
-  ResourceCreateWithEntitiesResult,
-  UpdateCodeGeneratorVersionArgs,
-} from "./dto";
-import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
-import { UserAction } from "../userAction/dto";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
-import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { Owner } from "../ownership/dto/Owner";
 import { OwnershipService } from "../ownership/ownership.service";
-import { Ownership } from "../ownership/dto/Ownership";
-import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { Relation } from "../relation/dto/Relation";
+import { RelationService } from "../relation/relation.service";
+import { ResourceSettings } from "../resourceSettings/dto";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
+import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { UserAction } from "../userAction/dto";
+import {
+  CreateOneResourceArgs,
+  CreateServiceWithEntitiesArgs,
+  FindManyResourceArgs,
+  ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
+  UpdateOneResourceArgs,
+} from "./dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
+import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -58,7 +63,10 @@ export class ResourceResolver {
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly resourceVersionService: ResourceVersionService,
     private readonly ownershipService: OwnershipService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly blueprintService: BlueprintService,
+    private readonly relationService: RelationService,
+    private readonly resourceSettingsService: ResourceSettingsService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -80,7 +88,7 @@ export class ResourceResolver {
     return this.resourceService.resources(args);
   }
 
-  @Query(() => [Resource], {
+  @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
   @Roles("ORGANIZATION_ADMIN")
@@ -88,8 +96,10 @@ export class ResourceResolver {
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
   )
-  async catalog(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
-    return this.resourceService.resources(args);
+  async catalog(
+    @Args() args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    return this.resourceService.searchResourcesWithCount(args);
   }
 
   @Query(() => [Resource], {
@@ -213,22 +223,29 @@ export class ResourceResolver {
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async updateResource(
-    @Args() args: UpdateOneResourceArgs
+    @Args() args: UpdateOneResourceArgs,
+    @UserEntity() user: User
   ): Promise<Resource | null> {
-    return this.resourceService.updateResource(args);
+    return this.resourceService.updateResource(args, user);
   }
 
-  @Mutation(() => Ownership, { nullable: false })
+  @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
   async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
-  ): Promise<Ownership> {
-    return this.resourceService.setOwner(
+  ): Promise<Resource> {
+    await this.resourceService.setOwner(
       args.data.resourceId,
       args.data.userId,
       args.data.teamId
     );
+
+    return this.resourceService.resource({
+      where: {
+        id: args.data.resourceId,
+      },
+    });
   }
 
   @Mutation(() => UserAction, { nullable: false })
@@ -299,6 +316,19 @@ export class ResourceResolver {
     });
   }
 
+  @ResolveField(() => Blueprint, { nullable: true })
+  async blueprint(@Parent() resource: Resource): Promise<Blueprint> {
+    if (!resource.blueprintId) {
+      return null;
+    }
+
+    return this.blueprintService.blueprint({
+      where: {
+        id: resource.blueprintId,
+      },
+    });
+  }
+
   @ResolveField(() => String, { nullable: true })
   async serviceTemplateVersion(
     @Parent() resource: Resource,
@@ -334,5 +364,35 @@ export class ResourceResolver {
 
     return (await this.ownershipService.getOwnership(resource.ownershipId))
       .owner;
+  }
+
+  @ResolveField(() => [Relation], { nullable: true })
+  async relations(@Parent() resource: Resource): Promise<Relation[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return this.relationService.findMany({
+      where: {
+        resource: {
+          id: resource.id,
+        },
+      },
+    });
+  }
+
+  @ResolveField(() => ResourceSettings, { nullable: true })
+  async settings(
+    @Parent() resource: Resource
+  ): Promise<ResourceSettings | null> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceSettingsService.getResourceSettingsBlock({
+      where: {
+        id: resource.id,
+      },
+    });
   }
 }

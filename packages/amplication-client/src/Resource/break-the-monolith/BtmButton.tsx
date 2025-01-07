@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   ConfirmationDialog,
@@ -16,27 +15,28 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import BreakTheMonolith from "./BreakTheMonolith";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
+  FeatureIndicator,
+} from "../../Components/FeatureIndicator";
+import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
 import { useAppContext } from "../../context/appContext";
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
   Resource,
 } from "../../models";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import useModelOrganizerPersistentData from "../../Project/ArchitectureConsole/hooks/useModelOrganizerPersistentData";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import {
-  FeatureIndicator,
-  DEFAULT_TEXT_END,
-  DEFAULT_TEXT_START,
-  DISABLED_DEFAULT_TEXT_END,
-} from "../../Components/FeatureIndicator";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { getCookie, setCookie } from "../../util/cookie";
 import useAbTesting from "../../VersionControl/hooks/useABTesting";
+import BreakTheMonolith from "./BreakTheMonolith";
 
 export enum EnumButtonLocation {
   Project = "Project",
@@ -257,10 +257,7 @@ export const BtmButton: React.FC<Props> = ({
                         itemsAlign={EnumItemsAlign.Center}
                         end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
                       >
-                        <ResourceCircleBadge
-                          type={resource.resourceType}
-                          size="small"
-                        />
+                        <ResourceTypeBadge resource={resource} size="small" />
                         <span>{resource.name}</span>
                       </FlexItem>
                     </SelectMenuItem>

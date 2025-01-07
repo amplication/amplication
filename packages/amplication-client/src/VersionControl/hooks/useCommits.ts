@@ -1,4 +1,4 @@
-import { COMMIT_CHANGES, GET_COMMITS } from "./commitQueries";
+import { COMMIT_CHANGES, GET_COMMITS, GET_LAST_COMMIT } from "./commitQueries";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   Commit,
@@ -10,7 +10,12 @@ import {
   CommitCreateInput,
   EnumResourceTypeGroup,
 } from "../../models";
-import { ApolloError, useLazyQuery, useMutation } from "@apollo/client";
+import {
+  ApolloError,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
 import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { AppContext } from "../../context/appContext";
@@ -99,22 +104,13 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     [commits, lastCommit]
   );
 
-  const [
-    getLastCommit,
-    {
-      data: getLastCommitData,
-      startPolling: getLastCommitStartPolling,
-      stopPolling: getLastCommitStopPolling,
-    },
-  ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
+  const {
+    startPolling: getLastCommitStartPolling,
+    stopPolling: getLastCommitStopPolling,
+  } = useQuery<{ commits: Commit[] }>(GET_LAST_COMMIT, {
+    skip: !currentProjectId,
     variables: {
       projectId: currentProjectId,
-      resourceTypeGroup: EnumResourceTypeGroup.Services,
-      skip: 0,
-      take: 1,
-      orderBy: {
-        createdAt: SortOrder.Desc,
-      },
     },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
@@ -146,12 +142,17 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       }
     }
 
-    if (shouldPoll) {
+    if (shouldPoll && currentProjectId) {
       getLastCommitStartPolling(POLL_INTERVAL);
     } else {
       getLastCommitStopPolling();
     }
-  }, [getLastCommitStopPolling, getLastCommitStartPolling, lastCommit]);
+  }, [
+    getLastCommitStopPolling,
+    getLastCommitStartPolling,
+    lastCommit,
+    currentProjectId,
+  ]);
 
   //cleanup polling
   useEffect(() => {
@@ -246,16 +247,14 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     return results;
   }, [commitChangesError]);
 
-  const [
-    getInitialCommits,
-    {
-      data: commitsData,
-      error: commitsError,
-      loading: commitsLoading,
-      refetch: refetchCommits,
-    },
-  ] = useLazyQuery(GET_COMMITS, {
+  const {
+    data: commitsData,
+    error: commitsError,
+    loading: commitsLoading,
+    refetch: refetchCommits,
+  } = useQuery(GET_COMMITS, {
     notifyOnNetworkStatusChange: true,
+    skip: !currentProjectId,
     variables: {
       projectId: currentProjectId,
       resourceTypeGroup: EnumResourceTypeGroup.Services,
@@ -270,14 +269,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         setDisableLoadMore(true);
     },
   });
-
-  // get initial commits for a specific project
-  useEffect(() => {
-    if (!currentProjectId) return;
-
-    getInitialCommits();
-    commitsCount !== 1 && setCommitsCount(1);
-  }, [commitsCount, currentProjectId, getInitialCommits]);
 
   // fetch the initial commit data and assign it
   useEffect(() => {

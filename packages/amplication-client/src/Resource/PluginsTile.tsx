@@ -226,6 +226,7 @@ function InstalledCategory({
         gap={EnumGapSize.Large}
         end={
           <PluginLogoGroup
+            iconSize="medium"
             installedPlugins={installedPlugins}
             resource={currentResource}
           />

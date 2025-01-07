@@ -16,6 +16,7 @@ import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 
 const CLASS_NAME = "pending-changes-page";
 
@@ -49,8 +50,8 @@ const PendingChangesPage = () => {
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>
               <FlexItem margin={EnumFlexItemMargin.Both}>
-                <ResourceCircleBadge
-                  type={resourceChanges.resource.resourceType}
+                <ResourceTypeBadge
+                  resource={resourceChanges.resource}
                   size="small"
                 />
                 <ResourceNameLink resource={resourceChanges.resource} />

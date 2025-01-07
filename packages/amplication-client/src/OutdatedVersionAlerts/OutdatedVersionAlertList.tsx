@@ -17,7 +17,7 @@ import { useCallback, useContext } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useOutdatedVersionAlerts from "./hooks/useOutdatedVersionAlerts";
@@ -36,11 +36,8 @@ function OutdatedVersionAlertList() {
     errorOutdatedVersionAlerts,
     loadingOutdatedVersionAlerts,
     //setSearchPhrase,
-    pageSize,
-    setPageNumber,
-    pageNumber,
+    pagination,
     setOrderBy,
-    outdatedVersionAlertsCount,
     status,
     setStatus,
     type,
@@ -51,7 +48,7 @@ function OutdatedVersionAlertList() {
 
   const onSortColumnsChange = useCallback(
     (sortColumns: DataGridSortColumn[]) => {
-      setPageNumber(1);
+      pagination.setPageNumber(1);
       const [sortColumn] = sortColumns;
       if (!sortColumn) {
         setOrderBy(undefined);
@@ -60,11 +57,15 @@ function OutdatedVersionAlertList() {
 
       setOrderBy(sortColumn);
     },
-    [setOrderBy, setPageNumber]
+    [setOrderBy, pagination]
   );
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={PAGE_TITLE}
+      pageWidth={EnumPageWidth.Full}
+    >
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}
@@ -98,18 +99,14 @@ function OutdatedVersionAlertList() {
         end={
           <FlexItem gap={EnumGapSize.Large} itemsAlign={EnumItemsAlign.Center}>
             <Text textStyle={EnumTextStyle.Tag}>
-              {outdatedVersionAlertsCount}{" "}
-              {pluralize(outdatedVersionAlertsCount, "Alert", "Alerts")}
+              {pagination.recordCount}{" "}
+              {pluralize(pagination.recordCount, "Alert", "Alerts")}
             </Text>
             <Pagination
-              count={
-                outdatedVersionAlertsCount > 0
-                  ? Math.ceil(outdatedVersionAlertsCount / pageSize)
-                  : 1
-              }
-              page={pageNumber}
+              count={pagination.pageCount}
+              page={pagination.pageNumber}
               onChange={(event, page) => {
-                setPageNumber(page);
+                pagination.setPageNumber(page);
                 event.preventDefault();
               }}
             />

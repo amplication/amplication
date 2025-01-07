@@ -1,6 +1,15 @@
 import classNames from "classnames";
 import "./VersionTag.scss";
 
+export const LATEST_VERSION_TAG = "latest";
+export const DEV_VERSION_TAG = "@dev";
+export const NEVER_VERSION_TAG = "Never";
+export const SPECIAL_TAGS = [
+  LATEST_VERSION_TAG,
+  DEV_VERSION_TAG,
+  NEVER_VERSION_TAG,
+];
+
 export enum EnumVersionTagState {
   Previous = "previous",
   Current = "current",
@@ -16,7 +25,6 @@ export type Props = {
 };
 
 const CLASS_NAME = "amp-version-tag";
-const LATEST_VERSION_TAG = "latest";
 
 export function VersionTag({
   className,
@@ -24,7 +32,7 @@ export function VersionTag({
   state = EnumVersionTagState.Current,
 }: Props) {
   const value = version
-    ? version === LATEST_VERSION_TAG
+    ? SPECIAL_TAGS.includes(version)
       ? version
       : `v${version}`
     : "none";

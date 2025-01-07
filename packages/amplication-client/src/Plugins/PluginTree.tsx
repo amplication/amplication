@@ -13,6 +13,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import usePlugins from "./hooks/usePlugins";
 import "./PluginTree.scss";
+import { EnumResourceType } from "../models";
 
 const CLASS_NAME = "plugin-tree";
 
@@ -61,6 +62,9 @@ export const PluginTree = React.memo(
       ));
     }, [categories, baseUrl]);
 
+    const showPublicPlugins =
+      currentResource?.resourceType !== EnumResourceType.Component;
+
     return (
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__list`}>
@@ -71,34 +75,46 @@ export const PluginTree = React.memo(
           >
             <span>All Plugins</span>
           </InnerTabLink>
-          <InnerTabLink
-            icon="plugins"
-            to={`${baseUrl}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
-          >
-            <span>Private Plugins</span>
-          </InnerTabLink>
+          {showPublicPlugins && (
+            <InnerTabLink
+              icon="plugins"
+              to={`${baseUrl}/plugins/catalog/${PRIVATE_PLUGINS_CATEGORY}`}
+            >
+              <span>Private Plugins</span>
+            </InnerTabLink>
+          )}
           <InnerTabLink icon="plugins" to={`${baseUrl}/plugins/installed`}>
             <span>Installed Plugins</span>
           </InnerTabLink>
-          <ListItem
-            onClick={handleCategoriesClick}
-            className={`${CLASS_NAME}__categories_container`}
-          >
-            <ListItemText>
-              <Icon icon={"filter"} />
-              <div className={`${CLASS_NAME}__categories_title`}>
-                Categories
-              </div>
-              <Icon
-                className={`${CLASS_NAME}__categories_chevron`}
-                icon={chevronIcon === "open" ? "chevron_down" : "chevron_up"}
-                size="small"
-              />
-            </ListItemText>
-          </ListItem>
-          <Collapse in={chevronIcon === "open"} timeout="auto" unmountOnExit>
-            {setCategoriesLinks}
-          </Collapse>
+          {showPublicPlugins && (
+            <>
+              <ListItem
+                onClick={handleCategoriesClick}
+                className={`${CLASS_NAME}__categories_container`}
+              >
+                <ListItemText>
+                  <Icon icon={"filter"} />
+                  <div className={`${CLASS_NAME}__categories_title`}>
+                    Categories
+                  </div>
+                  <Icon
+                    className={`${CLASS_NAME}__categories_chevron`}
+                    icon={
+                      chevronIcon === "open" ? "chevron_down" : "chevron_up"
+                    }
+                    size="small"
+                  />
+                </ListItemText>
+              </ListItem>
+              <Collapse
+                in={chevronIcon === "open"}
+                timeout="auto"
+                unmountOnExit
+              >
+                {setCategoriesLinks}
+              </Collapse>
+            </>
+          )}
         </div>
       </div>
     );

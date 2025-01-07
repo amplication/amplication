@@ -23,3 +23,4 @@ export { GitRepository } from "./GitRepository";
 export { AuthPreviewAccount } from "./AuthPreviewAccount";
 export { Team } from "./Team";
 export { CustomProperty } from "./CustomProperty";
+export { Blueprint } from "./Blueprint";

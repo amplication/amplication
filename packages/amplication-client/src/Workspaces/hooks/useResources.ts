@@ -16,7 +16,6 @@ import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
-import { CREATE_COMPONENT } from "../queries/ComponentQueries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -60,6 +59,10 @@ const createGitRepositoryFullName = (
       return `${gitRepository.groupName}/${gitRepository.name}`;
     case models.EnumGitProvider.AwsCodeCommit:
       return `${gitRepository.name}`;
+    case models.EnumGitProvider.GitLab:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
+    case models.EnumGitProvider.AzureDevOps:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
   }
 };
 
@@ -112,10 +115,6 @@ const useResources = (
     models.Resource | undefined
   >(undefined);
 
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const [propertiesFilter, setPropertiesFilter] =
-    useState<models.JsonPathStringFilter | null>(null);
-
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(
       currentResource?.gitRepository?.gitOrganization?.provider,
@@ -138,11 +137,6 @@ const useResources = (
     variables: {
       where: {
         project: { id: currentProject?.id },
-        properties: propertiesFilter,
-        name:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
       } as models.ResourceWhereInputWithPropertiesFilter,
     },
     skip: !currentProject?.id,
@@ -243,7 +237,7 @@ const useResources = (
       loading: loadingCreatePluginRepository,
       error: errorCreatePluginRepository,
     },
-  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY);
+  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY, {});
 
   const createPluginRepository = (data: models.ResourceCreateInput) => {
     trackEvent({
@@ -264,30 +258,9 @@ const useResources = (
   };
 
   const [
-    createComponentInternal,
-    { loading: loadingCreateComponent, error: errorCreateComponent },
-  ] = useMutation<{
-    createComponent: models.Resource;
-  }>(CREATE_COMPONENT);
-
-  const createComponent = (data: models.ResourceCreateInput) => {
-    trackEvent({
-      eventName: AnalyticsEventNames.CreateComponent,
-    });
-    createComponentInternal({ variables: { data: data } }).then((result) => {
-      result.data?.createComponent.id &&
-        reloadResources().then(() => {
-          history.push({
-            pathname: `${platformProjectBaseUrl}/${result.data?.createComponent.id}/settings/general`,
-          });
-        });
-    });
-  };
-
-  const [
     createBroker,
     { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
-  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER);
+  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER, {});
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
@@ -400,13 +373,6 @@ const useResources = (
     setResources(resources);
   }, [resourcesData, loadingResources]);
 
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
-
   // ***** section Create Service From Template *****
 
   const [
@@ -439,8 +405,6 @@ const useResources = (
     resources,
     projectConfigurationResource,
     pluginRepositoryResource,
-    handleSearchChange,
-    setPropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
@@ -464,9 +428,6 @@ const useResources = (
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
-    createComponent,
-    loadingCreateComponent,
-    errorCreateComponent,
   };
 };
 

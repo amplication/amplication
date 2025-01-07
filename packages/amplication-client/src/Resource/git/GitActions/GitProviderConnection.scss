@@ -66,4 +66,11 @@
     align-items: center;
     gap: var(--default-spacing-small);
   }
+
+  &__azure-organization-form {
+    &__logo {
+      max-width: 50px;
+      max-height: 50px;
+    }
+  }
 }

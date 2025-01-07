@@ -1,5 +1,4 @@
 import {
-  ColorPicker,
   ColorPickerField,
   Form,
   TextField,
