@@ -455,8 +455,8 @@ describe("WorkspaceService", () => {
       expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
       expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
       expect(createDemoRepoMock).toHaveBeenCalledTimes(1);
-      expect(prismaTeamCreateMock).toHaveBeenCalledTimes(1);
-      expect(prismaRoleCreateMock).toHaveBeenCalledTimes(1);
+      expect(prismaTeamCreateMock).toHaveBeenCalledTimes(3);
+      expect(prismaRoleCreateMock).toHaveBeenCalledTimes(3);
     });
   });
 
