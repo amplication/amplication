@@ -9,7 +9,7 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { Team, User, Workspace } from "../../models";
+import { User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -39,17 +39,81 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
-const DEFAULT_ADMINS_TEAM = {
-  name: "Admins",
-  description: "Admins team",
-  color: "#ACD371",
+type Role = {
+  name: string;
+  key: string;
+  description: string;
+  permissions: string[];
 };
 
-const DEFAULT_ADMINS_ROLE = {
-  name: "Admins",
-  key: "ADMINS",
-  description: "Can access and manage all resources",
-  permissions: ["*"],
+type Team = {
+  name: string;
+  description: string;
+  color: string;
+};
+
+type DefaultObject = {
+  team: Team;
+  role: Role;
+};
+
+const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultObject> = {
+  admins: {
+    team: {
+      name: "Admins",
+      description: "Admins team",
+      color: "#ACD371",
+    },
+    role: {
+      name: "Admins",
+      key: "ADMINS",
+      description: "Can access and manage all resources",
+      permissions: ["*"],
+    },
+  },
+  platform: {
+    team: {
+      name: "Platform Engineers",
+      description: "Platform Engineers team",
+      color: "#20A4F3",
+    },
+    role: {
+      name: "Platform Engineers",
+      key: "PLATFORM_ENGINEERS",
+      description: "Can create and manage Plugins and Templates",
+      permissions: [
+        "project.create",
+        "privatePlugin.create",
+        "privatePlugin.delete",
+        "privatePlugin.edit",
+        "privatePlugin.version.create",
+        "privatePlugin.version.edit",
+        "resource.createTemplate",
+      ],
+    },
+  },
+  developers: {
+    team: {
+      name: "Developers",
+      description: "Developers team",
+      color: "#F6AB50",
+    },
+    role: {
+      name: "Developer",
+      key: "DEVELOPER",
+      description: "Can create and build resources and services",
+      permissions: [
+        "project.create",
+        "resource.*.edit",
+        "resource.delete",
+        "resource.create",
+        "resource.createFromTemplate",
+        "resource.createMessageBroker",
+        "resource.createService",
+        "resource.createTemplate",
+      ],
+    },
+  },
 };
 
 @Injectable()
@@ -149,7 +213,7 @@ export class WorkspaceService {
 
     const [user] = workspace.users;
 
-    await this.createDefaultTeam(workspace, user);
+    await this.createDefaultTeams(workspace, user);
 
     const newProject = await this.projectService.createProject(
       {
@@ -173,43 +237,40 @@ export class WorkspaceService {
     return workspace;
   }
 
-  private async createDefaultTeam(
-    workspace: Workspace,
-    owner: User
-  ): Promise<Team> {
-    const role = await this.prisma.role.create({
-      data: {
-        ...DEFAULT_ADMINS_ROLE,
-        workspace: {
-          connect: {
-            id: workspace.id,
+  private async createDefaultTeams(workspace: Workspace, owner: User) {
+    for (const [, defaultValue] of Object.entries(DEFAULT_TEAMS_AND_ROLES)) {
+      const newRole = await this.prisma.role.create({
+        data: {
+          ...defaultValue.role,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
           },
         },
-      },
-    });
+      });
 
-    const team = await this.prisma.team.create({
-      data: {
-        ...DEFAULT_ADMINS_TEAM,
-        members: {
-          connect: {
-            id: owner.id,
+      await this.prisma.team.create({
+        data: {
+          ...defaultValue.team,
+          members: {
+            connect: {
+              id: owner.id,
+            },
+          },
+          roles: {
+            connect: {
+              id: newRole.id,
+            },
+          },
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
           },
         },
-        roles: {
-          connect: {
-            id: role.id,
-          },
-        },
-        workspace: {
-          connect: {
-            id: workspace.id,
-          },
-        },
-      },
-    });
-
-    return team;
+      });
+    }
   }
 
   private async canInvite(workspaceId: string): Promise<boolean> {
