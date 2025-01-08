@@ -1,9 +1,6 @@
 import {
   DataGridColumn,
-  EnumFlexDirection,
-  EnumGapSize,
   EnumTextStyle,
-  FlexItem,
   Text,
   VersionTag,
 } from "@amplication/ui/design-system";
@@ -11,8 +8,6 @@ import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { EnumResourceType, Resource } from "../models";
 import ResourcePluginLogoGroup from "../Plugins/ResourcePluginLogoGroup";
-import NewServiceFromTemplateButton from "../ServiceTemplate/NewServiceFromTemplateButton";
-import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import ResourceCodeEngineVersion from "../Workspaces/ResourceCodeEngineVersion";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCount";
@@ -105,21 +100,5 @@ export const SERVICE_TEMPLATE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     resizable: true,
     sortable: true,
-  },
-
-  {
-    key: "actions",
-    name: "Actions",
-    sortable: false,
-    width: 150,
-    renderCell: (props) => {
-      return (
-        <FlexItem direction={EnumFlexDirection.Row} gap={EnumGapSize.Small}>
-          <NewServiceFromTemplateButton serviceTemplateId={props.row.id} />
-          <DeleteResourceButton resource={props.row} />
-        </FlexItem>
-      );
-    },
-    resizable: true,
   },
 ];

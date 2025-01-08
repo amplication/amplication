@@ -6,11 +6,17 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useTracking } from "../util/analytics";
 import { Reference, gql, useMutation } from "@apollo/client";
 
-import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
+import {
+  ConfirmationDialog,
+  EnumButtonState,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { useAppContext } from "../context/appContext";
 import { formatError } from "../util/error";
 import { GET_OUTDATED_VERSION_ALERTS } from "../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -28,8 +34,10 @@ function DeleteResourceButton({ resource }: Props) {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { trackEvent } = useTracking();
   const [error, setError] = useState<Error | null>(null);
+  const { baseUrl } = useProjectBaseUrl();
 
   const { addEntity } = useAppContext();
+  const history = useHistory();
 
   const clearError = useCallback(() => {
     setError(null);
@@ -76,13 +84,14 @@ function DeleteResourceButton({ resource }: Props) {
       deleteResource({
         onCompleted: () => {
           addEntity();
+          history.push(baseUrl);
         },
         variables: {
           resourceId: resource.id,
         },
       }).catch(setError);
     },
-    [addEntity, deleteResource, trackEvent]
+    [addEntity, baseUrl, deleteResource, history, trackEvent]
   );
 
   const handleConfirmDelete = useCallback(() => {
@@ -109,10 +118,13 @@ function DeleteResourceButton({ resource }: Props) {
       />
 
       <Button
-        buttonStyle={EnumButtonStyle.Text}
+        buttonStyle={EnumButtonStyle.Primary}
+        buttonState={EnumButtonState.Danger}
         icon="trash_2"
         onClick={handleDelete}
-      />
+      >
+        Delete
+      </Button>
 
       <Snackbar
         open={Boolean(error)}
