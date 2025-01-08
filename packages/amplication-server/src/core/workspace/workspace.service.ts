@@ -9,7 +9,7 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { User, Workspace } from "../../models";
+import { Role, Team, User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -39,25 +39,12 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
-type Role = {
-  name: string;
-  key: string;
-  description: string;
-  permissions: string[];
+type DefaultTeamWithRole = {
+  team: Pick<Team, "name" | "description" | "color">;
+  role: Pick<Role, "name" | "key" | "description" | "permissions">;
 };
 
-type Team = {
-  name: string;
-  description: string;
-  color: string;
-};
-
-type DefaultObject = {
-  team: Team;
-  role: Role;
-};
-
-const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultObject> = {
+const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultTeamWithRole> = {
   admins: {
     team: {
       name: "Admins",
