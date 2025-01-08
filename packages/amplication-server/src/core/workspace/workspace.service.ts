@@ -40,8 +40,8 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 const INVITATION_EXPIRATION_DAYS = 7;
 
 type DefaultTeamWithRole = {
-  team: Omit<Team, "id" | "createdAt" | "updatedAt">;
-  role: Omit<Role, "id" | "createdAt" | "updatedAt">;
+  team: Omit<Team, "id" | "createdAt" | "updatedAt" | "workspaceId">;
+  role: Omit<Role, "id" | "createdAt" | "updatedAt" | "workspaceId">;
 };
 
 const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultTeamWithRole> = {
