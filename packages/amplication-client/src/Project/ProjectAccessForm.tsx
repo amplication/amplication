@@ -14,11 +14,15 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import useProjectConfigSettingsHook from "./useProjectConfigSettingsHook";
+import { useResourceContext } from "../context/resourceContext";
 
 const CLASS_NAME = "generation-settings-form";
 
 const ProjectAccessForm: React.FC = () => {
   const { currentProject } = useAppContext();
+
+  const { permissions } = useResourceContext();
+  const canEditProject = permissions.canPerformTask("project.settings.edit");
 
   const { updateProject, updateProjectError } = useProjectConfigSettingsHook();
 
@@ -58,8 +62,9 @@ const ProjectAccessForm: React.FC = () => {
                 </Text>
                 <HorizontalRule />
 
-                <FormikAutoSave debounceMS={1000} />
+                {canEditProject && <FormikAutoSave debounceMS={1000} />}
                 <ToggleField
+                  disabled={!canEditProject}
                   name="platformIsPublic"
                   label="Allow other projects to use plugins and templates from this project"
                 />
