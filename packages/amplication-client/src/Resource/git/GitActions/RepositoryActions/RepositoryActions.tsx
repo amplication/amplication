@@ -33,6 +33,7 @@ export default function RepositoryActions({
 
   const { permissions } = useResourceContext();
   const canCreateRepo = permissions.canPerformTask("git.repo.create");
+  const canSelectRepo = permissions.canPerformTask("git.repo.select");
 
   return (
     <Panel panelStyle={EnumPanelStyle.Bold}>
@@ -59,12 +60,14 @@ export default function RepositoryActions({
             end={
               selectedGitOrganization && (
                 <FlexItem>
-                  <Button
-                    buttonStyle={EnumButtonStyle.Outline}
-                    onClick={onSelectRepository}
-                  >
-                    Select repository
-                  </Button>
+                  {canSelectRepo && (
+                    <Button
+                      buttonStyle={EnumButtonStyle.Outline}
+                      onClick={onSelectRepository}
+                    >
+                      Select repository
+                    </Button>
+                  )}
 
                   {canCreateRepo && (
                     <>
