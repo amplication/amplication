@@ -47,11 +47,6 @@ const ProjectPermissions = [
 // Resource Permissions
 const ResourcePermissions = [
   "resource.*.edit", // (split later to specific)
-  "resource.git.repo.baseBranch.edit",
-  "resource.git.repo.create",
-  "resource.git.repo.disconnect",
-  "resource.git.repo.overrideProjectSettings",
-  "resource.git.repo.select",
   "resource.delete",
   "resource.create",
   "resource.createFromTemplate",
@@ -65,11 +60,6 @@ const PrivatePluginPermissions = [
   "privatePlugin.create",
   "privatePlugin.delete",
   "privatePlugin.edit",
-  "privatePlugin.git.repo.baseBranch.edit",
-  "privatePlugin.git.repo.create",
-  "privatePlugin.git.repo.disconnect",
-  "privatePlugin.git.repo.overrideProjectSettings",
-  "privatePlugin.git.repo.select",
   "privatePlugin.version.create",
   "privatePlugin.version.edit",
 ] as const;

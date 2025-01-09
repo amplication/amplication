@@ -43,14 +43,6 @@ const useResourcePermissions = (resourceId: string): IPermissions => {
   });
 
   const canPerformTask = (task: RolesPermissions) => {
-    console.log("canPerformTask", task);
-    console.log(
-      "workspacePermissions",
-      workspacePermissions.canPerformTask(task)
-    );
-    console.log("isAdmin", isAdmin);
-    console.log("allowedTasks[task]", allowedTasks[task]);
-
     return (
       workspacePermissions.canPerformTask(task) ||
       isAdmin ||
