@@ -51,15 +51,6 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/tokens",
-            Component: lazy(() => import("../Settings/ApiTokenList")),
-            moduleName: "",
-            displayName: "Tokens",
-            exactPath: false,
-            isAnalytics: true,
-          },
-
-          {
             path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
             Component: lazy(() => import("../Blueprints/BlueprintsPage")),
             moduleName: "",
