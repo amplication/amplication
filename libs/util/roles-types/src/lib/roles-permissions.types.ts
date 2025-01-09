@@ -53,6 +53,7 @@ const ResourcePermissions = [
   "resource.createMessageBroker",
   "resource.createService",
   "resource.createTemplate",
+  "resource.setPermissions",
 ] as const;
 
 // Private Plugin Permissions
@@ -64,7 +65,20 @@ const PrivatePluginPermissions = [
   "privatePlugin.version.edit",
 ] as const;
 
-const RolesPermissions = [
+// Api Token Permissions
+const ApiTokenPermissions = ["apiToken.create"] as const;
+
+// Blueprint Permissions
+const BlueprintPermissions = [
+  "blueprint.create",
+  "blueprint.delete",
+  "blueprint.edit",
+] as const;
+
+// Roles Permissions
+const RolesPermissions = ["role.create", "role.delete", "role.edit"] as const;
+
+const AllPermissions = [
   ...AdminPermissions,
   ...GitOrganizationPermissions,
   ...GitRepositoryPermissions,
@@ -74,8 +88,11 @@ const RolesPermissions = [
   ...ResourcePermissions,
   ...TeamPermissions,
   ...WorkspacePermissions,
+  ...ApiTokenPermissions,
+  ...BlueprintPermissions,
+  ...RolesPermissions,
 ] as const;
 
-export const rolesPermissionsList: string[] = [...RolesPermissions];
+export const rolesPermissionsList: string[] = [...AllPermissions];
 
-export type RolesPermissions = (typeof RolesPermissions)[number];
+export type RolesPermissions = (typeof AllPermissions)[number];

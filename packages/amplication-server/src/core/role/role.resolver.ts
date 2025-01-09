@@ -39,7 +39,8 @@ export class RoleResolver {
   @Mutation(() => Role, { nullable: false })
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "role.create"
   )
   async createRole(
     @Args() args: RoleCreateArgs,
@@ -49,19 +50,23 @@ export class RoleResolver {
   }
 
   @Mutation(() => Role, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.RoleId,
+    "where.id",
+    "role.delete"
+  )
   async deleteRole(@Args() args: FindOneArgs): Promise<Role | null> {
     return this.roleService.deleteRole(args);
   }
 
   @Mutation(() => Role, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id", "role.edit")
   async updateRole(@Args() args: UpdateRoleArgs): Promise<Role> {
     return this.roleService.updateRole(args);
   }
 
   @Mutation(() => Role, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id", "role.edit")
   async addRolePermissions(
     @Args() args: RoleAddRemovePermissionsArgs
   ): Promise<Role> {
@@ -69,7 +74,7 @@ export class RoleResolver {
   }
 
   @Mutation(() => Role, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.RoleId, "where.id", "role.edit")
   async removeRolePermissions(
     @Args() args: RoleAddRemovePermissionsArgs
   ): Promise<Role> {

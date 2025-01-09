@@ -48,7 +48,8 @@ export class BlueprintResolver {
   @Mutation(() => Blueprint, { nullable: false })
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "blueprint.create"
   )
   async createBlueprint(
     @Args() args: BlueprintCreateArgs,
@@ -58,13 +59,21 @@ export class BlueprintResolver {
   }
 
   @Mutation(() => Blueprint, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.id",
+    "blueprint.delete"
+  )
   async deleteBlueprint(@Args() args: FindOneArgs): Promise<Blueprint | null> {
     return this.blueprintService.deleteBlueprint(args);
   }
 
   @Mutation(() => Blueprint, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.id",
+    "blueprint.edit"
+  )
   async updateBlueprint(@Args() args: UpdateBlueprintArgs): Promise<Blueprint> {
     return this.blueprintService.updateBlueprint(args);
   }
@@ -74,7 +83,8 @@ export class BlueprintResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlueprintId,
-    "where.blueprint.id"
+    "where.blueprint.id",
+    "blueprint.edit"
   )
   async upsertBlueprintRelation(
     @Args() args: UpsertBlueprintRelationArgs
@@ -87,7 +97,8 @@ export class BlueprintResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlueprintId,
-    "where.blueprint.id"
+    "where.blueprint.id",
+    "blueprint.edit"
   )
   async deleteBlueprintRelation(
     @Args() args: DeleteBlueprintRelationArgs
