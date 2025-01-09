@@ -36,7 +36,11 @@ export class RelationResolver extends BlockTypeResolver(
   @Mutation(() => Relation, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resource.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resource.id",
+    "resource.*.edit"
+  )
   async updateResourceRelation(
     @Args() args: UpdateResourceRelationArgs,
     @UserEntity() user: User

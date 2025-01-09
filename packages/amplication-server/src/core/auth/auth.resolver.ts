@@ -81,6 +81,7 @@ export class AuthResolver {
 
   @Mutation(() => ApiToken)
   @UseGuards(GqlAuthGuard)
+  @AuthorizeContext(AuthorizableOriginParameter.None, "", "apiToken.create")
   async createApiToken(
     @UserEntity() user: User,
     @Args() args: CreateApiTokenArgs

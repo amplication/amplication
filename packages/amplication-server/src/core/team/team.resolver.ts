@@ -133,7 +133,11 @@ export class TeamResolver {
   }
 
   @Mutation(() => TeamAssignment, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.resourceId",
+    "resource.setPermissions"
+  )
   async addRolesToTeamAssignment(
     @Args() args: AddRolesToTeamAssignmentArgs,
     @UserEntity() user: User
@@ -142,7 +146,11 @@ export class TeamResolver {
   }
 
   @Mutation(() => TeamAssignment, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.resourceId",
+    "resource.setPermissions"
+  )
   async removeRolesFromTeamAssignment(
     @Args() args: RemoveRolesFromTeamAssignmentArgs
   ): Promise<TeamAssignment> {
@@ -150,7 +158,11 @@ export class TeamResolver {
   }
 
   @Mutation(() => TeamAssignment, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.TeamId, "where.teamId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.resourceId",
+    "resource.setPermissions"
+  )
   async deleteTeamAssignment(
     @Args() args: DeleteTeamAssignmentArgs
   ): Promise<TeamAssignment> {
@@ -158,7 +170,11 @@ export class TeamResolver {
   }
 
   @Mutation(() => [TeamAssignment], { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.resourceId",
+    "resource.setPermissions"
+  )
   async createTeamAssignments(
     @Args() args: CreateTeamAssignmentsArgs
   ): Promise<TeamAssignment[]> {

@@ -23,7 +23,8 @@ export class ServiceTemplateResolver {
   @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.resource.project.connect.id"
+    "data.resource.project.connect.id",
+    "resource.createTemplate"
   )
   async createServiceTemplate(
     @Args() args: CreateServiceTemplateArgs,
@@ -56,7 +57,8 @@ export class ServiceTemplateResolver {
   @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createFromTemplate"
   )
   async createServiceFromTemplate(
     @Args() args: CreateServiceFromTemplateArgs,
@@ -72,7 +74,8 @@ export class ServiceTemplateResolver {
   )
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.serviceTemplate.id"
+    "data.serviceTemplate.id",
+    "resource.createFromTemplate"
   )
   async scaffoldServiceFromTemplate(
     @Args() args: ScaffoldServiceFromTemplateArgs,
@@ -82,7 +85,11 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async upgradeServiceToLatestTemplateVersion(
     @Args() args: FindOneArgs,
     @UserEntity() user: User

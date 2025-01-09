@@ -462,7 +462,7 @@ export class TeamService {
       where: { teamId, resourceId },
     } = args;
 
-    await this.validateAssignmentResource(resourceId, user);
+    await this.validateAssignmentTeam(teamId, user);
 
     //check if team is already assigned to the resource
     const teamAssignment = await this.prisma.teamAssignment.upsert({
@@ -636,19 +636,17 @@ export class TeamService {
     return teamAssignments;
   }
 
-  async validateAssignmentResource(resourceId: string, user: User) {
-    const resource = await this.prisma.resource.findUnique({
+  async validateAssignmentTeam(teamId: string, user: User) {
+    const team = await this.prisma.team.findUnique({
       where: {
-        id: resourceId,
+        id: teamId,
         deletedAt: null,
-        project: {
-          workspaceId: user.workspace.id,
-        },
+        workspaceId: user.workspace.id,
       },
     });
 
-    if (!resource) {
-      throw new AmplicationError(INVALID_RESOURCE_ID);
+    if (!team) {
+      throw new AmplicationError(INVALID_TEAM_ID);
     }
   }
 

@@ -77,7 +77,8 @@ export class OutdatedVersionAlertResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.OutdatedVersionAlertId,
-    "where.id"
+    "where.id",
+    "resource.*.edit"
   )
   async updateOutdatedVersionAlert(
     @UserEntity() user: User,
