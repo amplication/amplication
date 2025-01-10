@@ -82,7 +82,7 @@ jobs:
 
       - name: Cache
         id: cache
-        uses: actions/cache@4.2.2
+        uses: actions/cache@4.2.0
         env:
           cache-name: cache
         with:
