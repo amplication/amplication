@@ -3661,6 +3661,7 @@ export type Resource = {
   id: Scalars['String']['output'];
   licensed: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  newProp?: Maybe<Scalars['String']['output']>;
   owner?: Maybe<Owner>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;

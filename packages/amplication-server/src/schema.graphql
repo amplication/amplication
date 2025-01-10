@@ -2437,6 +2437,7 @@ type Resource {
   id: String!
   licensed: Boolean!
   name: String!
+  newProp: String
   owner: Owner
   project: Project
   projectId: String

@@ -118,4 +118,7 @@ export class Resource {
 
   @Field(() => String, { nullable: true })
   blueprintId?: string;
+
+  @Field(() => String, { nullable: true })
+  newProp?: string;
 }
