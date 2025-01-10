@@ -78,6 +78,8 @@ import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/t
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ResourceInclude } from "./dto/ResourceInclude";
+import { Relation } from "../relation/dto/Relation";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -197,7 +199,8 @@ export class ResourceService {
     private readonly gitProviderService: GitProviderService,
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
     private readonly ownershipService: OwnershipService,
-    private readonly relationService: RelationService
+    private readonly relationService: RelationService,
+    private readonly customPropertyService: CustomPropertyService
   ) {}
 
   async createProjectConfiguration(
@@ -1805,7 +1808,40 @@ export class ResourceService {
     return resource;
   }
 
-  async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {
+  async validateResourceProperties(
+    values: Record<string, unknown>,
+    user: User
+  ): Promise<void> {
+    if (!values || Object.keys(values).length === 0) {
+      return;
+    }
+
+    const customProperties = await this.customPropertyService.customProperties({
+      where: {
+        workspace: {
+          id: user.workspace.id,
+        },
+        enabled: true,
+      },
+    });
+
+    const validationResults =
+      await this.customPropertyService.validateCustomProperties(
+        customProperties,
+        values
+      );
+
+    if (!validationResults.isValid) {
+      throw new AmplicationError(
+        `Validation failed for resource properties: ${validationResults.errorText}`
+      );
+    }
+  }
+
+  async updateResource(
+    args: UpdateOneResourceArgs,
+    user: User
+  ): Promise<Resource | null> {
     const resource = await this.resource({
       where: {
         id: args.where.id,
@@ -1815,6 +1851,11 @@ export class ResourceService {
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
     }
+
+    await this.validateResourceProperties(
+      args.data.properties as Record<string, unknown>,
+      user
+    );
 
     if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
       await this.projectService.updateProject({
@@ -2062,6 +2103,16 @@ export class ResourceService {
 
       return ownerShip;
     }
+  }
+
+  async getRelations(resourceId: string): Promise<Relation[]> {
+    return await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
   }
 
   async getRelatedResource(resourceId: string): Promise<Resource[]> {

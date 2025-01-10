@@ -12,21 +12,16 @@ const CLASS_NAME = "amp-breadcrumbs";
 
 export const Breadcrumbs = ({ children }: Props) => {
   return (
-    <>
-      {children && Children.count(children) > 0 && (
-        <div className={`${CLASS_NAME}__first-separator`} />
-      )}
-      <MuiBreadcrumbs
-        classes={{
-          separator: `${CLASS_NAME}__separator`,
-          li: `${CLASS_NAME}__item_wrapper`,
-        }}
-        className={CLASS_NAME}
-        aria-label="breadcrumb"
-      >
-        {children}
-      </MuiBreadcrumbs>
-    </>
+    <MuiBreadcrumbs
+      classes={{
+        separator: `${CLASS_NAME}__separator`,
+        li: `${CLASS_NAME}__item_wrapper`,
+      }}
+      className={CLASS_NAME}
+      aria-label="breadcrumb"
+    >
+      {children}
+    </MuiBreadcrumbs>
   );
 };
 

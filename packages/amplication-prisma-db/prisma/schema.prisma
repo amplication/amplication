@@ -802,20 +802,23 @@ enum PreviewAccountType {
 }
 
 model CustomProperty {
-  id          String             @id @default(cuid())
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  deletedAt   DateTime?
-  name        String
-  key         String
-  description String?
-  enabled     Boolean            @default(true)
-  type        CustomPropertyType
-  workspaceId String
-  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  options     Json?
-  blueprintId String?
-  blueprint   Blueprint?         @relation(fields: [blueprintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  name              String
+  key               String
+  description       String?
+  enabled           Boolean            @default(true)
+  type              CustomPropertyType
+  workspaceId       String
+  workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  options           Json?
+  blueprintId       String?
+  blueprint         Blueprint?         @relation(fields: [blueprintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  required          Boolean            @default(false)
+  validationRule    String?
+  validationMessage String?
 
   @@unique([workspaceId, blueprintId, key], map: "CustomProperty.workspaceId_blueprintId_key_unique")
   @@unique([workspaceId, blueprintId, name], map: "CustomProperty.workspaceId_blueprintId_name_unique")

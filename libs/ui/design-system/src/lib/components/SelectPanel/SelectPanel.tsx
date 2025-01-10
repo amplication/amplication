@@ -18,6 +18,7 @@ export type Props = {
   selectedValue: string | string[] | null;
   onChange: (selectedValue: string | string[]) => void;
   buttonProps?: ButtonProps;
+  openButtonProps?: Omit<ButtonProps, "onClick">;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -28,6 +29,7 @@ export const SelectPanel: React.FC<Props> = ({
   selectedValue,
   onChange,
   buttonProps,
+  openButtonProps,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -40,6 +42,9 @@ export const SelectPanel: React.FC<Props> = ({
     }
 
     if (isMulti) {
+      if (!Array.isArray(selectedValue)) {
+        return [];
+      }
       return (selectedValue as string[]).map((value) => {
         return (
           options.find((option) => option.value === value) || {
@@ -139,21 +144,20 @@ export const SelectPanel: React.FC<Props> = ({
           className={`${CLASS_NAME}__button`}
           buttonStyle={buttonStyle}
           {...otherButtonProps}
+          {...(isOpen ? openButtonProps : {})}
           onClick={handleButtonClick}
           type="button"
           disabled={disabled}
         >
-          {selectedItems.length > 0 ? (
-            selectedItems.map((item) => (
-              <SelectPanelItemContent
-                key={item.value}
-                item={item}
-                isMulti={isMulti}
-              />
-            ))
-          ) : (
-            <Text textStyle={EnumTextStyle.Description}>{label}</Text>
-          )}
+          {selectedItems.length > 0
+            ? selectedItems.map((item) => (
+                <SelectPanelItemContent
+                  key={item.value}
+                  item={item}
+                  isMulti={isMulti}
+                />
+              ))
+            : label}
         </Button>
       </Popover>
     </div>

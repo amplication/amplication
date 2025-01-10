@@ -124,13 +124,14 @@ function groupToNode(group: GroupedResult, parentId: string): GroupNode {
       payload: {
         id: group.nodeId,
         name: group.name,
+        fieldName: group.fieldName,
         fieldId: group.fieldId,
         fieldKey: group.fieldKey,
       },
     },
     id: group.nodeId,
     draggable: false,
-    selectable: false,
+    selectable: true,
     deletable: false,
     parentId: parentId,
     type: NODE_TYPE_GROUP,
@@ -265,6 +266,7 @@ function groupResourcesByPaths(
       {
         fieldId: string;
         fieldKey: string;
+        fieldName: string;
         name: string;
         items: models.Resource[];
       }
@@ -272,6 +274,7 @@ function groupResourcesByPaths(
     const currentGroup = groupByFields[depth];
 
     const fieldKey = currentGroup.fieldKey;
+    const fieldName = currentGroup.fieldName;
 
     items.forEach((item) => {
       const fieldId = getValueByPath(item, currentGroup.idPath);
@@ -283,6 +286,7 @@ function groupResourcesByPaths(
         grouped[groupKey] = {
           fieldId: fieldId,
           fieldKey: fieldKey,
+          fieldName: fieldName,
           name: groupName,
           items: [],
         };
@@ -298,6 +302,7 @@ function groupResourcesByPaths(
         name: group.name,
         fieldId: group.fieldId,
         fieldKey: group.fieldKey,
+        fieldName: group.fieldName,
         children: groupRecursively(
           group.items,
           groupByFields,
@@ -316,6 +321,7 @@ function groupResourcesByPaths(
     children: groupRecursively(resources, groupByFields, 0, "root"),
     fieldKey: "",
     fieldId: "",
+    fieldName: "",
   };
 }
 

@@ -63,7 +63,7 @@ export const CustomPropertyFilter = ({
             ) : (
               <CustomPropertyValueSelect
                 property={customProperty}
-                value={selectedValue}
+                value={selectedValue as string}
               />
             )}
           </FlexItem>

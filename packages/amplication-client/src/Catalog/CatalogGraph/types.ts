@@ -31,6 +31,7 @@ export type Group = {
   name: string;
   fieldKey: string;
   fieldId: string;
+  fieldName: string;
 };
 
 export type GroupNodePayload = NodePayload<Group>;
@@ -70,6 +71,7 @@ export type GroupedResult = {
   name: string;
   fieldKey: string;
   fieldId: string;
+  fieldName: string;
   type: "node-group";
   children?: GroupedResult[] | models.Resource[];
 };

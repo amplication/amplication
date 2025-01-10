@@ -11,7 +11,10 @@ type CatalogResults = {
 };
 
 const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
-  not: models.EnumResourceType.ProjectConfiguration,
+  notIn: [
+    models.EnumResourceType.ProjectConfiguration,
+    models.EnumResourceType.PluginRepository,
+  ],
 };
 
 const RESOURCE_TYPE_PREFIX = "resourceType_";
@@ -74,7 +77,7 @@ const useCatalog = (props?: Props) => {
   }, [catalogData, setCurrentPageData, setMeta]);
 
   const setFilter = useCallback(
-    (filters: Record<string, string>) => {
+    (filters: Record<string, string | string[]>) => {
       //split the filters into properties and other filters
       const [propertiesFilters, otherFilters] = Object.entries(filters).reduce(
         (acc, [key, value]) => {
@@ -85,7 +88,10 @@ const useCatalog = (props?: Props) => {
           }
           return acc;
         },
-        [{} as Record<string, string>, {} as Record<string, string>]
+        [
+          {} as Record<string, string | string[]>,
+          {} as Record<string, string | string[]>,
+        ]
       );
 
       const filterList: models.JsonPathStringFilterItem[] = Object.keys(
@@ -100,12 +106,12 @@ const useCatalog = (props?: Props) => {
           equals:
             customPropertiesMap[key].type ===
             models.EnumCustomPropertyType.Select
-              ? propertiesFilters[key]
+              ? (propertiesFilters[key] as string) // custom properties filters are always strings
               : undefined,
           arrayContains:
             customPropertiesMap[key].type ===
             models.EnumCustomPropertyType.MultiSelect
-              ? propertiesFilters[key]
+              ? (propertiesFilters[key] as string) // custom properties filters are always strings
               : undefined,
         };
       });
@@ -125,7 +131,7 @@ const useCatalog = (props?: Props) => {
           if (key === "resourceTypeOrBlueprint" && value) {
             acc = updateResourceTypeFilter(acc, value as unknown as string[]);
           } else if (key === "ownership" && value) {
-            const values = value.split(":");
+            const values = (value as string).split(":"); //ownership filter value is in the format of key:value
             if (values.length !== 2 || !values[0] || !values[1]) {
               return acc;
             }

@@ -37,7 +37,7 @@ const FIELDS: { [key: string]: GroupByField } = {
     fieldKey: "gitRepo",
     fieldName: "Git Repository",
     namePath: "gitRepository.name",
-    idPath: "gitRepository.id",
+    idPath: "gitRepository.name",
   },
   serviceTemplate: {
     fieldKey: "serviceTemplate",
@@ -94,6 +94,7 @@ export const CatalogGroupBySelector = ({ onChange, selectedValue }: Props) => {
         if (customPropertiesMap[field]) {
           return {
             fieldKey: field,
+            fieldName: customPropertiesMap[field].name,
             namePath: `properties.${field}`,
             idPath: `properties.${field}`,
           };

@@ -69,6 +69,7 @@ export default function CatalogGraph() {
     setPartialLayoutOptions,
     layoutOptions,
     saveState,
+    reloadCatalog,
   } = useCatalogGraph({
     onMessage: showMessage,
   });
@@ -174,6 +175,7 @@ export default function CatalogGraph() {
                 <DataGridFilters
                   columns={columnsWithAllProps}
                   onChange={setFilter}
+                  fixedFiltersKey="catalog-graph"
                 />
               </GraphToolbarItem>
               <GraphToolbarItem>
@@ -194,6 +196,15 @@ export default function CatalogGraph() {
                     icon="save"
                     buttonStyle={EnumButtonStyle.Text}
                     onClick={saveState}
+                  />
+                </Tooltip>
+              </GraphToolbarItem>
+              <GraphToolbarItem>
+                <Tooltip title="Refresh" direction="s">
+                  <Button
+                    icon="refresh_cw"
+                    buttonStyle={EnumButtonStyle.Text}
+                    onClick={reloadCatalog}
                   />
                 </Tooltip>
               </GraphToolbarItem>

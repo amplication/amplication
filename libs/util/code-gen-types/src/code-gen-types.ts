@@ -240,6 +240,7 @@ export type Package = BlockOmittedFields<models.Package> & {
 // };
 
 export type ResourceSettings = BlockOmittedFields<models.ResourceSettings>;
+export type Relation = BlockOmittedFields<models.Relation>;
 
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 
