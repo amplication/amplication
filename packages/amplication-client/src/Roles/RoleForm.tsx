@@ -14,6 +14,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 type Props = {
   onSubmit: (values: models.Role) => void;
   defaultValues?: models.Role;
+  disabled: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -52,7 +53,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const RoleForm = ({ onSubmit, defaultValues }: Props) => {
+const RoleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -73,12 +74,28 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
         onSubmit={onSubmit}
       >
         <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
+          {!disabled && <FormikAutoSave debounceMS={1000} />}
 
-          <DisplayNameField name="name" label="Name" minLength={1} />
-          <DisplayNameField name="key" label="Key" minLength={1} />
+          <DisplayNameField
+            name="name"
+            label="Name"
+            minLength={1}
+            disabled={disabled}
+          />
+          <DisplayNameField
+            name="key"
+            label="Key"
+            minLength={1}
+            disabled={disabled}
+          />
 
-          <TextField name="description" label="Description" textarea rows={3} />
+          <TextField
+            name="description"
+            label="Description"
+            textarea
+            rows={3}
+            disabled={disabled}
+          />
         </Form>
       </Formik>
     </>

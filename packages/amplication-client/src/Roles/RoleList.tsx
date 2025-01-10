@@ -27,7 +27,9 @@ import NewRole from "./NewRole";
 const CLASS_NAME = "role-list";
 
 export const RoleList = React.memo(() => {
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canCreate = permissions.canPerformTask("role.create");
 
   const baseUrl = `/${currentWorkspace?.id}/settings`;
 
@@ -80,7 +82,9 @@ export const RoleList = React.memo(() => {
 
       <List
         headerContent={
-          <NewRole disabled={!data?.roles} onRoleAdd={handleRoleChange} />
+          canCreate && (
+            <NewRole disabled={!data?.roles} onRoleAdd={handleRoleChange} />
+          )
         }
       >
         {data?.roles?.map((role) => (

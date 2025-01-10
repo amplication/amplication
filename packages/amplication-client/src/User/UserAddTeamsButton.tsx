@@ -2,6 +2,7 @@ import { Button, Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useState } from "react";
 import * as models from "../models";
 import UserAddTeams from "./UserAddTeams";
+import { useAppContext } from "../context/appContext";
 
 type Props = {
   user: models.User;
@@ -16,6 +17,10 @@ const UserAddTeamsButton = ({ user, onAddTeams }: Props) => {
     setIsOpen(false);
   };
 
+  const { permissions } = useAppContext();
+
+  const canAddTeamMember = permissions.canPerformTask("team.member.add");
+
   return (
     <>
       <Dialog
@@ -25,15 +30,16 @@ const UserAddTeamsButton = ({ user, onAddTeams }: Props) => {
       >
         {isOpen && <UserAddTeams user={user} onAddTeams={handleAddTeams} />}
       </Dialog>
-
-      <Button
-        buttonStyle={EnumButtonStyle.Outline}
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        Add to Teams
-      </Button>
+      {canAddTeamMember && (
+        <Button
+          buttonStyle={EnumButtonStyle.Outline}
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
+          Add to Teams
+        </Button>
+      )}
     </>
   );
 };

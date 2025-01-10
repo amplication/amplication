@@ -17,6 +17,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import AddRolePermission from "./AddRolePermissionButton";
 import useRoles from "./hooks/useRoles";
+import { useAppContext } from "../context/appContext";
 
 type Props = {
   role: models.Role;
@@ -38,6 +39,10 @@ const RolePermissionList = React.memo(
     const errorMessage = formatError(
       addPermissionsToRoleError || removePermissionsFromRoleError
     );
+
+    const { permissions } = useAppContext();
+
+    const canEditRole = permissions.canPerformTask("role.edit");
 
     const handleAddPermissions = (userIds: string[]) => {
       addPermissionsToRole(userIds);
@@ -69,7 +74,8 @@ const RolePermissionList = React.memo(
             </Text>
           }
           end={
-            role && (
+            role &&
+            canEditRole && (
               <AddRolePermission
                 role={role}
                 onAddPermissions={handleAddPermissions}
@@ -83,13 +89,15 @@ const RolePermissionList = React.memo(
           {orderedPermissions?.map((permission) => (
             <ListItem
               end={
-                <Button
-                  icon="trash_2"
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={() => {
-                    handleRemovePermissions(permission);
-                  }}
-                />
+                canEditRole && (
+                  <Button
+                    icon="trash_2"
+                    buttonStyle={EnumButtonStyle.Text}
+                    onClick={() => {
+                      handleRemovePermissions(permission);
+                    }}
+                  />
+                )
               }
               key={permission}
             >

@@ -25,7 +25,9 @@ import NewTeam from "./NewTeam";
 const CLASS_NAME = "team-list";
 
 export const TeamList = React.memo(() => {
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canCreate = permissions.canPerformTask("team.create");
 
   const baseUrl = `/${currentWorkspace?.id}/settings`;
 
@@ -78,7 +80,9 @@ export const TeamList = React.memo(() => {
 
       <List
         headerContent={
-          <NewTeam disabled={!data?.teams} onTeamAdd={handleTeamChange} />
+          canCreate && (
+            <NewTeam disabled={!data?.teams} onTeamAdd={handleTeamChange} />
+          )
         }
       >
         {data?.teams?.map((team) => (

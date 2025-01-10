@@ -18,7 +18,11 @@ const Role = () => {
     roleId: string;
   }>(["/:workspace/settings/roles/:roleId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canDelete = permissions.canPerformTask("role.delete");
+  const canEdit = permissions.canPerformTask("role.edit");
+
   const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
@@ -61,13 +65,17 @@ const Role = () => {
           subTitle={data?.role?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.role && (
+          {data?.role && canDelete && (
             <DeleteRole role={data?.role} onDelete={handleDeleteModule} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
       {!loading && (
-        <RoleForm onSubmit={handleSubmit} defaultValues={data?.role} />
+        <RoleForm
+          onSubmit={handleSubmit}
+          defaultValues={data?.role}
+          disabled={!canEdit}
+        />
       )}
       <TabContentTitle
         title="Permissions"

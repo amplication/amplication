@@ -26,10 +26,11 @@ const User = () => {
     userId: string;
   }>(["/:workspace/settings/members/:userId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
   const baseUrl = `/${currentWorkspace?.id}/settings`;
 
   const { userId } = match?.params ?? {};
+  const canRemoveTeamMember = permissions.canPerformTask("team.member.remove");
 
   const {
     getUserData: data,
@@ -89,15 +90,17 @@ const User = () => {
                 key={team.id}
                 to={`${baseUrl}/teams/${team.id}`}
                 end={
-                  <Button
-                    icon="trash_2"
-                    buttonStyle={EnumButtonStyle.Text}
-                    onClick={(e) => {
-                      handleRemoveMember(team.id);
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
-                  />
+                  canRemoveTeamMember && (
+                    <Button
+                      icon="trash_2"
+                      buttonStyle={EnumButtonStyle.Text}
+                      onClick={(e) => {
+                        handleRemoveMember(team.id);
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                    />
+                  )
                 }
               >
                 <TeamInfo team={team} />
