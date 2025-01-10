@@ -395,8 +395,8 @@ export class EntityService {
             connect: {
               // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
-                entityId: newEntity.id,
                 versionNumber: CURRENT_VERSION_NUMBER,
+                entityId: newEntity.id,
               },
             },
           },
