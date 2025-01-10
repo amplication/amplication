@@ -332,7 +332,7 @@ export class EntityService {
       args.data?.pluralDisplayName?.toLowerCase().trim()
     ) {
       throw new AmplicationError(
-        `The entity name and plural display name cannot be the same. new text`
+        `The entity name and plural display name cannot be the same.`
       );
     }
     if (
@@ -409,8 +409,8 @@ export class EntityService {
             connect: {
               // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
-                entityId: newEntity.id,
                 versionNumber: CURRENT_VERSION_NUMBER,
+                entityId: newEntity.id,
               },
             },
           },
