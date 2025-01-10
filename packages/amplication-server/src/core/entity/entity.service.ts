@@ -332,7 +332,7 @@ export class EntityService {
       args.data?.pluralDisplayName?.toLowerCase().trim()
     ) {
       throw new AmplicationError(
-        `The entity name and plural display name cannot be the same.`
+        `The entity name and plural display name cannot be the same. new text`
       );
     }
     if (
