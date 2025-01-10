@@ -4236,6 +4236,7 @@ export type User = {
   id: Scalars['String']['output'];
   isOwner: Scalars['Boolean']['output'];
   lastActive?: Maybe<Scalars['DateTime']['output']>;
+  lastActive1?: Maybe<Scalars['DateTime']['output']>;
   teams: Array<Team>;
   updatedAt: Scalars['DateTime']['output'];
   workspace?: Maybe<Workspace>;

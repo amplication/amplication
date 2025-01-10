@@ -2997,6 +2997,7 @@ type User {
   id: String!
   isOwner: Boolean!
   lastActive: DateTime
+  lastActive1: DateTime
   teams: [Team!]!
   updatedAt: DateTime!
   workspace: Workspace

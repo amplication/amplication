@@ -40,4 +40,9 @@ export class User {
     nullable: true,
   })
   lastActive?: Date | null;
+
+  @Field(() => Date, {
+    nullable: true,
+  })
+  lastActive1?: Date | null;
 }
