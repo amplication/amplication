@@ -45,6 +45,7 @@ export class ActionService {
    * @returns array of the steps of the action with ordered logs
    */
   async getSteps(actionId: string): Promise<ActionStep[]> {
+    console.log("hhhe");
     return this.prisma.actionStep.findMany({
       where: {
         actionId: actionId,
