@@ -63,7 +63,7 @@ jobs:
       affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
       affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
-      - uses: actions/checkout@4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ inputs.nx-head }}
@@ -82,7 +82,7 @@ jobs:
 
       - name: Cache
         id: cache
-        uses: actions/cache@4
+        uses: actions/cache@v4
         env:
           cache-name: cache
         with:
