@@ -206,6 +206,7 @@ export class EntityService {
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
+    console.log("ddd");
     const entity = await this.prisma.entity.findFirst({
       where: {
         id: args.where.id,
