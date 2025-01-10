@@ -319,6 +319,7 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = true
   ): Promise<Entity> {
+    console.log("createOneEntity");
     const resourceId = args.data.resource.connect.id;
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },

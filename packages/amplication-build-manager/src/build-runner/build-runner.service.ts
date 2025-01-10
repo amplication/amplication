@@ -71,6 +71,8 @@ export class BuildRunnerService {
     resourceId: string,
     dsgResourceData: DSGResourceData
   ) {
+    console.log("generatePackages", buildId, resourceId, dsgResourceData);
+
     this.buildLoggerService.addCodeGenerationLog({
       buildId,
       message: `Sending ${dsgResourceData.packages?.length} package(s) for generation`,
