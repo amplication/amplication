@@ -40,6 +40,9 @@ on:
         description: Nx projects configured with deploy:container affected by the changes
         value: ${{ jobs.nx.outputs.affected-deploy-container }}
 
+permissions:
+  contents: read # Minimal required permission
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
