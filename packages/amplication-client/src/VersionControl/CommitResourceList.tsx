@@ -10,11 +10,11 @@ import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import CommitResourceListItem from "./CommitResourceListItem";
 import DataPanel, { TitleDataType } from "./DataPanel";
-import { CommitChangesByResource } from "./hooks/useCommits";
+import { ChangesByResource } from "./hooks/useCommitChanges";
 
 type Props = {
   commit: models.Commit;
-  commitChangesByResource: CommitChangesByResource;
+  commitChangesByResource: ChangesByResource;
 };
 
 const CLASS_NAME = "commit-resource-list";

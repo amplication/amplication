@@ -21,12 +21,12 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import BuildGitLink from "./BuildGitLink";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
-import { CommitChangesByResource } from "./hooks/useCommits";
 import useBuildWatchStatus from "./useBuildWatchStatus";
+import { ChangesByResource } from "./hooks/useCommitChanges";
 
 type Props = {
   build: Build;
-  commitChangesByResource: CommitChangesByResource;
+  commitChangesByResource: ChangesByResource;
 };
 
 const CLASS_NAME = "commit-resource-list-item";
@@ -36,11 +36,10 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
   const { baseUrl } = useProjectBaseUrl();
 
   const resourceChangesCount = useMemo(() => {
-    const resourcesChanges = commitChangesByResource(build.commitId);
-    return resourcesChanges.find(
+    return commitChangesByResource.find(
       (resourceChanges) => resourceChanges.resourceId === build.resourceId
     )?.changes.length;
-  }, [build.commitId, build.resourceId, commitChangesByResource]);
+  }, [build.resourceId, commitChangesByResource]);
 
   const logMessage = useMemo(() => {
     if (data.build.status === EnumBuildStatus.Failed) {

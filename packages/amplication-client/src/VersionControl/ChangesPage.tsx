@@ -11,6 +11,7 @@ import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
+import useCommitChanges from "./hooks/useCommitChanges";
 
 const CLASS_NAME = "changes-page";
 
@@ -30,9 +31,11 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
   const { commitUtils } = useContext(AppContext);
   const { baseUrl } = useProjectBaseUrl();
 
-  const commitResourceChanges = commitUtils
-    .commitChangesByResource(commitId)
-    .find((resource) => resource.resourceId === resourceId)?.changes;
+  const { commitChangesByResource } = useCommitChanges(commitId);
+
+  const commitResourceChanges = commitChangesByResource?.find(
+    (resource) => resource.resourceId === resourceId
+  )?.changes;
 
   const errorMessage = formatError(commitUtils.commitsError);
 

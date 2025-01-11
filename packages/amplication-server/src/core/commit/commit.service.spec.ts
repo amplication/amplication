@@ -62,8 +62,8 @@ describe("CommitService", () => {
   it("should find one Commit", async () => {
     const args = { where: { id: EXAMPLE_COMMIT_ID } };
     expect(await service.findOne(args)).toEqual(EXAMPLE_COMMIT);
-    expect(prismaCommitFindOneMock).toBeCalledTimes(1);
-    expect(prismaCommitFindOneMock).toBeCalledWith(args);
+    expect(prismaCommitFindOneMock).toHaveBeenCalledTimes(1);
+    expect(prismaCommitFindOneMock).toHaveBeenCalledWith(args);
   });
 
   it("should find many Commits", async () => {
@@ -78,9 +78,35 @@ describe("CommitService", () => {
       RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
 
     expect(await service.findMany(args)).toEqual([EXAMPLE_COMMIT]);
-    expect(prismaCommitFindManyMock).toBeCalledTimes(1);
-    expect(prismaCommitFindManyMock).toBeCalledWith({
+    expect(prismaCommitFindManyMock).toHaveBeenCalledTimes(1);
+    expect(prismaCommitFindManyMock).toHaveBeenCalledWith({
       ...args,
+      include: {
+        builds: {
+          include: {
+            action: {
+              include: {
+                steps: {
+                  include: {
+                    logs: true,
+                  },
+                },
+              },
+            },
+            resource: true,
+            createdBy: {
+              include: {
+                account: true,
+              },
+            },
+          },
+        },
+        user: {
+          include: {
+            account: true,
+          },
+        },
+      },
       where: {
         ...args.where,
         builds: {

@@ -374,7 +374,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.BlockId]: async (
@@ -387,7 +387,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.BuildId]: async (
@@ -400,7 +400,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.ResourceVersionId]: async (
@@ -413,7 +413,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.UserActionId]: async (
@@ -426,7 +426,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.ResourceRoleId]: async (
@@ -439,7 +439,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.EnvironmentId]: async (
@@ -452,7 +452,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.OutdatedVersionAlertId]: async (
@@ -465,7 +465,7 @@ export const VALIDATION_FUNCTIONS: Record<
     );
     return {
       canAccessWorkspace: matching !== null,
-      requestedResourceId: matching.resourceId,
+      requestedResourceId: matching?.resourceId,
     };
   },
   [AuthorizableOriginParameter.CommitId]: async (

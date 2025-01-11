@@ -26,14 +26,20 @@ export class CommitResolver {
 
   @ResolveField(() => User)
   async user(@Parent() commit: Commit): Promise<User> {
-    return this.userService.findUser(
-      {
-        where: {
-          id: commit.userId,
+    if (!commit.user) {
+      return this.userService.findUser(
+        {
+          where: {
+            id: commit.userId,
+          },
+          include: {
+            account: true,
+          },
         },
-      },
-      true
-    );
+        true
+      );
+    }
+    return commit.user;
   }
 
   @Query(() => Commit, {
@@ -53,19 +59,30 @@ export class CommitResolver {
   }
 
   @ResolveField(() => [Build])
-  builds(
+  async builds(
     @Parent() commit: Commit,
     @Args() args: FindManyBuildArgs
   ): Promise<Build[]> {
-    return this.buildService.findMany({
-      ...args,
-      where: {
-        ...args.where,
-        commit: {
-          id: commit.id,
+    let builds: Build[] = [];
+    if (!commit.builds) {
+      builds = await this.buildService.findMany({
+        ...args,
+        where: {
+          ...args.where,
+          commit: {
+            id: commit.id,
+          },
         },
-      },
+      });
+    }
+    builds = commit.builds;
+
+    //add the commit for each build
+    builds?.forEach((build) => {
+      build.commit = commit;
     });
+
+    return builds;
   }
 
   @ResolveField(() => [PendingChange])
