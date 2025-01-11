@@ -71,7 +71,6 @@ export const DeleteCustomProperty = ({
 
       <div className={CLASS_NAME}>
         <Button
-          disabled={!permissions.allowedTasks["property.delete"]}
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleDelete}
