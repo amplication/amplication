@@ -43,12 +43,18 @@ export class BuildResolver {
 
   @ResolveField()
   async createdBy(@Parent() build: Build): Promise<User> {
-    return this.userService.findUser({ where: { id: build.userId } }, true);
+    if (build.createdAt === null) {
+      return this.userService.findUser({ where: { id: build.userId } }, true);
+    }
+    return build.createdBy;
   }
 
   @ResolveField()
   async action(@Parent() build: Build): Promise<Action> {
-    return this.actionService.findOne({ where: { id: build.actionId } });
+    if (build.action === null) {
+      return this.actionService.findOne({ where: { id: build.actionId } });
+    }
+    return build.action;
   }
 
   @ResolveField()
@@ -58,7 +64,10 @@ export class BuildResolver {
 
   @ResolveField()
   async resource(@Parent() build: Build): Promise<Resource> {
-    return this.resourceService.resource({ where: { id: build.resourceId } });
+    if (build.resource === null) {
+      return this.resourceService.resource({ where: { id: build.resourceId } });
+    }
+    return build.resource;
   }
 
   @ResolveField()
