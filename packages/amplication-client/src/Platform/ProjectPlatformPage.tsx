@@ -87,16 +87,18 @@ const ProjectPlatformPage: React.FC<Props> = ({
     ];
   }, [match.url, publishCount, tabs, pendingChanges]);
 
-  return match.isExact || currentRouteIsTab ? (
-    <>
-      <ResourceContextProvider newVal={context}>
-        <PageLayout className={moduleClass} tabs={tabItems}>
-          {match.isExact ? <ServiceTemplateList /> : tabRoutes}
-        </PageLayout>
-      </ResourceContextProvider>
-    </>
-  ) : (
-    innerRoutes
+  return (
+    <ResourceContextProvider newVal={context}>
+      {match.isExact || currentRouteIsTab ? (
+        <>
+          <PageLayout className={moduleClass} tabs={tabItems}>
+            {match.isExact ? <ServiceTemplateList /> : tabRoutes}
+          </PageLayout>
+        </>
+      ) : (
+        innerRoutes
+      )}
+    </ResourceContextProvider>
   );
 };
 
