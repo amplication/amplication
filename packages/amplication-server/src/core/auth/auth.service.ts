@@ -20,6 +20,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
+import { AwsMarketplaceService } from "../aws-marketplace/aws-marketplace.service";
 import { Auth0Service } from "../idp/auth0.service";
 import { Auth0User } from "../idp/types";
 import { UserService } from "../user/user.service";
@@ -36,8 +37,6 @@ import {
 } from "./dto";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { AuthProfile, AuthUser } from "./types";
-import { Auth0User } from "../idp/types";
-import { AwsMarketplaceService } from "../aws-marketplace/aws-marketplace.service";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
