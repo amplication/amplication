@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { TemplateServiceBase } from "./base/template.service.base";
 import {
@@ -8,12 +8,14 @@ import {
 } from "../../providers/openai/openai.service";
 import { GptConversationStart } from "@amplication/schema-registry";
 import { ProcessTemplateInput } from "./dto/ProcessTemplateInput";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class TemplateService extends TemplateServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
-    private openaiService: OpenaiService
+    private openaiService: OpenaiService,
+    private readonly logger: AmplicationLogger
   ) {
     super(prisma);
   }
@@ -64,10 +66,23 @@ export class TemplateService extends TemplateServiceBase {
       content: this.prepareMessage(message.content, args.params),
     })) as ChatCompletionMessageParam[];
 
+    let customParams: CreateChatCompletionRequestSettings = {};
+    if (template.params) {
+      try {
+        customParams = JSON.parse(template.params);
+      } catch (error) {
+        this.logger.error(
+          `Failed to parse custom params for template ${template.id}. Default params will be used.`,
+          error,
+          { templateName: template.name, params: template.params }
+        );
+      }
+    }
+
     return this.openaiService.createChatCompletion(
       template.model.name,
       messages,
-      template.params as CreateChatCompletionRequestSettings
+      customParams
     );
   }
 }

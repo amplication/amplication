@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.owner-selector {
+  .amp-collapsible-list-item {
+    margin-top: var(--default-spacing);
+
+    > div {
+      padding-left: var(--default-spacing);
+    }
+  }
+}

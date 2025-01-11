@@ -5,6 +5,7 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+      allowLLMFeatures
       externalId
       subscription {
         id
@@ -79,5 +80,11 @@ export const PROVISION_SUBSCRIPTION = gql`
       provisionStatus
       checkoutUrl
     }
+  }
+`;
+
+export const GET_PERMISSIONS = gql`
+  query permissions {
+    permissions
   }
 `;

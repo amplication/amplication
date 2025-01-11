@@ -19,7 +19,7 @@ import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { BuildService } from "../build/build.service";
@@ -35,8 +35,13 @@ import { BooleanEntitlement, MeteredEntitlement } from "@stigg/node-server-sdk";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -87,8 +92,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -116,6 +119,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -209,6 +214,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   projects: [EXAMPLE_PROJECT_2],
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -378,11 +384,16 @@ describe("ProjectService", () => {
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
         },
+        {
+          provide: ResourceVersionService,
+          useClass: jest.fn(() => ({})),
+        },
         MockedSegmentAnalyticsProvider(),
         {
           provide: GitProviderService,
           useClass: jest.fn(() => ({})),
         },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 
@@ -417,7 +428,7 @@ describe("ProjectService", () => {
         service.createProject(args, EXAMPLE_USER_ID)
       ).rejects.toThrow(
         new BillingLimitationError(
-          "Your workspace exceeds its project limitation.",
+          "You have reached the maximum number of projects allowed. To continue using additional projects, please upgrade your plan.",
           BillingFeature.Projects
         )
       );
@@ -434,6 +445,7 @@ describe("ProjectService", () => {
         data: {
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
           user: { connect: { id: EXAMPLE_USER_ID } },
         },
       };
@@ -475,11 +487,18 @@ describe("ProjectService", () => {
           user: { connect: { id: EXAMPLE_USER_ID } },
         },
       };
+
+      const resourceTypes =
+        RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[EnumResourceTypeGroup.Services];
+
       const findManyArgs = {
         where: {
           deletedAt: null,
           archived: {
             not: true,
+          },
+          resourceType: {
+            in: resourceTypes,
           },
           projectId: EXAMPLE_PROJECT_ID,
           project: {
@@ -546,7 +565,18 @@ describe("ProjectService", () => {
           message: args.data.message,
         },
       };
-      expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
+      expect(
+        await service.commit(
+          {
+            ...args,
+            data: {
+              ...args.data,
+              resourceTypeGroup: EnumResourceTypeGroup.Services,
+            },
+          },
+          EXAMPLE_USER
+        )
+      ).toEqual(EXAMPLE_COMMIT);
       expect(prismaResourceFindManyMock).toBeCalledTimes(1);
       expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
@@ -567,11 +597,15 @@ describe("ProjectService", () => {
       expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
       expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
         changesArgs.projectId,
+        EnumResourceTypeGroup.Services,
+        null,
         changesArgs.userId
       );
       expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
       expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
         changesArgs.projectId,
+        EnumResourceTypeGroup.Services,
+        null,
         changesArgs.userId
       );
       expect(buildServiceCreateMock).toBeCalledTimes(1);

@@ -1,14 +1,15 @@
 import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
+import { name as generatorName } from "../package.json";
 import { createAdminModules } from "./admin/create-admin";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
-import { logger } from "./logging";
+import { dynamicPackagesInstallations } from "@amplication/dsg-utils";
+import { logger } from "@amplication/dsg-utils";
 import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
@@ -16,6 +17,16 @@ export async function createDataService(
   internalLogger: ILogger,
   pluginInstallationPath?: string
 ): Promise<ModuleMap> {
+  const context = DsgContext.getInstance;
+
+  const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
+  await context.logger.info(
+    `Running DSG ${generatorName} version: ${gitRefName} <${gitSha?.substring(
+      0,
+      7
+    )}>`
+  );
+
   dSGResourceData.pluginInstallations = prepareDefaultPlugins(
     dSGResourceData.pluginInstallations
   );
@@ -23,10 +34,10 @@ export async function createDataService(
   await dynamicPackagesInstallations(
     dSGResourceData.pluginInstallations,
     pluginInstallationPath,
-    internalLogger
+    internalLogger,
+    context.logger
   );
 
-  const context = DsgContext.getInstance;
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
       internalLogger.info("No code to generate for a message broker");
@@ -38,11 +49,6 @@ export async function createDataService(
       dSGResourceData,
       internalLogger,
       pluginInstallationPath
-    );
-
-    const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
-    await context.logger.info(
-      `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
     );
 
     await context.logger.info("Creating application...", {

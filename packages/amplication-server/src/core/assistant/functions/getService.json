@@ -1,0 +1,14 @@
+{
+  "name": "getService",
+  "description": "get the details of a specific service",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "serviceId": {
+        "type": "string",
+        "description": "The ID of the service"
+      }
+    },
+    "required": ["serviceId"]
+  }
+}

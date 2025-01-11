@@ -40,8 +40,12 @@ on:
         description: Nx projects configured with deploy:container affected by the changes
         value: ${{ jobs.nx.outputs.affected-deploy-container }}
 
+permissions:
+  contents: read # Minimal required permission
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
   BRANCH: ${{ github.event.workflow_run.head_branch }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.

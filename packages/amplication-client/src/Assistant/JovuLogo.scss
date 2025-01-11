@@ -1,0 +1,54 @@
+@import "../style/index.scss";
+
+$logo-size-small: 30px;
+$logo-size-medium: 40px;
+$logo-size-large: 50px;
+$logo-size-extra-large: 100px;
+$loader-padding: 4px;
+$animation-duration: 3s;
+
+.jovu-logo {
+  width: $logo-size-small;
+  height: $logo-size-small;
+  position: relative;
+  padding: $loader-padding;
+  margin: $loader-padding * -1;
+
+  &--medium {
+    width: $logo-size-medium;
+    height: $logo-size-medium;
+  }
+
+  &--large {
+    width: $logo-size-large;
+    height: $logo-size-large;
+  }
+
+  &--extra-large {
+    width: $logo-size-extra-large;
+    height: $logo-size-extra-large;
+  }
+
+  &__logo-wrapper {
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+    border-radius: 100%;
+  }
+  &__logo {
+    width: 100%;
+    height: 100%;
+  }
+
+  .amp-circular-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    .amp-circular-progress__root {
+      width: 100% !important;
+      height: 100% !important ;
+      animation-duration: $animation-duration;
+    }
+  }
+}

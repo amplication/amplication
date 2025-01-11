@@ -46,6 +46,11 @@
   &__header {
     border-bottom: $border-dark;
     padding-bottom: var(--default-spacing);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__title {
     .amp-text {
       color: var(--gray-20) !important;
     }

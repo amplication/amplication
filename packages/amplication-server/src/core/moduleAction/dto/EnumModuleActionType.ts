@@ -8,7 +8,7 @@ export enum EnumModuleActionType {
   Delete = "Delete",
   Find = "Find",
   ParentGet = "ParentGet",
-  ChildrenFind = "ChildrenFindMany",
+  ChildrenFind = "ChildrenFind",
   ChildrenConnect = "ChildrenConnect",
   ChildrenDisconnect = "ChildrenDisconnect",
   ChildrenUpdate = "ChildrenUpdate",

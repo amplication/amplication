@@ -1,0 +1,42 @@
+@import "../../style/index.scss";
+
+.catalog-graph {
+  width: 100%;
+  height: 100%;
+
+  &__container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-spacing);
+    z-index: 0;
+  }
+
+  &__body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: var(--default-spacing);
+  }
+
+  &__side_toolbar {
+    display: flex;
+    z-index: 1;
+    bottom: var(--icon-spacing);
+    left: var(--icon-spacing);
+
+    flex-direction: column;
+    gap: var(--default-spacing);
+    position: absolute;
+  }
+
+  .reactflow-wrapper {
+    flex: 1;
+  }
+}

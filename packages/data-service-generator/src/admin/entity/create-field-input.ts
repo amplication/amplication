@@ -7,7 +7,7 @@ import {
   LookupResolvedProperties,
 } from "@amplication/code-gen-types";
 import { jsxElement } from "../util";
-import { isToManyRelationField } from "../../utils/field";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
@@ -49,10 +49,11 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     if (isToManyRelationField(field)) {
       return jsxElement`<ReferenceArrayInput source="${field.name}" 
       reference="${relatedEntity.name}"
-      parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-      format={(value: any) => value && value.map((v: any) => v.id)}
       >
-        <SelectArrayInput optionText={${relatedEntity.name}Title} />
+        <SelectArrayInput optionText={${relatedEntity.name}Title} 
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+       />
       </ReferenceArrayInput>`;
     }
     return jsxElement`<ReferenceInput source="${field.name}.id" reference="${relatedEntity.name}" label="${field.displayName}">
@@ -91,6 +92,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.UpdatedAt]: (field) =>
     jsxElement`<DateTimeInput label="${field.displayName}" source="${field.name}" disabled />`,
   [EnumDataType.Json]: null,
+  [EnumDataType.File]: null,
   [EnumDataType.Roles]: (field) =>
     jsxElement`<SelectArrayInput
       source="${field.name}"

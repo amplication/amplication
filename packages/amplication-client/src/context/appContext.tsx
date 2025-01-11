@@ -5,16 +5,23 @@ import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
 import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
+import { IBlueprintsMap } from "../Blueprints/hooks/useBlueprintsMap";
+import { IPermissions } from "../Workspaces/hooks/usePermissions";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
   handleSetCurrentWorkspace: (workspaceId: string) => void;
   createWorkspace: (data: CreateWorkspaceType) => void;
+  subscriptionPlan: models.EnumSubscriptionPlan;
+  subscriptionStatus: models.EnumSubscriptionStatus;
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
   currentProjectConfiguration: models.Resource | undefined;
   projectsList: models.Project[];
+  projectListError: ApolloError | undefined;
+  projectListLoading: boolean;
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
@@ -22,9 +29,8 @@ export interface AppContextInterface {
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string
   ) => void;
-  setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;
-  handleSearchChange: (searchResults: string) => void;
+  pluginRepositoryResource: models.Resource | undefined;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
@@ -52,6 +58,9 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateMessageBroker: boolean;
   errorCreateMessageBroker: Error | undefined;
+  createPluginRepository: (data: models.ResourceCreateInput) => void;
+  loadingCreatePluginRepository: boolean;
+  errorCreatePluginRepository: Error | undefined;
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
   openHubSpotChat: () => void;
@@ -60,10 +69,20 @@ export interface AppContextInterface {
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => void;
   loadingUpdateCodeGeneratorVersion: boolean;
   errorUpdateCodeGeneratorVersion: ApolloError | undefined;
+  createServiceFromTemplate: (
+    data: models.ServiceFromTemplateCreateInput
+  ) => void;
+  loadingCreateServiceFromTemplate: boolean;
+  errorCreateServiceFromTemplate: Error | undefined;
+  customPropertiesMap: Record<string, models.CustomProperty>;
+  blueprintsMap: IBlueprintsMap;
+  permissions: IPermissions;
 }
 
 const initialContext: AppContextInterface = {
   currentWorkspace: undefined,
+  subscriptionPlan: models.EnumSubscriptionPlan.Free,
+  subscriptionStatus: models.EnumSubscriptionStatus.Active,
   handleSetCurrentWorkspace: () => {},
   createWorkspace: () => {},
   createNewWorkspaceError: undefined,
@@ -71,13 +90,14 @@ const initialContext: AppContextInterface = {
   currentProject: undefined,
   currentProjectConfiguration: undefined,
   projectsList: [],
+  projectListError: undefined,
+  projectListLoading: false,
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
   setNewService: () => {},
-  setResource: () => {},
   projectConfigurationResource: undefined,
-  handleSearchChange: () => {},
+  pluginRepositoryResource: undefined,
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},
@@ -102,6 +122,9 @@ const initialContext: AppContextInterface = {
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
+  createPluginRepository: () => {},
+  loadingCreatePluginRepository: false,
+  errorCreatePluginRepository: undefined,
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
   openHubSpotChat: () => {},
@@ -125,6 +148,20 @@ const initialContext: AppContextInterface = {
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => {},
   loadingUpdateCodeGeneratorVersion: false,
   errorUpdateCodeGeneratorVersion: undefined,
+  createServiceFromTemplate: () => {},
+  loadingCreateServiceFromTemplate: false,
+  errorCreateServiceFromTemplate: undefined,
+  customPropertiesMap: {},
+  blueprintsMap: {
+    ready: false,
+    blueprintsMap: {},
+    blueprintsMapById: {},
+  },
+  permissions: {
+    allowedTasks: {} as Record<RolesPermissions, boolean>,
+    canPerformTask: () => false,
+    isAdmin: false,
+  },
 };
 
 export const AppContext =

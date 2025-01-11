@@ -7,6 +7,7 @@
   &__demo {
     padding-top: var(--double-spacing);
     width: 100%;
+    margin-top: 0.75em;
     @include flexFullRow;
 
     &__tooltip {

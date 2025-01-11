@@ -118,6 +118,10 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     label: "Roles",
     icon: "users",
   },
+  [models.EnumDataType.File]: {
+    label: "File",
+    icon: "file",
+  },
 };
 
 export const ENTITY_FIELD_ENUM_MAPPER: {
@@ -178,4 +182,5 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
   [models.EnumDataType.Username]: {},
   [models.EnumDataType.Password]: {},
   [models.EnumDataType.Roles]: {},
+  [models.EnumDataType.File]: {},
 };

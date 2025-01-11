@@ -1,11 +1,10 @@
-import { useCallback, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useCallback } from "react";
 
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import { EnumTextColor } from "@amplication/ui/design-system";
 
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
@@ -13,33 +12,22 @@ type Props = {
 };
 
 function TopicsTile({ resourceId }: Props) {
-  const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { trackEvent } = useTracking();
 
   const handleClick = useCallback(() => {
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerTopicsTileClick });
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics`
-    );
-  }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
+  }, [trackEvent]);
 
   return (
     <OverviewSecondaryTile
       icon="topics_outline"
       title="Topics"
       message="Create topics to send and receive messages between services."
-      footer={
-        <Button
-          buttonStyle={EnumButtonStyle.Outline}
-          type="button"
-          onClick={handleClick}
-          style={{ minWidth: "140px" }}
-        >
-          Go to Topics
-        </Button>
-      }
+      onClick={handleClick}
+      themeColor={EnumTextColor.ThemeBlue}
+      to={`${baseUrl}/topics`}
     />
   );
 }

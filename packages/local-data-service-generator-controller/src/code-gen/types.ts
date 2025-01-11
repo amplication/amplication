@@ -1,5 +1,6 @@
-export interface CodeGenerationRequest {
+export type CodeGenerationRequest = {
   resourceId: string;
   buildId: string;
-  containerImageTag: string;
-}
+  codeGeneratorVersion: string;
+  codeGeneratorName: string;
+};

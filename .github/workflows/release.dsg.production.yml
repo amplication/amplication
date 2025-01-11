@@ -11,6 +11,7 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   ECHO_RED: '\033[0;31m'
   ECHO_YELLOW: '\033[0;33m'
   ECHO_GREEN: '\033[0;32m'
@@ -99,7 +100,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(dsg): bump version to ${{ inputs.version }}"
-          branch: ${{ github.event.repository.default_branch }}
           commit_user_name: amplication-engineering
           commit_user_email: engineering@amplication.com
           commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run

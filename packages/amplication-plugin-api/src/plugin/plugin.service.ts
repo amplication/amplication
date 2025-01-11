@@ -1,9 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Plugin } from "../../prisma/generated-prisma-client";
+import { Plugin, PrismaPromise } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { PluginUpdateInput } from "./base/PluginUpdateInput";
+import { PluginCreateInput } from "./base/PluginCreateInput";
+import { CategoryCreateInput } from "src/category/base/CategoryCreateInput";
+
+interface PluginsDataObj {
+  pluginsData: PluginCreateInput[];
+  pluginUpdate: PrismaPromise<PluginUpdateInput>[];
+  categories: {
+    categoryMap: { [key: string]: number };
+    data: CategoryCreateInput[];
+  };
+}
 
 @Injectable()
 export class PluginService extends PluginServiceBase {
@@ -16,7 +28,7 @@ export class PluginService extends PluginServiceBase {
   }
 
   /**
-   * main service that trigger gitPluginService and return plugin list. It creates the plugins into DB
+   * main service that trigger gitPluginService and return plugin list. It creates the plugins and categories into DB
    * @returns Plugin[]
    */
   async processCatalogPlugins(): Promise<Plugin[]> {
@@ -29,47 +41,53 @@ export class PluginService extends PluginServiceBase {
         throw pluginsList;
       }
 
+      const pluginsAndCategories: PluginsDataObj = pluginsList.reduce(
+        (pluginsDataObj: PluginsDataObj, plugin: Plugin) => {
+          pluginsDataObj.pluginsData.push(plugin);
+
+          const pluginUpdate = this.prisma.plugin.update({
+            where: {
+              pluginId: plugin.pluginId,
+            },
+            data: plugin,
+          });
+          pluginsDataObj.pluginUpdate.push(pluginUpdate);
+
+          (plugin.categories as []).forEach((category) => {
+            if (pluginsDataObj.categories.categoryMap[category]) return;
+
+            const categoryData: CategoryCreateInput = { name: category };
+            pluginsDataObj.categories.categoryMap[category] = 1;
+            pluginsDataObj.categories.data.push(categoryData);
+          });
+
+          return pluginsDataObj;
+        },
+        {
+          pluginsData: [],
+          pluginUpdate: [],
+          categories: {
+            categoryMap: {},
+            data: [],
+          },
+        }
+      );
+
       const createdPlugins = await this.prisma.plugin.createMany({
-        data: pluginsList.map((plugin) => ({
-          description: plugin.description,
-          github: plugin.github,
-          icon: plugin.icon,
-          name: plugin.name,
-          npm: plugin.npm,
-          website: plugin.website,
-          taggedVersions: plugin.taggedVersions,
-          pluginId: plugin.pluginId,
-          createdAt: plugin.createdAt,
-          updatedAt: plugin.updatedAt,
-          categories: plugin.categories,
-          downloads: plugin.downloads,
-        })),
+        data: pluginsAndCategories.pluginsData,
         skipDuplicates: true,
       });
 
-      const updateMany = pluginsList.map((plugin) =>
-        this.prisma.plugin.update({
-          where: {
-            pluginId: plugin.pluginId,
-          },
-          data: {
-            createdAt: plugin.createdAt,
-            updatedAt: plugin.updatedAt,
-            description: plugin.description,
-            github: plugin.github,
-            taggedVersions: plugin.taggedVersions,
-            icon: plugin.icon,
-            name: plugin.name,
-            npm: plugin.npm,
-            website: plugin.website,
-            categories: plugin.categories,
-            downloads: plugin.downloads,
-          },
-        })
-      );
-      await this.prisma.$transaction(updateMany);
+      await this.prisma.$transaction(pluginsAndCategories.pluginUpdate);
 
       this.logger.debug("createdPlugins", createdPlugins);
+
+      const createdCategories = await this.prisma.category.createMany({
+        data: pluginsAndCategories.categories.data,
+        skipDuplicates: true,
+      });
+
+      this.logger.debug("createdCategories", createdCategories);
 
       return pluginsList;
     } catch (error) {

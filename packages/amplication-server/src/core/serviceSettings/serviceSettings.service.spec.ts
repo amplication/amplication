@@ -4,8 +4,10 @@ import { ServiceSettingsService } from "./serviceSettings.service";
 import { ServiceSettings } from "./dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { DEFAULT_SERVICE_SETTINGS } from "./constants";
-import { User } from "../../models";
+import { Resource, User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
+import { PrismaService } from "../../prisma";
+import { EnumResourceType } from "@amplication/code-gen-types";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -24,6 +26,7 @@ const EXAMPLE_USER: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     name: "example_workspace_name",
+    allowLLMFeatures: true,
   },
   isOwner: true,
 };
@@ -59,6 +62,27 @@ const findOneMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
 const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_SERVICE_SETTINGS]);
 const updateMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
 
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "Example Resource",
+  resourceType: EnumResourceType.Service,
+  description: "",
+  gitRepositoryOverride: false,
+  licensed: false,
+};
+
+const prismaBlueprintFindFirstMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
+
+const prismaMock = {
+  resource: {
+    findUnique: prismaBlueprintFindFirstMock,
+  },
+};
+
 describe("ServiceSettingsService", () => {
   let service: ServiceSettingsService;
 
@@ -77,6 +101,10 @@ describe("ServiceSettingsService", () => {
             findManyByBlockType: findManyByBlockTypeMock,
             update: updateMock,
           })),
+        },
+        {
+          provide: PrismaService,
+          useValue: prismaMock,
         },
         ServiceSettingsService,
       ],

@@ -16,7 +16,7 @@ $addon-title-line-height: 36px;
     gap: $addon-feature-tag-gap;
     padding: $feature-tag-padding;
     border-radius: $addon-feature-tag-border-radius;
-    background-color: var(--feature-indicator);
+    background-color: var(--theme-turquoise);
   }
 
   &__addon-section {
@@ -30,7 +30,7 @@ $addon-title-line-height: 36px;
 
     &__contact-us {
       & span {
-        color: var(--feature-indicator);
+        color: var(--theme-turquoise);
       }
     }
 

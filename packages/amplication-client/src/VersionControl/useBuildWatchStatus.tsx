@@ -20,9 +20,6 @@ const useBuildWatchStatus = (
       buildId: build?.id,
     },
     skip: !shouldReload(build),
-    onCompleted: (data) => {
-      commitUtils.updateBuildStatus(data.build);
-    },
   });
 
   //stop polling when build process completed
@@ -32,7 +29,9 @@ const useBuildWatchStatus = (
     } else {
       startPolling(POLL_INTERVAL);
     }
-  }, [data, stopPolling, startPolling]);
+    //update the build status in the commit for every change
+    data && commitUtils.updateBuildStatus(data.build);
+  }, [data, stopPolling, startPolling, commitUtils]);
 
   useEffect(() => {
     if (build) refetch();

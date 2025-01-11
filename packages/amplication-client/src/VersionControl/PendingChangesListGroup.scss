@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+$resource-name-max-width: 180px;
+
+.pending-changes-list-group {
+  &__header {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

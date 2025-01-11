@@ -1,20 +1,19 @@
-import { useCallback, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useCallback } from "react";
 
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import { EnumTextColor } from "@amplication/ui/design-system";
 
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
+
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   resourceId: string;
 };
 
 function ServicesTile({ resourceId }: Props) {
-  const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { trackEvent } = useTracking();
 
@@ -22,26 +21,16 @@ function ServicesTile({ resourceId }: Props) {
     trackEvent({
       eventName: AnalyticsEventNames.MessageBrokerConnectedServicesTileClick,
     });
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`
-    );
-  }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
+  }, [trackEvent]);
 
   return (
     <OverviewSecondaryTile
       icon="services_outline"
       title="Services"
       message="Connect services to the message broker for event-driven architecture."
-      footer={
-        <Button
-          buttonStyle={EnumButtonStyle.Outline}
-          type="button"
-          onClick={handleClick}
-          style={{ minWidth: "140px" }}
-        >
-          Connect Services
-        </Button>
-      }
+      onClick={handleClick}
+      themeColor={EnumTextColor.ThemePink}
+      to={`${baseUrl}/services`}
     />
   );
 }

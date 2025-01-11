@@ -1,29 +1,24 @@
-import React, { useContext, useEffect } from "react";
-import { AppContext } from "../context/appContext";
+import React, { useEffect } from "react";
 import InnerTabLink from "../Layout/InnerTabLink";
 
+import { useHistory } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
 import { AppRouteProps } from "../routes/routesUtil";
-import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 const CLASS_NAME = "project-settings";
 const PAGE_TITLE = "Project Settings";
 type Props = AppRouteProps;
 
 const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
   const history = useHistory();
   const location = history.location;
 
   useEffect(() => {
-    if (
-      location.pathname ===
-      `/${currentWorkspace?.id}/${currentProject?.id}/settings`
-    ) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/settings/general`
-      );
+    if (location.pathname === `${baseUrl}/settings`) {
+      history.push(`${baseUrl}/settings/general`);
     }
   }, []);
 
@@ -33,17 +28,14 @@ const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
       className={CLASS_NAME}
       sideContent={
         <>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/general`}
-            icon="app-settings"
-          >
+          <InnerTabLink to={`${baseUrl}/settings/general`} icon="app-settings">
             General
           </InnerTabLink>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/directories`}
-            icon="folder"
-          >
+          <InnerTabLink to={`${baseUrl}/settings/directories`} icon="folder">
             Base Directory
+          </InnerTabLink>
+          <InnerTabLink to={`${baseUrl}/settings/permissions`} icon="lock">
+            Permissions
           </InnerTabLink>
         </>
       }

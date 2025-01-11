@@ -6,7 +6,7 @@ import { useTracking } from "../../util/analytics";
 import "./WorkspaceBanner.scss";
 
 const CLASS_NAME = "workspace-banner";
-const LOCAL_STORAGE_KEY_SHOW_BANNER = "showBanner";
+const DEFAULT_LOCAL_STORAGE_KEY_SHOW_BANNER = "showBanner";
 
 export type Props = {
   children: ReactNode;
@@ -15,6 +15,7 @@ export type Props = {
   clickEventProps: Record<string, string>;
   closeEventName: AnalyticsEventNames;
   closeEventProps: Record<string, string>;
+  localStorageKey?: string;
 };
 
 export default function WorkspaceBanner({
@@ -24,11 +25,9 @@ export default function WorkspaceBanner({
   clickEventProps,
   closeEventName,
   closeEventProps,
+  localStorageKey = DEFAULT_LOCAL_STORAGE_KEY_SHOW_BANNER,
 }: Props) {
-  const [showBanner, setShowBanner] = useLocalStorage(
-    LOCAL_STORAGE_KEY_SHOW_BANNER,
-    "true"
-  );
+  const [showBanner, setShowBanner] = useLocalStorage(localStorageKey, "true");
   const { trackEvent } = useTracking();
   const isBannerShowing = JSON.parse(showBanner);
 

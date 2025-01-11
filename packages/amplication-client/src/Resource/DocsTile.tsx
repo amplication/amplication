@@ -1,10 +1,8 @@
-import React, { useCallback } from "react";
-
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import { useCallback } from "react";
 
 import { useTracking } from "../util/analytics";
-import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import OverviewSecondaryTile from "./OverviewSecondaryTile";
 function DocsTile() {
   const { trackEvent } = useTracking();
 
@@ -17,22 +15,8 @@ function DocsTile() {
       icon="file_text"
       title="Read the Docs"
       message="When in doubt, read the docs. You’ll become an expert in no time."
-      footer={
-        <a
-          href="https://docs.amplication.com"
-          target="docs"
-          rel="noopener"
-          onClick={handleClick}
-        >
-          <Button
-            buttonStyle={EnumButtonStyle.Outline}
-            type="button"
-            style={{ minWidth: "140px" }}
-          >
-            Go to Docs
-          </Button>
-        </a>
-      }
+      to="https://docs.amplication.com"
+      onClick={handleClick}
     />
   );
 }

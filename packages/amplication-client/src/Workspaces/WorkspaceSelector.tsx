@@ -14,6 +14,11 @@ import { EnumSubscriptionPlan } from "../models";
 import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
+import { GET_WORKSPACES } from "./queries/workspaceQueries";
+import { useQuery } from "@apollo/client";
+import * as models from "../models";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 export const FREE_WORKSPACE_COLOR = "#A787FF";
 export const PRO_WORKSPACE_COLOR = "#20a4f3";
@@ -23,7 +28,9 @@ export const getWorkspaceColor = (plan: EnumSubscriptionPlan) => {
   switch (plan) {
     case EnumSubscriptionPlan.Free:
       return FREE_WORKSPACE_COLOR;
+    case EnumSubscriptionPlan.Essential:
     case EnumSubscriptionPlan.Pro:
+    case EnumSubscriptionPlan.Team:
       return PRO_WORKSPACE_COLOR;
     case EnumSubscriptionPlan.Enterprise:
       return ENTERPRISE_WORKSPACE_COLOR;
@@ -32,13 +39,26 @@ export const getWorkspaceColor = (plan: EnumSubscriptionPlan) => {
   }
 };
 
+type TData = {
+  workspaces: models.Workspace[];
+};
+
 const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
   const { currentWorkspace, handleSetCurrentWorkspace } =
     useContext(AppContext);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newWorkspace, setNewWorkspace] = useState<boolean>(false);
+
+  const { data, loading } = useQuery<TData>(GET_WORKSPACES);
+
+  const { stigg } = useStiggContext();
+
+  const createWorkspaceEntitlement = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.AllowWorkspaceCreation,
+  }).hasAccess;
 
   const handleNewWorkspaceClick = useCallback(() => {
     setNewWorkspace(!newWorkspace);
@@ -64,18 +84,24 @@ function WorkspaceSelector() {
         className={classNames(`${CLASS_NAME}__current`, {
           [`${CLASS_NAME}__current--active`]: isOpen,
         })}
-        onClick={handleOpen}
+        onClick={
+          createWorkspaceEntitlement || data?.workspaces?.length > 1
+            ? handleOpen
+            : () => {}
+        }
       >
         {currentWorkspace ? (
           <>
             <FlexItem itemsAlign={EnumItemsAlign.Center}>
               <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                type="button"
-                icon={isOpen ? "chevron_up" : "chevron_down"}
-                iconSize="xsmall"
-              />
+              {(createWorkspaceEntitlement || data?.workspaces?.length > 1) && (
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  type="button"
+                  icon={isOpen ? "chevron_up" : "chevron_down"}
+                  iconSize="xsmall"
+                />
+              )}
             </FlexItem>
           </>
         ) : (
@@ -87,6 +113,8 @@ function WorkspaceSelector() {
           onNewWorkspaceClick={handleNewWorkspaceClick}
           selectedWorkspace={currentWorkspace}
           onWorkspaceSelected={handleSetCurrentWorkspace}
+          workspaces={data.workspaces}
+          loadingWorkspaces={loading}
         />
       )}
     </div>

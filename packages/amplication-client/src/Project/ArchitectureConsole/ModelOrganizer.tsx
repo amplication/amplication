@@ -5,8 +5,8 @@ import {
   EnumFlexDirection,
   FlexItem,
   Snackbar,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
-import { EnumItemsAlign } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Background,
@@ -27,17 +27,20 @@ import relationEdge from "./edges/relationEdge";
 import RelationMarkets from "./edges/relationMarkets";
 import simpleRelationEdge from "./edges/simpleRelationEdge";
 import { findGroupByPosition } from "./helpers";
-import useModelOrganization from "./hooks/useModelOrganizer";
+import useModelOrganizer from "./hooks/useModelOrganizer";
 import { applyAutoLayout } from "./layout";
 import modelGroupNode from "./nodes/modelGroupNode";
 import ModelNode from "./nodes/modelNode";
 import ModelSimpleNode from "./nodes/modelSimpleNode";
 import {
+  EntityNode,
   NODE_TYPE_MODEL,
   NODE_TYPE_MODEL_GROUP,
   Node,
   NodePayloadWithPayloadType,
 } from "./types";
+import ModelOrganizerPreviousChangesExistConfirmation from "./ModelOrganizerPreviousChangesExistConfirmation";
+import { useHistory, useLocation } from "react-router-dom";
 
 export const CLASS_NAME = "model-organizer";
 const REACT_FLOW_CLASS_NAME = "reactflow-wrapper";
@@ -58,13 +61,20 @@ const edgeTypes = {
   relationSimple: simpleRelationEdge,
 };
 
-export default function ModelOrganizer() {
-  const { currentProject } = useAppContext();
+type Props = {
+  restrictedMode?: boolean;
+};
+
+export default function ModelOrganizer({ restrictedMode = false }: Props) {
+  const { currentProject, resetPendingChangesIndicator } = useAppContext();
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
 
   const { message, messageType, showMessage, removeMessage } = useMessage();
+
+  const location = useLocation();
+  const history = useHistory();
 
   const {
     nodes,
@@ -88,11 +98,15 @@ export default function ModelOrganizer() {
     mergeNewResourcesChanges,
     redesignMode,
     resetUserAction,
+    currentEditableResourceNode,
     clearDuplicateEntityError,
+    setSelectResourceRelatedEntities,
     errorMessage,
-  } = useModelOrganization({
+    setMultipleChanges,
+  } = useModelOrganizer({
     projectId: currentProject?.id,
     onMessage: showMessage,
+    showRelationDetailsOnStartup: restrictedMode,
   });
 
   const [currentDropTarget, setCurrentDropTarget] = useState<Node>(null);
@@ -100,6 +114,12 @@ export default function ModelOrganizer() {
   const [isValidResourceName, setIsValidResourceName] = useState<boolean>(true);
 
   const fitViewTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+    resetChanges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPendingChangesIndicator]);
 
   const fitToView = useCallback(
     (delayBeforeStart = 100) => {
@@ -115,6 +135,16 @@ export default function ModelOrganizer() {
     },
     [reactFlowInstance]
   );
+
+  useEffect(() => {
+    if (location.state?.changes) {
+      setMultipleChanges(location.state?.changes);
+      history.replace({
+        ...location,
+        state: { ...location.state, changes: undefined },
+      });
+    }
+  }, [location, history, setMultipleChanges]);
 
   useEffect(() => {
     // Clear the timeout ref when the component unmounts
@@ -268,6 +298,14 @@ export default function ModelOrganizer() {
     fitToView();
   }, [nodes, edges, showRelationDetails, setNodes, fitToView]);
 
+  const onNodeClick = useCallback(
+    async (event: React.MouseEvent, node: Node) => {
+      if (!node.data.selectRelatedEntities) return;
+      setSelectResourceRelatedEntities(node as EntityNode);
+    },
+    [setSelectResourceRelatedEntities]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <>
@@ -284,7 +322,14 @@ export default function ModelOrganizer() {
             />
           </div>
           <div className={`${CLASS_NAME}__body`}>
+            <ModelOrganizerPreviousChangesExistConfirmation
+              changes={changes}
+            ></ModelOrganizerPreviousChangesExistConfirmation>
             <ModelOrganizerToolbar
+              restrictedMode={restrictedMode}
+              selectedEditableResource={
+                currentEditableResourceNode?.data?.payload
+              }
               changes={changes}
               nodes={nodes}
               redesignMode={redesignMode}
@@ -319,6 +364,7 @@ export default function ModelOrganizer() {
                 <Button onClick={handleCreateResourceState}>Ok</Button>
               </FlexItem>
             </Dialog>
+
             <ConfirmationDialog
               isOpen={errorMessage !== null}
               onDismiss={clearDuplicateEntityError}
@@ -339,6 +385,7 @@ export default function ModelOrganizer() {
                 onNodeDragStop={onNodeDragStop}
                 onEdgesChange={onEdgesChange}
                 connectionMode={ConnectionMode.Loose}
+                onNodeClick={onNodeClick}
                 proOptions={{ hideAttribution: true }}
                 minZoom={0.1}
                 panOnScroll

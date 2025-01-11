@@ -24,7 +24,7 @@ import { set } from "lodash";
  *  */
 
 export const validationErrorMessages = {
-  AT_LEAST_TWO_CHARARCTERS: "Must be at least 2 characters long",
+  AT_LEAST_TWO_CHARACTERS: "Must be at least 2 characters long",
   NO_SYMBOLS_ERROR: "Unsupported character",
   AT_MOST_SIXTY_CHARACTERS: "Must be at most 60 characters long",
 };
@@ -36,6 +36,15 @@ export function validate<T>(
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
+
+  ajv.addKeyword("isNotEmpty", {
+    type: "string",
+    validate: function (schema, data) {
+      return typeof data === "string" && data.trim() !== "";
+    },
+    errors: true,
+  });
+
   ajvErrors(ajv);
 
   const isValid = ajv.validate(validationSchema, values);

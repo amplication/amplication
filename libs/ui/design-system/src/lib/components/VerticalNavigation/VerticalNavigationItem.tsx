@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
-import { NavLink } from "react-router-dom";
-import { Icon } from "../Icon/Icon";
+import React, { useCallback, useEffect } from "react";
+import { NavLink, useRouteMatch } from "react-router-dom";
+import { EnumIconFamily, Icon } from "../Icon/Icon";
 import classNames from "classnames";
 import { VerticalNavigation } from "./VerticalNavigation";
 import "./VerticalNavigationItem.scss";
@@ -10,6 +10,7 @@ import { Button, EnumButtonStyle } from "../Button/Button";
 export type Props = {
   children: React.ReactNode;
   icon?: string;
+  iconFamily?: EnumIconFamily;
   to: string;
   className?: string;
   childItems?: React.ReactNode;
@@ -26,31 +27,44 @@ export function VerticalNavigationItem({
   className,
   childItems,
   expandable,
+  iconFamily,
   onExpand,
 }: Props) {
   const [expanded, setExpanded] = React.useState(false);
 
+  const match = useRouteMatch({
+    path: to,
+  });
+
   const handleExpand = useCallback(
     (e: any) => {
       e.preventDefault();
+      e.stopPropagation();
       setExpanded((expanded) => !expanded);
       onExpand && onExpand();
     },
     [onExpand, setExpanded]
   );
 
+  useEffect(() => {
+    if (match) {
+      setExpanded(true);
+    }
+  }, [match?.path]);
+
   return (
     <>
       <NavLink
         to={to}
         exact
+        onClick={() => setExpanded(true)}
         className={classNames(CLASS_NAME, className, {
           [`${CLASS_NAME}--expanded`]: expanded,
         })}
       >
         <FlexItem
           itemsAlign={EnumItemsAlign.Center}
-          start={icon && <Icon icon={icon} size="small" />}
+          start={icon && <Icon icon={icon} size="small" family={iconFamily} />}
           end={
             expandable && (
               <Button

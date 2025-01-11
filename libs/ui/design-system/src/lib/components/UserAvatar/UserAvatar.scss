@@ -1,12 +1,14 @@
 @import "../../style/index.scss";
+
 .user-avatar {
   height: var(--small-menu-item-height);
   position: relative;
   width: var(--small-menu-item-width);
+  display: flex;
 
   & &__initials {
     box-sizing: border-box;
-    background-color: var(--theme-blue);
+    border: 1px solid var(--tag-border-color);
     border-radius: 100px;
     display: inline-flex;
     flex-direction: row;
@@ -15,7 +17,8 @@
     height: var(--small-menu-item-height);
     text-align: center;
     width: var(--small-menu-item-width);
-    color: var(--static-white);
+    color: var(--tag-color);
+    background-color: var(--tag-background-color);
     font-size: var(--text-field-label-font-size);
     text-transform: capitalize;
   }

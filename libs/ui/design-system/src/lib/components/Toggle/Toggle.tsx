@@ -7,15 +7,29 @@ import "./Toggle.scss";
 
 const CLASS_NAME = "toggle-field";
 
+export enum EnumToggleStyle {
+  Default = "default",
+  Green = "green",
+  Dark = "dark",
+}
+
 export type Props = SwitchProps & {
   name?: string;
   label?: string;
   onValueChange?: (checked: boolean) => void;
   forwardRef?: React.MutableRefObject<HTMLButtonElement>;
+  toggleStyle?: EnumToggleStyle;
 };
 
 export const Toggle = (props: Props) => {
-  const { label, onChange, onValueChange, forwardRef, ...rest } = props;
+  const {
+    label,
+    onChange,
+    onValueChange,
+    forwardRef,
+    toggleStyle = EnumToggleStyle.Default,
+    ...rest
+  } = props;
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,14 +52,22 @@ export const Toggle = (props: Props) => {
   );
 
   const componentNode = !isEmpty(label) ? (
-    <div className={classNames(CLASS_NAME, `${CLASS_NAME}--with-label`)}>
+    <div
+      className={classNames(
+        CLASS_NAME,
+        `${CLASS_NAME}--with-label`,
+        `${CLASS_NAME}--${toggleStyle}`
+      )}
+    >
       <label className={LABEL_CLASS}>
         <span className={LABEL_VALUE_CLASS}>{label}</span>
         {switchNode}
       </label>
     </div>
   ) : (
-    <div className={CLASS_NAME}>{switchNode}</div>
+    <div className={classNames(CLASS_NAME, `${CLASS_NAME}--${toggleStyle}`)}>
+      {switchNode}
+    </div>
   );
 
   return componentNode;

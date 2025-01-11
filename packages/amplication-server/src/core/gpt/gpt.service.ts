@@ -8,7 +8,11 @@ import { Inject, Injectable } from "@nestjs/common";
 import { EnumActionStepStatus } from "../action/dto";
 import { UserAction } from "../userAction/dto";
 import { UserActionService } from "../userAction/userAction.service";
-import { ConversationTypeKey } from "./gpt.types";
+import {
+  ConversationTypeKey,
+  ConversationUserAction,
+  ConversationUserActionMetadata,
+} from "./gpt.types";
 import { EnumUserActionType } from "../userAction/types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
@@ -81,9 +85,35 @@ export class GptService {
       return;
     }
 
+    const metadata: ConversationUserActionMetadata = {
+      data: result,
+    };
+
     await this.userActionService.updateUserActionMetadata(
       requestUniqueId,
-      JSON.parse(result)
+      metadata
     );
+  }
+
+  async getConversationUserAction(
+    userActionId: string
+  ): Promise<ConversationUserAction> {
+    const userActionStatus =
+      this.userActionService.evalUserActionStatus(userActionId);
+
+    const { actionId, resourceId, metadata } =
+      await this.userActionService.findOne({
+        where: {
+          id: userActionId,
+        },
+      });
+
+    return {
+      id: userActionId,
+      actionId,
+      resourceId,
+      status: await userActionStatus,
+      metadata: metadata as ConversationUserActionMetadata,
+    };
   }
 }

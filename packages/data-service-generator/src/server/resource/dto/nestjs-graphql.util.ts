@@ -8,6 +8,8 @@ export const ARGS_TYPE_ID = builders.identifier("ArgsType");
 export const FIELD_ID = builders.identifier("Field");
 export const FLOAT_ID = builders.identifier("Float");
 export const INT_ID = builders.identifier("Int");
+export const MUTATION_ID = builders.identifier("graphql.Mutation");
+export const QUERY_ID = builders.identifier("graphql.Query");
 
 export function isInputType(classDeclaration: ClassDeclaration): boolean {
   return (

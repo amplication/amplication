@@ -42,7 +42,11 @@
   --theme-blue: #20a4f3;
   --theme-orange: #f6aa50;
 
-  --tooltip-background: #1b1f23;
+  --color-positive: #31c587;
+  --color-negative: var(--theme-red);
+  --theme-gradient: linear-gradient(45deg, #6c37ff 0%, #23c4da 100%);
+
+  --tooltip-background: var(--gray-60);
 
   --panel-background: var(--gray-80);
   --panel-hover-background: var(--gray-70);

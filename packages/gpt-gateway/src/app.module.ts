@@ -18,6 +18,8 @@ import { ACLModule } from "./auth/acl.module";
 import { AuthModule } from "./auth/auth.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { join } from "path";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { SERVICE_NAME } from "./constants";
 
 @Module({
   controllers: [],
@@ -38,7 +40,7 @@ import { join } from "path";
       useClass: ServeStaticOptionsService,
     }),
     AmplicationLoggerModule.forRoot({
-      component: "gpt-gateway",
+      component: SERVICE_NAME,
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -60,6 +62,7 @@ import { join } from "path";
       inject: [ConfigService],
       imports: [ConfigModule],
     }),
+    TracingModule.forRoot(),
   ],
   providers: [],
 })

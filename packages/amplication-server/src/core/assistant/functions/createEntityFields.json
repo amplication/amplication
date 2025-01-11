@@ -1,0 +1,45 @@
+{
+  "name": "createEntityFields",
+  "description": "creates fields for an existing entity. When creating a relation, instead of using the form customerId, just send the name 'Customer' with a type 'lookup' - the name of the field must be identical to the name of the related entity. Use the name of the related entity in singular form. When creating relation fields, the related entity should already exist. Create relation fields only on one side of the relation, the other side will be created automatically. Do not create relation fields on both sides.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "entityId": {
+        "type": "string",
+        "description": "the ID of the entity in which the fields are created."
+      },
+      "fields": {
+        "type": "array",
+        "description": "a list of fields of the entity. assume that 'id', 'createAt', and 'updatedAt' are already created by default so do not include them. When creating a relation, instead of using the form customerId, just send the name 'Customer' with a type 'lookup' - the name of the field must be identical to the name of the related entity. Use the name of the related entity in singular form. When creating relation fields, the related entity should already exist. Create relation fields only on one side of the relation, the other side will be created automatically. Do not create relation fields on both sides.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "the name of the field. "
+            },
+            "type": {
+              "type": "string",
+              "description": "the type of the field. ",
+              "enum": [
+                "SingleLineText",
+                "MultiLineText",
+                "Email",
+                "WholeNumber",
+                "DateTime",
+                "DecimalNumber",
+                "Lookup",
+                "MultiSelectOptionSet",
+                "OptionSet",
+                "Boolean",
+                "Json",
+                "File"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "required": ["entityId", "fields"]
+  }
+}

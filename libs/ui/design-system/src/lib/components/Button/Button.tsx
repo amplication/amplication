@@ -12,16 +12,20 @@ export enum EnumButtonStyle {
   Primary = "primary",
   Outline = "outline",
   Text = "text",
+  GradientFull = "gradient-full",
+  GradientOutline = "gradient-outline",
 }
 
 export enum EnumButtonState {
   Default = "default",
   Danger = "danger",
+  Success = "success",
 }
 
 export enum EnumIconPosition {
   Left = "left",
   Right = "right",
+  None = "none",
 }
 export interface Props extends PrimerButtonProps {
   /** The display style of the button */

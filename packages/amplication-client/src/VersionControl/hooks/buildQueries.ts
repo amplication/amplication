@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 
-export const GET_LAST_BUILD = gql`
-  query lastBuild($resourceId: String!) {
+export const GET_LAST_SUCCESSFUL_GIT_BUILD = gql`
+  query lastSuccessfulGitBuild($resourceId: String!) {
     builds(
-      where: { resource: { id: $resourceId } }
+      where: { resource: { id: $resourceId }, gitStatus: { equals: Completed } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {
@@ -15,27 +15,15 @@ export const GET_LAST_BUILD = gql`
       createdAt
       commitId
       actionId
-      action {
-        id
-        createdAt
-        steps {
-          id
-          name
-          createdAt
-          message
-          status
-          completedAt
-        }
-      }
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
       status
-      archiveURI
+      gitStatus
+      buildPlugins {
+        id
+        packageName
+        packageVersion
+        requestedFullPackageName
+        createdAt
+      }
     }
   }
 `;

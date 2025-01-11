@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  forwardRef,
+} from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -24,6 +29,7 @@ import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
 import { GitHubAuthGuard } from "./github.guard";
 import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { IdpModule } from "../idp/idp.module";
 
 @Module({
   imports: [
@@ -39,8 +45,9 @@ import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentA
     PrismaModule,
     PermissionsModule,
     ExceptionFiltersModule,
-    WorkspaceModule,
-    UserModule,
+    forwardRef(() => WorkspaceModule),
+    forwardRef(() => UserModule),
+    IdpModule,
   ],
   providers: [
     AuthService,
@@ -72,7 +79,7 @@ import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentA
     SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthService, AuthResolver],
+  exports: [GqlAuthGuard, AuthResolver, AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

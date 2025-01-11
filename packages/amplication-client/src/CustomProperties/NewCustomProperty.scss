@@ -1,0 +1,35 @@
+@import "../style/index.scss";
+
+.new-custom-property {
+  flex: 1;
+  width: 100%;
+
+  .text-input input {
+    border-style: dashed;
+
+    border-color: var(--gray-base);
+    width: 100%;
+    max-width: none;
+
+    &:active,
+    &:focus {
+      border-style: dashed;
+    }
+  }
+
+  &__add-field {
+    position: relative;
+    width: 100%;
+
+    &__button {
+      position: absolute !important;
+      top: 0;
+      right: 0;
+      display: none !important;
+
+      &--show {
+        display: flex !important;
+      }
+    }
+  }
+}

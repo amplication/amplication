@@ -22,11 +22,10 @@ import { VersionService } from "../version.service";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Public } from "../../decorators/public.decorator";
 import { VersionCreateInput } from "./VersionCreateInput";
-import { VersionWhereInput } from "./VersionWhereInput";
-import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
-import { VersionFindManyArgs } from "./VersionFindManyArgs";
-import { VersionUpdateInput } from "./VersionUpdateInput";
 import { Version } from "./Version";
+import { VersionFindManyArgs } from "./VersionFindManyArgs";
+import { VersionWhereUniqueInput } from "./VersionWhereUniqueInput";
+import { VersionUpdateInput } from "./VersionUpdateInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -46,13 +45,30 @@ export class VersionControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async create(@common.Body() data: VersionCreateInput): Promise<Version> {
-    return await this.service.create({
-      data: data,
+  async createVersion(
+    @common.Body() data: VersionCreateInput
+  ): Promise<Version> {
+    return await this.service.createVersion({
+      data: {
+        ...data,
+
+        generator: data.generator
+          ? {
+              connect: data.generator,
+            }
+          : undefined,
+      },
       select: {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -69,14 +85,21 @@ export class VersionControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async findMany(@common.Req() request: Request): Promise<Version[]> {
+  async versions(@common.Req() request: Request): Promise<Version[]> {
     const args = plainToClass(VersionFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.versions({
       ...args,
       select: {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -93,15 +116,22 @@ export class VersionControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async findOne(
+  async version(
     @common.Param() params: VersionWhereUniqueInput
   ): Promise<Version | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.version({
       where: params,
       select: {
         changelog: true,
         createdAt: true,
         deletedAt: true,
+
+        generator: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
         isActive: true,
         isDeprecated: true,
@@ -129,18 +159,33 @@ export class VersionControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async update(
+  async updateVersion(
     @common.Param() params: VersionWhereUniqueInput,
     @common.Body() data: VersionUpdateInput
   ): Promise<Version | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateVersion({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          generator: data.generator
+            ? {
+                connect: data.generator,
+              }
+            : undefined,
+        },
         select: {
           changelog: true,
           createdAt: true,
           deletedAt: true,
+
+          generator: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
           isActive: true,
           isDeprecated: true,
@@ -169,16 +214,23 @@ export class VersionControllerBase {
   @swagger.ApiForbiddenResponse({
     type: errors.ForbiddenException,
   })
-  async delete(
+  async deleteVersion(
     @common.Param() params: VersionWhereUniqueInput
   ): Promise<Version | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteVersion({
         where: params,
         select: {
           changelog: true,
           createdAt: true,
           deletedAt: true,
+
+          generator: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
           isActive: true,
           isDeprecated: true,

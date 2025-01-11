@@ -19,10 +19,11 @@ import {
 } from "@nestjs/apollo";
 import { gql } from "apollo-server-express";
 import { UserAction } from "./dto";
-import { EnumUserActionType } from "../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
-import { EnumUserActionStatus } from "./types";
+import { EnumUserActionStatus, EnumUserActionType } from "./types";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 const EXAMPLE_USER_ACTION_ID = "exampleUserActionId";
 const EXAMPLE_BUILD_ID = "exampleBuildId";
@@ -63,6 +64,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -82,7 +85,7 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
 
-const userActionServiceCalcUserActionStatusMock = jest.fn(() => {
+const userActionServiceEvalUserActionStatusMock = jest.fn(() => {
   return EnumUserActionStatus.Completed;
 });
 
@@ -143,7 +146,7 @@ describe("userActionResolver", () => {
           provide: UserActionService,
           useClass: jest.fn(() => ({
             findOne: userActionServiceFindOneMock,
-            calcUserActionStatus: userActionServiceCalcUserActionStatusMock,
+            evalUserActionStatus: userActionServiceEvalUserActionStatusMock,
           })),
         },
         {
@@ -211,8 +214,8 @@ describe("userActionResolver", () => {
         status: EnumUserActionStatus.Completed,
       },
     });
-    expect(userActionServiceCalcUserActionStatusMock).toBeCalledTimes(1);
-    expect(userActionServiceCalcUserActionStatusMock).toBeCalledWith(
+    expect(userActionServiceEvalUserActionStatusMock).toBeCalledTimes(1);
+    expect(userActionServiceEvalUserActionStatusMock).toBeCalledWith(
       EXAMPLE_USER_ACTION_ID
     );
   });

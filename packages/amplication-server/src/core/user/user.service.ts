@@ -1,19 +1,21 @@
-import { Prisma, PrismaService } from "../../prisma";
-import { ConflictException, Injectable } from "@nestjs/common";
-import { Account, User, UserRole } from "../../models";
-import { UserRoleArgs } from "./dto";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   KAFKA_TOPICS,
   UserAction,
   UserFeatureAnnouncement,
 } from "@amplication/schema-registry";
-import { encryptString } from "../../util/encryptionUtil";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { Account, Team, User } from "../../models";
+import { Prisma, PrismaService } from "../../prisma";
+import { encryptString } from "../../util/encryptionUtil";
+import { AuthUser } from "../auth/types";
+import { BillingService } from "../billing/billing.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 @Injectable()
 export class UserService {
@@ -48,69 +50,58 @@ export class UserService {
     });
   }
 
-  async assignRole(args: UserRoleArgs): Promise<User> {
-    const existingRole = await this.prisma.userRole.findMany({
-      where: {
-        user: {
-          id: args.where.id,
-        },
-        role: args.data.role,
+  async getAuthUser(where: Prisma.UserWhereInput): Promise<AuthUser | null> {
+    const matchingUsers = await this.findUsers({
+      where,
+      include: {
+        account: true,
+        workspace: true,
       },
+      take: 1,
     });
-
-    //if the role already exist do nothing and return the user
-    if (!existingRole || !existingRole.length) {
-      const roleData: Prisma.UserRoleCreateArgs = {
-        data: {
-          role: args.data.role,
-          user: { connect: { id: args.where.id } },
-        },
-      };
-
-      await this.prisma.userRole.create(roleData);
+    if (matchingUsers.length === 0) {
+      return null;
     }
-
-    return this.findUser({
-      where: {
-        id: args.where.id,
-      },
-    });
+    const [user] = matchingUsers;
+    return {
+      ...user,
+      account: user.account,
+      workspace: user.workspace,
+      permissions: await this.getUserPermissions(user.id),
+    };
   }
 
-  async removeRole(args: UserRoleArgs): Promise<User> {
-    const existingRole = await this.prisma.userRole.findMany({
+  async getUserPermissions(userId: string): Promise<RolesPermissions[]> {
+    const user = await this.findUser({
       where: {
-        user: {
-          id: args.where.id,
-        },
-        role: args.data.role,
+        id: userId,
       },
     });
 
-    //if the role already exist do nothing and return the user
-    if (existingRole && existingRole.length) {
-      await this.prisma.userRole.delete({
-        where: {
-          id: existingRole[0].id,
-        },
-      });
+    // If the user is an owner, return all permissions
+    if (user.isOwner) {
+      return ["*"];
     }
 
-    return this.findUser({
+    const userRoles = await this.prisma.role.findMany({
       where: {
-        id: args.where.id,
-      },
-    });
-  }
-
-  async getRoles(id: string): Promise<UserRole[]> {
-    return this.prisma.userRole.findMany({
-      where: {
-        user: {
-          id,
+        deletedAt: null,
+        teams: {
+          some: {
+            deletedAt: null,
+            members: {
+              some: {
+                id: userId,
+              },
+            },
+          },
         },
       },
     });
+
+    return Array.from(
+      new Set(userRoles.flatMap((role) => role.permissions))
+    ) as RolesPermissions[];
   }
 
   async getAccount(userId: string): Promise<Account> {
@@ -128,8 +119,22 @@ export class UserService {
 
     return {
       ...account,
-      email: account.previewAccountEmail ?? account.email,
+      email: account.email,
     };
+  }
+
+  async getTeams(userId: string): Promise<Team[]> {
+    return await this.prisma.user
+      .findUnique({
+        where: {
+          id: userId,
+        },
+      })
+      .teams({
+        where: {
+          deletedAt: null,
+        },
+      });
   }
 
   async delete(userId: string): Promise<User> {
@@ -215,6 +220,15 @@ export class UserService {
               where: {
                 deletedAt: null,
               },
+              include: {
+                resources: {
+                  where: {
+                    deletedAt: null,
+                    archived: { not: true },
+                    resourceType: EnumResourceType.Service,
+                  },
+                },
+              },
             },
           },
         },
@@ -223,8 +237,10 @@ export class UserService {
 
     for (const user of users) {
       const firstProject = user.workspace?.projects?.at(0);
+      const firstService = firstProject?.resources?.at(0);
       this.logger.info(
-        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id})`
+        `Queuing feature notification ${notificationTemplateIdentifier} to user ${user.id} (account: ${user.account?.id}, 
+          workspace: ${user.workspace?.id}, firstProject: ${firstProject?.id}), firstService: ${firstService?.id}`
       );
 
       this.kafkaProducerService
@@ -238,6 +254,7 @@ export class UserService {
             envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
             workspaceId: user.workspace?.id,
             projectId: firstProject?.id,
+            serviceId: firstService?.id,
           },
         })
         .catch((error) =>

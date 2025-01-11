@@ -7,6 +7,7 @@ import {
   AUTHORIZE_CONTEXT,
   AuthorizeContextParameters,
 } from "../guards/gql-auth.guard";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 /**
  *
@@ -19,9 +20,18 @@ import {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const AuthorizeContext = (
   parameterType: AuthorizableOriginParameter,
-  parameterPath: string
-): CustomDecorator<string> =>
-  SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {
+  parameterPath: string,
+  permissions?: RolesPermissions[] | RolesPermissions
+): CustomDecorator<string> => {
+  const requiredPermissions = permissions
+    ? Array.isArray(permissions)
+      ? permissions
+      : [permissions]
+    : undefined;
+
+  return SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {
     parameterType,
     parameterPath,
+    requiredPermissions,
   });
+};

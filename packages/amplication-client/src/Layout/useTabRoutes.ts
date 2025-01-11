@@ -24,9 +24,10 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
           : TAB_NAME_MISSING,
         to: `${currentUrl}${route.path.replace(currentPath, "")}`,
         exact: route.exactPath,
+        iconName: route.iconName,
       };
     });
-  }, [tabRoutes, currentPath]);
+  }, [tabRoutes, currentUrl, currentPath]);
 
   const currentRouteIsTab = tabRoutes?.some((def) =>
     location.pathname

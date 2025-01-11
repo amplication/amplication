@@ -16,6 +16,7 @@ export class Env {
   static readonly BUILD_ARTIFACTS_CODE_FOLDER = "BUILD_ARTIFACTS_CODE_FOLDER";
 
   static readonly DSG_JOBS_BASE_FOLDER = "DSG_JOBS_BASE_FOLDER";
+  static readonly DSG_ASSETS_FOLDER = "DSG_ASSETS_FOLDER";
   static readonly DSG_JOBS_CODE_FOLDER = "DSG_JOBS_CODE_FOLDER";
   static readonly DSG_JOBS_RESOURCE_DATA_FILE = "DSG_JOBS_RESOURCE_DATA_FILE";
   static readonly FEATURE_SPLIT_JOBS_MIN_DSG_VERSION =
@@ -24,4 +25,5 @@ export class Env {
   static readonly DSG_CATALOG_SERVICE_URL = "DSG_CATALOG_SERVICE_URL";
 
   static readonly SERVICE_NAME = "amplication-build-manager";
+  static readonly ENABLE_PACKAGE_MANAGER = "ENABLE_PACKAGE_MANAGER";
 }

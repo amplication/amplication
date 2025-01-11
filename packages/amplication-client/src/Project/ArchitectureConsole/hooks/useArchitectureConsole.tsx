@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { GET_RESOURCES } from "../queries/modelsQueries";
+import { GET_RESOURCES_FOR_MODE_ORGANIZER } from "../queries/modelsQueries";
 import * as models from "../../../models";
 import { AppContext } from "../../../context/appContext";
 import { ResourceFilter } from "../ArchitectureConsole";
@@ -22,7 +22,7 @@ const useArchitectureConsole = () => {
     error: resourcesError,
     data: resourcesData,
     refetch: refetchResourcesData,
-  } = useQuery<TData>(GET_RESOURCES, {
+  } = useQuery<TData>(GET_RESOURCES_FOR_MODE_ORGANIZER, {
     variables: {
       projectId: currentProject?.id,
       whereName:

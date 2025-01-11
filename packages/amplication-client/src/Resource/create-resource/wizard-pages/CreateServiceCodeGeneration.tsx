@@ -12,10 +12,9 @@ import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
-import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
-import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
-import { EnumGitProvider } from "@amplication/code-gen-types/models";
+import { COMMIT_CHANGES } from "../../../VersionControl/hooks/commitQueries";
+import { useResourceBaseUrl } from "../../../util/useResourceBaseUrl";
 
 const className = "create-service-code-generation";
 
@@ -40,7 +39,9 @@ const CreateServiceCodeGeneration: React.FC<
   const { data } = useBuildWatchStatus(build);
 
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentProject, commitUtils } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resource?.id });
 
   const [buildCompleted, setBuildCompleted] = React.useState(false);
 
@@ -59,6 +60,7 @@ const CreateServiceCodeGeneration: React.FC<
       data?.build?.status === models.EnumBuildStatus.Completed
     ) {
       setBuildCompleted(true);
+      commitUtils.refetchLastCommit();
       trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
     }
   }, [data?.build?.status]);
@@ -98,8 +100,8 @@ const CreateServiceCodeGeneration: React.FC<
 
   const handleContinueClick = useCallback(() => {
     trackWizardPageEvent(AnalyticsEventNames.ServiceWizardError_Continue);
-    history.push(`/${currentWorkspace.id}/${currentProject.id}/${resource.id}`);
-  }, [currentWorkspace, currentProject]);
+    history.push(`${baseUrl}`);
+  }, [trackWizardPageEvent, history, baseUrl]);
 
   const handleTryAgainClick = useCallback(() => {
     trackWizardPageEvent(AnalyticsEventNames.ServiceWizardError_TryAgain);
@@ -107,18 +109,16 @@ const CreateServiceCodeGeneration: React.FC<
       variables: {
         message: "Initial commit",
         projectId: currentProject.id,
+        resourceTypeGroup: models.EnumResourceTypeGroup.Services, //when creating new service, this will always be services
       },
     }).catch(console.error);
-  }, [commit, currentProject.id]);
+  }, [commit, currentProject?.id, trackWizardPageEvent]);
 
   const gitUrl = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return null;
     }
 
-    const provider = formik.values.connectToDemoRepo
-      ? EnumGitProvider.Github
-      : resource?.gitRepository?.gitOrganization?.provider;
     const stepGithub = data.build.action.steps.find(
       (step) => step.name === "PUSH_TO_GIT_PROVIDER"
     );

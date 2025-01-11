@@ -1,7 +1,8 @@
 @import "../style/index.scss";
 
-$before-spacing-left: 10px;
-$before-spacing: -6px;
+$before-spacing-left: -16px;
+$before-spacing: -16px;
+$indicator-width: 19px;
 
 .pending-change {
   margin-left: 0;
@@ -9,29 +10,15 @@ $before-spacing: -6px;
   margin-bottom: var(--default-spacing);
   position: relative;
   @include flexFullRow;
+  align-items: flex-start;
+  white-space: nowrap;
 
-  &:last-child {
-    margin-bottom: var(--large-spacing);
-  }
-
-  &__spacer {
-    flex: 1;
-  }
-  &__action {
-    height: var(--large-spacing);
-    width: var(--large-spacing);
-    font-size: var(--text-field-label-font-size);
-    min-width: var(--medium-spacing);
-    min-height: var(--medium-spacing);
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--static-white);
-    margin-bottom: 0;
+  &__guide {
+    position: relative;
+    width: 0px;
+    height: 100;
+    display: inline-block;
     margin-left: var(--double-spacing);
-    margin-right: var(--user-badge-spacing);
-
     &:before {
       content: "";
       position: absolute;
@@ -41,30 +28,49 @@ $before-spacing: -6px;
       top: $before-spacing;
       bottom: $before-spacing;
     }
+  }
 
-    &.update {
-      background-color: var(--theme-blue);
+  &:last-child {
+    margin-bottom: var(--large-spacing);
+  }
+
+  .pending-change-content {
+    &__link {
+      width: calc(100% - $indicator-width);
     }
-    &.delete {
-      background-color: var(--theme-red);
+    &__name {
+      width: calc(100% - $indicator-width);
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
-    &.create {
-      background-color: var(--theme-green);
+
+    &__indicator-wrapper {
+      min-width: $indicator-width;
+      max-width: $indicator-width;
+    }
+    &__indicator {
+      &--Update {
+        color: var(--theme-blue);
+      }
+
+      &--Delete {
+        color: var(--theme-red);
+      }
+      &--Create {
+        color: var(--theme-green);
+      }
     }
   }
+
   &__version {
     font-weight: 500;
   }
   &__tooltip_deleted:after {
-    border: 1px solid var(--theme-red);
     background-color: var(--gray-70);
     color: var(--gray-base);
   }
   &__deleted {
     color: var(--gray-20);
     cursor: pointer;
-  }
-  .tooltipped-ne:before {
-    border-top-color: var(--theme-red) !important;
   }
 }

@@ -13,6 +13,25 @@ $caret-width: 7px;
     }
   }
 
+  &__textbox-label {
+    @include label;
+    margin-bottom: 0;
+  }
+
+  &__textbox {
+    @include textField;
+    display: inline-block;
+    max-width: var(--form-field-long);
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:active:not(:disabled),
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      @include textField--active;
+    }
+  }
+
   & &__item {
     border-bottom: none;
     color: var(--gray-20);
@@ -79,5 +98,5 @@ $caret-width: 7px;
 }
 
 .SelectMenu-icon {
-  margin-right: var(--double-spacing) !important;
+  margin-left: var(--double-spacing) !important;
 }

@@ -6,15 +6,22 @@ import {
 import * as models from "../../models";
 import { useContext } from "react";
 import { AppContext } from "../../context/appContext";
+import { SET_RESOURCE_OWNER } from "../../Workspaces/queries/resourcesQueries";
 
 type TData = {
   updateServiceSettings: models.ServiceSettings;
 };
 
-const useResource = (resourceId: string) => {
-  const { addBlock } = useContext(AppContext);
+type setOwnerData = {
+  resourceOwnerShipId: string;
+  userId?: string;
+  teamId?: string;
+};
 
-  const { data: resourceSettings } = useQuery<{
+const useResource = (resourceId: string) => {
+  const { addBlock, reloadResources } = useContext(AppContext);
+
+  const { data: serviceSettings } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
@@ -23,17 +30,22 @@ const useResource = (resourceId: string) => {
     skip: !resourceId,
   });
 
-  const [updateResourceSettings, { error: updateResourceSettingsError }] =
+  const [updateServiceSettings, { error: updateServiceSettingsError }] =
     useMutation<TData>(UPDATE_SERVICE_SETTINGS, {
       onCompleted: (data) => {
         addBlock(data.updateServiceSettings.id);
       },
     });
 
+  const [setResourceOwner, { error: setResourceOwnerError }] =
+    useMutation<setOwnerData>(SET_RESOURCE_OWNER, {});
+
   return {
-    resourceSettings,
-    updateResourceSettings,
-    updateResourceSettingsError,
+    serviceSettings,
+    updateServiceSettings,
+    updateServiceSettingsError,
+    setResourceOwner,
+    setResourceOwnerError,
   };
 };
 

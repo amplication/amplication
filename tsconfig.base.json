@@ -16,12 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@amplication/code-gen-types": [
-        "packages/amplication-code-gen-types/src/index.ts"
-      ],
-      "@amplication/code-gen-types/*": [
-        "packages/amplication-code-gen-types/src/*"
-      ],
+      "@amplication/code-gen-types": ["libs/util/code-gen-types/src/index.ts"],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
       "@amplication/dsg-utils": ["libs/util/dsg-utils/src/index.ts"],
       "@amplication/graphql-error-codes": [
@@ -40,6 +35,9 @@
       "@amplication/ui/design-system/components/*": [
         "libs/ui/design-system/src/lib/components/*"
       ],
+      "@amplication/ui/design-system/custom-icons": [
+        "libs/ui/design-system/src/lib/custom-icons"
+      ],
       "@amplication/ui/design-system/icons": [
         "libs/ui/design-system/src/lib/icons"
       ],
@@ -49,6 +47,7 @@
       "@amplication/util-billing-types": [
         "libs/util/billing-types/src/index.ts"
       ],
+      "@amplication/util-roles-types": ["libs/util/roles-types/src/index.ts"],
       "@amplication/util/git": ["libs/util/git/src/index.ts"],
       "@amplication/util/json": ["libs/util/json/src/index.ts"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],

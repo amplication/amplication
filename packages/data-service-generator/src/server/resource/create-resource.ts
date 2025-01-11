@@ -16,17 +16,23 @@ import DsgContext from "../../dsg-context";
 import { createGrpcControllerModules } from "./grpc-controller/create-grpc-controller";
 
 export async function createResourcesModules(
-  entities: Entity[]
+  entities: Entity[],
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   const resourceModules = new ModuleMap(DsgContext.getInstance.logger);
   for await (const entity of entities) {
-    await resourceModules.merge(await createResourceModules(entity));
+    await resourceModules.merge(
+      await createResourceModules(entity, dtoNameToPath)
+    );
   }
 
   return resourceModules;
 }
 
-async function createResourceModules(entity: Entity): Promise<ModuleMap> {
+async function createResourceModules(
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
+): Promise<ModuleMap> {
   const entityType = entity.name;
   const context = DsgContext.getInstance;
   const { appInfo, generateGrpc } = context;
@@ -46,7 +52,8 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
     entity,
     serviceId,
     serviceBaseId,
-    delegateId
+    delegateId,
+    dtoNameToPath
   );
 
   const [serviceModule] = serviceModules.modules();
@@ -58,7 +65,8 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         entityName,
         entityType,
         serviceModule.path,
-        entity
+        entity,
+        dtoNameToPath
       ))) ||
     new ModuleMap(DsgContext.getInstance.logger);
 
@@ -71,7 +79,8 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         entityName,
         entityType,
         serviceModule.path,
-        entity
+        entity,
+        dtoNameToPath
       ))) ||
     new ModuleMap(DsgContext.getInstance.logger);
 
@@ -83,7 +92,8 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         entityName,
         entityType,
         serviceModule.path,
-        entity
+        entity,
+        dtoNameToPath
       ))) ||
     new ModuleMap(DsgContext.getInstance.logger);
   const [resolverModule] = resolverModules.modules();

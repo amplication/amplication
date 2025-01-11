@@ -1,32 +1,33 @@
-import React from "react";
-import { Project } from "../models";
-import { ProjectListItem } from "./ProjectListItem";
-import ProjectEmptyState from "./ProjectEmptyState";
 import {
+  CircularProgress,
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
-  List,
   Text,
 } from "@amplication/ui/design-system";
+import { Project } from "../models";
 import { pluralize } from "../util/pluralize";
-
-const CLASS_NAME = "project-list";
+import ProjectEmptyState from "./ProjectEmptyState";
+import "./ProjectList.scss";
+import { ProjectListItem } from "./ProjectListItem";
 
 type Props = {
   projects: Project[] | null;
   workspaceId: string;
+  loading?: boolean;
 };
 
-export const ProjectList = ({ projects, workspaceId }: Props) => {
+export const ProjectList = ({ projects, workspaceId, loading }: Props) => {
   return (
-    <div className={CLASS_NAME}>
+    <>
       <FlexItem margin={EnumFlexItemMargin.Bottom}>
         <Text textStyle={EnumTextStyle.Tag}>
           {projects.length} {pluralize(projects.length, "Project", "Projects")}
         </Text>
+        {loading && <CircularProgress />}
       </FlexItem>
-      <List>
+
+      <div className="project-list">
         {projects.length ? (
           projects?.map((project) => (
             <ProjectListItem
@@ -36,10 +37,14 @@ export const ProjectList = ({ projects, workspaceId }: Props) => {
             />
           ))
         ) : (
-          <ProjectEmptyState />
+          <>
+            <div />
+            <ProjectEmptyState />
+            <div />
+          </>
         )}
-      </List>
-    </div>
+      </div>
+    </>
   );
 };
 

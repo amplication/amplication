@@ -1,8 +1,8 @@
 import React, { Suspense, lazy } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
-import * as analytics from "../util/analytics";
+import { RouteWithAnalyticsContent } from "../Layout/RouteWithAnalytics";
+import { RouteDef } from "./appRoutes";
 
 //use lazy loading imports to prevent inclusion of the components CSS in the main bundle
 const CircularProgress = lazy(
@@ -42,9 +42,6 @@ const LazyRouteWrapper: React.FC<{
         exact={route.exactPath}
         render={(props) => {
           const { location, match } = props;
-
-          route.isAnalytics &&
-            pageTracking(match.path, match.url, match.params);
 
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
@@ -95,11 +92,21 @@ const LazyRouteWrapper: React.FC<{
               />
             ) : (
               <>
-                {/* <div>{route.path}</div> */}
-                {React.createElement(route.Component, {
-                  ...props,
-                  ...appRouteProps,
-                })}
+                {route.isAnalytics ? (
+                  <RouteWithAnalyticsContent key={match.url}>
+                    {React.createElement(route.Component, {
+                      ...props,
+                      ...appRouteProps,
+                    })}
+                  </RouteWithAnalyticsContent>
+                ) : (
+                  <>
+                    {React.createElement(route.Component, {
+                      ...props,
+                      ...appRouteProps,
+                    })}
+                  </>
+                )}
               </>
             ))
           );
@@ -124,12 +131,4 @@ export const routesGenerator: (
       <Route component={NotFoundPage} />
     </Switch>
   );
-};
-
-const pageTracking = (path: string, url: string, params: any) => {
-  analytics.page(path.replaceAll("/", "-"), {
-    path,
-    url,
-    params: params,
-  });
 };

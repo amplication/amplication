@@ -2,19 +2,43 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import axios from "axios";
 import { Version } from "./version.interface";
+import { Generator } from "./generator.interface";
 
 @Traceable()
 @Injectable()
 export class CodeGeneratorService {
   constructor(private readonly configService: ConfigService<Env, true>) {}
 
+  async getCodeGenerators(generatorName: string): Promise<string | undefined> {
+    const catalogServiceUrl = this.configService.get(
+      Env.DSG_CATALOG_SERVICE_URL
+    );
+
+    try {
+      const response = await axios.get(`${catalogServiceUrl}api/generators`);
+
+      return (<Generator[]>response.data).find(
+        (generator) => generator.name === generatorName
+      )?.fullName;
+    } catch (error) {
+      throw new Error(error.message, {
+        cause: {
+          code: error.response?.status,
+          message: error.response?.data?.message,
+        },
+      });
+    }
+  }
+
   async getCodeGeneratorVersion({
+    codeGeneratorFullName,
     codeGeneratorVersion,
     codeGeneratorStrategy,
   }: {
+    codeGeneratorFullName: string;
     codeGeneratorVersion?: string;
     codeGeneratorStrategy?: CodeGeneratorVersionStrategy;
   }): Promise<string | undefined> {
@@ -25,6 +49,7 @@ export class CodeGeneratorService {
       const response = await axios.post(
         `${catalogServiceUrl}api/versions/code-generator-version`,
         {
+          codeGeneratorFullName,
           codeGeneratorVersion,
           codeGeneratorStrategy,
         }

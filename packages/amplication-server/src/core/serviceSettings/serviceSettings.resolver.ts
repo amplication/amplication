@@ -19,7 +19,11 @@ export class ServiceSettingsResolver {
   @Mutation(() => ServiceSettings, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateServiceSettings(
     @Args() args: UpdateServiceSettingsArgs,
     @UserEntity() user: User

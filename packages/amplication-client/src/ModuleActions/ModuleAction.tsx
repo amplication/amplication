@@ -1,20 +1,26 @@
 import {
-  EnumFlexItemMargin,
+  EnumContentAlign,
+  EnumFlexDirection,
   EnumTextStyle,
   FlexItem,
   Snackbar,
   TabContentTitle,
   Text,
+  Toggle,
+  Panel,
+  EnumPanelStyle,
+  EnumTextColor,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
+import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
-import * as models from "../models";
+import { useModulesContext } from "../Modules/modulesContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,15 +35,12 @@ type Props = AppRouteProps & {
 const ModuleAction = ({ match }: Props) => {
   const { moduleAction: moduleActionId } = match?.params ?? {};
 
+  const { customActionsLicenseEnabled } = useModulesContext();
   const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
   } = useContext(AppContext);
-  const history = useHistory();
 
   const {
     getModuleAction,
@@ -63,14 +66,11 @@ const ModuleAction = ({ match }: Props) => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
       updateModuleAction({
-        onCompleted: () => {
-          addEntity(moduleActionId);
-        },
         variables: {
           where: {
             id: moduleActionId,
@@ -79,9 +79,21 @@ const ModuleAction = ({ match }: Props) => {
             ...data,
           },
         },
+        onCompleted: () => {
+          addEntity(moduleActionId);
+        },
       }).catch(console.error);
     },
-    [updateModuleAction, moduleActionId]
+    [updateModuleAction, moduleActionId, addEntity]
+  );
+
+  const onEnableChanged = useCallback(
+    (value: boolean) => {
+      handleSubmit({
+        enabled: value,
+      });
+    },
+    [handleSubmit]
   );
 
   const hasError = Boolean(error) || Boolean(updateModuleActionError);
@@ -99,19 +111,33 @@ const ModuleAction = ({ match }: Props) => {
           title={data?.moduleAction?.displayName}
           subTitle={data?.moduleAction?.description}
         />
-        <FlexItem.FlexEnd>
+        <FlexItem.FlexEnd
+          direction={EnumFlexDirection.Row}
+          alignSelf={EnumContentAlign.Start}
+        >
+          <Toggle
+            name={"enabled"}
+            onValueChange={onEnableChanged}
+            checked={
+              data?.moduleAction?.enabled ? data?.moduleAction?.enabled : false
+            }
+            disabled={!customActionsLicenseEnabled}
+          ></Toggle>
           {data?.moduleAction && isCustomAction && (
             <DeleteModuleAction moduleAction={data?.moduleAction} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
       {data?.moduleAction && !isCustomAction && (
-        <FlexItem margin={EnumFlexItemMargin.Bottom}>
-          <Text textStyle={EnumTextStyle.Description}>
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textColor={EnumTextColor.ThemeOrange}
+          >
             This is a default action that was created automatically with the
-            entity. It cannot be deleted, and its name cannot be changed.
+            entity. It cannot be deleted, and its settings cannot be changed.
           </Text>
-        </FlexItem>
+        </Panel>
       )}
 
       {!loading && (
@@ -119,6 +145,7 @@ const ModuleAction = ({ match }: Props) => {
           isCustomAction={isCustomAction}
           onSubmit={handleSubmit}
           defaultValues={data?.moduleAction}
+          disabled={!customActionsLicenseEnabled}
         />
       )}
       <Snackbar open={hasError} message={errorMessage} />

@@ -1,15 +1,14 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Inject, Injectable } from "@nestjs/common";
 import { Analytics, TrackParams } from "@segment/analytics-node";
-import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
+import { Account, PrismaService, User } from "../../prisma";
+import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import {
   ContextEventProperties,
   EventTrackData,
   IdentifyData,
 } from "./segmentAnalytics.types";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Account, PrismaService, User } from "../../prisma";
-
 @Injectable()
 export class SegmentAnalyticsService {
   private analytics: Analytics;

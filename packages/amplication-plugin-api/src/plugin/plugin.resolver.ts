@@ -1,6 +1,5 @@
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
-import { groupBy } from "lodash";
 import { PluginResolverBase } from "./base/plugin.resolver.base";
 import { Plugin } from "./base/Plugin";
 import { PluginService } from "./plugin.service";
@@ -40,11 +39,6 @@ export class PluginResolver extends PluginResolverBase {
           amplicationPlugins
         );
 
-      const npmPluginsVersionsMap = groupBy(
-        npmPluginsVersions,
-        (version) => version.pluginId
-      );
-
       this.logger.debug("processPluginCatalog", {
         timeToProcessPluginCatalog: (new Date().getTime() - startTime) / 1000,
       });
@@ -52,7 +46,8 @@ export class PluginResolver extends PluginResolverBase {
       return amplicationPlugins.map((plugin) => {
         return {
           ...plugin,
-          versions: npmPluginsVersionsMap[plugin.id],
+          id: plugin.pluginId,
+          versions: npmPluginsVersions[plugin.id],
         };
       });
     } catch (error) {

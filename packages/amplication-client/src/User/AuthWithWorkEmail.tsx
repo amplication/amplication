@@ -38,9 +38,6 @@ export const AuthWithWorkEmail: React.FC = () => {
     useMutation<SignUpWithBusinessEmail>(SIGNUP_WITH_BUSINESS_EMAIL);
 
   const handleSubmit = (data: FormValues) => {
-    trackEvent({
-      eventName: AnalyticsEventNames.SignUpWithEmailPassword,
-    });
     signUpWithBusinessEmail({
       variables: {
         data: {

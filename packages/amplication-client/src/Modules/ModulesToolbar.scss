@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.modules-toolbar {
+  .search-field {
+    max-width: 100px;
+  }
+
+  .beta-feature-tag__tag {
+    display: none;
+  }
+}
+
+.workspaces-layout__main_content--lg {
+  .modules-toolbar {
+    .search-field {
+      max-width: 150px;
+    }
+  }
+
+  .beta-feature-tag__tag {
+    display: flex;
+  }
+}
+
+.workspaces-layout__main_content--xl {
+  .modules-toolbar {
+    .search-field {
+      max-width: none;
+    }
+  }
+}

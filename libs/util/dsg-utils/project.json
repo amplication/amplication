@@ -19,7 +19,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/util/dsg-utils/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/util/dsg-utils/**/*.ts",
+          "libs/util/dsg-utils/package.json"
+        ]
       }
     },
     "test": {

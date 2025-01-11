@@ -1,0 +1,102 @@
+@import "../../style/index.scss";
+
+$max-width: 80vw;
+$modal-min-height: 80vh;
+$header-max-width: 600px;
+$service-min-width: max(200px, 20%);
+$service-max-height: 200px;
+$button-width: 100px;
+
+.break-the-monolith {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: min(var(--page-content-width-default), $max-width);
+  margin: auto;
+
+  &--full-screen {
+    justify-content: flex-start;
+    min-height: $modal-min-height;
+    .break-the-monolith {
+      &__header {
+        margin-top: var(--double-spacing);
+      }
+    }
+  }
+
+  &__loader {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+  }
+
+  &__header {
+    max-width: $header-max-width;
+    margin-top: 0;
+  }
+
+  &__content {
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__services {
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-spacing);
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: auto;
+    margin-top: var(--default-spacing);
+    margin-bottom: var(--default-spacing);
+
+    &__service {
+      overflow-y: auto;
+      min-width: $service-min-width;
+      max-width: $service-min-width;
+      max-height: $service-max-height;
+
+      .amp-list-item:first-child {
+        flex: 0;
+      }
+
+      &__header {
+        overflow: hidden;
+      }
+
+      &__description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+      }
+    }
+  }
+
+  &__confirmation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--double-spacing);
+  }
+
+  &__error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--double-spacing);
+  }
+
+  &__continue_button {
+    align-self: center;
+    width: $button-width;
+  }
+}

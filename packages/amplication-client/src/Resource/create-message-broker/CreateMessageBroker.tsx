@@ -5,7 +5,7 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
@@ -17,6 +17,7 @@ import { formatError } from "../../util/error";
 import { prepareMessageBrokerObject } from "../constants";
 import "./CreateMessageBroker.scss";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,15 +30,16 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
     createMessageBroker,
-    currentWorkspace,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
   } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const history = useHistory();
   const { trackEvent } = useTracking();
 
   const errorMessage = formatError(errorCreateMessageBroker);
+  const [isCreatingMessageBroker, setIsCreatingMessageBroker] = useState(false);
 
   useEffect(() => {
     if (!errorCreateMessageBroker) {
@@ -45,7 +47,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
     }
 
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
-  }, [errorCreateMessageBroker]);
+  }, [errorCreateMessageBroker, trackEvent]);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateInput, eventName: string) => {
@@ -57,11 +59,12 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleBackToProjectClick = () => {
     trackEvent({ eventName: AnalyticsEventNames.BackToProjectsClick });
-    history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+    history.push(`${baseUrl}/`);
   };
 
   const handleCreateServiceClick = () => {
     if (currentProject) {
+      setIsCreatingMessageBroker(true);
       const resource = prepareMessageBrokerObject(currentProject.id);
       createStarterResource(resource, "createMessageBroker");
     }
@@ -69,7 +72,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loadingCreateMessageBroker ? (
+      {loadingCreateMessageBroker || isCreatingMessageBroker ? (
         <div className={`${moduleClass}__processing`}>
           <div
             className={`${moduleClass}__processing__message_title_container`}
@@ -120,6 +123,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
         <Button
           buttonStyle={EnumButtonStyle.Primary}
           onClick={handleCreateServiceClick}
+          disabled={isCreatingMessageBroker}
         >
           <label>Create Message broker</label>
         </Button>

@@ -1,11 +1,11 @@
 import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { ResourceOrderByInput } from "./ResourceOrderByInput";
-import { ResourceWhereInput } from "./ResourceWhereInput";
+import { ResourceWhereInputWithPropertiesFilter } from "./ResourceWhereInputWithPropertiesFilter";
 
 @ArgsType()
 export class FindManyResourceArgs {
-  @Field(() => ResourceWhereInput, { nullable: true })
-  where?: ResourceWhereInput | null;
+  @Field(() => ResourceWhereInputWithPropertiesFilter, { nullable: true })
+  where?: ResourceWhereInputWithPropertiesFilter | null;
 
   @Field(() => [ResourceOrderByInput], { nullable: true })
   orderBy?: ResourceOrderByInput[] | null;

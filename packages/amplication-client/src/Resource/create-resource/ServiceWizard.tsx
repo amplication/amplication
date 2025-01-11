@@ -14,22 +14,14 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
-import { DefineUser } from "./CreateServiceWizard";
+import { WizardFlowSettings, WizardFlowType, WizardStep } from "./types";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { GlobalHotKeys } from "react-hotkeys";
 
-export type WizardStep = {
-  index: number;
-  hideFooter?: boolean;
-  hideBackButton?: boolean;
-  analyticsEventName: AnalyticsEventNames;
-  stepName: string;
-};
-
 interface ServiceWizardProps {
   children: ReactNode;
-  defineUser: DefineUser;
+  wizardFlowType: WizardFlowType;
   wizardSteps: WizardStep[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
@@ -46,6 +38,7 @@ interface ServiceWizardProps {
     page: string,
     pageEventName: AnalyticsEventNames
   ) => void;
+  flowSettings: WizardFlowSettings;
 }
 
 type BackButtonProps = {
@@ -125,7 +118,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
-  defineUser,
+  wizardFlowType,
+  flowSettings,
 }) => {
   const { trackEvent } = useTracking();
   const wizardPattern = useMemo(() => {
@@ -162,7 +156,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     trackEvent({
       eventName: wizardSteps[currWizardPatternIndex].analyticsEventName,
       category: "Service Wizard",
-      WizardType: defineUser,
+      WizardType: wizardFlowType,
     });
   }, []);
 
@@ -242,7 +236,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     <div className={`${moduleCss}__wizard_container`}>
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
-      {defineUser === "Create Service" && (
+      {(wizardFlowType === "Create Service" ||
+        wizardFlowType === "Create Service Template") && (
         <Button
           buttonStyle={EnumButtonStyle.Text}
           className={`${moduleCss}__close`}
@@ -269,7 +264,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             if (
               activePageIndex === 2 &&
               !values.isOverrideGitRepository &&
-              defineUser === "Create Service"
+              wizardFlowType === "Create Service"
             ) {
               setIsInvalidStep(false);
               return;
@@ -288,7 +283,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               <>
                 <Form>
                   {keepLoadingAnimation || submitLoader ? (
-                    <CreateServiceLoader />
+                    <CreateServiceLoader flowSettings={flowSettings} />
                   ) : (
                     React.cloneElement(
                       currentPage as React.ReactElement<
@@ -328,7 +323,12 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                                 }
                               : goNextPage
                           }
-                          disabled={isInvalidStep}
+                          disabled={
+                            isInvalidStep ||
+                            (activePageIndex ===
+                              wizardPattern[wizardPattern.length - 2] &&
+                              (keepLoadingAnimation || submitLoader)) // disable continue button on the create service animation page
+                          }
                           buttonName={"Continue"}
                         />
                       )}

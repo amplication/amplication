@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGenerationRequest } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 import { BuildRunnerController } from "./build-runner.controller";
@@ -8,7 +8,9 @@ import { BuildRunnerService } from "./build-runner.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { AppInfo } from "@amplication/code-gen-types";
-import { EnumJobStatus } from "../types";
+
+const onCodeGenerationSuccessMock = jest.fn();
+const onCodeGenerationFailureMock = jest.fn();
 
 describe("BuildRunnerController", () => {
   let controller: BuildRunnerController;
@@ -25,7 +27,8 @@ describe("BuildRunnerController", () => {
           provide: BuildRunnerService,
           useClass: jest.fn(() => ({
             runBuild: jest.fn(),
-            processBuildResult: jest.fn(),
+            onCodeGenerationSuccess: onCodeGenerationSuccessMock,
+            onCodeGenerationFailure: onCodeGenerationFailureMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -46,16 +49,9 @@ describe("BuildRunnerController", () => {
         buildId: "buildId",
         resourceId: "resourceId",
       };
-      const spyOnProcessBuildResult = jest.spyOn(
-        buildRunnerService,
-        "processBuildResult"
-      );
+
       await controller.onCodeGenerationSuccess(dto);
-      expect(spyOnProcessBuildResult).toHaveBeenCalledWith(
-        dto.resourceId,
-        dto.buildId,
-        EnumJobStatus.Success
-      );
+      expect(onCodeGenerationSuccessMock).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -64,19 +60,10 @@ describe("BuildRunnerController", () => {
       const dto: CodeGenerationFailureDto = {
         buildId: "buildId",
         resourceId: "resourceId",
-        error: new Error("Test Error"),
       };
-      const spyOnProcessBuildResult = jest.spyOn(
-        buildRunnerService,
-        "processBuildResult"
-      );
+
       await controller.onCodeGenerationFailure(dto);
-      expect(spyOnProcessBuildResult).toHaveBeenCalledWith(
-        dto.resourceId,
-        dto.buildId,
-        EnumJobStatus.Failure,
-        dto.error
-      );
+      expect(onCodeGenerationFailureMock).toHaveBeenCalledWith(dto);
     });
   });
 

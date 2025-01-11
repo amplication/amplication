@@ -6,8 +6,6 @@ export const GET_USER = gql`
       account {
         id
         email
-        previewAccountEmail
-        previewAccountType
         firstName
         lastName
         createdAt

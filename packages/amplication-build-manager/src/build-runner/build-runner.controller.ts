@@ -7,8 +7,11 @@ import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import {
   CodeGenerationRequest,
   KAFKA_TOPICS,
+  PackageManagerCreateSuccess,
+  PackageManagerCreateFailure,
 } from "@amplication/schema-registry";
-import { EnumJobStatus } from "../types";
+import { plainToInstance } from "class-transformer";
+import { NotifyPluginVersionDto } from "./dto/NotifyPluginVersion";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -21,23 +24,45 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
-    await this.buildRunnerService.processBuildResult(
-      dto.resourceId,
-      dto.buildId, // jobBuildId
-      EnumJobStatus.Success
-    );
+    await this.buildRunnerService.onCodeGenerationSuccess(dto);
+  }
+
+  @Post("notify-plugin-version")
+  async onNotifyPluginVersion(
+    @Payload() dto: NotifyPluginVersionDto
+  ): Promise<void> {
+    await this.buildRunnerService.emitBuildPluginNotifyVersion(dto);
   }
 
   @Post("code-generation-failure")
   async onCodeGenerationFailure(
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
-    await this.buildRunnerService.processBuildResult(
-      dto.resourceId,
-      dto.buildId, // jobBuildId
-      EnumJobStatus.Failure,
-      dto.error
-    );
+    await this.buildRunnerService.onCodeGenerationFailure(dto);
+  }
+
+  @EventPattern(KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_SUCCESS)
+  async onPackageManagerCreateSuccess(
+    @Payload() message: PackageManagerCreateSuccess.Value
+  ): Promise<void> {
+    this.logger.info("Code package manager create success response received", {
+      build: message.buildId,
+    });
+    const args = plainToInstance(PackageManagerCreateSuccess.Value, message);
+
+    await this.buildRunnerService.onPackageManagerCreateSuccess(args);
+  }
+
+  @EventPattern(KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_FAILURE)
+  async onPackageManagerCreateFailure(
+    @Payload() message: PackageManagerCreateFailure.Value
+  ): Promise<void> {
+    const args = plainToInstance(PackageManagerCreateFailure.Value, message);
+
+    this.logger.info("Code package manager create failure response received", {
+      error: args.errorMessage,
+    });
+    await this.buildRunnerService.onPackageManagerCreateFailure(args);
   }
 
   @EventPattern(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC)

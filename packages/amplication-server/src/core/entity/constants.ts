@@ -100,7 +100,7 @@ type EntityData = Omit<
 
 export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
 
-export const DEFAULT_ENTITIES: EntityData[] = [
+export const DEFAULT_USER_ENTITY: EntityData[] = [
   {
     name: USER_ENTITY_NAME,
     displayName: "User",
@@ -148,6 +148,16 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         properties: {
           maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
         },
+      },
+      {
+        dataType: EnumDataType.Email,
+        name: "email",
+        displayName: "Email",
+        description: "An automatically created field of the email of the user",
+        unique: true,
+        required: false,
+        searchable: true,
+        properties: {},
       },
       {
         dataType: EnumDataType.Password,
@@ -221,6 +231,7 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [EnumDataType.Username]: {},
   [EnumDataType.Password]: {},
   [EnumDataType.Roles]: {},
+  [EnumDataType.File]: {},
 };
 
 export const PRISMA_IMPORT_ACTION_LOG: Action = {

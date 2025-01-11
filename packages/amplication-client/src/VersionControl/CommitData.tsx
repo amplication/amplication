@@ -9,7 +9,6 @@ import React from "react";
 import { CommitMessage } from "../Components/CommitMessage";
 import UserBadge from "../Components/UserBadge";
 import { Commit } from "../models";
-import "./CommitData.scss";
 
 type Props = {
   commit: Commit;

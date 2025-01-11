@@ -1,25 +1,29 @@
-import { useContext } from "react";
-import classNames from "classnames";
 import {
   Button,
+  EnumButtonState,
   EnumButtonStyle,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import { ClickableId } from "../Components/ClickableId";
-import "./LastCommit.scss";
-import { AppContext } from "../context/appContext";
-import { Link } from "react-router-dom";
+import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";
-import { useCommitStatus } from "./hooks/useCommitStatus";
-import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { ClickableId } from "../Components/ClickableId";
+import { AppContext } from "../context/appContext";
+import { Commit, EnumBuildStatus } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Commit } from "../models";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import "./LastCommit.scss";
+import { useCommitStatus } from "./hooks/useCommitStatus";
+import BuildGitLink from "./BuildGitLink";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = {
   lastCommit: Commit;
@@ -28,15 +32,17 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ lastCommit }: Props) => {
-  const { currentWorkspace, currentProject, commitRunning } =
-    useContext(AppContext);
+  const { commitRunning } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
-  const { commitStatus } = useCommitStatus(lastCommit);
+  const { commitStatus, commitLastError } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
+
+  const singleBuild = lastCommit.builds && lastCommit.builds.length === 1;
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
+      to={`${baseUrl}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit"
       eventData={{
@@ -59,7 +65,28 @@ const LastCommit = ({ lastCommit }: Props) => {
         >
           <Text textStyle={EnumTextStyle.H4}>Last Commit</Text>
         </FlexItem>
-
+        {commitLastError && (
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            margin={EnumFlexItemMargin.Top}
+          >
+            <Link to={`${baseUrl}/commits/${lastCommit.id}`}>
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.ThemeRed}
+              >
+                {commitLastError}
+              </Text>{" "}
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.White}
+                underline
+              >
+                View details
+              </Text>
+            </Link>
+          </FlexItem>
+        )}
         <FlexItem
           direction={EnumFlexDirection.Column}
           margin={EnumFlexItemMargin.Both}
@@ -71,16 +98,21 @@ const LastCommit = ({ lastCommit }: Props) => {
           </Text>
         </FlexItem>
 
-        {lastCommit && (
+        {singleBuild ? (
+          <BuildGitLink build={lastCommit.builds[0]} />
+        ) : (
           <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
+            to={`${baseUrl}/commits/${lastCommit.id}`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
               buttonStyle={EnumButtonStyle.Outline}
-              disabled={commitRunning}
+              disabled={
+                commitRunning || commitStatus === EnumBuildStatus.Running
+              }
+              buttonState={EnumButtonState.Success}
             >
-              Go to view code
+              View code (multiple builds)
             </Button>
           </Link>
         )}

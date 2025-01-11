@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { MorganModule } from "nest-morgan";
-import { Request } from "express";
 import { CoreModule } from "./core/core.module";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
 import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnalytics.module";
@@ -42,9 +41,24 @@ import { RequestContextModule } from "nestjs-request-context";
           debug: configService.get("GRAPHQL_DEBUG") === "1",
           playground: configService.get("PLAYGROUND_ENABLE") === "1",
           introspection: configService.get("PLAYGROUND_ENABLE") === "1",
-          context: ({ req }: { req: Request }) => ({
-            req,
-          }),
+          context: (context) => {
+            if (context?.extra?.request) {
+              return {
+                req: {
+                  ...context?.extra?.request,
+                  headers: {
+                    ...context?.extra?.request?.headers,
+                    ...context?.connectionParams,
+                  },
+                },
+              };
+            }
+            return { req: context?.req };
+          },
+          subscriptions: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            "graphql-ws": true,
+          },
         };
       },
       inject: [ConfigService],
@@ -52,9 +66,7 @@ import { RequestContextModule } from "nestjs-request-context";
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
     }),
-    TracingModule.forRoot({
-      serviceName: SERVICE_NAME,
-    }),
+    TracingModule.forRoot(),
     MorganModule,
     SegmentAnalyticsModule.registerAsync({
       useClass: SegmentAnalyticsOptionsService,

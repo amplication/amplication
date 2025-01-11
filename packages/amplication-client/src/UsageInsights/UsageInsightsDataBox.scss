@@ -1,0 +1,38 @@
+@import "../style/index.scss";
+
+$max-width: 400px;
+$skeleton-height: 30px;
+$skeleton-width: 100px;
+
+.usage-insights-data-box {
+  width: 100%;
+  flex: 1;
+  margin-bottom: 0;
+  border: 1px solid var(--gray-70);
+
+  &__skeleton {
+    min-width: $skeleton-width;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: $skeleton-height;
+
+    .amp-skeleton__skeleton {
+      height: 100%;
+
+      .ssc-head-line {
+        height: 100%;
+      }
+    }
+  }
+
+  &__tooltip {
+    align-self: flex-end;
+  }
+
+  h1,
+  h3 {
+    display: inline;
+  }
+}

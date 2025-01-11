@@ -1,18 +1,16 @@
 import {
   Breadcrumbs,
-  ButtonProgress,
   Dialog,
-  EnumTextColor,
-  EnumTextStyle,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  FlexItem,
   Icon,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
+  OptionItem,
   Tooltip,
-  Text,
 } from "@amplication/ui/design-system";
-import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useApolloClient } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -21,20 +19,16 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { isMacOs } from "react-device-detect";
+import React, { useCallback, useContext, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import CommandPalette from "../../CommandPalette/CommandPalette";
+import AskJovuButton from "../../Assistant/AskJovuButton";
+import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 import { Button, EnumButtonStyle } from "../../Components/Button";
+import ProjectSelector from "../../Components/ProjectSelector";
 import UserBadge from "../../Components/UserBadge";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
+import NoNotifications from "../../assets/images/no-notification.svg";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
 import {
@@ -43,75 +37,43 @@ import {
 } from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import {
-  AMPLICATION_DISCORD_URL,
-  AMPLICATION_DOC_URL,
-} from "../../util/constants";
-import { version } from "../../util/version";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import useFetchGithubStars from "../hooks/useFetchGithubStars";
+import HelpMenu from "./HelpMenu";
+import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
-import styles from "./notificationStyle";
-import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
-import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
-import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompleteSignupDialog } from "../../Components/CompleteSignupDialog";
-import { COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL } from "../../User/UserQueries";
+import styles from "./notificationStyle";
+import ResourceSelector from "../../Components/ResourceSelector2";
 
 const CLASS_NAME = "workspace-header";
-const MWC_MEETING_URL =
-  "https://meetings-eu1.hubspot.com/oalaluf/book-your-demo-mwc";
+const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
+
+const ALL_VALUE = "-1";
+
+const ALL_PROJECTS_ITEM: OptionItem = {
+  label: "All Projects",
+  value: ALL_VALUE,
+};
+const ALL_RESOURCES_ITEM: OptionItem = {
+  label: "All Resources",
+  value: ALL_VALUE,
+};
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
-enum ItemDataCommand {
-  COMMAND_CONTACT_US = "command_contact_us",
-}
-
-type HelpMenuItem = {
-  name: string;
-  url: string | null;
-  itemData: ItemDataCommand | null;
-};
-
-const HELP_MENU_LIST: HelpMenuItem[] = [
-  { name: "Docs", url: AMPLICATION_DOC_URL, itemData: null },
-  {
-    name: "Technical Support",
-    url: AMPLICATION_DISCORD_URL,
-    itemData: null,
-  },
-  {
-    name: "Contact Us",
-    url: null,
-    itemData: ItemDataCommand.COMMAND_CONTACT_US,
-  },
-];
-
 const WorkspaceHeader: React.FC = () => {
-  const { currentWorkspace, currentProject, openHubSpotChat } =
+  const { currentWorkspace, currentProject, currentResource, resources } =
     useContext(AppContext);
-  const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
+  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
 
-  const [completeSignup] = useMutation(COMPLETE_SIGNUP_WITH_BUSINESS_EMAIL);
-
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const history = useHistory();
 
   const apolloClient = useApolloClient();
-  const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
-  const novuBellRef = useRef(null);
-
-  const daysLeftText = useMemo(() => {
-    return `${upgradeButtonData.trialDaysLeft} day${
-      upgradeButtonData.trialDaysLeft !== 1 ? "s" : ""
-    } left for the free trial`;
-  }, [upgradeButtonData.trialDaysLeft]);
+  const stars = useFetchGithubStars();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -123,26 +85,26 @@ const WorkspaceHeader: React.FC = () => {
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
 
-  const [showCompleteSignupDialog, setShowCompleteSignupDialog] =
-    useState<boolean>(false);
-
   const handleSignOut = useCallback(() => {
     unsetToken();
     apolloClient.clearStore();
 
     window.location.replace(REACT_APP_AUTH_LOGOUT_URI);
-  }, [history, apolloClient]);
+  }, [apolloClient]);
 
-  const onNotificationClick = useCallback((message: IMessage) => {
-    trackEvent({
-      eventName: AnalyticsEventNames.ClickNotificationMessage,
-      messageType: message.templateIdentifier,
-    });
+  const onNotificationClick = useCallback(
+    (message: IMessage) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.ClickNotificationMessage,
+        messageType: message.templateIdentifier,
+      });
 
-    if (message?.cta?.data?.url) {
-      // window.location.href = message.cta.data.url;
-    }
-  }, []);
+      if (message?.cta?.data?.url) {
+        // window.location.href = message.cta.data.url;
+      }
+    },
+    [trackEvent]
+  );
 
   const onBuildNotificationClick = useCallback(
     (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
@@ -151,52 +113,9 @@ const WorkspaceHeader: React.FC = () => {
     []
   );
 
-  const handleUpgradeClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeClick,
-      eventOriginLocation: "workspace-header",
-      workspace: currentWorkspace.id,
-    });
-  }, [currentWorkspace, window.location.pathname]);
-
-  const handleContactUsClick = useCallback(() => {
-    window.open(data?.contactUsLink, "_blank");
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Contact Us",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [openHubSpotChat]);
-
-  const handleGenerateCodeClick = useCallback(() => {
-    completeSignup();
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Generate code",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [completeSignup, showCompleteSignupDialog, trackEvent]);
-
-  const handleItemDataClicked = useCallback(
-    (itemData: ItemDataCommand) => {
-      if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
-        handleContactUsClick();
-      }
-      return;
-    },
-    [handleContactUsClick]
-  );
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
-
-  const handleShowCompleteSignupDialog = useCallback(() => {
-    setShowCompleteSignupDialog(!showCompleteSignupDialog);
-  }, [showCompleteSignupDialog]);
 
   const handleBellClick = useCallback(() => {
     if (!novuCenterState) {
@@ -205,7 +124,7 @@ const WorkspaceHeader: React.FC = () => {
       });
     }
     setNovuCenterState(!novuCenterState);
-  }, [novuBellRef, novuCenterState]);
+  }, [novuCenterState, trackEvent]);
 
   const Footer = () => <div></div>;
 
@@ -216,6 +135,34 @@ const WorkspaceHeader: React.FC = () => {
         <span>All caught up! </span>
       </div>
     </div>
+  );
+
+  const handleProjectSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${value}`;
+
+      history.push(url);
+    },
+    [currentWorkspace?.id, history, isPlatformConsole]
+  );
+
+  const handleResourceSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${value}`;
+
+      history.push(url);
+    },
+    [currentProject?.id, currentWorkspace?.id, history, isPlatformConsole]
   );
 
   return (
@@ -229,21 +176,17 @@ const WorkspaceHeader: React.FC = () => {
         <ProfileForm />
       </Dialog>
       <WorkspaceBanner
-        to={MWC_MEETING_URL}
-        clickEventName={AnalyticsEventNames.MWC2024BannerCTAClick}
+        to={AMP_GITHUB_URL}
+        clickEventName={AnalyticsEventNames.StarUsBannerCTAClick}
         clickEventProps={{}}
-        closeEventName={AnalyticsEventNames.MWC2024BannerClose}
+        closeEventName={AnalyticsEventNames.StarUsBannerClose}
         closeEventProps={{}}
       >
-        <Icon icon="rss" />
-        Join us at MWC Barcelona 2024 (Feb 26 - 29).{" "}
-        <Text
-          textColor={EnumTextColor.ThemeTurquoise}
-          textStyle={EnumTextStyle.Normal}
-        >
-          Book a meeting
-        </Text>
-        , and let's innovate together!
+        <Icon icon="github" />
+        Star us on GitHub{" "}
+        <span className={`${CLASS_NAME}__stars`}>
+          {stars} <Icon icon="star" />
+        </span>
       </WorkspaceBanner>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
@@ -252,141 +195,52 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <span>
-            <a
-              href="https://github.com/amplication/amplication/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${CLASS_NAME}__version`}
+          <ConsoleNavigationButton />
+
+          {currentProject && (
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Large}
+              itemsAlign={EnumItemsAlign.Center}
             >
-              v{version}
-            </a>
-          </span>
-          <Breadcrumbs>
-            {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-              <Breadcrumbs.Item key={item.url} to={item.url}>
-                {item.name}
-              </Breadcrumbs.Item>
-            ))}
-          </Breadcrumbs>
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              <ProjectSelector
+                onChange={handleProjectSelected}
+                selectedValue={currentProject?.id}
+                allProjectsItem={ALL_PROJECTS_ITEM}
+              />
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              {/* {currentResource && ( */}
+              <>
+                <ResourceSelector
+                  onChange={handleResourceSelected}
+                  selectedValue={currentResource?.id || ALL_VALUE}
+                  allResourcesItem={ALL_RESOURCES_ITEM}
+                  isPlatformConsole={isPlatformConsole}
+                />
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+              </>
+              {/* )} */}
+              <Breadcrumbs>
+                {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+                  <Breadcrumbs.Item key={item.url} to={item.url}>
+                    {item.name}
+                  </Breadcrumbs.Item>
+                ))}
+              </Breadcrumbs>
+            </FlexItem>
+          )}
         </div>
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.showUpgradeTrialButton && (
-                <ButtonProgress
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  onClick={handleUpgradeClick}
-                  progress={upgradeButtonData.trialLeftProgress}
-                  leftValue={daysLeftText}
-                  yellowColorThreshold={50}
-                  redColorThreshold={0}
-                >
-                  Upgrade
-                </ButtonProgress>
-              )}
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.showUpgradeDefaultButton && (
-                <Button
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={handleUpgradeClick}
-                >
-                  Upgrade
-                </Button>
-              )}
-            {upgradeButtonData.isCompleted &&
-              upgradeButtonData.isPreviewPlan &&
-              !upgradeButtonData.showUpgradeDefaultButton && (
-                <>
-                  <Dialog
-                    className="new-entity-dialog"
-                    isOpen={showCompleteSignupDialog}
-                    onDismiss={handleShowCompleteSignupDialog}
-                    title="Generate your Code"
-                  >
-                    <CompleteSignupDialog
-                      handleDialogClose={handleShowCompleteSignupDialog}
-                    />
-                  </Dialog>
-                  <FeatureIndicator
-                    featureName={BillingFeature.CodeGenerationBuilds}
-                    text="Generate production-ready code for this architecture with just a few simple clicks"
-                    linkText=""
-                    element={
-                      <Button
-                        className={`${CLASS_NAME}__upgrade__btn`}
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleGenerateCodeClick}
-                      >
-                        Generate the code
-                      </Button>
-                    }
-                  />
-                  <Button
-                    className={`${CLASS_NAME}__upgrade__btn`}
-                    buttonStyle={EnumButtonStyle.Outline}
-                    onClick={handleContactUsClick}
-                  >
-                    Contact us
-                  </Button>
-                </>
-              )}
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+            <AskJovuButton />
+            <UpgradeCtaButton />
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="search"
-                  iconSize="small"
-                />
-              </Tooltip>
-            }
-          />
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div className={`${CLASS_NAME}__help_popover`}>
-            <SelectMenu
-              title="Help"
-              buttonStyle={EnumButtonStyle.Text}
-              icon="chevron_down"
-              openIcon="chevron_up"
-              className={`${CLASS_NAME}__help_popover__menu`}
-            >
-              <SelectMenuModal align="right">
-                <SelectMenuList>
-                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      onSelectionChange={() => {
-                        !route.url && handleItemDataClicked(route.itemData);
-                      }}
-                      key={index}
-                      {...(route.url
-                        ? {
-                            rel: "noopener noreferrer",
-                            href: route.url,
-                            target: "_blank",
-                          }
-                        : {})}
-                    >
-                      <div className={`${CLASS_NAME}__help_popover__name`}>
-                        {route.name}
-                      </div>
-                    </SelectMenuItem>
-                  ))}
-                </SelectMenuList>
-              </SelectMenuModal>
-            </SelectMenu>
-          </div>
+          <HelpMenu />
           {canShowNotification && (
             <>
               <hr className={`${CLASS_NAME}__vertical_border`} />
@@ -425,22 +279,18 @@ const WorkspaceHeader: React.FC = () => {
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Logout`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="log_out"
-                  onClick={handleSignOut}
-                />
-              </Tooltip>
-            }
-          />
+          <Tooltip
+            className="amp-menu-item__tooltip"
+            aria-label={`Logout`}
+            direction="sw"
+            noDelay
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="log_out"
+              onClick={handleSignOut}
+            />
+          </Tooltip>
         </div>
       </div>
 
@@ -448,10 +298,7 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__highlight`}>
           Notice: You're currently using a preview repository for your generated
           code. For a full personalized experience, please&nbsp;
-          <Link
-            title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
-          >
+          <Link title={"Go to project settings"} to={`${baseUrl}/git-sync`}>
             connect to your own repository
           </Link>
         </div>

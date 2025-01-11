@@ -26,6 +26,7 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   NX_BRANCH: ${{ github.head_ref || github.ref_name }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_AFFECTED_OR_ALL: ${{ fromJSON('["affected", "run-many --all"]')[ inputs.nx-force-all ] }}
@@ -105,6 +106,7 @@ jobs:
     uses: ./.github/workflows/release.template.yml
     if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
     with:
+      default-branch: ${{ github.event.repository.default_branch }}
       branch: ${{ github.ref_name }}
       affected-apps: ${{ needs.nx.outputs.affected-apps }}
       affected-lib: ${{ needs.nx.outputs.affected-lib }}

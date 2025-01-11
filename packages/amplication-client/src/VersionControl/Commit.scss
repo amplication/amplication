@@ -1,11 +1,41 @@
 @import "../style/index.scss";
 
+$padding-top-toggle: 16px;
+
 .commit {
   padding-top: 0;
 
   .amp-button {
     margin: var(--large-spacing) 0;
     width: 100%;
+    flex: 1;
+  }
+
+  &__commit-strategy {
+    .select-menu__item {
+      color: var(--gray-base);
+    }
+
+    .select-menu__modal {
+      max-width: calc(var(--changes-menu-width) - var(--triple-spacing));
+      overflow: hidden;
+      box-sizing: border-box;
+
+      > div {
+        width: calc(var(--changes-menu-width) - var(--triple-spacing));
+        box-sizing: border-box;
+      }
+    }
+  }
+
+  .multi-state-toggle {
+    margin-bottom: 0px;
+    padding-top: $padding-top-toggle;
+
+    .multi-state-toggle__states__state--selected {
+      background-color: var(--color-positive);
+      border-color: var(--color-positive);
+    }
   }
 
   .text-input {
@@ -14,12 +44,18 @@
     }
 
     textarea {
-      height: var(--textarea-height);
+      height: var(--textarea-height-small);
       background-color: var(--gray-80);
 
       @media only screen and (max-width: $breakpoint-desktop) {
         height: var(--textare-height-small);
       }
+    }
+  }
+
+  &__technology-toggle {
+    label {
+      margin-bottom: 0;
     }
   }
 }

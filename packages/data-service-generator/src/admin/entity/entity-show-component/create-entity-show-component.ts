@@ -151,7 +151,7 @@ function createToManyReferenceField(
     target="${fkFieldName}"
     label="${field.properties.relatedEntity.pluralDisplayName}"
   >
-    <Datagrid rowClick="show">
+    <Datagrid rowClick="show" bulkActionButtons={false}>
       ${fields.map((field) => jsxElement`${createFieldValue(field)}`)}
     </Datagrid>
   </ReferenceManyField>`;

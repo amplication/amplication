@@ -125,19 +125,6 @@
         "passWithNoTests": true
       }
     },
-    "package:container": {
-      "executor": "@nx-tools/nx-container:build",
-      "options": {
-        "push": false,
-        "tags": ["amplication/client:latest"],
-        "build-args": []
-      },
-      "configurations": {
-        "production": {
-          "build-args": []
-        }
-      }
-    },
     "deploy:static": {
       "executor": "nx:run-commands",
       "options": {

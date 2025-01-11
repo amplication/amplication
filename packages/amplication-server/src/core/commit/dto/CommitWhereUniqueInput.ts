@@ -5,7 +5,7 @@ import { Field, InputType } from "@nestjs/graphql";
 })
 export class CommitWhereUniqueInput {
   @Field(() => String, {
-    nullable: true,
+    nullable: false,
   })
-  id?: string | null | undefined;
+  id: string;
 }

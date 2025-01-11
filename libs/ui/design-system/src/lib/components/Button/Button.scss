@@ -25,21 +25,25 @@ $split-icon-font-size: 20px;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
 
+  &__icon {
+    margin: 0;
+  }
+
   &--icon-left {
-    padding-left: var(--default-spacing-small) !important;
+    .amp-button__icon {
+      margin-right: var(--icon-spacing);
+    }
   }
 
   &--icon-right {
-    padding-right: var(--default-spacing-small) !important;
+    .amp-button__icon {
+      margin-left: var(--icon-spacing);
+    }
   }
 
   &[disabled] {
     cursor: default;
     font-family: var(--primary-font-family);
-  }
-
-  &__icon {
-    margin: 0 var(--icon-spacing);
   }
 
   &.amp-button--primary {
@@ -69,6 +73,19 @@ $split-icon-font-size: 20px;
       &:focus {
         background-color: var(--theme-red);
         border-color: var(--theme-red);
+        outline: none;
+      }
+    }
+
+    &--success {
+      background-color: var(--color-positive);
+      border: 1px solid var(--color-positive);
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: var(--color-positive);
+        border-color: var(--color-positive);
         outline: none;
       }
     }
@@ -106,6 +123,17 @@ $split-icon-font-size: 20px;
       &:active,
       &:focus {
         color: var(--theme-red);
+        outline: none;
+      }
+    }
+
+    &--success {
+      color: var(--color-positive);
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: var(--color-positive);
         outline: none;
       }
     }
@@ -171,6 +199,72 @@ $split-icon-font-size: 20px;
         border-color: var(--theme-red);
         outline: none;
       }
+    }
+
+    &--success {
+      color: var(--color-positive);
+      border-color: var(--color-positive);
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: var(--color-positive);
+        border-color: var(--color-positive);
+        outline: none;
+      }
+    }
+  }
+
+  &.amp-button--gradient-outline {
+    position: relative;
+    background-color: transparent;
+    color: var(--gray-base);
+    border: 0;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--gray-10);
+      outline: none;
+    }
+
+    &[disabled] {
+      color: var(--gray-40);
+    }
+
+    &::after {
+      //use ::after because the "summary" element used in the SelectMenu does not work properly with ::before
+      content: "";
+      position: absolute;
+      box-sizing: border-box;
+      inset: 0;
+      border-radius: 6px;
+      padding: 1px;
+      width: 100%;
+      height: 100%;
+      background: var(--theme-gradient);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+  }
+
+  &.amp-button--gradient-full {
+    background: var(--theme-gradient);
+    color: var(--gray-base);
+    border: 0;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--gray-10);
+      outline: none;
+    }
+
+    &[disabled] {
+      color: var(--gray-40);
+      background: var(--gray-80);
     }
   }
 }

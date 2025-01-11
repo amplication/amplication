@@ -6,27 +6,33 @@ import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 export async function prepareFilesForPullRequest(
   gitResourceMeta: GitResourceMeta,
   pullRequestModule: File[],
-  amplicationIgnoreManger: AmplicationIgnoreManger
+  amplicationIgnoreManger: AmplicationIgnoreManger,
+  overrideCustomizableFilesInGit: boolean
 ): Promise<UpdateFile[]> {
-  //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
-  const doNotOverride = [
-    new RegExp(
-      `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
-    ),
-    new RegExp(
-      `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
-    ),
-    new RegExp(
-      `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
-    ),
-    new RegExp(
-      `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
-    ),
+  let doNotOverride = [
     new RegExp(
       `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
     ),
   ];
+
+  //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
+  if (!overrideCustomizableFilesInGit) {
+    doNotOverride = doNotOverride.concat([
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
+      ),
+    ]);
+  }
 
   const authFolder = "server/src/auth/";
 

@@ -1,3 +1,6 @@
+$theme-border-height: 5px;
+$theme-border-expand: 1px;
+
 @mixin font-base {
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
@@ -201,5 +204,21 @@
 
   @media only screen and (max-width: #{$page-content-max-width}) {
     right: calc(var(--default-page-padding) + var(--default-spacing-small));
+  }
+}
+
+@mixin themeTopBorder {
+  border-top: $theme-border-height solid var(--border-color);
+  position: relative;
+  &:after {
+    content: "";
+    position: absolute;
+    top: -$theme-border-height;
+    left: -$theme-border-expand;
+    width: calc(100% + 2 * $theme-border-expand);
+    height: $theme-border-height;
+    border-top-left-radius: var(--default-border-radius);
+    border-top-right-radius: var(--default-border-radius);
+    background-color: var(--theme-border-color);
   }
 }

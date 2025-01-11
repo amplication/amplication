@@ -1,0 +1,15 @@
+@import "../../style/index.scss";
+
+.amp-pagination {
+  display: flex;
+  justify-content: flex-end;
+
+  .MuiPaginationItem-root {
+    color: var(--gray-base);
+  }
+
+  .Mui-selected {
+    color: var(--gray-full);
+    background-color: var(--gray-base) !important;
+  }
+}

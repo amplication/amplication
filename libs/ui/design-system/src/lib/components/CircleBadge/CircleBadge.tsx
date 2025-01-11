@@ -1,10 +1,12 @@
 import React from "react";
 
 import "./CircleBadge.scss";
+import { EnumTextColor } from "../Text/Text";
 
 export type Props = {
   name?: string;
   color?: string;
+  themeColor?: EnumTextColor;
   border?: string;
   size?:
     | "xxsmall"
@@ -21,13 +23,14 @@ export const CircleBadge: React.FC<Props> = ({
   name,
   color,
   border,
+  themeColor,
   size = "medium",
   children = null,
 }) => (
   <div
     className={`circle-badge${size ? ` ${size}` : ""}`}
     style={{
-      backgroundColor: color,
+      backgroundColor: themeColor ? `var(--${themeColor})` : color,
       border: border,
     }}
   >

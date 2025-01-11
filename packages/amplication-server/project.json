@@ -44,6 +44,14 @@
         "cwd": "packages/amplication-server"
       }
     },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/core/assistant/functions/types"],
+      "options": {
+        "command": "ts-node ./scripts/generate-assistant-functions-types",
+        "cwd": "packages/amplication-server"
+      }
+    },
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
@@ -114,12 +122,12 @@
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/schema.graphql"],
       "outputs": [
+        "{workspaceRoot}/ee/packages/git-sync-manager/src/models.ts",
+        "{workspaceRoot}/libs/util/code-gen-types/src/models.ts",
         "{workspaceRoot}/packages/amplication-cli/src/models.ts",
         "{workspaceRoot}/packages/amplication-client/src/models.ts",
-        "{workspaceRoot}/packages/amplication-code-gen-types/src/models.ts",
-        "{workspaceRoot}/ee/packages/git-sync-manager/src/models.ts",
-        "{workspaceRoot}/packages/amplication-git-pull-request-service/src/models.ts",
-        "{workspaceRoot}/packages/data-service-generator/src/models.ts"
+        "{workspaceRoot}/packages/data-service-generator/src/models.ts",
+        "{workspaceRoot}/packages/generator-blueprints/src/models.ts"
       ],
       "dependsOn": ["graphql:schema:generate"],
       "options": {

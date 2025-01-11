@@ -16,44 +16,28 @@ import {
   BreakServiceToMicroservicesResult,
   BreakServiceToMicroservicesData,
 } from "./dto/BreakServiceToMicroservicesResult";
-import { UserActionService } from "../userAction/userAction.service";
 import { GptBadFormatResponseError } from "./errors/GptBadFormatResponseError";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { Resource, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
+import { types } from "@amplication/code-gen-types";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { EnumResourceType } from "./dto/EnumResourceType";
+import { v4 } from "uuid";
+import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 @Injectable()
 export class ResourceBtmService {
-  /* eslint-disable @typescript-eslint/naming-convention */
-  private dataTypeMap: Record<keyof typeof EnumDataType, string> = {
-    SingleLineText: "string",
-    MultiLineText: "string",
-    Email: "string",
-    WholeNumber: "int",
-    DateTime: "datetime",
-    DecimalNumber: "float",
-    Lookup: "enum",
-    MultiSelectOptionSet: "enum",
-    OptionSet: "enum",
-    Boolean: "bool",
-    GeographicLocation: "string",
-    Id: "int",
-    CreatedAt: "datetime",
-    UpdatedAt: "datetime",
-    Roles: "string",
-    Username: "string",
-    Password: "string",
-    Json: "string",
-  };
-
   constructor(
     private readonly gptService: GptService,
     private readonly prisma: PrismaService,
-    private readonly userActionService: UserActionService,
     private readonly billingService: BillingService,
     private readonly analyticsService: SegmentAnalyticsService,
+    private readonly serviceSettingsService: ServiceSettingsService,
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -88,6 +72,33 @@ export class ResourceBtmService {
     }
   }
 
+  private async checkAccessToBreakTheMonolithWithGpt(user: User) {
+    if (this.billingService.isBillingEnabled) {
+      const userWorkspace = await this.prisma.workspace.findUnique({
+        where: {
+          id: user.workspace?.id,
+        },
+      });
+      const btmWithGpt = (
+        await this.billingService.getBooleanEntitlement(
+          user.workspace?.id,
+          BillingFeature.RedesignArchitecture
+        )
+      ).hasAccess;
+
+      if (!btmWithGpt) {
+        throw new BillingLimitationError(
+          "Available as part of the Enterprise plan only.",
+          BillingFeature.RedesignArchitecture
+        );
+      } else if (!userWorkspace.allowLLMFeatures) {
+        throw new AmplicationError(
+          "your workspace settings forbid LLM features use."
+        );
+      }
+    }
+  }
+
   async startRedesign(user: User, resourceId: string): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: resourceId },
@@ -112,7 +123,13 @@ export class ResourceBtmService {
     resourceId: string;
     user: User;
   }): Promise<UserAction> {
+    await this.checkAccessToBreakTheMonolithWithGpt(user);
     const resource = await this.getResourceDataForBtm(resourceId);
+
+    if (resource.entities && resource.entities.length === 0) {
+      throw new AmplicationError("Resource has no entities");
+    }
+
     const prompt = this.generatePromptForBreakTheMonolith(resource);
 
     const conversationParams = [
@@ -138,17 +155,14 @@ export class ResourceBtmService {
   }
 
   async finalizeBreakServiceIntoMicroservices(
-    userActionId: string
+    userActionId: string,
+    user: User
   ): Promise<BreakServiceToMicroservicesResult> {
-    const { resourceId, metadata } = await this.userActionService.findOne({
-      where: {
-        id: userActionId,
-      },
-    });
-
-    const userActionStatus = await this.userActionService.calcUserActionStatus(
-      userActionId
-    );
+    const {
+      status: userActionStatus,
+      resourceId,
+      metadata,
+    } = await this.gptService.getConversationUserAction(userActionId);
 
     if (userActionStatus !== EnumUserActionStatus.Completed) {
       return {
@@ -158,98 +172,204 @@ export class ResourceBtmService {
       };
     }
 
-    const recommendations = await this.prepareBtmRecommendations(
-      JSON.stringify(metadata),
-      resourceId
-    );
+    try {
+      const recommendations = await this.prepareBtmRecommendations(
+        metadata.data,
+        resourceId,
+        user
+      );
 
-    return {
-      status: EnumUserActionStatus.Completed,
-      originalResourceId: resourceId,
-      data: recommendations,
-    };
+      return {
+        status: EnumUserActionStatus.Completed,
+        originalResourceId: resourceId,
+        data: recommendations,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error, { userActionId });
+      throw new AmplicationError(BREAK_THE_MONOLITH_AI_ERROR_MESSAGE);
+    }
   }
 
   generatePromptForBreakTheMonolith(resource: ResourceDataForBtm): string {
-    const entityIdNameMap = resource.entities.reduce((acc, entity) => {
-      acc[entity.id] = entity.name;
-      return acc;
-    });
+    const entityNameToRelatedFieldsMap = resource.entities.reduce(
+      (acc, entity) => {
+        const relationFields = entity.versions[0].fields.filter(
+          (field) => field.dataType === EnumDataType.Lookup
+        );
+
+        const relatedEntityFieldNames = relationFields.length
+          ? [
+              ...new Set(
+                relationFields.map((field) => {
+                  const relatedEntity = (
+                    field.properties as unknown as types.Lookup
+                  ).relatedEntityId;
+                  const relatedEntityName = resource.entities.find(
+                    (entity) => entity.id === relatedEntity
+                  )?.name;
+                  return relatedEntityName;
+                })
+              ),
+            ]
+          : [];
+
+        acc[entity.name] = relatedEntityFieldNames;
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
 
     const prompt: BreakTheMonolithPromptInput = {
-      dataModels: resource.entities.map((entity) => {
-        return {
-          name: entity.name,
-          fields: entity.versions[0].fields.map((field) => {
-            return {
-              name: field.name,
-              dataType:
-                field.dataType == EnumDataType.Lookup
-                  ? entityIdNameMap[field.properties["relatedEntityId"]]
-                  : this.dataTypeMap[field.dataType],
-            };
-          }),
-        };
-      }),
+      tables: Object.entries(entityNameToRelatedFieldsMap).map(
+        ([name, relations]) => ({
+          name,
+          relations,
+        })
+      ),
     };
 
     return JSON.stringify(prompt);
   }
 
+  handleProjectServicesCollision(
+    projectServices: { name: string }[],
+    serviceName: string
+  ): string {
+    let validServiceName = serviceName;
+    projectServices.forEach((service) => {
+      const isDuplicated = service.name === serviceName;
+
+      if (isDuplicated) {
+        const suffix = v4().split("-")[0];
+        validServiceName = `${serviceName}_${suffix}`;
+      }
+    });
+    return validServiceName;
+  }
+
+  /**
+   * This function prepares the GPT recommendation for the Break the Monolith result
+   * It filters out the tables that the GPT result has that the original resource doesn't have
+   * It makes sure that there are no duplicated tables in the microservices by removing the duplicates and putting them on the microservice with the least amount of tables
+   * It makes sure that the result will not includes microservices with no tables
+   * It renames microservices that have the same name as a service in the project
+   * @param promptResult - GPT recommendation
+   * @param resourceId
+   * @returns the GPT recommendation with some data structure manipulation
+   */
   async prepareBtmRecommendations(
     promptResult: string,
-    resourceId: string
+    resourceId: string,
+    user: User
   ): Promise<BreakServiceToMicroservicesData> {
     const promptResultObj = this.mapToBreakTheMonolithOutput(promptResult);
-
+    const originalResource = await this.getResourceDataForBtm(resourceId);
+    const originalResourceEntityNamesSet = new Set(
+      originalResource.entities.map((entity) => entity.name)
+    );
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: { id: resourceId },
+        },
+        user
+      );
     const recommendedResourceEntities = promptResultObj.microservices
-      .map((resource) => resource.dataModels)
+      .map((resource) => resource.tables)
       .flat();
 
-    const duplicatedEntities = this.findDuplicatedEntities(
-      recommendedResourceEntities
-    );
+    let inventedEntitiesByGpt: string[] = [];
+    let duplicatedEntities = new Set<string>();
     const usedDuplicatedEntities = new Set<string>();
 
-    const originalResource = await this.getResourceDataForBtm(resourceId);
-    const originalResourceEntitiesSet = new Set(
-      originalResource.entities.map((entity) => entity.name)
+    const projectServices = await this.prisma.resource.findMany({
+      where: {
+        projectId: originalResource.project?.id,
+        deletedAt: null,
+        resourceType: EnumResourceType.Service,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    const microserviceNameToTablesMap = promptResultObj.microservices
+      .filter((microservice) => microservice.tables.length > 0)
+      .map((microservice) => {
+        duplicatedEntities = this.findDuplicatedEntities(
+          recommendedResourceEntities
+        );
+        inventedEntitiesByGpt = recommendedResourceEntities.filter(
+          (item) => !originalResourceEntityNamesSet.has(item)
+        );
+        return {
+          name: this.handleProjectServicesCollision(
+            projectServices,
+            microservice.name
+          ),
+          functionality: microservice.functionality,
+          tables: microservice.tables,
+        };
+      })
+      .sort((a, b) => a.tables.length - b.tables.length)
+      .reduce(
+        (
+          acc: Record<string, { functionality: string; tables: string[] }>,
+          microservice
+        ) => {
+          acc[microservice.name] = {
+            functionality: microservice.functionality,
+            tables: microservice.tables,
+          };
+          return acc;
+        },
+        {}
+      );
+
+    const microserviceData = Object.entries(microserviceNameToTablesMap).map(
+      ([microserviceName, { functionality, tables }]) => {
+        const microserviceTables = tables
+          .filter((tableName) => {
+            const isDuplicatedAlreadyUsed =
+              usedDuplicatedEntities.has(tableName);
+            if (!isDuplicatedAlreadyUsed && duplicatedEntities.has(tableName)) {
+              usedDuplicatedEntities.add(tableName);
+            }
+            return (
+              originalResourceEntityNamesSet.has(tableName) &&
+              !isDuplicatedAlreadyUsed &&
+              !inventedEntitiesByGpt.includes(tableName) &&
+              !(
+                serviceSettings?.authEntityName &&
+                serviceSettings.authEntityName === tableName
+              )
+            );
+          })
+          .map((tableName) => {
+            const entityNameIdMap = originalResource.entities.reduce(
+              (map, entity) => {
+                map[entity.name] = entity;
+                return map;
+              },
+              {} as Record<string, EntityDataForBtm>
+            );
+
+            return {
+              name: tableName,
+              originalEntityId: entityNameIdMap[tableName].id,
+            };
+          });
+
+        return {
+          name: microserviceName,
+          functionality: functionality,
+          tables: microserviceTables,
+        };
+      }
     );
 
     return {
-      microservices: promptResultObj.microservices
-        .sort((microservice) => -1 * microservice.dataModels.length)
-        .map((microservice) => ({
-          name: microservice.name,
-          functionality: microservice.functionality,
-          dataModels: microservice.dataModels
-            .filter((dataModelName) => {
-              const isDuplicatedAlreadyUsed =
-                usedDuplicatedEntities.has(dataModelName);
-              if (duplicatedEntities.has(dataModelName)) {
-                usedDuplicatedEntities.add(dataModelName);
-              }
-              return (
-                originalResourceEntitiesSet.has(dataModelName) &&
-                !isDuplicatedAlreadyUsed
-              );
-            })
-            .map((dataModelName) => {
-              const entityNameIdMap = originalResource.entities.reduce(
-                (map, entity) => {
-                  map[entity.name] = entity;
-                  return map;
-                },
-                {} as Record<string, EntityDataForBtm>
-              );
-
-              return {
-                name: dataModelName,
-                originalEntityId: entityNameIdMap[dataModelName]?.id,
-              };
-            }),
-        }))
-        .filter((microservice) => microservice.dataModels.length > 0),
+      microservices: microserviceData,
     };
   }
 
@@ -261,20 +381,27 @@ export class ResourceBtmService {
         microservices: result.microservices.map((microservice) => ({
           name: microservice.name,
           functionality: microservice.functionality,
-          dataModels: microservice.dataModels,
+          tables: microservice.tables,
         })),
       };
     } catch (error) {
-      throw new GptBadFormatResponseError(JSON.stringify(promptResult), error);
+      throw new GptBadFormatResponseError(promptResult, error);
     }
   }
 
   findDuplicatedEntities(entities: string[]): Set<string> {
-    return new Set(
-      entities.filter((entity, index) => {
-        return entities.indexOf(entity) !== index;
-      })
-    );
+    const duplicates = new Set<string>();
+    const seen = new Set<string>();
+
+    for (const entity of entities) {
+      if (seen.has(entity)) {
+        duplicates.add(entity);
+      } else {
+        seen.add(entity);
+      }
+    }
+
+    return duplicates;
   }
 
   async getResourceDataForBtm(resourceId: string): Promise<ResourceDataForBtm> {

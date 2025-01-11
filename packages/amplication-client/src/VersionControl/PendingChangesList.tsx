@@ -1,39 +1,74 @@
 import { useContext } from "react";
-import PendingChange from "./PendingChange";
 
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
+import { EnumResourceTypeGroup } from "../models";
 import "./PendingChangesList.scss";
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
+import PendingChangesListGroup from "./PendingChangesListGroup";
 
 const CLASS_NAME = "pending-changes-list";
 
-const PendingChangesList = () => {
+type Props = {
+  resourceTypeGroup: EnumResourceTypeGroup;
+};
+
+const PendingChangesList = ({ resourceTypeGroup }: Props) => {
   const { currentProject } = useContext(AppContext);
 
-  const { pendingChangesByResource } = usePendingChanges(currentProject);
+  const { pendingChangesByResourceAndType } = usePendingChanges(
+    currentProject,
+    resourceTypeGroup
+  );
 
   return (
     <div className={CLASS_NAME}>
-      {pendingChangesByResource.map((group) => (
-        <div key={group.resource.id}>
+      {pendingChangesByResourceAndType.map((resourceGroup) => (
+        <div key={resourceGroup.resource.id}>
           <div className={`${CLASS_NAME}__changes__resource`}>
-            <ResourceCircleBadge
-              type={group.resource.resourceType}
+            <ResourceTypeBadge
+              resource={resourceGroup.resource}
               size="xsmall"
             />
-            <span>{group.resource.name}</span>
+            <span>{resourceGroup.resource.name}</span>
           </div>
-          {group.changes.map((change) => (
-            <PendingChange key={change.originId} change={change} linkToOrigin />
+          {resourceGroup.changes.map((typeGroup) => (
+            <PendingChangesListGroup key={typeGroup.type} group={typeGroup} />
           ))}
         </div>
       ))}
-      {pendingChangesByResource.length === 0 && (
-        <Text textStyle={EnumTextStyle.Description}>
-          No pending changes! keep working.
-        </Text>
+      {pendingChangesByResourceAndType.length === 0 && (
+        <>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <SvgThemeImage
+              image={
+                resourceTypeGroup === EnumResourceTypeGroup.Platform
+                  ? EnumImages.AddResource
+                  : EnumImages.NoChanges
+              }
+            />
+            <Text
+              textStyle={EnumTextStyle.Description}
+              textAlign={EnumTextAlign.Center}
+            >
+              {resourceTypeGroup === EnumResourceTypeGroup.Platform
+                ? "No platform changes! keep working."
+                : "No pending changes! keep working."}
+            </Text>
+          </FlexItem>
+        </>
       )}
     </div>
   );

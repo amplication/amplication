@@ -1,14 +1,21 @@
 import {
   EnumFlexDirection,
+  EnumGapSize,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
   Snackbar,
   Text,
   TextField,
+  ToggleField,
+  Form,
+  EnumFlexItemMargin,
+  TabContentTitle,
+  Panel,
+  EnumPanelStyle,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Form, Formik } from "formik";
+import { Formik } from "formik";
 import { useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
@@ -21,12 +28,15 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import "./WorkspaceForm.scss";
 
 type TData = {
   updateWorkspace: models.Workspace;
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -35,10 +45,13 @@ const FORM_SCHEMA = {
       type: "string",
       minLength: 2,
     },
+    allowLLMFeatures: {
+      type: "boolean",
+    },
   },
   errorMessage: {
     properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -51,13 +64,18 @@ function WorkspaceForm() {
   const { currentWorkspace } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
+  const { stigg } = useStiggContext();
+
+  const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.RedesignArchitecture,
+  }).hasAccess;
 
   const [updateWorkspace, { error: updateError }] =
     useMutation<TData>(UPDATE_WORKSPACE);
 
   const handleSubmit = useCallback(
     (newData) => {
-      const { name } = newData;
+      const { name, allowLLMFeatures } = newData;
       trackEvent({
         eventName: AnalyticsEventNames.WorkspaceInfoUpdate,
       });
@@ -66,6 +84,7 @@ function WorkspaceForm() {
           variables: {
             data: {
               name,
+              allowLLMFeatures,
             },
             workspaceId: currentWorkspace.id,
           },
@@ -77,10 +96,17 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <div className={CLASS_NAME}>
       <Text textStyle={EnumTextStyle.H4}>Workspace Settings</Text>
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        margin={EnumFlexItemMargin.Top}
+      >
+        <Text textStyle={EnumTextStyle.Label}>ID: </Text>
+        <Text textStyle={EnumTextStyle.Label}>{currentWorkspace?.id}</Text>
+      </FlexItem>
 
-      <HorizontalRule doubleSpacing />
+      <HorizontalRule />
 
       {currentWorkspace && (
         <Formik
@@ -91,22 +117,47 @@ function WorkspaceForm() {
         >
           {(formik) => {
             return (
-              <Form>
+              <Form childrenAsBlocks>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Workspace Name" />
+                <div>
+                  <TabContentTitle title="AI-powered features" />
+                  <Panel panelStyle={EnumPanelStyle.Bordered}>
+                    <Text textStyle={EnumTextStyle.Tag}>
+                      <FlexItem
+                        direction={EnumFlexDirection.Column}
+                        gap={EnumGapSize.Small}
+                      >
+                        <div>
+                          Manage Amplication AI-powered features and
+                          enable/disable advanced features using artificial
+                          intelligence. These include personalized
+                          recommendations, and automation of tasks.
+                        </div>
+                        <div>
+                          Note: This may involve processing your data with AI
+                          technologies while keeping your data secure. When
+                          disabled, we will never share your data with any AI or
+                          large language model services.
+                        </div>
+                      </FlexItem>
+                    </Text>
+                  </Panel>
+
+                  <ToggleField
+                    name="allowLLMFeatures"
+                    label="Enable AI-powered features"
+                    disabled={!hasRedesignArchitectureFeature}
+                  />
+                </div>
               </Form>
             );
           }}
         </Formik>
       )}
 
-      <FlexItem direction={EnumFlexDirection.Column}>
-        <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
-        <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
-      </FlexItem>
-
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-    </PageContent>
+    </div>
   );
 }
 
@@ -120,6 +171,7 @@ const UPDATE_WORKSPACE = gql`
     updateWorkspace(data: $data, where: { id: $workspaceId }) {
       id
       name
+      allowLLMFeatures
     }
   }
 `;

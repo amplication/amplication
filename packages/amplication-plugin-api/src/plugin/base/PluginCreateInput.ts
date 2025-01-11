@@ -20,6 +20,24 @@ import { InputJsonValue } from "../../types";
 class PluginCreateInput {
   @ApiProperty({
     required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  categories?: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  codeGeneratorName!: string;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -115,13 +133,6 @@ class PluginCreateInput {
     nullable: true,
   })
   website?: string | null;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  categories!: InputJsonValue;
 }
 
 export { PluginCreateInput as PluginCreateInput };

@@ -9,7 +9,8 @@ $resource-name-max-width: 180px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
   &__title {
     @include bold-14;
@@ -98,26 +99,6 @@ $resource-name-max-width: 180px;
     border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
-  }
-
-  &__changes {
-    flex-grow: 1;
-    flex-basis: 0px;
-    overflow-y: auto;
-    @include scrollbars(16px, var(--gray-30), transparent);
-
-    &__resource {
-      @include bold-12;
-      margin-bottom: var(--medium-spacing);
-      max-width: $resource-name-max-width;
-      white-space: nowrap;
-      text-align: left;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      .circle-badge {
-        margin-right: var(--user-badge-spacing);
-      }
-    }
   }
 }
 

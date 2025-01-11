@@ -35,8 +35,7 @@ import {
   getMethods,
   removeClassMethodByName,
 } from "../../../utils/ast";
-import { isToManyRelationField } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
@@ -52,6 +51,7 @@ import {
   createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+import { createControllerCustomActionMethods } from "./create-controller-custom-actions";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -72,7 +72,8 @@ export async function createControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { appInfo, DTOs, entityActionsMap, moduleContainers } =
@@ -169,7 +170,7 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
         entityActions,
-      }
+      } as CreateEntityControllerParams
     ),
     await pluginWrapper(
       createControllerBaseModule,
@@ -185,7 +186,8 @@ export async function createControllerModules(
         serviceId,
         moduleContainers,
         entityActions,
-      }
+        dtoNameToPath,
+      } as CreateEntityControllerBaseParams
     ),
   ]);
 
@@ -245,6 +247,7 @@ async function createControllerBaseModule({
   serviceId,
   moduleContainers,
   entityActions,
+  dtoNameToPath,
 }: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
@@ -253,10 +256,6 @@ async function createControllerBaseModule({
   const entityDTOs = DTOs[entity.name];
 
   interpolate(template, templateMapping);
-
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
-  );
 
   const classDeclaration = getClassDeclarationById(template, controllerBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -322,7 +321,10 @@ async function createControllerBaseModule({
     setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
-  classDeclaration.body.body.push(...toManyRelationMethods);
+  classDeclaration.body.body.push(
+    ...toManyRelationMethods,
+    ...(await createControllerCustomActionMethods(entityActions.customActions))
+  );
 
   toManyRelationFields.map((field) =>
     Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
@@ -330,10 +332,7 @@ async function createControllerBaseModule({
         const action: ModuleAction =
           entityActions.relatedFieldsDefaultActions[field.name][key];
 
-        if (
-          (moduleContainer && !moduleContainer?.enabled && action) ||
-          (action && !action.enabled)
-        ) {
+        if (action && !action.enabled) {
           removeClassMethodByName(classDeclaration, action.name);
         }
       }
@@ -342,10 +341,7 @@ async function createControllerBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (
-      (moduleContainer && !moduleContainer?.enabled && action) ||
-      (action && !action.enabled)
-    ) {
+    if (action && !action.enabled) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });
@@ -356,7 +352,6 @@ async function createControllerBaseModule({
   removeTSInterfaceDeclares(template);
   removeTSClassDeclares(template);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

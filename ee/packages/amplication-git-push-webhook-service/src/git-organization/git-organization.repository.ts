@@ -13,9 +13,10 @@ export class GitOrganizationRepository {
     return await this.prisma.gitOrganization.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        provider_installationId: {
+        provider_installationId_workspaceId: {
           installationId,
           provider,
+          workspaceId: 'default',
         },
       },
     });

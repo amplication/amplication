@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Plugin, OnPluginDropped } from "./hooks/usePlugins";
+import { OnPluginDropped } from "./hooks/usePlugins";
+import { Plugin } from "./hooks/usePluginCatalog";
 import * as models from "../models";
 
 import { Button, EnumButtonStyle } from "../Components/Button";

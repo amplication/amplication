@@ -228,10 +228,10 @@ export class SubscriptionService {
     const resourcesBeyondLimit = resources.slice(featureServices.usageLimit);
 
     const resourceIdsWithinLimit = resourcesWithinLimit.map(
-      (project) => project.id
+      (resource) => resource.id
     );
     const resourceIdsBeyondLimit = resourcesBeyondLimit.map(
-      (project) => project.id
+      (resource) => resource.id
     );
 
     await this.prisma.$transaction([

@@ -16,7 +16,6 @@ export interface CodeEditorProps {
   onChange?: EditorProps["onChange"];
   className?: EditorProps["className"];
   path?: string;
-  resetKey?: string;
 }
 
 const setEditorTheme = (monaco: Monaco) => {
@@ -53,7 +52,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   onValidate,
   onChange,
   className,
-  resetKey,
   path,
 }) => {
   const [isValid, setIsValid] = useState<boolean>(true);
@@ -69,12 +67,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
     value && setEditorValue(setCodeValue(value) as string);
   }, [value, defaultValue]);
-
-  useEffect(() => {
-    if (!resetKey) return;
-
-    setEditorValue(JSON.stringify(defaultValue, null, 2));
-  }, [resetKey, defaultValue]);
 
   const handleBeforeMount = (monaco: Monaco) => {
     setEditorTheme(monaco);
@@ -123,6 +115,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         options={{
           ...options,
           minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          padding: {
+            bottom: 200,
+          },
         }}
         path={path}
         theme={"vs-dark-amp"}

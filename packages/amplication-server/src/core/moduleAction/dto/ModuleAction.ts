@@ -3,6 +3,8 @@ import { IBlock } from "../../../models";
 import { EnumModuleActionType } from "./EnumModuleActionType";
 import { EnumModuleActionGqlOperation } from "./EnumModuleActionGqlOperation";
 import { EnumModuleActionRestVerb } from "./EnumModuleActionRestVerb";
+import { PropertyTypeDef } from "../../moduleDto/dto/propertyTypes/PropertyTypeDef";
+import { EnumModuleActionRestInputSource } from "./EnumModuleActionRestInputSource";
 
 @ObjectType({
   isAbstract: true,
@@ -43,4 +45,34 @@ export class ModuleAction extends IBlock {
     nullable: true,
   })
   path!: string;
+
+  @Field(() => PropertyTypeDef, {
+    nullable: true,
+  })
+  inputType?: PropertyTypeDef;
+
+  @Field(() => PropertyTypeDef, {
+    nullable: true,
+  })
+  outputType?: PropertyTypeDef;
+
+  @Field(() => EnumModuleActionRestInputSource, {
+    nullable: true,
+  })
+  restInputSource?: keyof typeof EnumModuleActionRestInputSource;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputParamsPropertyName?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputBodyPropertyName?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  restInputQueryPropertyName?: string;
 }

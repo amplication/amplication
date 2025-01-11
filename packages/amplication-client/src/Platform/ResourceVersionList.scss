@@ -1,0 +1,7 @@
+@import "../style/index.scss";
+
+.resource-version-list {
+  &__grid-container {
+    height: calc(100% - 80px);
+  }
+}

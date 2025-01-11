@@ -34,6 +34,12 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const { workspace } = useParams<{ workspace?: string }>();
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
   const [workspacesList, setWorkspacesList] = useState<models.Workspace[]>([]);
+  const [subscriptionPlan, setSubscriptionPlan] =
+    useState<models.EnumSubscriptionPlan>();
+  const [subscriptionStatus, setSubscriptionStatus] =
+    useState<models.EnumSubscriptionStatus>(
+      models.EnumSubscriptionStatus.Active
+    );
 
   const [
     getCurrentWorkspace,
@@ -64,7 +70,16 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     setWorkspacesList(workspaceListData.workspaces);
   }, [workspaceListData]);
 
-  useEffect(() => {}, [currentWorkspace]);
+  useEffect(() => {
+    if (loadingCurrentWorkspace) return;
+
+    if (data && data.currentWorkspace) {
+      setSubscriptionPlan(
+        data.currentWorkspace?.subscription?.subscriptionPlan
+      );
+      setSubscriptionStatus(data.currentWorkspace?.subscription?.status);
+    }
+  }, [currentWorkspace, data, loadingCurrentWorkspace, subscriptionPlan]);
 
   const refreshCurrentWorkspace = useCallback(() => {
     data && refetch && refetch();
@@ -174,6 +189,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
 
   return {
     currentWorkspace,
+    subscriptionPlan,
+    subscriptionStatus,
     loadingWorkspace: loadingCurrentWorkspace,
     handleSetCurrentWorkspace,
     createWorkspace,

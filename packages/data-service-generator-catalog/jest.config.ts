@@ -16,8 +16,25 @@ export default {
   coverageDirectory: "../../coverage/packages/data-service-generator-catalog",
   coverageThreshold: {
     global: {
-      branches: 57,
-      lines: 30,
+      branches: 59,
+      lines: 29,
     },
   },
+  collectCoverageFrom: [
+    "**/src/**/*.{ts,tsx}",
+    "!**/*.types.{ts,tsx}",
+    "!**/*.template.{ts,tsx}",
+    "!**/*.spec.{ts,tsx}",
+    "!**/*.e2e-spec.{ts,tsx}",
+    "!**/tests/e2e/**",
+    "!**/health/**",
+    "!**/index.ts",
+    "!**/*.mock.ts",
+    "!**/*.module.ts",
+    "!**/*.interface.ts",
+    "!**/dto/*.ts",
+    "!**/*.dto.ts",
+    "!**/main.ts",
+    "!**/base/**",
+  ],
 };

@@ -1,4 +1,4 @@
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { Field, InputType, registerEnumType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
@@ -20,6 +20,14 @@ class GetCodeGeneratorVersionInput {
   })
   @Field(() => CodeGeneratorVersionStrategy, { nullable: false })
   codeGeneratorStrategy!: CodeGeneratorVersionStrategy;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  codeGeneratorFullName!: string;
 }
 
 registerEnumType(CodeGeneratorVersionStrategy, {

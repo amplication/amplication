@@ -1,15 +1,15 @@
 import { Form, SelectField, ToggleField } from "@amplication/ui/design-system";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
-import { BillingFeature } from "@amplication/util-billing-types";
-import FormikAutoSave from "../../util/formikAutoSave";
-import { validate } from "../../util/formikValidateJsonSchema";
-import "./CodeGeneratorVersionForm.scss";
 import {
   EntitlementType,
   FeatureIndicatorContainer,
   FeatureIndicatorPlacement,
 } from "../../Components/FeatureIndicatorContainer";
+import FormikAutoSave from "../../util/formikAutoSave";
+import { validate } from "../../util/formikValidateJsonSchema";
+import "./CodeGeneratorVersionForm.scss";
 
 const CLASS_NAME = "code-generator-version-form";
 
@@ -88,11 +88,14 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                     }
                     label={"Select a version"}
                     name={"version"}
-                    options={codeGeneratorVersionList.map((version) => ({
-                      label: version,
-                      value: version,
-                    }))}
+                    options={
+                      codeGeneratorVersionList?.map((version) => ({
+                        label: version,
+                        value: version,
+                      })) || []
+                    }
                   />
+
                   <ToggleField
                     disabled={
                       !canChooseCodeGeneratorVersion ||

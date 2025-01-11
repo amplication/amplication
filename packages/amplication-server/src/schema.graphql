@@ -10,8 +10,6 @@ type Account {
   id: String!
   lastName: String!
   password: String!
-  previewAccountEmail: String
-  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -39,6 +37,10 @@ type ActionStep {
   status: EnumActionStepStatus!
 }
 
+input AddMemberToTeamsInput {
+  teamIds: [String!]!
+}
+
 type AdminUISettings {
   adminUIPath: String!
   generateAdminUI: Boolean!
@@ -64,16 +66,37 @@ input ApiTokenCreateInput {
   name: String!
 }
 
+input AssistantContext {
+  projectId: String
+  resourceId: String
+}
+
+type AssistantMessage {
+  createdAt: String!
+  id: String!
+  role: EnumAssistantMessageRole!
+  text: String!
+}
+
+type AssistantMessageDelta {
+  completed: Boolean!
+  functionExecuted: EnumAssistantFunctions
+  id: String!
+  snapshot: String!
+  text: String!
+  threadId: String!
+}
+
+type AssistantThread {
+  createdAt: String!
+  id: String!
+  messages: [AssistantMessage!]
+  updatedAt: String!
+}
+
 type Auth {
   """JWT Bearer token"""
   token: String!
-}
-
-type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String!
-  token: String!
-  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -166,6 +189,61 @@ input BlockWhereInput {
   updatedAt: DateTimeFilter
 }
 
+type Blueprint {
+  color: String
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  properties: [CustomProperty!]
+  relations: [BlueprintRelation!]
+  updatedAt: DateTime!
+}
+
+input BlueprintCreateInput {
+  name: String!
+}
+
+input BlueprintOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+type BlueprintRelation {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
+}
+
+input BlueprintRelationUpsertInput {
+  allowMultiple: Boolean!
+  description: String
+  key: String!
+  name: String!
+  relatedTo: String!
+  required: Boolean!
+}
+
+input BlueprintUpdateInput {
+  color: String
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+}
+
+input BlueprintWhereInput {
+  id: String
+  key: StringFilter
+  name: StringFilter
+}
+
 input BooleanFilter {
   equals: Boolean
   not: Boolean
@@ -176,9 +254,9 @@ type BreakServiceToMicroservicesData {
 }
 
 type BreakServiceToMicroservicesItem {
-  dataModels: [BreakServiceToMicroservicesItemEntities!]!
   functionality: String!
   name: String!
+  tables: [BreakServiceToMicroservicesItemEntities!]!
 }
 
 type BreakServiceToMicroservicesItemEntities {
@@ -201,24 +279,23 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String
+  buildPlugins: [BuildPlugin!]!
   codeGeneratorVersion: String
   commit: Commit
   commitId: String!
   createdAt: DateTime!
   createdBy: User
+  filesChanged: Float
+  gitStatus: EnumBuildGitStatus!
   id: String!
+  linesOfCodeAdded: Float
+  linesOfCodeDeleted: Float
   message: String
   resource: Resource
   resourceId: String!
-  status: EnumBuildStatus
+  status: EnumBuildStatus!
   userId: String!
   version: String!
-}
-
-input BuildCreateInput {
-  commit: WhereParentIdInput!
-  message: String!
-  resource: WhereParentIdInput!
 }
 
 input BuildOrderByInput {
@@ -230,13 +307,25 @@ input BuildOrderByInput {
   version: SortOrder
 }
 
+type BuildPlugin {
+  build: Build
+  buildId: String!
+  createdAt: DateTime!
+  id: String!
+  packageName: String!
+  packageVersion: String!
+  requestedFullPackageName: String!
+}
+
 input BuildWhereInput {
   commit: WhereUniqueInput
   createdAt: DateTimeFilter
   createdBy: WhereUniqueInput
+  gitStatus: EnumBuildGitStatusFilter
   id: StringFilter
   message: StringFilter
-  resource: WhereUniqueInput!
+  resource: WhereUniqueInput
+  status: EnumBuildStatusFilter
   version: StringFilter
 }
 
@@ -275,8 +364,20 @@ input CommitCreateInput {
   It will bypass the limitations of the plan (if any). It will only work for limitation that support commit bypass.
   """
   bypassLimitations: Boolean = false
+
+  """
+  The strategy to use when committing the changes. If not provided, the default strategy will be used.
+  """
+  commitStrategy: EnumCommitStrategy = All
   message: String!
   project: WhereParentIdInput!
+
+  """
+  The resources to commit, when strategy is "Specific". On other strategies, this field will be ignored.
+  """
+  resourceIds: [String!]
+  resourceTypeGroup: EnumResourceTypeGroup!
+  resourceVersions: [CommitResourceVersionCreateInput!]
 }
 
 input CommitOrderByInput {
@@ -285,16 +386,28 @@ input CommitOrderByInput {
   message: SortOrder
 }
 
+input CommitResourceVersionCreateInput {
+  resourceId: String
+  version: String
+}
+
 input CommitWhereInput {
   createdAt: DateTimeFilter
   id: StringFilter
   message: StringFilter
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
   user: WhereUniqueInput
 }
 
 input CommitWhereUniqueInput {
-  id: String
+  id: String!
+}
+
+input CompareResourceVersionsWhereInput {
+  resource: WhereUniqueInput!
+  sourceVersion: String!
+  targetVersion: String!
 }
 
 input CompleteInvitationInput {
@@ -326,19 +439,6 @@ input CreateEntitiesFromPredefinedSchemaInput {
   schemaName: EnumSchemaNames!
 }
 
-input CreateGitRepositoryBaseInput {
-  gitOrganizationId: String!
-  gitOrganizationType: EnumGitOrganizationType!
-  gitProvider: EnumGitProvider!
-
-  """
-  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
-  """
-  groupName: String
-  isPublic: Boolean!
-  name: String!
-}
-
 input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -351,6 +451,77 @@ input CreateGitRepositoryInput {
   isPublic: Boolean!
   name: String!
   resourceId: String
+}
+
+input CreateTeamAssignmentsInput {
+  teamIds: [String!]!
+}
+
+input CreateTeamAssignmentsWhereInput {
+  resourceId: String!
+}
+
+type CustomProperty {
+  blueprint: String
+  blueprintId: String
+  createdAt: DateTime!
+  description: String
+  enabled: Boolean!
+  id: String!
+  key: String!
+  name: String!
+  options: [CustomPropertyOption!]
+  required: Boolean!
+  type: EnumCustomPropertyType!
+  updatedAt: DateTime!
+  validationMessage: String
+  validationRule: String
+}
+
+input CustomPropertyCreateInput {
+  blueprint: WhereParentIdInput
+  name: String!
+}
+
+type CustomPropertyOption {
+  color: String!
+  value: String!
+}
+
+input CustomPropertyOptionCreateInput {
+  customProperty: WhereParentIdInput!
+  value: String
+}
+
+input CustomPropertyOptionUpdateInput {
+  color: String!
+  value: String!
+}
+
+input CustomPropertyOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input CustomPropertyUpdateInput {
+  description: String
+  enabled: Boolean
+  key: String
+  name: String
+  required: Boolean
+  type: EnumCustomPropertyType
+  validationMessage: String
+  validationRule: String
+}
+
+input CustomPropertyWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: String
+  deletedAt: DateTimeFilter
+  enabled: Boolean
+  id: String
+  name: StringFilter
 }
 
 input DBSchemaImportCreateInput {
@@ -647,6 +818,37 @@ enum EnumActionStepStatus {
   Waiting
 }
 
+enum EnumAssistantFunctions {
+  CommitProjectPendingChanges
+  CreateEntities
+  CreateEntityFields
+  CreateModule
+  CreateModuleAction
+  CreateModuleDto
+  CreateModuleEnum
+  CreateProject
+  CreateService
+  GetModuleActions
+  GetModuleDtosAndEnums
+  GetPlugins
+  GetProjectPendingChanges
+  GetProjectServices
+  GetService
+  GetServiceEntities
+  GetServiceModules
+  InstallPlugins
+}
+
+enum EnumAssistantMessageRole {
+  Assistant
+  User
+}
+
+enum EnumAssistantMessageType {
+  Default
+  Onboarding
+}
+
 enum EnumAuthProviderType {
   Auth0
   Http
@@ -654,11 +856,17 @@ enum EnumAuthProviderType {
 }
 
 enum EnumBlockType {
+  CodeEngineVersion
   Module
   ModuleAction
+  ModuleDto
+  Package
   PluginInstallation
   PluginOrder
+  PrivatePlugin
   ProjectConfigurationSettings
+  Relation
+  ResourceSettings
   ServiceSettings
   ServiceTopics
   Topic
@@ -671,11 +879,59 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildGitStatus {
+  Canceled
+  Completed
+  Failed
+  NotConnected
+  Unknown
+  Waiting
+}
+
+input EnumBuildGitStatusFilter {
+  equals: EnumBuildGitStatus
+  in: [EnumBuildGitStatus!]
+  not: EnumBuildGitStatus
+  notIn: [EnumBuildGitStatus!]
+}
+
 enum EnumBuildStatus {
+  Canceled
   Completed
   Failed
   Invalid
   Running
+  Unknown
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  not: EnumBuildStatus
+  notIn: [EnumBuildStatus!]
+}
+
+enum EnumCodeGenerator {
+  Blueprint
+  DotNet
+  NodeJs
+}
+
+input EnumCodeGeneratorFilter {
+  equals: EnumCodeGenerator
+}
+
+enum EnumCommitStrategy {
+  All
+  AllWithPendingChanges
+  Specific
+}
+
+enum EnumCustomPropertyType {
+  Link
+  MultiSelect
+  Select
+  Text
 }
 
 enum EnumDataType {
@@ -684,6 +940,7 @@ enum EnumDataType {
   DateTime
   DecimalNumber
   Email
+  File
   GeographicLocation
   Id
   Json
@@ -721,6 +978,12 @@ enum EnumEntityPermissionType {
   Public
 }
 
+enum EnumGitFolderContentItemType {
+  Dir
+  File
+  Other
+}
+
 enum EnumGitOrganizationType {
   Organization
   User
@@ -728,6 +991,7 @@ enum EnumGitOrganizationType {
 
 enum EnumGitProvider {
   AwsCodeCommit
+  AzureDevOps
   Bitbucket
   GitLab
   Github
@@ -742,6 +1006,13 @@ enum EnumMessagePatternConnectionOptions {
 enum EnumModuleActionGqlOperation {
   Mutation
   Query
+}
+
+enum EnumModuleActionRestInputSource {
+  Body
+  Params
+  Query
+  Split
 }
 
 enum EnumModuleActionRestVerb {
@@ -770,6 +1041,73 @@ enum EnumModuleActionType {
   Update
 }
 
+enum EnumModuleDtoPropertyType {
+  Boolean
+  DateTime
+  Dto
+  Enum
+  Float
+  Integer
+  Json
+  Null
+  String
+  Undefined
+}
+
+enum EnumModuleDtoType {
+  CountArgs
+  CreateArgs
+  CreateInput
+  CreateNestedManyInput
+  Custom
+  CustomEnum
+  DeleteArgs
+  Entity
+  Enum
+  FindManyArgs
+  FindOneArgs
+  ListRelationFilter
+  OrderByInput
+  UpdateArgs
+  UpdateInput
+  UpdateNestedManyInput
+  WhereInput
+  WhereUniqueInput
+}
+
+enum EnumOutdatedVersionAlertStatus {
+  Canceled
+  Ignored
+  New
+  Resolved
+}
+
+input EnumOutdatedVersionAlertStatusFilter {
+  equals: EnumOutdatedVersionAlertStatus
+  in: [EnumOutdatedVersionAlertStatus!]
+  not: EnumOutdatedVersionAlertStatus
+  notIn: [EnumOutdatedVersionAlertStatus!]
+}
+
+enum EnumOutdatedVersionAlertType {
+  CodeEngineVersion
+  PluginVersion
+  TemplateVersion
+}
+
+input EnumOutdatedVersionAlertTypeFilter {
+  equals: EnumOutdatedVersionAlertType
+  in: [EnumOutdatedVersionAlertType!]
+  not: EnumOutdatedVersionAlertType
+  notIn: [EnumOutdatedVersionAlertType!]
+}
+
+enum EnumPackageStatus {
+  Completed
+  Failed
+  Initial
+}
+
 enum EnumPendingChangeAction {
   Create
   Delete
@@ -781,15 +1119,13 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
-enum EnumPreviewAccountType {
-  BreakingTheMonolith
-  None
-}
-
 enum EnumResourceType {
+  Component
   MessageBroker
+  PluginRepository
   ProjectConfiguration
   Service
+  ServiceTemplate
 }
 
 input EnumResourceTypeFilter {
@@ -797,6 +1133,11 @@ input EnumResourceTypeFilter {
   in: [EnumResourceType!]
   not: EnumResourceType
   notIn: [EnumResourceType!]
+}
+
+enum EnumResourceTypeGroup {
+  Platform
+  Services
 }
 
 enum EnumSchemaNames {
@@ -808,9 +1149,11 @@ enum EnumSchemaNames {
 
 enum EnumSubscriptionPlan {
   Enterprise
+  Essential
   Free
   PreviewBreakTheMonolith
   Pro
+  Team
 }
 
 enum EnumSubscriptionStatus {
@@ -819,6 +1162,13 @@ enum EnumSubscriptionStatus {
   PastDue
   Paused
   Trailing
+}
+
+enum EnumTimeGroup {
+  Day
+  Month
+  Week
+  Year
 }
 
 enum EnumUserActionStatus {
@@ -850,8 +1200,26 @@ type Environment {
   updatedAt: DateTime!
 }
 
+type EvaluationInsights {
+  codeQuality: Int!
+  costSaved: Int!
+  loc: Int!
+  timeSaved: Int!
+}
+
+type GitFolderContent {
+  content: [GitFolderContentItem!]!
+}
+
+type GitFolderContentItem {
+  name: String!
+  path: String!
+  type: EnumGitFolderContentItemType!
+}
+
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 """Group of Repositories"""
@@ -868,6 +1236,7 @@ input GitGroupInput {
 input GitOAuth2FlowInput {
   code: String!
   gitProvider: EnumGitProvider!
+  state: String
 }
 
 type GitOrganization {
@@ -910,6 +1279,12 @@ input GitOrganizationCreateInputGitHub {
   installationId: String!
 }
 
+input GitOrganizationOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  provider: SortOrder
+}
+
 input GitOrganizationWhereInput {
   id: String
 }
@@ -923,6 +1298,15 @@ type GitRepository {
   id: String!
   name: String!
   updatedAt: DateTime
+}
+
+input GitRepositoryOrderByInput {
+  baseBranchName: SortOrder
+  gitOrganization: GitOrganizationOrderByInput
+  gitOrganizationId: SortOrder
+  groupName: SortOrder
+  id: SortOrder
+  name: SortOrder
 }
 
 input GitRepositoryUpdateInput {
@@ -976,6 +1360,17 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+input JsonPathStringFilter {
+  matchAll: [JsonPathStringFilterItem!]!
+}
+
+input JsonPathStringFilterItem {
+  arrayContains: String
+  equals: String
+  path: String!
+  stringContains: String
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -989,6 +1384,17 @@ type MessagePattern {
 input MessagePatternCreateInput {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
+}
+
+type MetaQueryPayload {
+  count: Float!
+}
+
+type Metrics {
+  count: Int!
+  month: Int!
+  timeGroup: Int!
+  year: Int!
 }
 
 type Module implements IBlock {
@@ -1023,15 +1429,21 @@ type ModuleAction implements IBlock {
   gqlOperation: EnumModuleActionGqlOperation!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  inputType: PropertyTypeDef
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!
+  outputType: PropertyTypeDef
   parentBlock: Block
   parentBlockId: String
   path: String
   resourceId: String
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
   restVerb: EnumModuleActionRestVerb!
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1040,14 +1452,11 @@ type ModuleAction implements IBlock {
 input ModuleActionCreateInput {
   description: String
   displayName: String!
-  gqlOperation: EnumModuleActionGqlOperation!
   inputParameters: [BlockInputOutputInput!]
   name: String
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
-  path: String
   resource: WhereParentIdInput!
-  restVerb: EnumModuleActionRestVerb!
 }
 
 input ModuleActionOrderByInput {
@@ -1062,11 +1471,17 @@ input ModuleActionOrderByInput {
 input ModuleActionUpdateInput {
   description: String
   displayName: String
-  enabled: Boolean!
-  gqlOperation: EnumModuleActionGqlOperation!
+  enabled: Boolean
+  gqlOperation: EnumModuleActionGqlOperation
+  inputType: PropertyTypeDefInput
   name: String
+  outputType: PropertyTypeDefInput
   path: String
-  restVerb: EnumModuleActionRestVerb!
+  restInputBodyPropertyName: String
+  restInputParamsPropertyName: String
+  restInputQueryPropertyName: String
+  restInputSource: EnumModuleActionRestInputSource
+  restVerb: EnumModuleActionRestVerb
 }
 
 input ModuleActionWhereInput {
@@ -1074,6 +1489,8 @@ input ModuleActionWhereInput {
   description: StringFilter
   displayName: StringFilter
   id: StringFilter
+  includeCustomActions: Boolean
+  includeDefaultActions: Boolean
   parentBlock: WhereUniqueInput
   resource: ResourceWhereInput
   updatedAt: DateTimeFilter
@@ -1087,6 +1504,114 @@ input ModuleCreateInput {
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
   resource: WhereParentIdInput!
+}
+
+type ModuleDto implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  dtoType: EnumModuleDtoType!
+  enabled: Boolean!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  members: [ModuleDtoEnumMember!]
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  properties: [ModuleDtoProperty!]
+  relatedEntityId: String
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleDtoCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+}
+
+type ModuleDtoEnumMember {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoEnumMemberCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoEnumMemberInput {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoEnumMemberUpdateInput {
+  name: String!
+  value: String!
+}
+
+input ModuleDtoOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+type ModuleDtoProperty {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDef!]!
+}
+
+input ModuleDtoPropertyCreateInput {
+  moduleDto: WhereParentIdInput!
+  name: String
+}
+
+input ModuleDtoPropertyInput {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDefInput!]!
+}
+
+input ModuleDtoPropertyUpdateInput {
+  isArray: Boolean!
+  isOptional: Boolean!
+  name: String!
+  propertyTypes: [PropertyTypeDefInput!]!
+}
+
+input ModuleDtoUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean!
+  name: String
+}
+
+input ModuleDtoWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  includeCustomDtos: Boolean
+  includeDefaultDtos: Boolean
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 input ModuleOrderByInput {
@@ -1117,17 +1642,24 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  addMemberToTeams(data: AddMemberToTeamsInput!, where: WhereUniqueInput!): User!
+  addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  addRolesToTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  addRolesToTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  completeSignupWithBusinessEmail: String!
-  connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToNewRemoteGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
-  createBuild(data: BuildCreateInput!): Build!
+  createBlueprint(data: BlueprintCreateInput!): Blueprint!
+  createComponent(data: ResourceCreateInput!): Resource!
+  createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
+  createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
@@ -1136,18 +1668,35 @@ type Mutation {
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
+  createModuleDto(data: ModuleDtoCreateInput!, members: [ModuleDtoEnumMemberInput!], properties: [ModuleDtoPropertyInput!]): ModuleDto!
+  createModuleDtoEnum(data: ModuleDtoCreateInput!, members: [ModuleDtoEnumMemberInput!], properties: [ModuleDtoPropertyInput!]): ModuleDto!
+  createModuleDtoEnumMember(data: ModuleDtoEnumMemberCreateInput!): ModuleDtoEnumMember!
+  createModuleDtoProperty(data: ModuleDtoPropertyCreateInput!): ModuleDtoProperty!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  createPackage(data: PackageCreateInput!): Package!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  createPluginRepository(data: ResourceCreateInput!): Resource!
+  createPrivatePlugin(data: PrivatePluginCreateInput!): PrivatePlugin!
+  createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
+  createRelation(data: RelationCreateInput!): Relation!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  createRole(data: RoleCreateInput!): Role!
   createService(data: ResourceCreateInput!): Resource!
+  createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
+  createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
+  createTeam(data: TeamCreateInput!): Team!
+  createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  deleteBlueprint(where: WhereUniqueInput!): Blueprint
+  deleteBlueprintRelation(where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
+  deleteCustomProperty(where: WhereUniqueInput!): CustomProperty
+  deleteCustomPropertyOption(where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   deleteEntity(where: WhereUniqueInput!): Entity
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
@@ -1155,16 +1704,24 @@ type Mutation {
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteModule(where: WhereUniqueInput!): Module!
   deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
+  deleteModuleDto(where: WhereUniqueInput!): ModuleDto!
+  deleteModuleDtoEnumMember(where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
+  deleteModuleDtoProperty(where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  deletePackage(where: WhereUniqueInput!): Package!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  deletePrivatePlugin(where: WhereUniqueInput!): PrivatePlugin!
   deleteProject(where: WhereUniqueInput!): Project
+  deleteRelation(where: WhereUniqueInput!): Relation!
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  deleteRole(where: WhereUniqueInput!): Role
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
+  deleteTeam(where: WhereUniqueInput!): Team
+  deleteTeamAssignment(where: WhereTeamAssignmentInput!): TeamAssignment!
   deleteTopic(where: WhereUniqueInput!): Topic!
   deleteUser(where: WhereUniqueInput!): User
-  deleteWorkspace(where: WhereUniqueInput!): Workspace
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  disconnectResourceGitRepository(resourceId: String!): Resource!
+  disconnectResourceGitRepository(overrideProjectSettings: Boolean, resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
   inviteUser(data: InviteUserInput!): Invitation
   lockEntity(where: WhereUniqueInput!): Entity
@@ -1172,12 +1729,18 @@ type Mutation {
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   redeemCoupon(data: RedeemCouponInput!): Coupon!
   redesignProject(data: RedesignProjectInput!): UserAction!
+  removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  removeRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  removeRolesFromTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  removeRolesFromTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
+  scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
+  sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  setResourceOwner(data: ResourceSetOwnerInput!): Resource!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
   startRedesign(data: WhereUniqueInput!): Resource
 
@@ -1186,7 +1749,10 @@ type Mutation {
   """
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
+  updateBlueprint(data: BlueprintUpdateInput!, where: WhereUniqueInput!): Blueprint!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
+  updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
+  updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -1195,15 +1761,133 @@ type Mutation {
   updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
+  updateModuleDto(data: ModuleDtoUpdateInput!, where: WhereUniqueInput!): ModuleDto!
+  updateModuleDtoEnumMember(data: ModuleDtoEnumMemberUpdateInput!, where: WhereEnumMemberUniqueInput!): ModuleDtoEnumMember!
+  updateModuleDtoProperty(data: ModuleDtoPropertyUpdateInput!, where: WherePropertyUniqueInput!): ModuleDtoProperty!
+  updateOutdatedVersionAlert(data: OutdatedVersionAlertUpdateInput!, where: WhereUniqueInput!): OutdatedVersionAlert!
+  updatePackage(data: PackageUpdateInput!, where: WhereUniqueInput!): Package!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  updatePrivatePlugin(data: PrivatePluginUpdateInput!, where: WhereUniqueInput!): PrivatePlugin!
+  updatePrivatePluginVersion(data: PrivatePluginVersionUpdateInput!, where: WherePrivatePluginVersionUniqueInput!): PrivatePluginVersion!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  updateRelation(data: RelationUpdateInput!, where: WhereUniqueInput!): Relation!
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
+  updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateResourceSettings(data: ResourceSettingsUpdateInput!, where: WhereUniqueInput!): ResourceSettings
+  updateRole(data: RoleUpdateInput!, where: WhereUniqueInput!): Role!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
+  updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  upgradeServiceToLatestTemplateVersion(where: WhereUniqueInput!): Resource!
+  upsertBlueprintRelation(data: BlueprintRelationUpsertInput!, where: WhereBlueprintRelationUniqueInput!): BlueprintRelation!
+}
+
+type OutdatedVersionAlert {
+  block: Block
+  blockId: String
+  createdAt: DateTime!
+  id: String!
+  latestVersion: String!
+  outdatedVersion: String!
+  resource: Resource
+  resourceId: String!
+  status: EnumOutdatedVersionAlertStatus!
+  type: EnumOutdatedVersionAlertType!
+  updatedAt: DateTime!
+}
+
+input OutdatedVersionAlertOrderByInput {
+  block: BlockOrderByInput
+  createdAt: SortOrder
+  id: SortOrder
+  latestVersion: SortOrder
+  outdatedVersion: SortOrder
+  resource: ResourceOrderByInput
+  status: SortOrder
+  type: SortOrder
+  updatedAt: SortOrder
+}
+
+input OutdatedVersionAlertUpdateInput {
+  status: String
+}
+
+input OutdatedVersionAlertWhereInput {
+  block: WhereUniqueInput
+  createdAt: DateTimeFilter
+  id: StringFilter
+  latestVersion: StringFilter
+  outdatedVersion: StringFilter
+  resource: ResourceWhereInput!
+  status: EnumOutdatedVersionAlertStatusFilter
+  type: EnumOutdatedVersionAlertTypeFilter
+  updatedAt: DateTimeFilter
+}
+
+union Owner = Team | User
+
+input OwnershipWhereInput {
+  teamId: String
+  userId: String
+}
+
+type Package implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  resourceId: String
+  summary: String!
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input PackageCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+  summary: String!
+}
+
+input PackageOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input PackageUpdateInput {
+  description: String
+  displayName: String
+  packageStatus: EnumPackageStatus
+  summary: String
+}
+
+input PackageWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 """Returns a paginated list of repository groups available to select."""
@@ -1218,6 +1902,11 @@ type PaginatedGitGroup {
 
   """Total number of groups"""
   total: Float!
+}
+
+type PaginatedResourceQueryResult {
+  data: [Resource!]
+  totalCount: Int!
 }
 
 type Pagination {
@@ -1238,10 +1927,12 @@ union PendingChangeOrigin = Block | Entity
 
 input PendingChangesDiscardInput {
   project: WhereParentIdInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 input PendingChangesFindInput {
   project: WhereUniqueInput!
+  resourceTypeGroup: EnumResourceTypeGroup!
 }
 
 type PluginInstallation implements IBlock {
@@ -1253,6 +1944,7 @@ type PluginInstallation implements IBlock {
   enabled: Boolean!
   id: String!
   inputParameters: [BlockInputOutput!]!
+  isPrivate: Boolean
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String
@@ -1274,6 +1966,7 @@ input PluginInstallationCreateInput {
   displayName: String!
   enabled: Boolean!
   inputParameters: [BlockInputOutputInput!]
+  isPrivate: Boolean!
   npm: String!
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
@@ -1343,6 +2036,94 @@ input PluginSetOrderInput {
   order: Int!
 }
 
+type PrivatePlugin implements IBlock {
+  blockType: EnumBlockType!
+  blueprints: [String!]
+  codeGenerator: EnumCodeGenerator!
+  color: String
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  icon: String
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  pluginId: String!
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+  versions: [PrivatePluginVersion!]!
+}
+
+input PrivatePluginCreateInput {
+  codeGenerator: EnumCodeGenerator!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  pluginId: String!
+  resource: WhereParentIdInput!
+}
+
+input PrivatePluginOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input PrivatePluginUpdateInput {
+  blueprints: [String!]
+  codeGenerator: EnumCodeGenerator
+  color: String
+  description: String
+  displayName: String
+  enabled: Boolean!
+  icon: String
+}
+
+type PrivatePluginVersion {
+  configurations: JSONObject
+  deprecated: Boolean!
+  enabled: Boolean!
+  settings: JSONObject
+  version: String!
+}
+
+input PrivatePluginVersionCreateInput {
+  privatePlugin: WhereParentIdInput!
+  version: String!
+}
+
+input PrivatePluginVersionUpdateInput {
+  configurations: JSONObject
+  deprecated: Boolean
+  enabled: Boolean
+  settings: JSONObject
+}
+
+input PrivatePluginWhereInput {
+  blue: EnumCodeGeneratorFilter
+  codeGenerator: EnumCodeGeneratorFilter
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 type Project {
   createdAt: DateTime!
   demoRepoName: String
@@ -1350,6 +2131,7 @@ type Project {
   id: String!
   licensed: Boolean!
   name: String!
+  platformIsPublic: Boolean
   resources: [Resource!]
   updatedAt: DateTime!
   useDemoRepo: Boolean!
@@ -1367,6 +2149,7 @@ type ProjectConfigurationSettings implements IBlock {
   lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
+  overrideCustomizableFilesInGit: Boolean
   parentBlock: Block
   parentBlockId: String
   resourceId: String
@@ -1378,6 +2161,7 @@ input ProjectConfigurationSettingsUpdateInput {
   baseDirectory: String
   description: String
   displayName: String
+  overrideCustomizableFilesInGit: Boolean
 }
 
 input ProjectCreateInput {
@@ -1391,14 +2175,14 @@ input ProjectOrderByInput {
 }
 
 input ProjectUpdateInput {
-  name: String
+  platformIsPublic: Boolean
 }
 
 input ProjectWhereInput {
   deletedAt: DateTimeFilter
   id: String
   name: StringFilter
-  resources: ResourceListRelationFilter
+  platformIsPublic: BooleanFilter
 }
 
 type PropertySelector {
@@ -1409,6 +2193,18 @@ type PropertySelector {
 input PropertySelectorInput {
   include: Boolean!
   propertyName: String!
+}
+
+type PropertyTypeDef {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
+}
+
+input PropertyTypeDefInput {
+  dtoId: String
+  isArray: Boolean!
+  type: EnumModuleDtoPropertyType!
 }
 
 input ProvisionSubscriptionInput {
@@ -1426,16 +2222,27 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
+  _outdatedVersionAlertsMeta(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): MetaQueryPayload!
+  _resourceVersionsMeta(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): MetaQueryPayload!
   account: Account!
   action(where: WhereUniqueInput!): Action!
+  availableDtosForResource(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
+  availablePrivatePluginsForResource(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
+  availableTemplatesForProject(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: WhereUniqueInput!): [Resource!]!
   block(where: WhereUniqueInput!): Block!
   blocks(orderBy: BlockOrderByInput, skip: Int, take: Int, where: BlockWhereInput): [Block!]!
+  blueprint(where: WhereUniqueInput!): Blueprint
+  blueprints(orderBy: BlueprintOrderByInput, skip: Int, take: Int, where: BlueprintWhereInput): [Blueprint!]!
   build(where: WhereUniqueInput!): Build!
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  catalog(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): PaginatedResourceQueryResult!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput): [Commit!]
+  commits(cursor: CommitWhereUniqueInput, orderBy: CommitOrderByInput, skip: Int, take: Int, where: CommitWhereInput!): [Commit!]
+  compareResourceVersions(where: CompareResourceVersionsWhereInput!): ResourceVersionsDiff!
   contactUsLink(where: WhereUniqueInput!): String
   currentWorkspace: Workspace
+  customProperties(orderBy: CustomPropertyOrderByInput, skip: Int, take: Int, where: CustomPropertyWhereInput): [CustomProperty!]!
+  customProperty(where: WhereUniqueInput!): CustomProperty
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
   entity(where: WhereUniqueInput!): Entity
 
@@ -1443,6 +2250,8 @@ type Query {
   Get the changes to apply to the model in order to break a resource into microservices
   """
   finalizeBreakServiceIntoMicroservices(userActionId: String!): BreakServiceToMicroservicesResult!
+  getEvaluationInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): EvaluationInsights!
+  getUsageInsights(endDate: DateTime!, projectIds: [String!]!, startDate: DateTime!, timeGroup: EnumTimeGroup = Month): UsageInsightsResult!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitOrganizations(skip: Float, take: Float, where: GitOrganizationWhereInput): [GitOrganization!]!
@@ -1451,28 +2260,51 @@ type Query {
   module(where: WhereUniqueInput!): Module
   moduleAction(where: WhereUniqueInput!): ModuleAction
   moduleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
+  moduleDto(where: WhereUniqueInput!): ModuleDto
+  moduleDtos(orderBy: ModuleDtoOrderByInput, skip: Int, take: Int, where: ModuleDtoWhereInput): [ModuleDto!]!
   modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
+  outdatedVersionAlert(where: WhereUniqueInput!): OutdatedVersionAlert!
+  outdatedVersionAlerts(orderBy: OutdatedVersionAlertOrderByInput, skip: Int, take: Int, where: OutdatedVersionAlertWhereInput): [OutdatedVersionAlert!]!
+  package(where: WhereUniqueInput!): Package
+  packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  permissions: [String!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  pluginRepositoryRemotePlugins(where: WhereUniqueInput!): GitFolderContent!
+  privatePlugin(where: WhereUniqueInput!): PrivatePlugin
+  privatePlugins(orderBy: PrivatePluginOrderByInput, skip: Int, take: Int, where: PrivatePluginWhereInput): [PrivatePlugin!]!
   project(where: WhereUniqueInput!): Project
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   projects(orderBy: ProjectOrderByInput, skip: Int, take: Int, where: ProjectWhereInput): [Project!]!
+  relation(where: WhereUniqueInput!): Relation
+  relations(orderBy: RelationOrderByInput, skip: Int, take: Int, where: RelationWhereInput): [Relation!]!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   resource(where: WhereUniqueInput!): Resource
+  resourcePermissions(where: WhereUniqueInput!): [String!]!
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
-  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
+  resourceSettings(where: WhereUniqueInput!): ResourceSettings
+  resourceVersion(where: WhereUniqueInput!): ResourceVersion!
+  resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
+  resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
+  role(where: WhereUniqueInput!): Role
+  roles(orderBy: RoleOrderByInput, skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
   serviceTopicsList(orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int, where: ServiceTopicsWhereInput): [ServiceTopics!]!
+  team(where: WhereUniqueInput!): Team
+  teams(orderBy: TeamOrderByInput, skip: Int, take: Int, where: TeamWhereInput): [Team!]!
   topic(where: WhereUniqueInput!): Topic
   topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
+  user(where: WhereUniqueInput!): User
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
   workspaceMembers: [WorkspaceMember!]
+  workspaceUsers: [User!]
   workspaces: [Workspace!]!
 }
 
@@ -1498,8 +2330,65 @@ input RedesignProjectMovedEntity {
 }
 
 input RedesignProjectNewService {
+  description: String!
   id: String!
   name: String!
+}
+
+type Relation implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  relatedResources: [String!]!
+  relationKey: String!
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input RelationCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  relatedResources: [String!]!
+  relationKey: String!
+  resource: WhereParentIdInput!
+}
+
+input RelationOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input RelationUpdateInput {
+  description: String
+  displayName: String
+  relatedResources: [String!]!
+}
+
+input RelationWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
 }
 
 type RemoteGitRepos {
@@ -1521,7 +2410,6 @@ input RemoteGitRepositoriesWhereUniqueInput {
 }
 
 type RemoteGitRepository {
-  admin: Boolean!
   defaultBranch: String!
   fullName: String!
   groupName: String
@@ -1531,7 +2419,10 @@ type RemoteGitRepository {
 }
 
 type Resource {
+  blueprint: Blueprint
+  blueprintId: String
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  codeGenerator: EnumCodeGenerator
   codeGeneratorStrategy: CodeGeneratorVersionStrategy
   codeGeneratorVersion: String
   createdAt: DateTime!
@@ -1546,13 +2437,23 @@ type Resource {
   id: String!
   licensed: Boolean!
   name: String!
+  owner: Owner
   project: Project
   projectId: String
+  properties: JSONObject
+  relations: [Relation!]
   resourceType: EnumResourceType!
+  serviceTemplate: Resource
+  serviceTemplateVersion: String
+  settings: ResourceSettings
+  teamAssignments: [TeamAssignment!]
   updatedAt: DateTime!
+  version: ResourceVersion
 }
 
 input ResourceCreateInput {
+  blueprint: WhereParentIdInput
+  codeGenerator: EnumCodeGenerator
   description: String!
   gitRepository: ConnectGitRepositoryInput
   name: String!
@@ -1589,19 +2490,20 @@ type ResourceCreateWithEntitiesResult {
   resource: Resource!
 }
 
-input ResourceListRelationFilter {
-  every: ResourceWhereInput
-  none: ResourceWhereInput
-  some: ResourceWhereInput
-}
-
 input ResourceOrderByInput {
   createdAt: SortOrder
   description: SortOrder
+  gitRepository: GitRepositoryOrderByInput
   id: SortOrder
   name: SortOrder
+  project: ProjectOrderByInput
   resourceType: SortOrder
   updatedAt: SortOrder
+}
+
+input ResourceRelationUpdateInput {
+  relatedResources: [String!]!
+  relationKey: String!
 }
 
 type ResourceRole {
@@ -1645,28 +2547,164 @@ input ResourceRoleWhereInput {
   updatedAt: DateTimeFilter
 }
 
+input ResourceSetOwnerInput {
+  resourceId: String!
+  teamId: String
+  userId: String
+}
+
+type ResourceSettings implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  parentBlockId: String
+  properties: JSONObject
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ResourceSettingsUpdateInput {
+  description: String
+  displayName: String
+  properties: JSONObject
+}
+
 input ResourceUpdateInput {
   description: String
-  gitRepositoryOverride: Boolean
   name: String
+  properties: JSONObject
+}
+
+type ResourceVersion {
+  commit: Commit
+  commitId: String!
+  createdAt: DateTime!
+  createdBy: User
+  id: String!
+  message: String
+  resource: Resource
+  resourceId: String!
+  userId: String!
+  version: String!
+}
+
+input ResourceVersionOrderByInput {
+  createdAt: SortOrder
+  id: SortOrder
+  message: SortOrder
+  userId: SortOrder
+  version: SortOrder
+}
+
+input ResourceVersionWhereInput {
+  commit: WhereUniqueInput
+  createdAt: DateTimeFilter
+  createdBy: WhereUniqueInput
+  id: StringFilter
+  message: StringFilter
+  resource: WhereUniqueInput!
+  version: StringFilter
+}
+
+type ResourceVersionsDiff {
+  createdBlocks: [BlockVersion!]
+  deletedBlocks: [BlockVersion!]
+  updatedBlocks: [ResourceVersionsDiffBlock!]
+}
+
+type ResourceVersionsDiffBlock {
+  sourceBlockVersion: BlockVersion!
+  targetBlockVersion: BlockVersion!
 }
 
 input ResourceWhereInput {
+  blueprint: BlueprintWhereInput
+  blueprintId: StringFilter
   createdAt: DateTimeFilter
   description: StringFilter
   id: String
   name: StringFilter
+  ownership: OwnershipWhereInput
   project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
   updatedAt: DateTimeFilter
 }
 
-enum Role {
-  Admin
-  OrganizationAdmin
-  ProjectAdmin
-  User
+input ResourceWhereInputWithPropertiesFilter {
+  blueprint: BlueprintWhereInput
+  blueprintId: StringFilter
+  createdAt: DateTimeFilter
+  description: StringFilter
+  id: String
+  name: StringFilter
+  ownership: OwnershipWhereInput
+  project: ProjectWhereInput
+  projectId: String
+  projectIdFilter: StringFilter
+  properties: JsonPathStringFilter
+  resourceType: EnumResourceTypeFilter
+  serviceTemplateId: String
+  updatedAt: DateTimeFilter
+}
+
+type Role {
+  createdAt: DateTime!
+  description: String
+  id: String!
+  key: String!
+  name: String!
+  permissions: [String!]
+  updatedAt: DateTime!
+}
+
+input RoleAddRemovePermissionsInput {
+  permissions: [String!]!
+}
+
+input RoleCreateInput {
+  name: String!
+}
+
+input RoleOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input RoleUpdateInput {
+  description: String
+  key: String
+  name: String
+}
+
+input RoleWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  key: String
+  name: StringFilter
+}
+
+input ScaffoldServiceFromTemplateInput {
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplateName: String!
+}
+
+input SendAssistantMessageInput {
+  message: String!
+  messageType: EnumAssistantMessageType
+  threadId: String
 }
 
 type ServerSettings {
@@ -1681,6 +2719,13 @@ input ServerSettingsUpdateInput {
   generateRestApi: Boolean
   generateServer: Boolean = true
   serverPath: String
+}
+
+input ServiceFromTemplateCreateInput {
+  description: String!
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplate: WhereUniqueInput!
 }
 
 type ServiceSettings implements IBlock {
@@ -1701,6 +2746,7 @@ type ServiceSettings implements IBlock {
   parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
+  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -1712,6 +2758,16 @@ input ServiceSettingsUpdateInput {
   description: String
   displayName: String
   serverSettings: ServerSettingsUpdateInput!
+}
+
+input ServiceTemplateCreateInput {
+  plugins: PluginInstallationsCreateInput
+  resource: ResourceCreateInput!
+}
+
+type ServiceTemplateVersion {
+  serviceTemplateId: String!
+  version: String!
 }
 
 type ServiceTopics implements IBlock {
@@ -1782,11 +2838,6 @@ input SignupInput {
   workspaceName: String!
 }
 
-input SignupPreviewAccountInput {
-  previewAccountEmail: String!
-  previewAccountType: EnumPreviewAccountType!
-}
-
 input SignupWithBusinessEmailInput {
   email: String!
 }
@@ -1812,18 +2863,59 @@ input StringFilter {
 }
 
 type Subscription {
-  cancelUrl: String
-  cancellationEffectiveDate: DateTime
+  assistantMessageUpdated(threadId: String!): AssistantMessageDelta!
+}
+
+type Team {
+  color: String
+  createdAt: DateTime!
+  description: String
+  id: String!
+  members: [User!]
+  name: String!
+  roles: [Role!]
+  updatedAt: DateTime!
+}
+
+type TeamAssignment {
   createdAt: DateTime!
   id: String!
-  nextBillDate: DateTime
-  price: Float
-  status: EnumSubscriptionStatus!
-  subscriptionPlan: EnumSubscriptionPlan!
-  updateUrl: String
+  resource: Resource!
+  resourceId: String!
+  roles: [Role!]
+  team: Team
+  teamId: String
   updatedAt: DateTime!
-  workspace: Workspace
-  workspaceId: String!
+}
+
+input TeamCreateInput {
+  name: String!
+}
+
+input TeamOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input TeamUpdateInput {
+  color: String
+  description: String
+  name: String
+}
+
+input TeamUpdateMembersInput {
+  userIds: [String!]!
+}
+
+input TeamUpdateRolesInput {
+  roleIds: [String!]!
+}
+
+input TeamWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  name: StringFilter
 }
 
 type Topic implements IBlock {
@@ -1888,14 +2980,25 @@ input UpdateAccountInput {
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
+type UsageInsights {
+  results: [Metrics!]!
+}
+
+type UsageInsightsResult {
+  builds: UsageInsights!
+  entities: UsageInsights!
+  moduleActions: UsageInsights!
+  plugins: UsageInsights!
+}
+
 type User {
   account: Account
   createdAt: DateTime!
   id: String!
   isOwner: Boolean!
   lastActive: DateTime
+  teams: [Team!]!
   updatedAt: DateTime!
-  userRoles: [UserRole!]
   workspace: Workspace
 }
 
@@ -1914,15 +3017,38 @@ type UserAction {
   userId: String!
 }
 
-type UserRole {
-  createdAt: DateTime!
-  id: String!
-  role: Role!
-  updatedAt: DateTime!
+input WhereBlueprintRelationUniqueInput {
+  blueprint: WhereUniqueInput!
+  relationKey: String!
+}
+
+input WhereCustomPropertyOptionUniqueInput {
+  customProperty: WhereUniqueInput!
+  value: String!
+}
+
+input WhereEnumMemberUniqueInput {
+  enumMemberName: String!
+  moduleDto: WhereUniqueInput!
 }
 
 input WhereParentIdInput {
   connect: WhereUniqueInput!
+}
+
+input WherePrivatePluginVersionUniqueInput {
+  privatePlugin: WhereUniqueInput!
+  version: String!
+}
+
+input WherePropertyUniqueInput {
+  moduleDto: WhereUniqueInput!
+  propertyName: String!
+}
+
+input WhereTeamAssignmentInput {
+  resourceId: String!
+  teamId: String!
 }
 
 input WhereUniqueInput {
@@ -1930,13 +3056,14 @@ input WhereUniqueInput {
 }
 
 type Workspace {
+  allowLLMFeatures: Boolean!
   createdAt: DateTime!
   externalId: String
   gitOrganizations: [GitOrganization!]
   id: String!
   name: String!
   projects: [Project!]!
-  subscription: Subscription
+  subscription: WorkspaceSubscription
   updatedAt: DateTime!
   users: [User!]!
 }
@@ -1952,6 +3079,22 @@ type WorkspaceMember {
 
 union WorkspaceMemberType = Invitation | User
 
+type WorkspaceSubscription {
+  cancelUrl: String
+  cancellationEffectiveDate: DateTime
+  createdAt: DateTime!
+  id: String!
+  nextBillDate: DateTime
+  price: Float
+  status: EnumSubscriptionStatus!
+  subscriptionPlan: EnumSubscriptionPlan!
+  updateUrl: String
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+}
+
 input WorkspaceUpdateInput {
+  allowLLMFeatures: Boolean
   name: String
 }

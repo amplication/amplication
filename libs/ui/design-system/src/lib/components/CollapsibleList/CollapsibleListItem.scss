@@ -1,0 +1,61 @@
+@import "../../style/index.scss";
+
+$expand-button-width: 42px; //this is needed to prevent the button from creating an overflow when rotated
+
+@mixin active-link {
+  background-color: var(--gray-70);
+  color: var(--gray-base);
+  padding: var(--default-spacing-small);
+}
+
+.amp-collapsible-list-item {
+  font-size: var(--tag-font-size);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: var(--default-spacing-small);
+  padding: var(--default-spacing-small);
+  border-radius: var(--default-border-radius);
+  gap: var(--user-badge-spacing);
+
+  &:hover {
+    @include active-link;
+  }
+
+  &__child-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-in;
+    &--expanded {
+      max-height: none;
+    }
+  }
+
+  &__expand-button-container {
+    width: $expand-button-width;
+
+    .amp-button {
+      i {
+        margin-right: 0;
+      }
+    }
+  }
+  &__expand-button {
+    transform: rotate(0deg);
+    transition: transform 0.1s ease-in;
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+
+  &.active {
+    @include active-link;
+  }
+
+  &__inner-span {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+}

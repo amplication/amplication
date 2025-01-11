@@ -7,7 +7,7 @@ export const AMPLICATION_GITHUB_URL =
 export const NPM_DOWNLOADS_API = "https://api.npmjs.org/downloads/point/";
 
 export const emptyPlugin: PluginData = {
-  plugin: {
+  pluginCatalogEntry: {
     id: "",
     name: "",
     description: "",
@@ -20,6 +20,7 @@ export const emptyPlugin: PluginData = {
     categories: "[]",
     resourceTypes: "",
     pluginId: "",
+    generator: [""],
   },
   npm: {
     "dist-tags": {},

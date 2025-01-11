@@ -26,6 +26,8 @@ import { createTypesRelatedFiles } from "./create-types-related-files/create-typ
 import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
 import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
+import { createCustomDtos } from "./resource/dto/custom-types/create-custom-dtos";
+import { createCustomModulesModules } from "./custom-module/create-custom-module";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -49,6 +51,9 @@ async function createServerInternal(
     serverDirectories.baseDirectory
   );
 
+  await context.logger.info("Creating custom DTOs...");
+  const { customDtos, dtoNameToPath } = await createCustomDtos();
+
   await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
 
@@ -56,10 +61,16 @@ async function createServerInternal(
   const packageJsonModule = await createServerPackageJson();
 
   await context.logger.info("Creating server DTOs...");
-  const dtoModules = await createDTOModules(context.DTOs);
+  const dtoModules = await createDTOModules(context.DTOs, dtoNameToPath);
 
   await context.logger.info("Creating resources...");
-  const resourcesModules = await createResourcesModules(entities);
+  const resourcesModules = await createResourcesModules(
+    entities,
+    dtoNameToPath
+  );
+
+  await context.logger.info("Creating custom modules...");
+  const customModulesModules = await createCustomModulesModules(dtoNameToPath);
 
   await context.logger.info("Creating auth module...");
   const authModules = await createAuthModules();
@@ -68,7 +79,7 @@ async function createServerInternal(
   const swagger = await createSwagger();
 
   await context.logger.info("Creating seed script...");
-  const seedModule = await createSeed();
+  const seedModule = await createSeed(dtoNameToPath);
 
   await context.logger.info("Creating message broker...");
   const messageBrokerModules = await createMessageBroker({});
@@ -83,6 +94,7 @@ async function createServerInternal(
   const appModuleInputModules = new ModuleMap(context.logger);
   await appModuleInputModules.mergeMany([
     resourcesModules,
+    customModulesModules,
     staticModules,
     secretsManagerModule,
   ]);
@@ -132,9 +144,11 @@ async function createServerInternal(
   const moduleMap = new ModuleMap(context.logger);
   await moduleMap.mergeMany([
     staticModules,
+    customDtos,
     gitIgnore,
     packageJsonModule,
     resourcesModules,
+    customModulesModules,
     dtoModules,
     swagger,
     appModule,

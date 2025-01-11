@@ -32,8 +32,7 @@ import {
   importContainedIdentifiers,
   getMethods,
 } from "../../../utils/ast";
-import { isToManyRelationField } from "../../../utils/field";
-import { getDTONameToPath } from "../create-dtos";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
@@ -65,7 +64,8 @@ export async function createGrpcControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity
+  entity: Entity,
+  dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { appInfo, DTOs, entityActionsMap } = DsgContext.getInstance;
@@ -149,7 +149,8 @@ export async function createGrpcControllerModules(
       templateMapping,
       controllerBaseId,
       serviceId,
-    }
+      dtoNameToPath,
+    } as CreateEntityGrpcControllerParams
   );
 
   const grpcControllerBaseModule = await pluginWrapper(
@@ -164,7 +165,8 @@ export async function createGrpcControllerModules(
       templateMapping,
       controllerBaseId,
       serviceId,
-    }
+      dtoNameToPath,
+    } as CreateEntityGrpcControllerBaseParams
   );
   if (!grpcControllerModule || !grpcControllerBaseModule) return moduleMap;
 
@@ -228,6 +230,7 @@ async function createGrpcControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  dtoNameToPath,
 }: CreateEntityGrpcControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories, generateGrpc } = DsgContext.getInstance;
@@ -309,7 +312,6 @@ async function createGrpcControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
-  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

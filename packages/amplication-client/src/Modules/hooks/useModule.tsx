@@ -1,8 +1,8 @@
 import { Reference, useMutation, useQuery } from "@apollo/client";
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
-import { DATE_CREATED_FIELD } from "../ModuleList";
+import { DATE_CREATED_FIELD } from "../ModuleNavigationList";
 import {
   CREATE_MODULE,
   DELETE_MODULE,
@@ -44,7 +44,7 @@ const useModule = (moduleId?: string) => {
       const deletedModuleId = data.deleteModule.id;
       cache.modify({
         fields: {
-          Modules(existingModuleRefs, { readField }) {
+          modules(existingModuleRefs, { readField }) {
             return existingModuleRefs.filter(
               (moduleRef: Reference) =>
                 deletedModuleId !== readField("id", moduleRef)
@@ -74,7 +74,7 @@ const useModule = (moduleId?: string) => {
 
       cache.modify({
         fields: {
-          Modules(existingModuleRefs = [], { readField }) {
+          modules(existingModuleRefs = [], { readField }) {
             const newModuleRef = cache.writeFragment({
               data: newModule,
               fragment: MODULE_FIELDS_FRAGMENT,
@@ -95,18 +95,6 @@ const useModule = (moduleId?: string) => {
       });
     },
   });
-
-  let timeout;
-
-  const handleSearchChange = useCallback(
-    (value) => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        setSearchPhrase(value);
-      }, 750);
-    },
-    [setSearchPhrase, timeout]
-  );
 
   const {
     data: findModulesData,
@@ -171,7 +159,7 @@ const useModule = (moduleId?: string) => {
     updateModule,
     updateModuleError,
     updateModuleLoading,
-    handleSearchChange,
+    setSearchPhrase,
   };
 };
 

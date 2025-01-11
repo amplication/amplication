@@ -1,0 +1,16 @@
+@import "../style/index.scss";
+
+.entity-context-menu-button {
+  &__menu {
+    z-index: 1;
+    position: absolute;
+    margin-left: -8px;
+  }
+  &__list-header {
+    margin-left: var(--default-spacing);
+  }
+
+  &__menu-title {
+    color: var(--gray-20) !important;
+  }
+}

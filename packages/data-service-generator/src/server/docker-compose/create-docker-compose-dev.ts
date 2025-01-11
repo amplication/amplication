@@ -7,7 +7,7 @@ import {
 } from "@amplication/code-gen-types";
 import { promises as fs } from "fs";
 import path from "path";
-import { prepareYamlFile } from "../../utils/prepare-yaml-file";
+import { prepareYamlFile } from "@amplication/dsg-utils";
 
 import pluginWrapper from "../../plugin-wrapper";
 import { DOCKER_COMPOSE_DEV_FILE_NAME } from "../constants";

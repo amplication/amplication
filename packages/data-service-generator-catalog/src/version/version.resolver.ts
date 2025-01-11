@@ -8,7 +8,6 @@ import { Version } from "./base/Version";
 import { VersionService } from "./version.service";
 import { Public } from "../decorators/public.decorator";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
-import { boolean } from "@amplication/code-gen-types/schemas";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)

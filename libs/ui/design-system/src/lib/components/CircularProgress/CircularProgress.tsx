@@ -35,6 +35,11 @@ export const CircularProgress = ({
         {...rest}
         className={classNames(className)}
         size={size}
+        classes={{
+          root: `${CLASS_NAME}__root`,
+          circle: `${CLASS_NAME}__circle`,
+          svg: `${CLASS_NAME}__svg`,
+        }}
         sx={{
           color: "inherit",
           ...rest.sx,

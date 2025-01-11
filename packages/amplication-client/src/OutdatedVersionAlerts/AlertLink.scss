@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+.outdated-version-alert-link {
+  display: inline-block;
+  width: 100%;
+  &:hover {
+    .amp-text {
+      color: var(--theme-turquoise);
+      text-decoration: underline;
+    }
+  }
+}

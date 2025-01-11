@@ -1,3 +1,7 @@
+import { Tracing } from '@amplication/util/nestjs/tracing';
+Tracing.init({
+  serviceName: 'amplication-git-push-webhook-service',
+});
 import { AmplicationLogger } from '@amplication/util/nestjs/logging';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

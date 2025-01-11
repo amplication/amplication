@@ -9,6 +9,7 @@ export const GET_PROJECTS = gql`
       useDemoRepo
       demoRepoName
       licensed
+      platformIsPublic
       resources {
         id
         name
@@ -42,8 +43,16 @@ export const CREATE_PROJECT = gql`
 `;
 
 export const GET_PENDING_CHANGES_STATUS = gql`
-  query pendingChanges($projectId: String!) {
-    pendingChanges(where: { project: { id: $projectId } }) {
+  query pendingChanges(
+    $projectId: String!
+    $resourceTypeGroup: EnumResourceTypeGroup!
+  ) {
+    pendingChanges(
+      where: {
+        project: { id: $projectId }
+        resourceTypeGroup: $resourceTypeGroup
+      }
+    ) {
       originId
       action
       originType
@@ -66,6 +75,10 @@ export const GET_PENDING_CHANGES_STATUS = gql`
           displayName
           updatedAt
           blockType
+          parentBlock {
+            id
+            displayName
+          }
         }
       }
       resource {
@@ -73,6 +86,16 @@ export const GET_PENDING_CHANGES_STATUS = gql`
         name
         resourceType
         licensed
+        blueprint {
+          id
+          name
+          color
+        }
+        version {
+          id
+          version
+          message
+        }
       }
     }
   }

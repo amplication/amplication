@@ -1,30 +1,33 @@
-import GitProviderConnection from "./GitProviderConnection";
+import { Dialog } from "@amplication/ui/design-system";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
+import { useCallback, useState } from "react";
 import {
   AuthorizeResourceWithGitResult,
   EnumGitProvider,
 } from "../../../models";
 import { useTracking } from "../../../util/analytics";
-import "./GitProviderConnectionList.scss";
-import { useCallback } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
-import { gql, useMutation } from "@apollo/client";
-import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "@amplication/util-billing-types";
+import GitProviderConnection from "./GitProviderConnection";
+import GitProviderConnectionAzureOrganizationForm from "./GitProviderConnectionAzureOrganizationForm";
+import "./GitProviderConnectionList.scss";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
 };
 
 // eslint-disable-next-line
-let triggerOnDone = () => {};
+let triggerOnDone = (organizationId: string) => {};
 // eslint-disable-next-line
-let triggerAuthFailed = () => {};
+let triggerAuthFailed = (errorMessage?: string) => {};
 
 export type Props = {
-  onDone: () => void;
+  onDone: (organizationId: string) => void;
   setPopupFailed: (status: boolean) => void;
   onProviderSelect?: (data: any) => any;
   onSelectRepository?: () => void;
+  onError?: (error: string) => void;
 };
 
 const CLASS_NAME = "git-provider-connection-list";
@@ -34,6 +37,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   setPopupFailed,
   onProviderSelect,
   onSelectRepository,
+  onError,
 }) => {
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -44,6 +48,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const showGitLab = stigg.getBooleanEntitlement({
     featureId: BillingFeature.GitLab,
   }).hasAccess;
+  const showAzureDevops = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.AzureDevops,
+  }).hasAccess;
+
+  const [showAzureOrgName, setShowAzureOrgName] = useState(false);
 
   const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
     onCompleted: (data) => {
@@ -51,15 +60,20 @@ export const GitProviderConnectionList: React.FC<Props> = ({
     },
   });
 
-  triggerOnDone = () => {
-    onDone();
+  triggerOnDone = (organizationId: string) => {
+    onDone(organizationId);
   };
-  triggerAuthFailed = () => {
-    setPopupFailed(true);
+  triggerAuthFailed = (errorMessage?: string) => {
+    //if an error was returned from the other window, show the error
+    if (errorMessage) {
+      onError && onError(errorMessage);
+    } else {
+      setPopupFailed(true);
+    }
   };
 
   const handleAddProvider = useCallback(
-    (provider: EnumGitProvider) => {
+    (provider: EnumGitProvider, state?: string) => {
       trackEvent({
         eventName: AnalyticsEventNames.GitProviderConnectClick,
         eventOriginLocation: "git-provider-connection-list",
@@ -68,16 +82,17 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       authWithGit({
         variables: {
           gitProvider: provider,
+          state,
         },
-      })
-        .then(() => {
-          onSelectRepository();
-        })
-        .catch(console.error);
+      }).catch(console.error);
       onProviderSelect && onProviderSelect(provider);
     },
     [authWithGit, trackEvent, onProviderSelect]
   );
+
+  const handleAzureDevops = useCallback(() => {
+    setShowAzureOrgName(true);
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
@@ -87,17 +102,22 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         disabled={false}
       />
       <GitProviderConnection
-        provider={EnumGitProvider.GitLab}
-        onSyncNewGitOrganizationClick={handleAddProvider}
-        billingFeature={BillingFeature.GitLab}
-        disabled={!showGitLab}
-        comingSoon={true}
-      />
-      <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
         billingFeature={BillingFeature.Bitbucket}
         disabled={!showBitbucketConnect}
+      />
+      <GitProviderConnection
+        provider={EnumGitProvider.GitLab}
+        onSyncNewGitOrganizationClick={handleAddProvider}
+        billingFeature={BillingFeature.GitLab}
+        disabled={!showGitLab}
+      />
+      <GitProviderConnection
+        provider={EnumGitProvider.AzureDevOps}
+        onSyncNewGitOrganizationClick={handleAzureDevops}
+        billingFeature={BillingFeature.AzureDevops}
+        disabled={!showAzureDevops}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
@@ -106,15 +126,31 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         }}
         billingFeature={BillingFeature.AwsCodeCommit}
         disabled={true}
-        comingSoon={true}
       />
+      <Dialog
+        isOpen={showAzureOrgName}
+        title="Connect to Azure DevOps"
+        onDismiss={() => setShowAzureOrgName(false)}
+      >
+        <GitProviderConnectionAzureOrganizationForm
+          onSubmit={(values) => {
+            setShowAzureOrgName(false);
+            handleAddProvider(EnumGitProvider.AzureDevOps, values.organization);
+          }}
+        />
+      </Dialog>
     </div>
   );
 };
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
-    getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
+  mutation getGitResourceInstallationUrl(
+    $gitProvider: EnumGitProvider!
+    $state: String
+  ) {
+    getGitResourceInstallationUrl(
+      data: { gitProvider: $gitProvider, state: $state }
+    ) {
       url
     }
   }
@@ -123,7 +159,10 @@ const START_AUTH_APP_WITH_GITHUB = gql`
 const receiveMessage = (event: any) => {
   const { data } = event;
   if (data.completed) {
-    triggerOnDone();
+    triggerOnDone(data.id);
+  }
+  if (data.failed) {
+    triggerAuthFailed(data.errorMessage);
   }
 };
 

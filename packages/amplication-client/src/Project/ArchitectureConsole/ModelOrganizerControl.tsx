@@ -1,6 +1,7 @@
 import {
   Button,
   EnumButtonStyle,
+  EnumIconPosition,
   Tooltip,
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
@@ -24,6 +25,7 @@ export default function ModelOrganizerControl({
         <Button
           icon={icon}
           iconSize="small"
+          iconPosition={EnumIconPosition.None}
           buttonStyle={EnumButtonStyle.Text}
           onClick={onClick}
         ></Button>

@@ -16,6 +16,7 @@ import { DeleteModule } from "./DeleteModule";
 import "./Module.scss";
 import ModuleForm from "./ModuleForm";
 import useModule from "./hooks/useModule";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 const Module = () => {
   const match = useRouteMatch<{
@@ -24,14 +25,10 @@ const Module = () => {
   }>("/:workspace/:project/:resource/modules/:module");
 
   const { module: moduleId } = match?.params ?? {};
-  const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
-    resetPendingChangesIndicator,
-    setResetPendingChangesIndicator,
-  } = useContext(AppContext);
+  const { resetPendingChangesIndicator, setResetPendingChangesIndicator } =
+    useContext(AppContext);
   const history = useHistory();
+  const { baseUrl } = useResourceBaseUrl();
 
   const {
     getModuleData: data,
@@ -47,18 +44,20 @@ const Module = () => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const handleSubmit = useCallback(
     (data) => {
+      const { name, description } = data;
       updateModule({
         variables: {
           where: {
             id: moduleId,
           },
           data: {
-            ...data,
-            displayName: data.name,
+            name,
+            displayName: name,
+            description,
           },
         },
       }).catch(console.error);
@@ -71,10 +70,8 @@ const Module = () => {
   const errorMessage = formatError(error) || formatError(updateModuleError);
 
   const handleDeleteModule = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
-    );
-  }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
+    history.push(`${baseUrl}/modules`);
+  }, [history, baseUrl]);
 
   const isEntityModule =
     data?.module && !isEmpty(data.module.entityId) ? true : false;
@@ -96,9 +93,7 @@ const Module = () => {
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This modules was created automatically with the{" "}
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data?.module.entityId}`}
-            >
+            <Link to={`${baseUrl}/entities/${data?.module.entityId}`}>
               <Text
                 textStyle={EnumTextStyle.Description}
                 textColor={EnumTextColor.White}

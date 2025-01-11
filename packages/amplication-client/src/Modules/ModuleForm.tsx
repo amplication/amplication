@@ -64,6 +64,7 @@ const ModuleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
           name="description"
           label="Description"
           textarea
+          textareaSize="small"
           rows={3}
           disabled={disabled}
         />

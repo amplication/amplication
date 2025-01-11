@@ -18,6 +18,24 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { kebabCase } from "lodash";
+import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
+import { EnumModuleActionGqlOperation } from "./dto/EnumModuleActionGqlOperation";
+import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { validateCustomActionsEntitlement } from "../block/block.util";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
+
+const UNSUPPORTED_TYPES = [
+  EnumModuleDtoPropertyType.Null,
+  EnumModuleDtoPropertyType.Undefined,
+  EnumModuleDtoPropertyType.Json,
+];
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -29,11 +47,62 @@ export class ModuleActionService extends BlockTypeService<
 > {
   blockType = EnumBlockType.ModuleAction;
 
+  customActionsEnabled: boolean;
+
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
+    private readonly prisma: PrismaService,
+    private configService: ConfigService,
+    private readonly moduleDtoService: ModuleDtoService
   ) {
-    super(blockService);
+    super(blockService, logger);
+
+    this.customActionsEnabled = Boolean(
+      this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
+        "true"
+    );
+  }
+
+  async findMany(
+    args: FindManyModuleActionArgs,
+    user?: User
+  ): Promise<ModuleAction[]> {
+    const { includeCustomActions, includeDefaultActions, ...rest } =
+      args.where || {};
+
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...rest,
+      },
+    };
+
+    //when undefined the default value is true
+    const includeCustomActionsBoolean = includeCustomActions !== false;
+    const includeDefaultActionsBoolean = includeDefaultActions !== false;
+
+    if (includeCustomActionsBoolean && includeDefaultActionsBoolean) {
+      return super.findMany(prismaArgs);
+    } else if (includeCustomActionsBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["actionType"],
+          equals: EnumModuleActionType.Custom,
+        },
+      ]);
+    } else if (includeDefaultActionsBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["actionType"],
+          not: EnumModuleActionType.Custom,
+        },
+      ]);
+    } else {
+      return [];
+    }
   }
 
   validateModuleActionName(moduleActionName: string): void {
@@ -47,15 +116,50 @@ export class ModuleActionService extends BlockTypeService<
     args: CreateModuleActionArgs,
     user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
+
     this.validateModuleActionName(args.data.name);
+
+    if (!this.customActionsEnabled) {
+      return null;
+    }
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        actionParameters: args.data,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserAction,
+    });
 
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          enabled: true,
           actionType: EnumModuleActionType.Custom,
+          enabled: true,
+          gqlOperation: EnumModuleActionGqlOperation.Query,
+          restVerb: EnumModuleActionRestVerb.Get,
+          path: `/:id/${kebabCase(args.data.name)}`,
+          outputType: {
+            type: EnumModuleDtoPropertyType.String,
+            dtoId: "",
+            isArray: false,
+          },
+          inputType: {
+            type: EnumModuleDtoPropertyType.String,
+            dtoId: "",
+            isArray: false,
+          },
         },
       },
       user
@@ -66,6 +170,11 @@ export class ModuleActionService extends BlockTypeService<
     args: UpdateModuleActionArgs,
     user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
     //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleActionName(args.data.name);
 
@@ -80,12 +189,49 @@ export class ModuleActionService extends BlockTypeService<
     }
 
     if (existingAction.actionType !== EnumModuleActionType.Custom) {
-      if (existingAction.name !== args.data.name) {
+      if (
+        existingAction.name !== args.data.name &&
+        args.data.name !== undefined
+      ) {
         throw new AmplicationError(
           "Cannot update the name of a default Action for entity."
         );
       }
+      if (args.data.inputType !== undefined) {
+        throw new AmplicationError(
+          "Cannot update the input type of a default Action for entity."
+        );
+      }
+
+      if (args.data.outputType !== undefined) {
+        throw new AmplicationError(
+          "Cannot update the output type of a default Action for entity."
+        );
+      }
+    } else {
+      if (args.data.inputType && args.data.outputType)
+        await this.moduleDtoService.validateTypes(
+          existingAction.resourceId,
+          [args.data.inputType, args.data.outputType],
+          UNSUPPORTED_TYPES
+        );
     }
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        actionParameters: args.data,
+        operation: "edit",
+        planType: subscription.subscriptionPlan,
+      },
+      event:
+        existingAction.actionType === EnumModuleActionType.Custom
+          ? EnumEventType.InteractUserAction
+          : EnumEventType.InteractAmplicationAction,
+    });
 
     return super.update(args, user);
   }
@@ -94,6 +240,11 @@ export class ModuleActionService extends BlockTypeService<
     args: DeleteModuleActionArgs,
     @UserEntity() user: User
   ): Promise<ModuleAction> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
     const moduleAction = await super.findOne(args);
 
     if (moduleAction?.actionType !== EnumModuleActionType.Custom) {
@@ -101,6 +252,19 @@ export class ModuleActionService extends BlockTypeService<
         "Cannot delete a default Action for entity. To delete it, you must delete the entity"
       );
     }
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: moduleAction.name,
+        operation: "delete",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserAction,
+    });
     return super.delete(args, user);
   }
 
@@ -182,6 +346,8 @@ export class ModuleActionService extends BlockTypeService<
                 gqlOperation: defaultActions[action.actionType].gqlOperation,
                 restVerb: defaultActions[action.actionType].restVerb,
                 path: defaultActions[action.actionType].path,
+                inputType: defaultActions[action.actionType].inputType,
+                outputType: defaultActions[action.actionType].outputType,
               },
             },
             user
@@ -343,6 +509,8 @@ export class ModuleActionService extends BlockTypeService<
               gqlOperation: defaultActions[action].gqlOperation,
               restVerb: defaultActions[action].restVerb,
               path: defaultActions[action].path,
+              inputType: defaultActions[action].inputType,
+              outputType: defaultActions[action].outputType,
             },
           },
           user

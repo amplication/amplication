@@ -10,7 +10,23 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const usePendingChanges = (currentProject: models.Project | undefined) => {
+export type PendingChangesType = keyof typeof models.EnumBlockType | "Entity";
+
+export type PendingChangesByType = {
+  type: PendingChangesType;
+
+  typeChanges: PendingChangeItem[];
+};
+
+export type PendingChangesByResourceAndType = {
+  resource: models.Resource;
+  changes: PendingChangesByType[];
+};
+
+const usePendingChanges = (
+  currentProject: models.Project | undefined,
+  resourceTypeGroup: models.EnumResourceTypeGroup
+) => {
   const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
@@ -26,6 +42,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     skip: !currentProject,
     variables: {
       projectId: currentProject?.id,
+      resourceTypeGroup: resourceTypeGroup,
     },
   });
 
@@ -105,6 +122,33 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     });
   }, [pendingChanges]);
 
+  const pendingChangesByResourceAndType: PendingChangesByResourceAndType[] =
+    useMemo(() => {
+      return pendingChangesByResource.map((resourceChanges) => {
+        const groupedChangesByType = groupBy(
+          resourceChanges.changes,
+          (change) =>
+            change.originType === models.EnumPendingChangeOriginType.Block
+              ? (change.origin as models.Block).blockType
+              : "Entity"
+        );
+        const changesByType = Object.entries(groupedChangesByType).map(
+          ([type, typeChanges]) =>
+            ({
+              type,
+              typeChanges: typeChanges.sort((a, b) =>
+                a.origin.displayName.localeCompare(b.origin.displayName)
+              ),
+            } as PendingChangesByType)
+        );
+
+        return {
+          resource: resourceChanges.resource,
+          changes: changesByType,
+        };
+      });
+    }, [pendingChangesByResource]);
+
   return {
     pendingChanges,
     commitRunning,
@@ -120,6 +164,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     pendingChangesByResource,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
+    pendingChangesByResourceAndType,
   };
 };
 

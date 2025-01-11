@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #22273c;
+  background: var(--gray-full);
 
   &__layout {
     height: 60px;
@@ -32,6 +32,14 @@
     margin-top: 10px;
   }
 
+  &__faq {
+    background-color: var(--gray-90);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--double-spacing);
+  }
   &__contact {
     display: flex;
     flex-direction: column;
@@ -39,7 +47,7 @@
     align-self: stretch;
     padding: var(--header-spacing) 0;
     gap: var(--double-spacing);
-    background: #15192c;
+    background: var(--gray-full);
 
     &__content {
       display: flex;
@@ -92,208 +100,6 @@
       size: 14px;
       text-decoration-line: underline;
     }
-  }
-
-  .stigg-paywall-plans-layout {
-    width: 924px;
-  }
-
-  .stigg-plan-header {
-    font-weight: 700;
-    margin-bottom: 4px;
-    font-size: 24px;
-    line-height: 36px;
-    padding-bottom: 0;
-  }
-
-  .stigg-paywall-plan-button-layout {
-    text-align: center;
-    position: absolute;
-    bottom: 0px;
-    left: 0;
-  }
-  .stigg-paywall-plan-button {
-    background-color: #7950ed;
-    border-radius: 4px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 5px 12px;
-    height: 28px;
-    min-height: auto;
-  }
-
-  .stigg-paywall-plan-button-text {
-    color: white;
-    font-family: Poppins, sans-serif;
-    font-size: 12px;
-  }
-
-  .stigg-plan-offering-container {
-    border-radius: 8px;
-    border: 1px solid #373d57;
-    max-width: 100%;
-    min-width: 1px;
-    padding-top: 16px;
-    box-sizing: content-box;
-    flex: 1;
-  }
-
-  .stigg-plan-offering-container * {
-    box-sizing: content-box;
-  }
-  .stigg-plan-amplication-free {
-    border-top: 10px solid #a787ff;
-  }
-
-  .stigg-plan-amplication-pro {
-    border-top: 10px solid #20a4f3;
-  }
-
-  .stigg-plan-amplication-enterprise {
-    border-top: 10px solid #31c587;
-  }
-
-  .stigg-header-wrapper {
-    margin: 0 -24px;
-    padding: 0 24px 24px 24px;
-    border-bottom: 1px solid #373d57;
-
-    > div:first-of-type:not(.stigg-paywall-plan-button-layout) {
-      height: 0px !important;
-    }
-  }
-
-  .stigg-plan-amplication-free.stigg-current-plan .stigg-plan-header::before {
-    color: #a787ff;
-  }
-
-  .stigg-plan-amplication-pro.stigg-current-plan .stigg-plan-header::before {
-    color: #20a4f3;
-  }
-
-  .stigg-plan-amplication-enterprise.stigg-current-plan
-    .stigg-plan-header::before {
-    color: #31c587;
-  }
-
-  .stigg-plan-offering-container .stigg-plan-header::before {
-    display: block;
-    content: "";
-    height: 18px;
-    margin-bottom: 8px;
-  }
-
-  .stigg-current-plan {
-    .stigg-plan-header::before {
-      display: block;
-      content: "Current plan";
-      font-weight: 300;
-      font-size: 12px;
-      line-height: 18px;
-      color: #a787ff;
-      margin-left: -4px;
-    }
-
-    &:not(.stigg-plan-amplication-enterprise) .stigg-paywall-plan-button {
-      visibility: hidden;
-    }
-  }
-
-  .stigg-price-text {
-    order: 1;
-    font-size: 40px;
-    margin-top: 4px !important;
-  }
-
-  .stigg-price-billing-period-text {
-    order: 2;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 15px;
-    color: #a3a8b8;
-  }
-
-  .stigg-price-billing-period-text::first-letter {
-    text-transform: uppercase;
-  }
-
-  .stigg-price-text span[class*="PriceUnitSpan"] {
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 27px;
-    color: #a3a8b8;
-    margin-left: 0px;
-  }
-
-  .stigg-plan-header-divider {
-    display: none;
-  }
-
-  .stigg-plan-entitlements-container {
-    gap: 2px;
-    width: 100%;
-    margin: 0 -24px 60px -24px;
-    padding: 0 24px;
-  }
-
-  .stigg-plan-description,
-  .stigg-plan-entitlements-title,
-  .stigg-entitlement-name {
-    color: white;
-    font-family: Poppins, sans-serif;
-    line-height: 18px;
-  }
-
-  .stigg-plan-entitlements-title {
-    font-size: 14px;
-    line-height: 22px;
-    font-weight: 500;
-    border-bottom: 1px solid #373d57;
-    margin: 0 -24px 12px -24px;
-    padding: 12px 24px;
-  }
-
-  .stigg-plan-description,
-  .stigg-entitlement-name {
-    font-weight: 300;
-  }
-
-  .stigg-plan-amplication-free
-    .stigg-entitlement-row-container:nth-child(-n + 8)
-    .stigg-entitlement-row-icon {
-    display: block;
-  }
-
-  .stigg-plan-amplication-free .stigg-entitlement-row-container:nth-child(8) {
-    border-bottom: 1px solid #373d57;
-    margin: 0 -24px 12px -24px;
-    padding: 0 24px 12px 24px;
-  }
-
-  .stigg-entitlement-row-container:last-child {
-    border-top: 1px solid #373d57;
-    border-bottom: 1px solid #373d57;
-    margin: 12px -24px 12px -24px;
-    padding: 12px 24px 12px 24px;
-  }
-
-  .stigg-entitlement-row-icon {
-    display: none;
-    transform: scale(0.55);
-    margin-right: 8px;
-  }
-
-  .stigg-plan-amplication-free .stigg-plan-entitlements-title {
-    font-size: 12px;
-    line-height: 18px;
-    font-weight: 400;
-    border-bottom: none;
-    padding-bottom: 4px;
-    margin-bottom: 0;
-  }
-
-  .stigg-entitlement-row-icon path {
-    fill: #a787ff;
   }
 }
 

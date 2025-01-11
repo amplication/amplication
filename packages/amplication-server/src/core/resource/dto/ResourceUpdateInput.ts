@@ -1,4 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql";
+import { GraphQLJSONObject } from "graphql-type-json";
+import type { JsonValue } from "type-fest";
 
 @InputType({
   isAbstract: true,
@@ -14,6 +16,8 @@ export class ResourceUpdateInput {
   })
   description?: string | null;
 
-  @Field(() => Boolean, { nullable: true })
-  gitRepositoryOverride?: boolean | null;
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  properties?: JsonValue | null;
 }

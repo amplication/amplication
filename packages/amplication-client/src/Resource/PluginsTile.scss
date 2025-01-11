@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+$description-height: 24px;
+
+.plugins-tile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--default-spacing);
+  margin-bottom: var(--default-spacing);
+
+  &__description {
+    height: $description-height;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.workspaces-layout__main_content--xl {
+  .plugins-tile {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

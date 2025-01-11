@@ -5,12 +5,8 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl-types";
-import { createEnumName } from "../../../prisma/create-prisma-schema-fields";
 import { Entity, EntityField } from "@amplication/code-gen-types";
-import {
-  isRelationField,
-  isToManyRelationField,
-} from "../../../../utils/field";
+import { isRelationField, isToManyRelationField } from "@amplication/dsg-utils";
 import {
   BOOLEAN_ID,
   DATE_ID,
@@ -29,6 +25,7 @@ import { createUpdateManyWithoutInputID } from "../nested-input-dto/update-neste
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { FIELD_ID } from "../nestjs-graphql.util";
 import { createEntityListRelationFilterID } from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { createEnumName } from "@amplication/dsg-utils";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,

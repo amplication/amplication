@@ -2,7 +2,7 @@ import { AppInfo } from "@amplication/code-gen-types";
 import {
   CodeGeneratorVersionStrategy,
   EnumAuthProviderType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 
 export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".ts",

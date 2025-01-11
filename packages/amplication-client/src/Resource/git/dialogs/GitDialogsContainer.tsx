@@ -7,10 +7,9 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
-import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
-import "./GitDialogsContainer.scss";
+import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import { useCallback } from "react";
-import { PROVIDERS_DISPLAY_NAME } from "../../constants";
+import { GIT_PROVIDER_NAME } from "../constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -53,7 +52,7 @@ export default function GitDialogsContainer({
     openCreateNewRepo();
   }, [closeSelectRepoDialog, openCreateNewRepo]);
 
-  const providerDisplayName = PROVIDERS_DISPLAY_NAME[gitProvider];
+  const providerDisplayName = GIT_PROVIDER_NAME[gitProvider];
 
   return (
     <div>
@@ -68,6 +67,7 @@ export default function GitDialogsContainer({
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
           openCreateNewRepo={handleCreateNewRepoClick}
+          srcType={src}
         />
       </Dialog>
       <Dialog
@@ -79,7 +79,6 @@ export default function GitDialogsContainer({
         Please make sure that you allow popup windows in the browser
       </Dialog>
       <Dialog
-        className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
         onDismiss={onGitCreateRepositoryClose}

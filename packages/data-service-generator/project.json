@@ -96,6 +96,18 @@
         "envFile": "packages/data-service-generator/.env"
       }
     },
+    "generate-local-code-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf ./.amplication/generate-local-code/generated",
+          "docker run --rm --env-file=packages/data-service-generator/.env --env BUILD_OUTPUT_PATH=/generate-local-code/generated --env BUILD_SPEC_PATH=/generate-local-code/input.json -v $(pwd)/.amplication/generate-local-code:/generate-local-code amplication/data-service-generator:latest node ./src/main.js"
+        ],
+        "parallel": false,
+        "envFile": "packages/data-service-generator/.env"
+      },
+      "dependsOn": ["package:container"]
+    },
     "update-snapshot": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
@@ -136,6 +148,9 @@
       "configurations": {
         "production": {
           "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        },
+        "dev": {
+          "file": "packages/data-service-generator/Dockerfile.dev"
         }
       }
     }

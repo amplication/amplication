@@ -11,4 +11,7 @@ export class Value {
   @IsUrl()
   @IsOptional()
   url?: string;
+
+  @IsString()
+  diffStat!: string;
 }

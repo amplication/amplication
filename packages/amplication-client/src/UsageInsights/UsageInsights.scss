@@ -1,0 +1,58 @@
+@import "../style/index.scss";
+
+$chart-side-width: 250px;
+
+.usage-insights {
+  flex: 1;
+
+  &__chart-container {
+    flex: 1;
+  }
+  &__chart-side {
+    min-width: $chart-side-width;
+  }
+
+  &__tooltip {
+    align-self: flex-end;
+  }
+
+  &__toggle {
+    white-space: nowrap;
+
+    .multi-state-toggle__states__state {
+      padding-right: var(--default-spacing);
+      padding-left: var(--default-spacing);
+    }
+  }
+  &__chart {
+    margin-bottom: 0;
+    width: 100%;
+    border-color: var(--gray-70);
+  }
+
+  .MuiChartsAxis-label {
+    fill: var(--gray-base) !important;
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+      "Helvetica Neue", sans-serif !important;
+  }
+
+  .MuiChartsAxis-tickLabel {
+    fill: var(--gray-base) !important;
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+      "Helvetica Neue", sans-serif !important;
+  }
+  .MuiChartsAxis-tick {
+    stroke: var(--gray-base) !important;
+  }
+  .MuiChartsAxis-line {
+    stroke: var(--gray-base) !important;
+  }
+  .MuiChartsLegend-series {
+    text {
+      font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
+        "Helvetica Neue", sans-serif !important;
+      fill: var(--gray-10) !important;
+      font-size: var(--tag-font-size) !important;
+    }
+  }
+}

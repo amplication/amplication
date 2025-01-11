@@ -8,24 +8,16 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useContext } from "react";
+import React from "react";
 import { IconType } from "../Components/FeatureIndicatorContainer";
-import { AppContext } from "../context/appContext";
-import { useQuery } from "@apollo/client";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
+import { useContactUs } from "../Workspaces/hooks/useContactUs";
 
 type Props = {
-  icon: IconType;
-  handleSearchChange: (value: string) => void;
   className: string;
 };
 
 export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
-  const { currentWorkspace } = useContext(AppContext);
-
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const { contactUsLink } = useContactUs({});
 
   return (
     <FlexItem
@@ -61,10 +53,10 @@ export const ModuleActionsDisabled: React.FC<Props> = ({ className }) => {
         textColor={EnumTextColor.Black20}
       >
         and customization as a unified source of truth.{" "}
-        {data && (
+        {contactUsLink && (
           <a
             className={`${className}__addon-section__contact-us`}
-            href={data.contactUsLink}
+            href={contactUsLink}
             target="blank"
           >
             <Text>{"Contact us"}</Text>{" "}

@@ -22,6 +22,6 @@
     margin-bottom: var(--default-spacing);
     overflow-x: hidden;
     overflow-y: auto;
-    @include scrollbars(16px, var(--gray-30), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
   }
 }

@@ -1,0 +1,9 @@
+@import "../style/index.scss";
+
+.workspaces-layout__main_content--xl {
+  .workspace-overview {
+    &__content {
+      flex-direction: row;
+    }
+  }
+}

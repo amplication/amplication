@@ -1,0 +1,14 @@
+{
+  "name": "getServiceEntities",
+  "description": "get a list of entities in a service",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "serviceId": {
+        "type": "string",
+        "description": "The ID of the service"
+      }
+    },
+    "required": ["serviceId"]
+  }
+}

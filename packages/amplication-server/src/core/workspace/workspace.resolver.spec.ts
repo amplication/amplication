@@ -47,6 +47,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   name: EXAMPLE_WORKSPACE_NAME,
   createdAt: timeNow,
   updatedAt: timeNow,
+  allowLLMFeatures: true,
 };
 
 const EXAMPLE_INVITATION: Invitation = {
@@ -82,6 +83,7 @@ const GET_WORKSPACE_QUERY = gql`
     workspace(where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -104,22 +106,12 @@ const GET_PROJECT_QUERY = gql`
   }
 `;
 
-const DELETE_WORKSPACE_MUTATION = gql`
-  mutation ($id: String!) {
-    deleteWorkspace(where: { id: $id }) {
-      id
-      name
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
 const UPDATE_WORKSPACE_MUTATION = gql`
   mutation ($id: String!) {
     updateWorkspace(data: {}, where: { id: $id }) {
       id
       name
+      allowLLMFeatures
       createdAt
       updatedAt
     }
@@ -138,7 +130,6 @@ const INVITE_USER_MUTATION = gql`
 `;
 
 const workspaceServiceGetWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
-const workspaceServiceDeleteWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceUpdateWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceInviteUserMock = jest.fn(() => EXAMPLE_INVITATION);
 const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
@@ -170,7 +161,6 @@ describe("WorkspaceResolver", () => {
           provide: WorkspaceService,
           useClass: jest.fn(() => ({
             getWorkspace: workspaceServiceGetWorkspaceMock,
-            deleteWorkspace: workspaceServiceDeleteWorkspaceMock,
             updateWorkspace: workspaceServiceUpdateWorkspaceMock,
             inviteUser: workspaceServiceInviteUserMock,
           })),
@@ -272,25 +262,6 @@ describe("WorkspaceResolver", () => {
     expect(projectServiceProjectsMock).toBeCalledTimes(1);
     expect(projectServiceProjectsMock).toBeCalledWith({
       where: { workspace: { id: EXAMPLE_WORKSPACE_ID } },
-    });
-  });
-
-  it("should delete an workspace", async () => {
-    const res = await apolloClient.executeOperation({
-      query: DELETE_WORKSPACE_MUTATION,
-      variables: { id: EXAMPLE_WORKSPACE_ID },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      deleteWorkspace: {
-        ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString(),
-      },
-    });
-    expect(workspaceServiceDeleteWorkspaceMock).toBeCalledTimes(1);
-    expect(workspaceServiceDeleteWorkspaceMock).toBeCalledWith({
-      where: { id: EXAMPLE_WORKSPACE_ID },
     });
   });
 

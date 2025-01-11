@@ -24,6 +24,8 @@ export enum EnumTextColor {
   ThemeRed = "theme-red",
   ThemeOrange = "theme-orange",
   Primary = "primary",
+  ThemePink = "theme-pink",
+  Secondary = "secondary",
 }
 
 export enum EnumTextAlign {
@@ -47,6 +49,7 @@ export type Props = {
   children: ReactNode;
   textAlign?: EnumTextAlign;
   singleLineEllipsis?: boolean;
+  noWrap?: boolean;
 };
 
 const STYLE_TO_TAG: { [key: string]: string } = {
@@ -71,6 +74,7 @@ export function Text({
   children,
   textAlign = EnumTextAlign.Left,
   underline = false,
+  noWrap = false,
   singleLineEllipsis = false,
 }: Props) {
   const styleClassName = `${CLASS_NAME}--${textStyle}`;
@@ -91,7 +95,7 @@ export function Text({
         ...colorStyle,
         textAlign,
         textDecoration: underline ? "underline" : undefined,
-        whiteSpace: singleLineEllipsis ? "nowrap" : undefined,
+        whiteSpace: singleLineEllipsis || noWrap ? "nowrap" : undefined,
         overflow: singleLineEllipsis ? "hidden" : undefined,
         textOverflow: singleLineEllipsis ? "ellipsis" : undefined,
         width: singleLineEllipsis ? "100%" : undefined,

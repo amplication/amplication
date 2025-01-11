@@ -1,0 +1,35 @@
+@import "../style/index.scss";
+
+$feature-tag-height: 20px;
+$feature-tag-radius: $feature-tag-height/2;
+$max-width: 800px;
+
+.premium-feature-header {
+  margin-bottom: var(--triple-spacing);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+
+  &__content {
+    max-width: $max-width;
+  }
+
+  &__feature-tag {
+    box-sizing: border-box;
+    height: $feature-tag-height;
+    display: flex;
+    align-items: center;
+    gap: var(--icon-spacing);
+    padding: var(--icon-spacing) var(--default-spacing);
+    background-color: var(--theme-turquoise);
+    border-radius: $feature-tag-radius;
+  }
+
+  &__contact-us {
+    & span {
+      color: var(--theme-turquoise);
+    }
+  }
+}

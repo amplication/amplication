@@ -14,6 +14,7 @@ import {
   FlexItem,
   HorizontalRule,
   Panel,
+  Snackbar,
   TabContentTitle,
 } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
@@ -27,6 +28,8 @@ import * as models from "../models";
 import { EnumSubscriptionPlan } from "../models";
 import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
+import "./WorkspaceOverview.scss";
+import { formatError } from "../util/error";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -38,10 +41,17 @@ const SUBSCRIPTION_TO_CHIP_STYLE: {
   [EnumSubscriptionPlan.Pro]: EnumChipStyle.ThemeBlue,
   [EnumSubscriptionPlan.Enterprise]: EnumChipStyle.ThemeGreen,
   [EnumSubscriptionPlan.PreviewBreakTheMonolith]: EnumChipStyle.ThemeOrange,
+  [EnumSubscriptionPlan.Essential]: EnumChipStyle.ThemeBlue,
+  [EnumSubscriptionPlan.Team]: EnumChipStyle.ThemeBlue,
 };
 
 export const WorkspaceOverview = () => {
-  const { currentWorkspace, projectsList } = useContext(AppContext);
+  const {
+    currentWorkspace,
+    projectsList,
+    projectListError,
+    projectListLoading,
+  } = useContext(AppContext);
 
   const { data: membersData } = useQuery<MemberListData>(GET_WORKSPACE_MEMBERS);
 
@@ -53,12 +63,14 @@ export const WorkspaceOverview = () => {
     );
   }, [membersData]);
 
+  const errorMessage = formatError(projectListError);
+
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
-        start={<TabContentTitle title="Workspace" />}
-        end={<AddNewProject />}
+        start={<TabContentTitle title="Workspace Projects" />}
+        end={<AddNewProject projectsLength={projectsList.length} />}
         margin={EnumFlexItemMargin.None}
       />
       <HorizontalRule doubleSpacing />
@@ -101,7 +113,7 @@ export const WorkspaceOverview = () => {
                 icon="users"
                 buttonStyle={EnumButtonStyle.Text}
                 as={Link}
-                to={`/${currentWorkspace.id}/members`}
+                to={`/${currentWorkspace.id}/settings/members`}
               >
                 {membersCount} members
               </Button>
@@ -109,7 +121,13 @@ export const WorkspaceOverview = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
       </Panel>
-      <ProjectList projects={projectsList} workspaceId={currentWorkspace.id} />
+
+      <ProjectList
+        projects={projectsList}
+        workspaceId={currentWorkspace.id}
+        loading={projectListLoading}
+      />
+      <Snackbar open={Boolean(projectListError)} message={errorMessage} />
     </PageContent>
   );
 };

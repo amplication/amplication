@@ -24,6 +24,9 @@
   --image-import-prisma-schema: url("../assets/images/mono/import-prisma-schema-dark.svg");
   --image-import-prisma: url("../assets/images/mono/import-prisma-dark.svg");
 
+  --image-dotnet: url("../assets/images/tech-stack/dotnet.svg");
+  --image-nodejs: url("../assets/images/tech-stack/nodejs.svg");
+
   --diffViewerBackground: var(--gray-full);
   --diffViewerColor: var(--gray-base);
   --addedBackground: #1b3b3e;
@@ -49,6 +52,4 @@
   --diffViewerTitleColor: var(--gray-base);
   --diffViewerTitleBorderColor: var(--gray-full);
   --screenResolutionMessageColor: var(--gray-base);
-
-  --feature-indicator: #53dbee;
 }

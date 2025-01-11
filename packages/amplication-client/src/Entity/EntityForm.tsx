@@ -40,7 +40,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name", "displayName", "pluralDisplayName"],
@@ -60,9 +60,9 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
-      name: AT_LEAST_TWO_CHARARCTERS,
-      pluralDisplayName: AT_LEAST_TWO_CHARARCTERS,
+      displayName: AT_LEAST_TWO_CHARACTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
+      pluralDisplayName: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
@@ -73,7 +73,7 @@ const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
 const CLASS_NAME = "entity-form";
 
 const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
-  const { resourceSettings } = useResource(resourceId);
+  const { serviceSettings } = useResource(resourceId);
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -111,7 +111,7 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                 <NameField
                   name="name"
                   disabled={
-                    resourceSettings?.serviceSettings?.authEntityName ===
+                    serviceSettings?.serviceSettings?.authEntityName ===
                     entity?.name
                   }
                   capitalized
@@ -123,6 +123,7 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                 <TextField
                   autoComplete="off"
                   textarea
+                  textareaSize="small"
                   rows={3}
                   name="description"
                   label="Description"

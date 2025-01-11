@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+//these queries are automatically generated as hooks by codegen
+//the file name that ends with .query.ts is automatically generated as a hook
+
 export const CREATE_GIT_ORGANIZATION_GITHUB = gql`
   mutation createOrganizationGitHub(
     $installationId: String!
@@ -47,9 +50,12 @@ export const CREATE_GIT_ORGANIZATION_AWS_CODECOMMIT = gql`
 export const CREATE_GIT_ORGANIZATION_OAUTH2_FLOW = gql`
   mutation completeGitOAuth2Flow(
     $code: String!
+    $state: String
     $gitProvider: EnumGitProvider!
   ) {
-    completeGitOAuth2Flow(data: { code: $code, gitProvider: $gitProvider }) {
+    completeGitOAuth2Flow(
+      data: { code: $code, gitProvider: $gitProvider, state: $state }
+    ) {
       id
       name
     }

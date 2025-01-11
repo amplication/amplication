@@ -1,4 +1,4 @@
-import { EnumActionStepStatus } from "@amplication/code-gen-types/models";
+import { EnumActionStepStatus } from "@amplication/code-gen-types";
 import { LogEntry } from "@amplication/util/logging";
 import { IsBoolean, IsEnum, IsString } from "class-validator";
 

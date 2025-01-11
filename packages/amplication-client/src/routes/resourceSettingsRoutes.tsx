@@ -1,8 +1,8 @@
 import { lazy } from "react";
 
-const resourceSettingsRoutes = [
+export const resourceSettingsRoutes = (resourceBasePath) => [
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/general",
+    path: `${resourceBasePath}/settings/general`,
     Component: lazy(() => import("../Resource/ResourceFormPage")),
     moduleName: "",
     routeTrackType: "",
@@ -11,7 +11,16 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/generationSettings",
+    path: `${resourceBasePath}/settings/resource-settings`,
+    Component: lazy(() => import("../ResourceSettings/ResourceSettingsPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
+    routes: [],
+    isAnalytics: true,
+  },
+  {
+    path: `${resourceBasePath}/settings/generationSettings`,
     Component: lazy(
       () => import("../Resource/resourceSettings/GenerationSettingsForm")
     ),
@@ -22,7 +31,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/directories",
+    path: `${resourceBasePath}/settings/directories`,
     Component: lazy(
       () => import("../Resource/resourceSettings/DirectoriesSettingsForm")
     ),
@@ -33,7 +42,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/authentication",
+    path: `${resourceBasePath}/settings/authentication`,
     Component: lazy(
       () => import("../Resource/resourceSettings/AuthenticationSettingsForm")
     ),
@@ -44,7 +53,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/code-generator-version",
+    path: `${resourceBasePath}/settings/code-generator-version`,
     Component: lazy(
       () =>
         import("../Resource/codeGeneratorVersionSettings/CodeGeneratorVersion")
@@ -56,5 +65,3 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
 ];
-
-export default resourceSettingsRoutes;

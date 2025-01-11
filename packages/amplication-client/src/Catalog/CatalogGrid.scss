@@ -1,0 +1,20 @@
+@import "../style/index.scss";
+
+.catalog-grid {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__grid-container {
+    flex: 1;
+    overflow: hidden;
+  }
+}
+
+.catalog-graph-modal {
+  .amp-modal__close {
+    z-index: 1;
+  }
+}

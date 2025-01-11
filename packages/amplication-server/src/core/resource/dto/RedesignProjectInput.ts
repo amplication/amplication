@@ -33,6 +33,11 @@ export class RedesignProjectNewService {
     nullable: false,
   })
   name!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  description!: string;
 }
 @InputType({
   isAbstract: true,

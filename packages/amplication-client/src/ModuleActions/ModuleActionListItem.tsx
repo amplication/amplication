@@ -1,24 +1,20 @@
 import {
   ApiOperationTag,
+  ClickableListItemWithInnerActions,
   EnumApiOperationTagStyle,
-  EnumFlexDirection,
-  EnumGapSize,
   EnumGqlApiOperationTagType,
-  EnumItemsAlign,
   EnumRestApiOperationTagType,
   EnumTextColor,
   EnumTextStyle,
-  ListItem,
+  EnumToggleStyle,
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
-import { useCallback, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { AppContext } from "../context/appContext";
+import { useCallback } from "react";
 import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModuleAction from "./hooks/useModuleAction";
-import "./ToggleModule.scss";
 
 type Props = {
   module: models.Module;
@@ -55,10 +51,8 @@ export const ModuleActionListItem = ({
   tagStyle,
   disabled,
 }: Props) => {
-  const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
   const { updateModuleAction } = useModuleAction();
+  const { baseUrl } = useResourceBaseUrl();
 
   const onEnableChanged = useCallback(
     (value: boolean) => {
@@ -69,38 +63,28 @@ export const ModuleActionListItem = ({
           },
           data: {
             enabled: value,
-            gqlOperation: moduleAction.gqlOperation,
-            restVerb: moduleAction.restVerb,
-            name: moduleAction.name,
-            displayName: moduleAction.displayName,
-            description: moduleAction.description,
           },
         },
       }).catch(console.error);
     },
-    [updateModuleAction, moduleAction.id, moduleAction]
+    [updateModuleAction, moduleAction]
   );
 
   if (!module) return null;
 
-  const actionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions/${moduleAction.id}`;
+  const actionUrl = `${baseUrl}/modules/${module.id}/actions/${moduleAction.id}`;
 
   return (
-    <ListItem
-      //to={actionUrl} TODO: return in phase 2 (custom actions implementation)
-      showDefaultActionIcon={false}
-      direction={EnumFlexDirection.Row}
-      itemsAlign={EnumItemsAlign.Center}
-      gap={EnumGapSize.Default}
-      start={
-        <div className="module-toggle-field">
-          <Toggle
-            name={"enabled"}
-            onValueChange={onEnableChanged}
-            checked={moduleAction.enabled}
-            disabled={disabled}
-          ></Toggle>
-        </div>
+    <ClickableListItemWithInnerActions
+      to={actionUrl}
+      startAction={
+        <Toggle
+          toggleStyle={EnumToggleStyle.Green}
+          name={"enabled"}
+          onValueChange={onEnableChanged}
+          checked={moduleAction.enabled}
+          disabled={disabled}
+        ></Toggle>
       }
     >
       <ApiOperationTag
@@ -120,6 +104,6 @@ export const ModuleActionListItem = ({
       <Text textStyle={EnumTextStyle.Description}>
         {moduleAction.displayName}
       </Text>
-    </ListItem>
+    </ClickableListItemWithInnerActions>
   );
 };

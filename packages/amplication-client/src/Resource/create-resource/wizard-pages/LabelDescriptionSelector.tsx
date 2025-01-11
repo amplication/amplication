@@ -26,6 +26,7 @@ export type LabelDescriptionSelectorProps = {
   subDescription?: string;
   icon?: string;
   image?: string | JSX.Element | React.ReactElement<any, any>;
+  excludeImageWrapper?: boolean;
   imageSize?: string;
   customClassName?: string;
   onClick: (name) => void;
@@ -42,6 +43,7 @@ export const LabelDescriptionSelector: React.FC<
   subDescription,
   icon,
   image,
+  excludeImageWrapper = false,
   imageSize = "medium",
   customClassName,
   onClick,
@@ -65,7 +67,12 @@ export const LabelDescriptionSelector: React.FC<
         </CreateServiceCircleBadge>
       )}
 
-      {image && <CreateServiceCircleBadge>{image}</CreateServiceCircleBadge>}
+      {image &&
+        (excludeImageWrapper ? (
+          <div>{image}</div>
+        ) : (
+          <CreateServiceCircleBadge>{image}</CreateServiceCircleBadge>
+        ))}
 
       <label>{label}</label>
       {subDescription && (

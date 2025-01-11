@@ -1,1 +1,2 @@
-export * from "./lib/tracing.module";
+export * from "./lib/tracing";
+export { OpenTelemetryModule as TracingModule } from "@amplication/opentelemetry-nestjs";

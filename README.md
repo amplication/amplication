@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-  <i align="center">Instantly generate production-ready Node.js backend apps 🚀</i>
+  <i align="center">Transform platform engineering with tailor-made live templates and service catalog 🚀</i>
 </p>
 
 <h4 align="center">
@@ -36,18 +36,19 @@
 
 
 <p align="center">
-    <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard"/>
+    <img src="https://github.com/amplication/amplication/assets/149934977/80ed0d00-2f08-4bd8-92b1-1a347bb30ba6" alt="dashboard"/>
 </p>
+
 
 ## Introduction
 
-`Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure Node.js applications. We eliminate repetitive coding tasks and deliver production-ready infrastructure code, meticulously tailored to your specifications and adhering to industry best practices.
+`Amplication` enables you to quickly build, maintain, and scale backend services that embed your company’s best practices and standards.
 
-Our user-friendly interface fosters seamless integration of APIs, data models, databases, authentication, and authorization. Built on a flexible, plugin-based architecture, Amplication allows effortless customization of the code and offers a diverse range of integrations.
+With Amplication you can create your own live templates embedding your organization’s best practices and standards, to ensure consistency and compliance from the start. 
 
-With a strong focus on collaboration, Amplication streamlines team-oriented development, making it an ideal choice for groups of all sizes, from startups to large enterprises. Our platform enables you to concentrate on your business logic, while we handle the heavy lifting.
+Leveraging AI-powered automation, Amplication will generate microservices in no time, with everything that is needed to support your business domain: APIs, data models, DTOs and more, allowing engineers to focus on business logic. 
 
-Experience the fastest way to develop Node.js applications with Amplication.
+Now your live applications will be always up-to-date. Amplication automatically handles package updates, patches, and versioning, reducing technical debt and ensuring consistency across your services. 
 
 <details open>
 <summary>
@@ -67,11 +68,11 @@ Experience the fastest way to develop Node.js applications with Amplication.
 </p> 
     
 <p align="center">
-    <img width="49%" src="https://github.com/amplication/amplication/assets/73097785/a51e166b-07ec-4c80-99ed-8792a81c4064.png" alt="own-your-code"/>
+    <img width="49%" src="https://github.com/amplication/amplication/assets/149934977/4daf03a4-0866-49c9-8dd6-a340f3465c73" alt="own-your-code"/>
 &nbsp;
     <img width="49%" src="https://github.com/amplication/amplication/assets/73097785/1cca9721-b8d6-425b-a1a9-d10d3cdcc9b8.png" alt="customize-code"/>
 </p>
-    
+
 </details>
 
 ## Usage 
@@ -159,7 +160,7 @@ npm run serve:client
 # running the data-service-generator component
 npm run serve:dsg
 
-# running the git-pull-request-service component
+# running the git-sync-manager component
 npm run serve:git
 
 # running the plugin-api component
@@ -177,7 +178,6 @@ The development environment should now be set up. Additional information on the 
 - **[Website](https://amplication.com)** overview of the product.
 - **[Docs](https://docs.amplication.com)** for comprehensive documentation.
 - **[Blog](https://amplication.com/blog)** for guides and technical comparisons.
-- **[Roadmap](https://amplication.com/#roadmap)** to see what features will be added in the future.
 - **[Discord](https://amplication.com/discord)** for support and discussions with the community and the team.
 - **[GitHub](https://github.com/amplication/amplication)** for source code, project board, issues, and pull requests.
 - **[Twitter](https://twitter.com/amplication)** for the latest updates on the product and published blogs.
@@ -186,11 +186,11 @@ The development environment should now be set up. Additional information on the 
 <a name="contributing_anchor"></a>
 ## Contributing
 
-Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community. Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [code of conduct](./CODE_OF_CONDUCT.md).
+The majority of Amplication code is open-source. We are committed to a transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community. Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
 - Bug Report: If you see an error message or encounter an issue while using Amplication, please create a [bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+).
 
-- Feature Request: If you have an idea or if there is a capability that is missing and would make development easier and more robust, please submit a[feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
+- Feature Request: If you have an idea or if there is a capability that is missing and would make development easier and more robust, please submit a [feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
 - Documentation Request: If you're reading the Amplication docs and feel like you're missing something, please submit a [documentation request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+docs&template=documentation-request.yaml&title=%F0%9F%93%96+Documentation%3A+).
 

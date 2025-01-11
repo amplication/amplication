@@ -6,6 +6,7 @@ import { subscribeUser } from "./notification-packages/subscribeUser";
 import { buildCompleted } from "./notification-packages/buildCompleted";
 import { featureAnnouncement } from "./notification-packages/featureAnnouncement";
 import { NotificationContext } from "./util/novuTypes";
+import { techDebtAlert } from "./notification-packages/techDebtAlert";
 
 type NotificationPackageFunc = (
   ctx: NotificationContext
@@ -28,6 +29,7 @@ export class AppService {
       subscribeUser,
       buildCompleted,
       featureAnnouncement,
+      techDebtAlert,
       novuPackage
     )({
       message,

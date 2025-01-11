@@ -6,7 +6,6 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, Entity, EntityField, User } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BlockService } from "../block/block.service";
 import { EntityService } from "../entity/entity.service";
 import { Module } from "../module/dto/Module";
@@ -16,6 +15,16 @@ import { EnumModuleActionRestVerb } from "./dto/EnumModuleActionRestVerb";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { ModuleActionService } from "./moduleAction.service";
+import { kebabCase } from "lodash";
+import { EnumModuleDtoPropertyType } from "../moduleDto/dto/propertyTypes/EnumModuleDtoPropertyType";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { billingServiceGetBooleanEntitlementMock } from "../block/blockType.service.spec";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { subscriptionServiceFindOneMock } from "../module/module.service.spec";
+import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -32,8 +41,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -45,11 +52,14 @@ const EXAMPLE_USER: User = {
 };
 
 const EXAMPLE_ACTION_NAME = "createCustomer";
+const EXAMPLE_DEFAULT_ACTION_NAME = "defaultActionCreateCustomer";
 const EXAMPLE_INVALID_ACTION_NAME = "create Customer";
 const EXAMPLE_ACTION_DISPLAY_NAME = "Create Customer";
 const EXAMPLE_ACTION_DESCRIPTION = "Create One Customer";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_DEFAULT_ACTION_ID = "exampleDefaultActionId";
+const EXAMPLE_DTO_ID = "exampleDtoId";
 
 const EXAMPLE_ACTION: ModuleAction = {
   id: EXAMPLE_ACTION_ID,
@@ -58,9 +68,9 @@ const EXAMPLE_ACTION: ModuleAction = {
   displayName: EXAMPLE_ACTION_DISPLAY_NAME,
   description: EXAMPLE_ACTION_DESCRIPTION,
   enabled: true,
-  gqlOperation: EnumModuleActionGqlOperation.Mutation,
-  restVerb: EnumModuleActionRestVerb.Post,
-  path: `/`,
+  gqlOperation: EnumModuleActionGqlOperation.Query,
+  restVerb: EnumModuleActionRestVerb.Get,
+  path: `/:id/${kebabCase(EXAMPLE_ACTION_NAME)}`,
   createdAt: expect.any(Date),
   updatedAt: expect.any(Date),
   parentBlock: null,
@@ -68,6 +78,46 @@ const EXAMPLE_ACTION: ModuleAction = {
   inputParameters: null,
   outputParameters: null,
   versionNumber: 0,
+  outputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
+  inputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
+};
+
+const EXAMPLE_DEFAULT_ACTION: ModuleAction = {
+  id: EXAMPLE_DEFAULT_ACTION_ID,
+  actionType: EnumModuleActionType.Create,
+  resourceId: EXAMPLE_RESOURCE_ID,
+  name: EXAMPLE_DEFAULT_ACTION_NAME,
+  displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+  description: EXAMPLE_ACTION_DESCRIPTION,
+  enabled: false,
+  gqlOperation: EnumModuleActionGqlOperation.Query,
+  restVerb: EnumModuleActionRestVerb.Get,
+  path: `/:id/${kebabCase(EXAMPLE_ACTION_NAME)}`,
+  createdAt: expect.any(Date),
+  updatedAt: expect.any(Date),
+  parentBlock: null,
+  blockType: EnumBlockType.ModuleAction,
+  inputParameters: undefined,
+  outputParameters: undefined,
+  versionNumber: 0,
+  outputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
+  inputType: {
+    type: EnumModuleDtoPropertyType.String,
+    dtoId: "",
+    isArray: false,
+  },
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -119,8 +169,10 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   },
 };
 
-const blockServiceFindOneMock = jest.fn(() => {
-  return EXAMPLE_ACTION;
+const blockServiceFindOneMock = jest.fn((args: FindOneArgs): ModuleAction => {
+  if (args.where.id === EXAMPLE_ACTION_ID) {
+    return EXAMPLE_ACTION;
+  } else return EXAMPLE_DEFAULT_ACTION;
 });
 
 const blockServiceDeleteMock = jest.fn(() => {
@@ -145,13 +197,22 @@ const blockServiceCreateMock = jest.fn(
       description: data.description,
       inputParameters: null,
       outputParameters: null,
+      path: data.path as string,
+      gqlOperation:
+        data.gqlOperation as keyof typeof EnumModuleActionGqlOperation,
+      restVerb: data.restVerb as keyof typeof EnumModuleActionRestVerb,
     };
   }
 );
 
-const blockServiceUpdateMock = jest.fn(() => {
-  return EXAMPLE_ACTION;
-});
+const blockServiceUpdateMock = jest.fn(
+  (args: UpdateModuleActionArgs): ModuleAction => {
+    if (args.where.id === EXAMPLE_ACTION_ID) {
+      return EXAMPLE_ACTION;
+    }
+    return EXAMPLE_DEFAULT_ACTION;
+  }
+);
 
 const blockServiceFindManyByBlockTypeAndSettingsMock = jest.fn(() => {
   return [
@@ -183,12 +244,56 @@ describe("ModuleActionService", () => {
           })),
         },
         {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            trackWithContext: jest.fn(() => {
+              return null;
+            }),
+          })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+            getSubscription: subscriptionServiceFindOneMock,
+          })),
+        },
+        {
+          provide: ModuleDtoService,
+          useClass: jest.fn(() => ({
+            validateTypes: jest.fn(() => {
+              return null;
+            }),
+          })),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn(() => ({
+            error: jest.fn(() => {
+              return null;
+            }),
+          })),
+        },
+        {
           provide: PrismaService,
           useClass: jest.fn(() => ({})),
         },
         {
           provide: EntityService,
           useValue: {},
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (variable) => {
+              switch (variable) {
+                case Env.FEATURE_CUSTOM_ACTIONS_ENABLED:
+                  return "true";
+                default:
+                  return "";
+              }
+            },
+          },
         },
         ModuleActionService,
       ],
@@ -212,9 +317,6 @@ describe("ModuleActionService", () => {
         description: EXAMPLE_ACTION_DESCRIPTION,
         displayName: EXAMPLE_ACTION_DISPLAY_NAME,
         name: EXAMPLE_ACTION_NAME,
-        gqlOperation: EnumModuleActionGqlOperation.Mutation,
-        restVerb: EnumModuleActionRestVerb.Post,
-        path: `/`,
       },
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(EXAMPLE_ACTION);
@@ -227,6 +329,19 @@ describe("ModuleActionService", () => {
           blockType: EnumBlockType.ModuleAction,
           enabled: true,
           actionType: EnumModuleActionType.Custom,
+          gqlOperation: EnumModuleActionGqlOperation.Query,
+          restVerb: EnumModuleActionRestVerb.Get,
+          path: `/:id/${kebabCase(args.data.name)}`,
+          outputType: {
+            type: EnumModuleDtoPropertyType.String,
+            dtoId: "",
+            isArray: false,
+          },
+          inputType: {
+            type: EnumModuleDtoPropertyType.String,
+            dtoId: "",
+            isArray: false,
+          },
         },
       },
       EXAMPLE_USER_ID
@@ -277,6 +392,15 @@ describe("ModuleActionService", () => {
         gqlOperation: EnumModuleActionGqlOperation.Mutation,
         restVerb: EnumModuleActionRestVerb.Post,
         path: ``,
+        inputType: {
+          type: EnumModuleDtoPropertyType.Dto,
+          isArray: false,
+          dtoId: EXAMPLE_DTO_ID,
+        },
+        outputType: {
+          type: EnumModuleDtoPropertyType.Boolean,
+          isArray: false,
+        },
       },
     };
     expect(await service.update(args, EXAMPLE_USER)).toEqual(EXAMPLE_ACTION);
@@ -285,6 +409,60 @@ describe("ModuleActionService", () => {
       args,
       EXAMPLE_USER,
       undefined
+    );
+  });
+
+  it("should update one default action", async () => {
+    const args: UpdateModuleActionArgs = {
+      where: {
+        id: EXAMPLE_DEFAULT_ACTION_ID,
+      },
+      data: {
+        description: "",
+        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+        enabled: false,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        name: EXAMPLE_DEFAULT_ACTION_NAME,
+        restVerb: EnumModuleActionRestVerb.Post,
+      },
+    };
+
+    expect(await service.update(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_DEFAULT_ACTION
+    );
+    expect(blockServiceUpdateMock).toBeCalledTimes(1);
+
+    expect(blockServiceUpdateMock).toBeCalledWith(
+      args,
+      EXAMPLE_USER,
+      undefined
+    );
+  });
+
+  it("should throw an error when updating an input type of a default action", async () => {
+    const args: UpdateModuleActionArgs = {
+      where: {
+        id: EXAMPLE_DEFAULT_ACTION_ID,
+      },
+      data: {
+        description: "",
+        displayName: EXAMPLE_ACTION_DISPLAY_NAME,
+        enabled: false,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        name: EXAMPLE_DEFAULT_ACTION_NAME,
+        restVerb: EnumModuleActionRestVerb.Post,
+        inputType: {
+          type: EnumModuleDtoPropertyType.Dto,
+          isArray: false,
+          dtoId: EXAMPLE_DTO_ID,
+        },
+      },
+    };
+
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrow(
+      new AmplicationError(
+        "Cannot update the input type of a default Action for entity."
+      )
     );
   });
 
@@ -357,7 +535,7 @@ describe("ModuleActionService", () => {
         name: "_exampleEntitiesMeta",
         outputParameters: null,
         parentBlock: null,
-        path: "/:id/meta",
+        path: "/meta",
         restVerb: "Get",
         versionNumber: 0,
       },

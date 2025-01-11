@@ -42,7 +42,7 @@ describe("SegmentAnalyticsService", () => {
     jest.clearAllMocks();
   });
 
-  it("should indentify with account data and anonymous id if present", async () => {
+  it("should identify with account data and anonymous id if present", async () => {
     jest.spyOn(RequestContext, "currentContext", "get").mockReturnValue({
       req: {
         analyticsSessionId: "123",

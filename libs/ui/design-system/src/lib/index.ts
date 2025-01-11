@@ -34,14 +34,16 @@ export {
   SelectMenuItem,
   SelectMenuList,
 } from "./components/SelectMenu/SelectMenu";
-
 export type { Props as SelectMenuProps } from "./components/SelectMenu/SelectMenu";
+
+export { SelectPanel } from "./components/SelectPanel/SelectPanel";
+export type { Props as SelectPanelProps } from "./components/SelectPanel/SelectPanel";
 
 export { SelectField } from "./components/SelectField/SelectField";
 
 export type { Props as SelectFieldProps } from "./components/SelectField/SelectField";
 
-export type { OptionItem } from "./components/types";
+export { OptionItem } from "./components/types";
 export { TextField } from "./components/TextField/TextField";
 
 export type { Props as TextFieldProps } from "./components/TextField/TextField";
@@ -78,7 +80,7 @@ export { ToggleButton } from "./components/ToggleButton/ToggleButton";
 
 export type { Props as ToggleButtonProps } from "./components/ToggleButton/ToggleButton";
 
-export { Toggle } from "./components/Toggle/Toggle";
+export { Toggle, EnumToggleStyle } from "./components/Toggle/Toggle";
 export type { Props as ToggleProps } from "./components/Toggle/Toggle";
 
 export { ToggleField } from "./components/Toggle/ToggleField";
@@ -96,7 +98,7 @@ export {
 
 export type { Props as UserAndTimeProps } from "./components/UserAndTime/UserAndTime";
 
-export { TimeSince, EnumTimeSinceSize } from "./components/TimeSince/TimeSince";
+export { TimeSince } from "./components/TimeSince/TimeSince";
 
 export type { Props as TimeSinceProps } from "./components/TimeSince/TimeSince";
 
@@ -108,6 +110,7 @@ export { default as Page } from "./components/Page/Page";
 export type { Props as PageProps } from "./components/Page/Page";
 
 export { Form } from "./components/Form/Form";
+export { FormColumns } from "./components/FormColumns/FormColumns";
 
 export type { Props as FormProps } from "./components/Form/Form";
 
@@ -178,17 +181,13 @@ export { default as PlanUpgradeConfirmation } from "./components/PlanUpgradeConf
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 
 export { default as Tabs } from "./components/Tabs/Tabs";
-export type {
+
+export {
   Props as TabsProps,
   TabProps,
   TabItem,
+  EnumTabsStyle,
 } from "./components/Tabs/Tabs";
-
-export type {
-  Props as FlexItemProps,
-  FlexStartProps,
-  FlexEndProps,
-} from "./components/FlexItem/FlexItem";
 
 export {
   FlexItem,
@@ -212,6 +211,11 @@ export {
 export type { Props as ChipProps } from "./components/Chip/Chip";
 
 export { Chip, EnumChipStyle } from "./components/Chip/Chip";
+
+export {
+  ClickableListItemWithInnerActions,
+  Props as ClickableListItemWithInnerActionsProps,
+} from "./components/List/ClickableListItemWithActions";
 
 export type { Props as ListProps } from "./components/List/List";
 
@@ -240,4 +244,69 @@ export {
   EnumGqlApiOperationTagType,
 } from "./components/ApiOperationTag/ApiOperationTag";
 
+export {
+  CollapsibleList,
+  Props as CollapsibleListProps,
+} from "./components/CollapsibleList/CollapsibleList";
+
+export {
+  CollapsibleListItem,
+  Props as CollapsibleListItemProps,
+} from "./components/CollapsibleList/CollapsibleListItem";
 export { JumboButton } from "./components/JumboButton/JumboButton";
+
+export { NavigationFilter } from "./components/NavigationFilter/NavigationFilter";
+export { NavigationFilterItem } from "./components/NavigationFilter/NavigationFilterItem";
+export { NavigationHeader } from "./components/NavigationHeader/NavigationHeader";
+
+export type { Props as NavigationFilterItemProps } from "./components/NavigationFilter/NavigationFilterItem";
+
+export {
+  DataGrid,
+  Props as DataGridProps,
+  DataGridColumn,
+  DataGridSortColumn,
+  DataGridSortOrder,
+  ExpandableDataGridRow,
+  DataGridRenderFilterProps,
+} from "./components/DataGrid/DataGrid";
+
+export { DataGridRowExpander } from "./components/DataGrid/DataGridRowExpander";
+export { DataGridColumnFilter } from "./components/DataGrid/DataGridColumnFilter";
+export { DataGridFilters } from "./components/DataGrid/DataGridFilters";
+export { DataGridFilter } from "./components/DataGrid/DataGridFilter";
+export {
+  ToggleView,
+  Props as ToggleViewProps,
+} from "./components/Toggle/ToggleView";
+
+export {
+  VersionTag,
+  Props as VersionTagProps,
+  EnumVersionTagState,
+} from "./components/VersionTag/VersionTag";
+
+export {
+  CodeCompare,
+  Props as CodeCompareProps,
+} from "./components/CodeCompare/CodeCompare";
+
+export {
+  HeaderItemsStripe,
+  Props as HeaderItemsStripeProps,
+} from "./components/HeaderItemsStripe/HeaderItemsStripe";
+
+export {
+  HeaderItemsStripeItem,
+  Props as HeaderItemsStripeItemProps,
+} from "./components/HeaderItemsStripe/HeaderItemsStripeItem";
+
+export { ColorPicker } from "./components/ColorPicker/ColorPicker";
+
+export { ColorPickerField } from "./components/ColorPicker/ColorPickerField";
+export { useTagColorStyle } from "./components/ColorPicker/useTagColorStyle";
+export { Tag, Props as TagProps } from "./components/Tag/Tag";
+
+export { IconPicker } from "./components/IconPicker/IconPicker";
+export { IconPickerField } from "./components/IconPicker/IconPickerField";
+export { EnumIconFamily } from "./components/Icon/Icon";

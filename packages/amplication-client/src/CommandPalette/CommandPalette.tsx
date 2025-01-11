@@ -11,6 +11,7 @@ import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 import { resourceThemeMap } from "../Resource/constants";
 import EllipsisText from "../Components/EllipsisText";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 export type ResourceDescriptor = Pick<
   models.Resource,
@@ -105,13 +106,9 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { currentProject, currentResource } = useContext(AppContext);
 
-  const projectBaseUrl = useMemo(
-    () => `/${currentWorkspace?.id}/${currentProject?.id}`,
-    [currentWorkspace, currentProject]
-  );
+  const { baseUrl } = useProjectBaseUrl();
 
   const history = useHistory();
   const [query, setQuery] = useState("");
@@ -120,13 +117,12 @@ const CommandPalette = ({ trigger }: Props) => {
   };
   const { data } = useQuery<TData>(SEARCH, {
     variables: { query, projectId: currentProject?.id },
+    skip: !currentProject,
   });
   const commands = useMemo(
     () =>
-      data
-        ? getCommands(data, history, currentResource as any, projectBaseUrl)
-        : [],
-    [data, history, currentResource, projectBaseUrl]
+      data ? getCommands(data, history, currentResource as any, baseUrl) : [],
+    [data, history, currentResource, baseUrl]
   );
 
   return (

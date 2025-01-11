@@ -135,7 +135,7 @@ describe("GptService", () => {
       );
       expect(updateUserActionMetadataMock).toBeCalledTimes(1);
       expect(updateUserActionMetadataMock).toBeCalledWith(mockUserActionId, {
-        result: 123,
+        data: '{"result": 123}',
       });
     });
   });
