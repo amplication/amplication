@@ -137,6 +137,11 @@ describe("CommitService", () => {
   });
 
   it("should find committing user", async () => {
+    commitServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_COMMIT,
+      user: null,
+    });
+
     const res = await apolloClient.executeOperation({
       query: USER_QUERY,
       variables: {
@@ -153,10 +158,11 @@ describe("CommitService", () => {
         },
       },
     });
-    expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith(
+    expect(userServiceFindUserMock).toHaveBeenCalledTimes(1);
+    expect(userServiceFindUserMock).toHaveBeenCalledWith(
       {
         where: { id: EXAMPLE_USER_ID },
+        include: { account: true },
       },
       true
     );
@@ -174,8 +180,8 @@ describe("CommitService", () => {
         createdAt: EXAMPLE_COMMIT.createdAt.toISOString(),
       },
     });
-    expect(commitServiceFindOneMock).toBeCalledTimes(1);
-    expect(commitServiceFindOneMock).toBeCalledWith({
+    expect(commitServiceFindOneMock).toHaveBeenCalledTimes(1);
+    expect(commitServiceFindOneMock).toHaveBeenCalledWith({
       where: { id: EXAMPLE_COMMIT_ID },
     });
   });
@@ -197,8 +203,8 @@ describe("CommitService", () => {
         },
       ],
     });
-    expect(commitServiceFindManyMock).toBeCalledTimes(1);
-    expect(commitServiceFindManyMock).toBeCalledWith({
+    expect(commitServiceFindManyMock).toHaveBeenCalledTimes(1);
+    expect(commitServiceFindManyMock).toHaveBeenCalledWith({
       where: {
         project: { id: "exampleProjectId" },
         resourceTypeGroup: EnumResourceTypeGroup.Services,
