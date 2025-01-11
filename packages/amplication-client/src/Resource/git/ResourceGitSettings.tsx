@@ -1,10 +1,10 @@
 import {
-  ConfirmationDialog,
   Dialog,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
   FlexItem,
+  Snackbar,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback, useState } from "react";
@@ -21,6 +21,7 @@ import {
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import useResourceGitSettings from "./useResourceGitSettings";
+import { formatError } from "../../util/error";
 
 interface Props {
   type: "wizard" | "resource";
@@ -61,6 +62,7 @@ const ResourceGitSettings: React.FC<Props> = ({
     openCreateNewRepo,
     closeCreateNewRepo,
     updateGitRepository,
+    updateGitRepositoryError,
     handleGitOrganizationConnected,
   } = useResourceGitSettings({
     resource,
@@ -74,33 +76,26 @@ const ResourceGitSettings: React.FC<Props> = ({
     (data: models.GitRepositoryUpdateInput) => {
       updateGitRepository(resource?.gitRepository.id, data);
     },
-    [updateGitRepository]
+    [resource?.gitRepository?.id, updateGitRepository]
   );
 
-  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleError = useCallback((errorMessage: string) => {
     setErrorMessage(errorMessage);
-    setError(true);
   }, []);
+
+  const errorMessageText =
+    formatError(connectGitRepoError) ||
+    errorMessage ||
+    formatError(updateGitRepositoryError);
+  const hasError =
+    Boolean(connectGitRepoError) ||
+    Boolean(errorMessage) ||
+    Boolean(updateGitRepositoryError);
 
   return (
     <>
-      <ConfirmationDialog
-        isOpen={error}
-        onDismiss={() => {
-          setError(false);
-        }}
-        message={errorMessage}
-        confirmButton={{
-          label: "OK",
-        }}
-        onConfirm={() => {
-          setError(false);
-        }}
-      ></ConfirmationDialog>
-
       {gitOrganization && (
         <GitDialogsContainer
           gitOrganization={gitOrganization}
@@ -198,6 +193,8 @@ const ResourceGitSettings: React.FC<Props> = ({
           )}
         </>
       )}
+
+      <Snackbar open={hasError} message={errorMessageText} />
     </>
   );
 };

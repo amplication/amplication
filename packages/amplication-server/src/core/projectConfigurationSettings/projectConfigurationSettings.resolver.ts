@@ -18,7 +18,11 @@ export class ProjectConfigurationSettingsResolver {
   constructor(private readonly service: ProjectConfigurationSettingsService) {}
 
   @Mutation(() => ProjectConfigurationSettings, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "project.settings.edit"
+  )
   async updateProjectConfigurationSettings(
     @Args() args: UpdateProjectConfigurationSettingsArgs,
     @UserEntity() user: User

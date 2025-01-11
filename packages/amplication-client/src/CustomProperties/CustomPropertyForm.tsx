@@ -18,6 +18,7 @@ import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 type Props = {
   onSubmit: (values: models.CustomProperty) => void;
   defaultValues?: models.CustomProperty;
+  disabled?: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -45,7 +46,7 @@ const FORM_SCHEMA = {
   errorMessage: {},
 };
 
-const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
+const CustomPropertyForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -71,14 +72,31 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
           <Form childrenAsBlocks>
             <FormikAutoSave debounceMS={1000} />
 
-            <DisplayNameField name="name" label="Name" minLength={1} />
-            <TextField name="key" label="Key" />
+            <DisplayNameField
+              name="name"
+              label="Name"
+              minLength={1}
+              disabled={disabled}
+            />
+            <TextField name="key" label="Key" disabled={disabled} />
 
-            <OptionalDescriptionField name="description" label="Description" />
+            <OptionalDescriptionField
+              name="description"
+              label="Description"
+              disabled={disabled}
+            />
             <div>
-              <ToggleField name="required" label="Required" />
+              <ToggleField
+                name="required"
+                label="Required"
+                disabled={disabled}
+              />
             </div>
-            <CustomPropertyTypeSelectField name="type" label="Type" />
+            <CustomPropertyTypeSelectField
+              name="type"
+              label="Type"
+              disabled={disabled}
+            />
 
             {!NON_VALIDATED_TYPES.includes(formik.values.type) && (
               <>
@@ -94,6 +112,7 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
                     content:
                       "Use regex to validate the property value. For example, ^.{4}$ will require the field to be 4 characters long.",
                   }}
+                  disabled={disabled}
                 />
                 <TextField
                   name="validationMessage"
@@ -103,6 +122,7 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
                     content:
                       "The message that will be displayed if the validation fails.",
                   }}
+                  disabled={disabled}
                 />
               </>
             )}

@@ -37,6 +37,7 @@ import classNames from "classnames";
 import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertiesMap";
 import { CatalogContextProvider } from "../Catalog/CatalogContext";
 import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
+import usePermissions from "./hooks/usePermissions";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -61,7 +62,6 @@ const WorkspaceLayout: React.FC<Props> = ({
     currentWorkspace,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
     handleSetCurrentWorkspace,
     createWorkspace,
     createNewWorkspaceError,
@@ -104,6 +104,8 @@ const WorkspaceLayout: React.FC<Props> = ({
   );
 
   const commitUtils = useCommits(currentProject?.id);
+
+  const permissions = usePermissions();
 
   const {
     resources,
@@ -191,7 +193,6 @@ const WorkspaceLayout: React.FC<Props> = ({
         currentWorkspace,
         subscriptionPlan,
         subscriptionStatus,
-        isPreviewPlan,
         handleSetCurrentWorkspace,
         createWorkspace,
         currentProjectConfiguration,
@@ -247,6 +248,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         errorCreateServiceFromTemplate,
         customPropertiesMap,
         blueprintsMap,
+        permissions,
       }}
     >
       <AssistantContextProvider>

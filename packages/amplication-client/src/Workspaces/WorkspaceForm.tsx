@@ -96,7 +96,7 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <div className={CLASS_NAME}>
       <Text textStyle={EnumTextStyle.H4}>Workspace Settings</Text>
       <FlexItem
         direction={EnumFlexDirection.Row}
@@ -157,7 +157,7 @@ function WorkspaceForm() {
       )}
 
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-    </PageContent>
+    </div>
   );
 }
 

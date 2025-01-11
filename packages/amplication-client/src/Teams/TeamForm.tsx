@@ -18,6 +18,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 type Props = {
   onSubmit: (values: models.Team) => void;
   defaultValues?: models.Team;
+  disabled?: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -26,6 +27,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "__typename",
   "members",
+  "roles",
 ];
 
 export const INITIAL_VALUES: Partial<models.Team> = {
@@ -50,7 +52,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const TeamForm = ({ onSubmit, defaultValues }: Props) => {
+const TeamForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -71,11 +73,20 @@ const TeamForm = ({ onSubmit, defaultValues }: Props) => {
         onSubmit={onSubmit}
       >
         <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
-
-          <DisplayNameField name="name" label="Name" minLength={1} />
-
-          <TextField name="description" label="Description" textarea rows={3} />
+          {!disabled && <FormikAutoSave debounceMS={1000} />}
+          <DisplayNameField
+            name="name"
+            label="Name"
+            minLength={1}
+            disabled={disabled}
+          />
+          <TextField
+            name="description"
+            label="Description"
+            textarea
+            rows={3}
+            disabled={disabled}
+          />
         </Form>
       </Formik>
       <Formik
@@ -85,9 +96,9 @@ const TeamForm = ({ onSubmit, defaultValues }: Props) => {
         onSubmit={onSubmit}
       >
         <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={0} />
+          {!disabled && <FormikAutoSave debounceMS={0} />}
 
-          <ColorPickerField name="color" label="Color" />
+          <ColorPickerField name="color" label="Color" disabled={disabled} />
         </Form>
       </Formik>
     </>

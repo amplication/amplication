@@ -7,7 +7,6 @@ import {
 import { CodeGeneratorImage } from "../Components/CodeGeneratorImage";
 import { EnumResourceType, Resource } from "../models";
 import ServiceTemplateChip from "../Platform/ServiceTemplateChip";
-import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import ResourceGitRepo from "../Workspaces/ResourceGitRepo";
 import ResourceLastBuild from "../Workspaces/ResourceLastBuild";
 import ResourceLastBuildVersion from "../Workspaces/ResourceLastBuildVersion";
@@ -191,15 +190,6 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
     },
     getValue: (row) =>
       row.serviceTemplateVersion ? row.serviceTemplateVersion : "",
-    resizable: true,
-  },
-  {
-    key: "actions",
-    name: "Actions",
-    sortable: false,
-    renderCell: (props) => {
-      return <DeleteResourceButton resource={props.row} />;
-    },
     resizable: true,
   },
 ];

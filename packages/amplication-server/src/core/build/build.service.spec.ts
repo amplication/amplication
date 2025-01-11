@@ -65,8 +65,6 @@ const EXAMPLE_USER: User = {
     firstName: "exampleFirstName",
     lastName: "exampleLastName",
     password: "",
-    previewAccountType: "None",
-    previewAccountEmail: "",
   },
 };
 

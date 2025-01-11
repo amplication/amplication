@@ -68,7 +68,8 @@ export class PrivatePluginResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlockId,
-    "data.privatePlugin.connect.id"
+    "data.privatePlugin.connect.id",
+    "privatePlugin.version.create"
   )
   async createPrivatePluginVersion(
     @UserEntity() user: User,
@@ -82,7 +83,8 @@ export class PrivatePluginResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlockId,
-    "where.privatePlugin.id"
+    "where.privatePlugin.id",
+    "privatePlugin.version.edit"
   )
   async updatePrivatePluginVersion(
     @UserEntity() user: User,

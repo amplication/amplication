@@ -7,7 +7,6 @@ import { ResourceService } from "../resource/resource.service";
 import { PrivatePluginService } from "./privatePlugin.service";
 import { BillingService } from "../billing/billing.service";
 import { Account, User } from "../../models";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { PrivatePlugin } from "./dto/PrivatePlugin";
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { EnumBlockType } from "@amplication/code-gen-types";
@@ -33,8 +32,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {

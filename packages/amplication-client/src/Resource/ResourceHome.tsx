@@ -5,7 +5,6 @@ import PageLayout from "../Layout/PageLayout";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import ResourceOverview from "./ResourceOverview";
 import {
   MenuItemLinks,
   linksMap,
@@ -18,6 +17,8 @@ import {
   ResourceContextProvider,
 } from "../context/resourceContext";
 import { useLastSuccessfulGitBuild } from "../VersionControl/hooks/useLastSuccessfulGitBuild";
+import OverviewContainer from "./ResourceOverview/OverviewContainer";
+import useResourcePermissions from "./hooks/useResourcePermissions";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -89,11 +90,14 @@ const ResourceHome = ({
 
   const { currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
+  const permissions = useResourcePermissions(currentResource?.id);
+
   const context: ResourceContextInterface = {
     resourceId: currentResource?.id,
     resource: currentResource,
     lastSuccessfulGitBuild: build,
     lastSuccessfulGitBuildPluginVersions: buildPluginVersionMap,
+    permissions,
   };
 
   return (
@@ -101,7 +105,7 @@ const ResourceHome = ({
       <ResourceContextProvider newVal={context}>
         {(match.isExact || currentRouteIsTab) && currentResource ? (
           <PageLayout className={CLASS_NAME} tabs={tabs}>
-            {match.isExact ? <ResourceOverview /> : tabRoutes}
+            {match.isExact ? <OverviewContainer /> : tabRoutes}
           </PageLayout>
         ) : (
           innerRoutes

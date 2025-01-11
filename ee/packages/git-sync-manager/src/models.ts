@@ -28,8 +28,6 @@ export type Account = {
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
-  previewAccountEmail?: Maybe<Scalars['String']['output']>;
-  previewAccountType: EnumPreviewAccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -55,6 +53,10 @@ export type ActionStep = {
   message: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: EnumActionStepStatus;
+};
+
+export type AddMemberToTeamsInput = {
+  teamIds: Array<Scalars['String']['input']>;
 };
 
 export type AdminUiSettings = {
@@ -113,13 +115,6 @@ export type AssistantThread = {
 export type Auth = {
   /** JWT Bearer token */
   token: Scalars['String']['output'];
-};
-
-export type AuthPreviewAccount = {
-  projectId: Scalars['String']['output'];
-  resourceId?: Maybe<Scalars['String']['output']>;
-  token: Scalars['String']['output'];
-  workspaceId: Scalars['String']['output'];
 };
 
 export type AuthorizeResourceWithGitResult = {
@@ -464,16 +459,6 @@ export type CreateEntitiesFromPredefinedSchemaInput = {
   schemaName: EnumSchemaNames;
 };
 
-export type CreateGitRepositoryBaseInput = {
-  gitOrganizationId: Scalars['String']['input'];
-  gitOrganizationType: EnumGitOrganizationType;
-  gitProvider: EnumGitProvider;
-  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
-  groupName?: InputMaybe<Scalars['String']['input']>;
-  isPublic: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-};
-
 export type CreateGitRepositoryInput = {
   gitOrganizationId: Scalars['String']['input'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -483,6 +468,14 @@ export type CreateGitRepositoryInput = {
   isPublic: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   resourceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateTeamAssignmentsInput = {
+  teamIds: Array<Scalars['String']['input']>;
+};
+
+export type CreateTeamAssignmentsWhereInput = {
+  resourceId: Scalars['String']['input'];
 };
 
 export type CustomProperty = {
@@ -543,6 +536,7 @@ export type CustomPropertyWhereInput = {
   blueprint?: InputMaybe<BlueprintWhereInput>;
   blueprintId?: InputMaybe<Scalars['String']['input']>;
   deletedAt?: InputMaybe<DateTimeFilter>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<StringFilter>;
 };
@@ -1158,12 +1152,6 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
-export enum EnumPreviewAccountType {
-  BreakingTheMonolith = 'BreakingTheMonolith',
-  None = 'None',
-  PreviewOnboarding = 'PreviewOnboarding'
-}
-
 export enum EnumResourceType {
   Component = 'Component',
   MessageBroker = 'MessageBroker',
@@ -1677,15 +1665,18 @@ export type ModuleWhereInput = {
 
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
+  addMemberToTeams: User;
   addMembersToTeam: Team;
+  addRolePermissions: Role;
+  addRolesToTeam: Team;
+  addRolesToTeamAssignment: TeamAssignment;
   bulkUpdateWorkspaceProjectsAndResourcesLicensed: Scalars['Boolean']['output'];
   changePassword: Account;
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
-  completeSignupWithBusinessEmail: Scalars['String']['output'];
-  connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
+  connectResourceToNewRemoteGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBlueprint: Blueprint;
@@ -1713,14 +1704,15 @@ export type Mutation = {
   createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
   createRelation: Relation;
-  createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
+  createRole: Role;
   createService: Resource;
   createServiceFromTemplate: Resource;
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTeam: Team;
+  createTeamAssignments: Array<TeamAssignment>;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1745,11 +1737,12 @@ export type Mutation = {
   deleteRelation: Relation;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
+  deleteRole?: Maybe<Role>;
   deleteServiceTopics: ServiceTopics;
   deleteTeam?: Maybe<Team>;
+  deleteTeamAssignment: TeamAssignment;
   deleteTopic: Topic;
   deleteUser?: Maybe<User>;
-  deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']['output']>;
   disconnectResourceGitRepository: Resource;
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -1760,6 +1753,9 @@ export type Mutation = {
   redeemCoupon: Coupon;
   redesignProject: UserAction;
   removeMembersFromTeam: Team;
+  removeRolePermissions: Role;
+  removeRolesFromTeam: Team;
+  removeRolesFromTeamAssignment: TeamAssignment;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   scaffoldServiceFromTemplate: Resource;
@@ -1768,7 +1764,6 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   setResourceOwner: Resource;
   signup: Auth;
-  signupPreviewAccount: AuthPreviewAccount;
   signupWithBusinessEmail: Scalars['Boolean']['output'];
   startRedesign?: Maybe<Resource>;
   /** Trigger the generation of a set of recommendations for breaking a resource into microservices */
@@ -1801,6 +1796,7 @@ export type Mutation = {
   updateResourceRelation: Relation;
   updateResourceRole?: Maybe<ResourceRole>;
   updateResourceSettings?: Maybe<ResourceSettings>;
+  updateRole: Role;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateServiceTopics: ServiceTopics;
   updateTeam: Team;
@@ -1816,9 +1812,33 @@ export type MutationAddEntityPermissionFieldArgs = {
 };
 
 
+export type MutationAddMemberToTeamsArgs = {
+  data: AddMemberToTeamsInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationAddMembersToTeamArgs = {
   data: TeamUpdateMembersInput;
   where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolePermissionsArgs = {
+  data: RoleAddRemovePermissionsInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolesToTeamArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationAddRolesToTeamAssignmentArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereTeamAssignmentInput;
 };
 
 
@@ -1847,13 +1867,13 @@ export type MutationCompleteInvitationArgs = {
 };
 
 
-export type MutationConnectGitRepositoryArgs = {
-  data: CreateGitRepositoryInput;
+export type MutationConnectResourceGitRepositoryArgs = {
+  data: ConnectGitRepositoryInput;
 };
 
 
-export type MutationConnectResourceGitRepositoryArgs = {
-  data: ConnectGitRepositoryInput;
+export type MutationConnectResourceToNewRemoteGitRepositoryArgs = {
+  data: CreateGitRepositoryInput;
 };
 
 
@@ -2000,13 +2020,13 @@ export type MutationCreateRelationArgs = {
 };
 
 
-export type MutationCreateRemoteGitRepositoryArgs = {
-  data: CreateGitRepositoryBaseInput;
+export type MutationCreateResourceRoleArgs = {
+  data: ResourceRoleCreateInput;
 };
 
 
-export type MutationCreateResourceRoleArgs = {
-  data: ResourceRoleCreateInput;
+export type MutationCreateRoleArgs = {
+  data: RoleCreateInput;
 };
 
 
@@ -2037,6 +2057,12 @@ export type MutationCreateServiceWithEntitiesArgs = {
 
 export type MutationCreateTeamArgs = {
   data: TeamCreateInput;
+};
+
+
+export type MutationCreateTeamAssignmentsArgs = {
+  data: CreateTeamAssignmentsInput;
+  where: CreateTeamAssignmentsWhereInput;
 };
 
 
@@ -2161,6 +2187,11 @@ export type MutationDeleteResourceRoleArgs = {
 };
 
 
+export type MutationDeleteRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type MutationDeleteServiceTopicsArgs = {
   where: WhereUniqueInput;
 };
@@ -2168,6 +2199,11 @@ export type MutationDeleteServiceTopicsArgs = {
 
 export type MutationDeleteTeamArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteTeamAssignmentArgs = {
+  where: WhereTeamAssignmentInput;
 };
 
 
@@ -2181,17 +2217,13 @@ export type MutationDeleteUserArgs = {
 };
 
 
-export type MutationDeleteWorkspaceArgs = {
-  where: WhereUniqueInput;
-};
-
-
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
 
 export type MutationDisconnectResourceGitRepositoryArgs = {
+  overrideProjectSettings?: InputMaybe<Scalars['Boolean']['input']>;
   resourceId: Scalars['String']['input'];
 };
 
@@ -2237,6 +2269,24 @@ export type MutationRemoveMembersFromTeamArgs = {
 };
 
 
+export type MutationRemoveRolePermissionsArgs = {
+  data: RoleAddRemovePermissionsInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationRemoveRolesFromTeamArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationRemoveRolesFromTeamAssignmentArgs = {
+  data: TeamUpdateRolesInput;
+  where: WhereTeamAssignmentInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -2276,11 +2326,6 @@ export type MutationSetResourceOwnerArgs = {
 
 export type MutationSignupArgs = {
   data: SignupInput;
-};
-
-
-export type MutationSignupPreviewAccountArgs = {
-  data: SignupPreviewAccountInput;
 };
 
 
@@ -2463,6 +2508,12 @@ export type MutationUpdateResourceRoleArgs = {
 
 export type MutationUpdateResourceSettingsArgs = {
   data: ResourceSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateRoleArgs = {
+  data: RoleUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -2983,6 +3034,7 @@ export type Query = {
   package?: Maybe<Package>;
   packageList: Array<Package>;
   pendingChanges: Array<PendingChange>;
+  permissions: Array<Scalars['String']['output']>;
   pluginInstallation?: Maybe<PluginInstallation>;
   pluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
@@ -2996,12 +3048,15 @@ export type Query = {
   relations: Array<Relation>;
   remoteGitRepositories: RemoteGitRepos;
   resource?: Maybe<Resource>;
+  resourcePermissions: Array<Scalars['String']['output']>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
   resourceSettings?: Maybe<ResourceSettings>;
   resourceVersion: ResourceVersion;
   resourceVersions: Array<ResourceVersion>;
   resources: Array<Resource>;
+  role?: Maybe<Role>;
+  roles: Array<Role>;
   serviceSettings: ServiceSettings;
   serviceTemplates: Array<Resource>;
   serviceTopics?: Maybe<ServiceTopics>;
@@ -3010,6 +3065,7 @@ export type Query = {
   teams: Array<Team>;
   topic?: Maybe<Topic>;
   topics: Array<Topic>;
+  user?: Maybe<User>;
   userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
@@ -3351,6 +3407,11 @@ export type QueryResourceArgs = {
 };
 
 
+export type QueryResourcePermissionsArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type QueryResourceRoleArgs = {
   version?: InputMaybe<Scalars['Float']['input']>;
   where: WhereUniqueInput;
@@ -3388,6 +3449,19 @@ export type QueryResourcesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<ResourceWhereInputWithPropertiesFilter>;
+};
+
+
+export type QueryRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryRolesArgs = {
+  orderBy?: InputMaybe<RoleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<RoleWhereInput>;
 };
 
 
@@ -3440,6 +3514,11 @@ export type QueryTopicsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<TopicWhereInput>;
+};
+
+
+export type QueryUserArgs = {
+  where: WhereUniqueInput;
 };
 
 
@@ -3588,6 +3667,7 @@ export type Resource = {
   serviceTemplate?: Maybe<Resource>;
   serviceTemplateVersion?: Maybe<Scalars['String']['output']>;
   settings?: Maybe<ResourceSettings>;
+  teamAssignments?: Maybe<Array<TeamAssignment>>;
   updatedAt: Scalars['DateTime']['output'];
   version?: Maybe<ResourceVersion>;
 };
@@ -3737,7 +3817,6 @@ export type ResourceSettingsUpdateInput = {
 
 export type ResourceUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  gitRepositoryOverride?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   properties?: InputMaybe<Scalars['JSONObject']['input']>;
 };
@@ -3816,12 +3895,42 @@ export type ResourceWhereInputWithPropertiesFilter = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
-export enum Role {
-  Admin = 'Admin',
-  OrganizationAdmin = 'OrganizationAdmin',
-  ProjectAdmin = 'ProjectAdmin',
-  User = 'User'
-}
+export type Role = {
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  permissions?: Maybe<Array<Scalars['String']['output']>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type RoleAddRemovePermissionsInput = {
+  permissions: Array<Scalars['String']['input']>;
+};
+
+export type RoleCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type RoleOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type RoleUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RoleWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  key?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<StringFilter>;
+};
 
 export type ScaffoldServiceFromTemplateInput = {
   name: Scalars['String']['input'];
@@ -3966,11 +4075,6 @@ export type SignupInput = {
   workspaceName: Scalars['String']['input'];
 };
 
-export type SignupPreviewAccountInput = {
-  previewAccountEmail: Scalars['String']['input'];
-  previewAccountType: EnumPreviewAccountType;
-};
-
 export type SignupWithBusinessEmailInput = {
   email: Scalars['String']['input'];
 };
@@ -4011,6 +4115,18 @@ export type Team = {
   id: Scalars['String']['output'];
   members?: Maybe<Array<User>>;
   name: Scalars['String']['output'];
+  roles?: Maybe<Array<Role>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TeamAssignment = {
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  resource: Resource;
+  resourceId: Scalars['String']['output'];
+  roles?: Maybe<Array<Role>>;
+  team?: Maybe<Team>;
+  teamId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -4032,6 +4148,10 @@ export type TeamUpdateInput = {
 
 export type TeamUpdateMembersInput = {
   userIds: Array<Scalars['String']['input']>;
+};
+
+export type TeamUpdateRolesInput = {
+  roleIds: Array<Scalars['String']['input']>;
 };
 
 export type TeamWhereInput = {
@@ -4116,8 +4236,8 @@ export type User = {
   id: Scalars['String']['output'];
   isOwner: Scalars['Boolean']['output'];
   lastActive?: Maybe<Scalars['DateTime']['output']>;
+  teams: Array<Team>;
   updatedAt: Scalars['DateTime']['output'];
-  userRoles?: Maybe<Array<UserRole>>;
   workspace?: Maybe<Workspace>;
 };
 
@@ -4134,13 +4254,6 @@ export type UserAction = {
   user: User;
   userActionType: EnumUserActionType;
   userId: Scalars['String']['output'];
-};
-
-export type UserRole = {
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['String']['output'];
-  role: Role;
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type WhereBlueprintRelationUniqueInput = {
@@ -4170,6 +4283,11 @@ export type WherePrivatePluginVersionUniqueInput = {
 export type WherePropertyUniqueInput = {
   moduleDto: WhereUniqueInput;
   propertyName: Scalars['String']['input'];
+};
+
+export type WhereTeamAssignmentInput = {
+  resourceId: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
 };
 
 export type WhereUniqueInput = {

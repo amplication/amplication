@@ -82,3 +82,9 @@ export const PROVISION_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const GET_PERMISSIONS = gql`
+  query permissions {
+    permissions
+  }
+`;

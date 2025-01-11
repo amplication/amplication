@@ -11,6 +11,7 @@ import { useRef } from "react";
 import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
+import { useAppContext } from "../../../context/appContext";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -30,6 +31,10 @@ export default function ExistingConnectionsMenu({
   onSelectGitOrganization,
 }: Props) {
   const selectRef = useRef(null);
+
+  const { permissions } = useAppContext();
+
+  const canCreateGitOrganization = permissions.canPerformTask("git.org.create");
 
   return (
     <>
@@ -70,18 +75,20 @@ export default function ExistingConnectionsMenu({
                 </SelectMenuItem>
               ))}
             </>
-            <SelectMenuItem
-              closeAfterSelectionChange
-              selected={false}
-              onSelectionChange={() => {
-                onAddGitOrganization && onAddGitOrganization();
-              }}
-            >
-              <div className={`${CLASS_NAME}__add-item`}>
-                <Icon icon="plus" size="xsmall" />
-                <span>Add Organization</span>
-              </div>
-            </SelectMenuItem>
+            {canCreateGitOrganization && (
+              <SelectMenuItem
+                closeAfterSelectionChange
+                selected={false}
+                onSelectionChange={() => {
+                  onAddGitOrganization && onAddGitOrganization();
+                }}
+              >
+                <div className={`${CLASS_NAME}__add-item`}>
+                  <Icon icon="plus" size="xsmall" />
+                  <span>Add Organization</span>
+                </div>
+              </SelectMenuItem>
+            )}
           </SelectMenuList>
         </SelectMenuModal>
       </SelectMenu>

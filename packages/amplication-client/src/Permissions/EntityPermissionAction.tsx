@@ -20,7 +20,7 @@ import {
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
-import { GET_ROLES } from "../Roles/RoleList";
+import { GET_ROLES } from "../ResourceRoles/RoleList";
 import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "entity-permissions-action";

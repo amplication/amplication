@@ -858,13 +858,6 @@ export class BuildService {
         EnumBuildGitStatus.Completed
       );
 
-      //In case this is a preview user - a success email will be sent after the first code generation
-      await this.userService.handleUserPullRequestCompleted(
-        build.userId,
-        build.id,
-        response.url
-      );
-
       const workspace = await this.resourceService.getResourceWorkspace(
         build.resourceId
       );

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Request } from "express";
-import { Account, User, UserRole, Workspace } from "../../models";
+import { Account, User, Workspace } from "../../models";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export type GitHubRequest = Request & { isNew: boolean | undefined };
 
@@ -31,23 +32,5 @@ interface AuthProfileCustomClaims {
 export type AuthUser = User & {
   account: Account;
   workspace: Workspace;
-  userRoles: UserRole[];
-};
-
-export type BootstrapPreviewUser = {
-  user: AuthUser;
-  workspaceId: string;
-  projectId: string;
-  resourceId: string;
-};
-
-export type CreatePreviewServiceSettingsArgs = {
-  projectId: string;
-  name: string;
-  description: string;
-  adminUIPath: string;
-  serverPath: string;
-  generateAdminUI: boolean;
-  generateGraphQL: boolean;
-  generateRestApi: boolean;
+  permissions: RolesPermissions[];
 };

@@ -8,6 +8,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import { useCallback, useEffect } from "react";
@@ -18,6 +19,7 @@ import { EnumButtonStyle } from "./Button";
 import "./OwnerSelector.scss";
 import { TeamInfo } from "./TeamInfo";
 import { UserInfo } from "./UserInfo";
+import { formatError } from "../util/error";
 
 const CLASS_NAME = "owner-selector";
 
@@ -32,13 +34,15 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
   const { findTeamsData, getAvailableWorkspaceUsers, availableWorkspaceUsers } =
     useTeams();
 
-  const { setResourceOwner } = useResource(id);
+  const { setResourceOwner, setResourceOwnerError } = useResource(id);
 
   let content = null;
 
   useEffect(() => {
     getAvailableWorkspaceUsers();
   }, []);
+
+  const errorMessage = formatError(setResourceOwnerError);
 
   const handleOwnerChanged = useCallback(
     (data, typeName: string) => {
@@ -66,54 +70,57 @@ export const OwnerSelector = ({ resource, disabled }: Props) => {
   }
 
   return (
-    <SelectMenu
-      buttonAsTextBox
-      buttonAsTextBoxLabel="Owner"
-      disabled={disabled}
-      className={CLASS_NAME}
-      title={
-        <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>
-          {content}
-        </FlexItem>
-      }
-      buttonStyle={EnumButtonStyle.Text}
-    >
-      <SelectMenuModal>
-        <SelectMenuList>
-          <CollapsibleListItem
-            initiallyExpanded
-            expandable
-            icon={"users"}
-            childItems={findTeamsData?.teams?.map((team) => (
-              <SelectMenuItem
-                closeAfterSelectionChange
-                itemData={team}
-                onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
-              >
-                <TeamInfo team={team} />
-              </SelectMenuItem>
-            ))}
-          >
-            Teams
-          </CollapsibleListItem>
-          <CollapsibleListItem
-            initiallyExpanded
-            expandable
-            icon={"user"}
-            childItems={availableWorkspaceUsers?.map((user) => (
-              <SelectMenuItem
-                itemData={user}
-                closeAfterSelectionChange
-                onSelectionChange={(data) => handleOwnerChanged(data, "User")}
-              >
-                <UserInfo user={user} showEmail={false} />
-              </SelectMenuItem>
-            ))}
-          >
-            Users
-          </CollapsibleListItem>
-        </SelectMenuList>
-      </SelectMenuModal>
-    </SelectMenu>
+    <>
+      <SelectMenu
+        buttonAsTextBox
+        buttonAsTextBoxLabel="Owner"
+        disabled={disabled}
+        className={CLASS_NAME}
+        title={
+          <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>
+            {content}
+          </FlexItem>
+        }
+        buttonStyle={EnumButtonStyle.Text}
+      >
+        <SelectMenuModal>
+          <SelectMenuList>
+            <CollapsibleListItem
+              initiallyExpanded
+              expandable
+              icon={"users"}
+              childItems={findTeamsData?.teams?.map((team) => (
+                <SelectMenuItem
+                  closeAfterSelectionChange
+                  itemData={team}
+                  onSelectionChange={(data) => handleOwnerChanged(data, "Team")}
+                >
+                  <TeamInfo team={team} />
+                </SelectMenuItem>
+              ))}
+            >
+              Teams
+            </CollapsibleListItem>
+            <CollapsibleListItem
+              initiallyExpanded
+              expandable
+              icon={"user"}
+              childItems={availableWorkspaceUsers?.map((user) => (
+                <SelectMenuItem
+                  itemData={user}
+                  closeAfterSelectionChange
+                  onSelectionChange={(data) => handleOwnerChanged(data, "User")}
+                >
+                  <UserInfo user={user} showEmail={false} />
+                </SelectMenuItem>
+              ))}
+            >
+              Users
+            </CollapsibleListItem>
+          </SelectMenuList>
+        </SelectMenuModal>
+      </SelectMenu>
+      <Snackbar open={Boolean(setResourceOwnerError)} message={errorMessage} />
+    </>
   );
 };

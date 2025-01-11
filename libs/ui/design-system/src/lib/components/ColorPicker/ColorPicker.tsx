@@ -19,6 +19,7 @@ export type Props = {
   onChange: (color: string) => void;
   label?: string;
   iconOnlyMode?: boolean;
+  disabled?: boolean;
 };
 
 export const COLORS = [
@@ -47,6 +48,7 @@ export const ColorPicker: React.FC<Props> = ({
   onChange,
   label,
   iconOnlyMode,
+  disabled,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -138,6 +140,7 @@ export const ColorPicker: React.FC<Props> = ({
               onClick={() => setIsOpen(!isOpen)}
               type="button"
               icon="color"
+              disabled={disabled}
             />
           ) : (
             <Button
@@ -146,6 +149,7 @@ export const ColorPicker: React.FC<Props> = ({
               style={style}
               onClick={() => setIsOpen(!isOpen)}
               type="button"
+              disabled={disabled}
             >
               Choose
             </Button>

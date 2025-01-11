@@ -54,6 +54,7 @@ export type Props = {
   ctaType?: EnumCtaType;
   actualUsage?: number | null;
   paidPlansExclusive?: boolean;
+  canPerformTask?: boolean; //set the disabled property to false based on the user specific permissions, even if the feature is enabled
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -69,6 +70,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   ctaType = EnumCtaType.Upgrade,
   actualUsage,
   paidPlansExclusive = true,
+  canPerformTask = true,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
@@ -100,11 +102,6 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Boolean) {
-      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
-        setDisabled(null);
-        setIcon(null);
-        return;
-      }
       setDisabled(!hasBooleanAccess);
     }
 
@@ -113,11 +110,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
         actualUsage !== null ? actualUsage : currentUsage;
       const usageExceeded = usageLimit && actualCurrentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
-      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
-        setDisabled(null);
-        setIcon(null);
-        return;
-      }
+
       if (actualUsage !== null) {
         // do not consider metered access if actual usage is provided
         setDisabled(usageExceeded);
@@ -169,11 +162,10 @@ export const FeatureIndicatorContainer: FC<Props> = ({
 
   const showTooltipLink = useMemo(() => {
     if (
-      isPreviewPlan(subscriptionPlan) ||
-      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
         subscriptionPlan === EnumSubscriptionPlan.Essential ||
         subscriptionPlan === EnumSubscriptionPlan.Team) &&
-        status !== EnumSubscriptionStatus.Trailing)
+      status !== EnumSubscriptionStatus.Trailing
     ) {
       return false; // don't show the upgrade link when the plan is preview
     }
@@ -203,7 +195,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   }, [featureId, subscriptionPlan, status, disabled, paidPlansExclusive]);
 
   const renderProps = {
-    disabled: disabled,
+    disabled: disabled || !canPerformTask,
     icon: icon,
     reversePosition,
   };
@@ -253,12 +245,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             }
           />
         ))}
-      {!render && !icon && children}
+      {!render && !icon && React.cloneElement(children, renderProps)}
     </div>
   );
 };
-
-export function isPreviewPlan(plan: EnumSubscriptionPlan) {
-  const previewPlans = [EnumSubscriptionPlan.PreviewBreakTheMonolith];
-  return previewPlans.includes(plan);
-}

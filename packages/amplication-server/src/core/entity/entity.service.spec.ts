@@ -45,7 +45,6 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
@@ -299,8 +298,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {

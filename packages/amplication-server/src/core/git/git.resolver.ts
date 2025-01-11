@@ -18,15 +18,11 @@ import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
 import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
-import {
-  RemoteGitRepos,
-  RemoteGitRepository,
-} from "./dto/objects/RemoteGitRepository";
+import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
-import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { GitRepository, User } from "../../models";
@@ -40,23 +36,13 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
+    "data.gitOrganizationId",
+    "git.repo.create"
   )
-  async connectGitRepository(
+  async connectResourceToNewRemoteGitRepository(
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource | boolean> {
-    return this.gitService.connectGitRepository(args.data);
-  }
-
-  @Mutation(() => RemoteGitRepository)
-  @AuthorizeContext(
-    AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
-  )
-  async createRemoteGitRepository(
-    @Args() args: CreateGitRepositoryBaseArgs
-  ): Promise<RemoteGitRepository> {
-    return this.gitService.createRemoteGitRepository(args.data);
+    return this.gitService.connectResourceToNewRemoteGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
@@ -67,16 +53,22 @@ export class GitResolver {
 
   @Mutation(() => Resource)
   @AuthorizeContext(
-    AuthorizableOriginParameter.GitOrganizationId,
-    "data.gitOrganizationId"
+    AuthorizableOriginParameter.ResourceId,
+    "data.resourceId",
+    "git.repo.select"
   )
   async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
   ): Promise<Resource> {
     return await this.gitService.connectResourceGitRepository(args.data);
   }
+
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resourceId",
+    "git.repo.select"
+  )
   async connectResourceToProjectRepository(
     @Args() args: ConnectToProjectGitRepositoryArgs
   ): Promise<Resource> {
@@ -86,7 +78,11 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization, {})
-  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "data.workspaceId",
+    "git.org.create"
+  )
   async createOrganization(
     @UserEntity() currentUser: User,
     @Args()
@@ -98,7 +94,8 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitRepositoryId,
-    "gitRepositoryId"
+    "gitRepositoryId",
+    "git.repo.disconnect"
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
@@ -107,7 +104,11 @@ export class GitResolver {
   }
 
   @Mutation(() => GitRepository)
-  @AuthorizeContext(AuthorizableOriginParameter.GitRepositoryId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitRepositoryId,
+    "where.id",
+    "git.repo.settings.edit"
+  )
   async updateGitRepository(
     @Args() args: UpdateGitRepositoryArgs
   ): Promise<GitRepository> {
@@ -117,7 +118,8 @@ export class GitResolver {
   @Mutation(() => Boolean)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    "gitOrganizationId"
+    "gitOrganizationId",
+    "git.org.delete"
   )
   async deleteGitOrganization(
     @Args() args: DeleteGitOrganizationArgs
@@ -126,11 +128,18 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resourceId",
+    "git.repo.disconnect"
+  )
   async disconnectResourceGitRepository(
     @Args() args: DisconnectGitRepositoryArgs
   ): Promise<Resource> {
-    return this.gitService.disconnectResourceGitRepository(args.resourceId);
+    return this.gitService.disconnectResourceGitRepository(
+      args.resourceId,
+      args.overrideProjectSettings
+    );
   }
 
   @Mutation(() => AuthorizeResourceWithGitResult)

@@ -1,35 +1,34 @@
-import { Resolver, Mutation, Query, Args } from "@nestjs/graphql";
-import { UseGuards, UseFilters } from "@nestjs/common";
-import { Auth, User, Account } from "../../models";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Account, Auth, User } from "../../models";
 import {
-  LoginArgs,
-  SignupArgs,
-  ChangePasswordArgs,
-  SetCurrentWorkspaceArgs,
-  CreateApiTokenArgs,
   ApiToken,
+  ChangePasswordArgs,
+  CreateApiTokenArgs,
+  LoginArgs,
+  SetCurrentWorkspaceArgs,
+  SignupArgs,
 } from "./dto";
 
 import { CompleteInvitationArgs } from "../workspace/dto";
 
-import { AuthService } from "./auth.service";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { UserEntity } from "../../decorators/user.decorator";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { FindOneArgs } from "../../dto";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { SignupPreviewAccountArgs } from "./dto/SignupPreviewAccountArgs";
-import { AuthPreviewAccount } from "../../models/AuthPreviewAccount";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { AuthService } from "./auth.service";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
-import { PreviewUserService } from "./previewUser.service";
+import { AuthUser } from "./types";
+import { PermissionsService } from "../permissions/permissions.service";
 
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
-    private readonly previewUserService: PreviewUserService
+    private readonly permissionsService: PermissionsService
   ) {}
 
   @Query(() => User)
@@ -38,35 +37,30 @@ export class AuthResolver {
     return user;
   }
 
+  @Query(() => [String])
+  @UseGuards(GqlAuthGuard)
+  async permissions(@UserEntity() user: AuthUser): Promise<string[]> {
+    return user.permissions;
+  }
+
+  @Query(() => [String])
+  @UseGuards(GqlAuthGuard)
+  async resourcePermissions(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: AuthUser
+  ): Promise<string[]> {
+    return this.permissionsService.getUserResourceOrProjectPermissions(
+      user,
+      args.where.id,
+      undefined
+    );
+  }
+
   @Mutation(() => Boolean)
   async signupWithBusinessEmail(
     @Args() args: SignupWithBusinessEmailArgs
   ): Promise<boolean> {
     return this.authService.signupWithBusinessEmail(args);
-  }
-
-  @Mutation(() => AuthPreviewAccount)
-  async signupPreviewAccount(
-    @Args() args: SignupPreviewAccountArgs
-  ): Promise<AuthPreviewAccount> {
-    const {
-      data: { previewAccountEmail, previewAccountType },
-    } = args;
-
-    const previewAccountEmailToLower = previewAccountEmail.toLowerCase();
-
-    return this.previewUserService.signupPreviewAccount({
-      previewAccountEmail: previewAccountEmailToLower,
-      previewAccountType,
-    });
-  }
-
-  @Mutation(() => String)
-  @UseGuards(GqlAuthGuard)
-  async completeSignupWithBusinessEmail(
-    @UserEntity() user: User
-  ): Promise<string> {
-    return this.previewUserService.completeSignupPreviewAccount(user);
   }
 
   @Mutation(() => Auth)
@@ -87,6 +81,7 @@ export class AuthResolver {
 
   @Mutation(() => ApiToken)
   @UseGuards(GqlAuthGuard)
+  @AuthorizeContext(AuthorizableOriginParameter.None, "", "apiToken.create")
   async createApiToken(
     @UserEntity() user: User,
     @Args() args: CreateApiTokenArgs

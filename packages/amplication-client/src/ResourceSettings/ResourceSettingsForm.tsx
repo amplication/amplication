@@ -57,7 +57,7 @@ function ResourceSettingsForm({ resource }: Props) {
 
     const schema = {
       properties: {
-        properties: settingsSchema.schema,
+        properties: settingsSchema?.schema,
       },
     };
 

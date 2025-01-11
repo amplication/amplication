@@ -5,6 +5,7 @@
  * in the { @link PermissionService }
  */
 export enum AuthorizableOriginParameter {
+  None,
   WorkspaceId,
   ResourceId,
   EntityId,
@@ -28,4 +29,6 @@ export enum AuthorizableOriginParameter {
   TeamId,
   CustomPropertyId,
   BlueprintId,
+  RoleId,
+  UserId,
 }

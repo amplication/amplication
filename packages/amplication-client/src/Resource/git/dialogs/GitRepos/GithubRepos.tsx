@@ -25,6 +25,7 @@ import { GitSelectGroup } from "../../select/GitSelectGroup";
 import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
+import { useResourceContext } from "../../../../context/resourceContext";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10;
@@ -65,6 +66,9 @@ function GitRepos({
   srcType,
 }: Props) {
   const [page, setPage] = useState(1);
+
+  const { permissions } = useResourceContext();
+  const canCreateRepo = permissions.canPerformTask("git.repo.create");
 
   const {
     data: gitGroupsData,
@@ -228,36 +232,38 @@ function GitRepos({
             </>
           )}
         </div>
-        <div className={`${CLASS_NAME}__header-right`}>
-          {gitOrganization.type === EnumGitOrganizationType.Organization && (
-            <Button
-              className={`${CLASS_NAME}__header-create`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={(e) => {
-                openCreateNewRepo();
-              }}
-              type="button"
-            >
-              Create repository
-            </Button>
-          )}
-          {gitOrganization.type === EnumGitOrganizationType.User &&
-            gitOrganization.provider === EnumGitProvider.Github && (
-              <a
-                href={`https://github.com/new?&owner=${gitOrganization.name}`}
-                target="_blank"
-                rel="noreferrer"
+        {canCreateRepo && (
+          <div className={`${CLASS_NAME}__header-right`}>
+            {gitOrganization.type === EnumGitOrganizationType.Organization && (
+              <Button
+                className={`${CLASS_NAME}__header-create`}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={(e) => {
+                  openCreateNewRepo();
+                }}
+                type="button"
               >
-                <Button
-                  className={`${CLASS_NAME}__header-create`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  type="button"
-                >
-                  Create repository
-                </Button>
-              </a>
+                Create repository
+              </Button>
             )}
-        </div>
+            {gitOrganization.type === EnumGitOrganizationType.User &&
+              gitOrganization.provider === EnumGitProvider.Github && (
+                <a
+                  href={`https://github.com/new?&owner=${gitOrganization.name}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button
+                    className={`${CLASS_NAME}__header-create`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    type="button"
+                  >
+                    Create repository
+                  </Button>
+                </a>
+              )}
+          </div>
+        )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (

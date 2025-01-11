@@ -9,13 +9,18 @@ type Props = {
   icon?: string;
   to: string;
   className?: string;
+  exact?: boolean;
 };
 
 const CLASS_NAME = "inner-tab-link";
 
-function InnerTabLink({ children, icon, to, className }: Props) {
+function InnerTabLink({ children, icon, to, className, exact = true }: Props) {
   return (
-    <NavLink to={to} exact className={classNames(CLASS_NAME, className)}>
+    <NavLink
+      to={to}
+      exact={exact}
+      className={classNames(CLASS_NAME, className)}
+    >
       {icon && <Icon icon={icon} size="small" />}
       <span className={`${CLASS_NAME}__inner-span`}>{children}</span>
     </NavLink>

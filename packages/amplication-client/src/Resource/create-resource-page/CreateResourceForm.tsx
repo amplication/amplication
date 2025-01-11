@@ -2,6 +2,7 @@ import {
   Button,
   EnumButtonStyle,
   EnumFlexItemMargin,
+  EnumMessageType,
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
@@ -10,6 +11,7 @@ import {
   HorizontalRule,
   Panel,
   SelectField,
+  Snackbar,
   Text,
   TextField,
 } from "@amplication/ui/design-system";
@@ -30,6 +32,7 @@ import { useHistory } from "react-router-dom";
 import { useCatalogContext } from "../../Catalog/CatalogContext";
 import { useAppContext } from "../../context/appContext";
 import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
+import { formatError } from "../../util/error";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -191,9 +194,12 @@ const CreateResourceForm = ({ projectId }: Props) => {
     [blueprintsMapById, propertiesSchema.schema]
   );
 
-  const { createComponent, loadingCreateComponent } = useCreateComponent({
-    onComponentCreated: handleComponentCreated,
-  });
+  const { createComponent, loadingCreateComponent, errorCreateComponent } =
+    useCreateComponent({
+      onComponentCreated: handleComponentCreated,
+    });
+
+  const errorMessage = formatError(errorCreateComponent);
 
   const handleSubmit = useCallback(
     (values: CreateResourceFormType) => {
@@ -317,7 +323,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
 
                   <SelectField name="Owner" label="owner" options={[]} />
 
-                  <CustomPropertiesFormFields />
+                  <CustomPropertiesFormFields disabled={false} />
                   <TextField
                     name={"description"}
                     label={"Description"}
@@ -361,6 +367,11 @@ const CreateResourceForm = ({ projectId }: Props) => {
           </Form>
         )}
       </Formik>
+      <Snackbar
+        messageType={EnumMessageType.Error}
+        open={Boolean(errorCreateComponent)}
+        message={errorMessage}
+      />
     </>
   );
 };

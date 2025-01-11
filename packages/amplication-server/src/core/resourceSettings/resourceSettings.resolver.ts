@@ -19,7 +19,11 @@ export class ResourceSettingsResolver {
   @Mutation(() => ResourceSettings, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateResourceSettings(
     @Args() args: UpdateResourceSettingsArgs,
     @UserEntity() user: User

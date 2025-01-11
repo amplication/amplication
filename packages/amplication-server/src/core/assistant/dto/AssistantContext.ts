@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { User } from "../../../models";
+import { AuthUser } from "../../auth/types";
 
 @InputType()
 export class AssistantContext {
@@ -14,6 +14,6 @@ export class AssistantContext {
   resourceId?: string;
 
   //the below properties are automatically populated by the resolver based on the authenticated user
-  user: User;
+  user: AuthUser;
   workspaceId: string;
 }

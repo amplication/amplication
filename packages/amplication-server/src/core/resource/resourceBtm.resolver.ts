@@ -22,7 +22,11 @@ export class ResourceBtmResolver {
     description:
       "Trigger the generation of a set of recommendations for breaking a resource into microservices",
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "resourceId",
+    "resource.*.edit"
+  )
   async triggerBreakServiceIntoMicroservices(
     @Args({ name: "resourceId", type: () => String })
     resourceId: string,
@@ -53,7 +57,11 @@ export class ResourceBtmResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.id",
+    "resource.*.edit"
+  )
   async startRedesign(
     @UserEntity() user: User,
     @Args() args: StartRedesignArgs

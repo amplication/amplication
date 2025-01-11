@@ -1,7 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Account } from "./Account";
 import { Workspace } from "./Workspace";
-import { UserRole } from "./UserRole";
 
 @ObjectType({
   isAbstract: true,
@@ -31,11 +30,6 @@ export class User {
     nullable: true,
   })
   workspace?: Workspace;
-
-  @Field(() => [UserRole], {
-    nullable: true,
-  })
-  userRoles?: UserRole[] | null;
 
   @Field(() => Boolean, {
     nullable: false,

@@ -10,8 +10,6 @@ type Account {
   id: String!
   lastName: String!
   password: String!
-  previewAccountEmail: String
-  previewAccountType: EnumPreviewAccountType!
   updatedAt: DateTime!
 }
 
@@ -37,6 +35,10 @@ type ActionStep {
   message: String!
   name: String!
   status: EnumActionStepStatus!
+}
+
+input AddMemberToTeamsInput {
+  teamIds: [String!]!
 }
 
 type AdminUISettings {
@@ -95,13 +97,6 @@ type AssistantThread {
 type Auth {
   """JWT Bearer token"""
   token: String!
-}
-
-type AuthPreviewAccount {
-  projectId: String!
-  resourceId: String
-  token: String!
-  workspaceId: String!
 }
 
 type AuthorizeResourceWithGitResult {
@@ -444,19 +439,6 @@ input CreateEntitiesFromPredefinedSchemaInput {
   schemaName: EnumSchemaNames!
 }
 
-input CreateGitRepositoryBaseInput {
-  gitOrganizationId: String!
-  gitOrganizationType: EnumGitOrganizationType!
-  gitProvider: EnumGitProvider!
-
-  """
-  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
-  """
-  groupName: String
-  isPublic: Boolean!
-  name: String!
-}
-
 input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -469,6 +451,14 @@ input CreateGitRepositoryInput {
   isPublic: Boolean!
   name: String!
   resourceId: String
+}
+
+input CreateTeamAssignmentsInput {
+  teamIds: [String!]!
+}
+
+input CreateTeamAssignmentsWhereInput {
+  resourceId: String!
 }
 
 type CustomProperty {
@@ -1129,12 +1119,6 @@ enum EnumPendingChangeOriginType {
   Entity
 }
 
-enum EnumPreviewAccountType {
-  BreakingTheMonolith
-  None
-  PreviewOnboarding
-}
-
 enum EnumResourceType {
   Component
   MessageBroker
@@ -1658,15 +1642,18 @@ input ModuleWhereInput {
 
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  addMemberToTeams(data: AddMemberToTeamsInput!, where: WhereUniqueInput!): User!
   addMembersToTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  addRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  addRolesToTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  addRolesToTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   bulkUpdateWorkspaceProjectsAndResourcesLicensed(useUserLastActive: Boolean): Boolean!
   changePassword(data: ChangePasswordInput!): Account!
   commit(data: CommitCreateInput!): Commit
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  completeSignupWithBusinessEmail: String!
-  connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToNewRemoteGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBlueprint(data: BlueprintCreateInput!): Blueprint!
@@ -1694,14 +1681,15 @@ type Mutation {
   createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
   createRelation(data: RelationCreateInput!): Relation!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  createRole(data: RoleCreateInput!): Role!
   createService(data: ResourceCreateInput!): Resource!
   createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTeam(data: TeamCreateInput!): Team!
+  createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1726,13 +1714,14 @@ type Mutation {
   deleteRelation(where: WhereUniqueInput!): Relation!
   deleteResource(where: WhereUniqueInput!): Resource
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  deleteRole(where: WhereUniqueInput!): Role
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   deleteTeam(where: WhereUniqueInput!): Team
+  deleteTeamAssignment(where: WhereTeamAssignmentInput!): TeamAssignment!
   deleteTopic(where: WhereUniqueInput!): Topic!
   deleteUser(where: WhereUniqueInput!): User
-  deleteWorkspace(where: WhereUniqueInput!): Workspace
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  disconnectResourceGitRepository(resourceId: String!): Resource!
+  disconnectResourceGitRepository(overrideProjectSettings: Boolean, resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
   inviteUser(data: InviteUserInput!): Invitation
   lockEntity(where: WhereUniqueInput!): Entity
@@ -1741,6 +1730,9 @@ type Mutation {
   redeemCoupon(data: RedeemCouponInput!): Coupon!
   redesignProject(data: RedesignProjectInput!): UserAction!
   removeMembersFromTeam(data: TeamUpdateMembersInput!, where: WhereUniqueInput!): Team!
+  removeRolePermissions(data: RoleAddRemovePermissionsInput!, where: WhereUniqueInput!): Role!
+  removeRolesFromTeam(data: TeamUpdateRolesInput!, where: WhereUniqueInput!): Team!
+  removeRolesFromTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
@@ -1749,7 +1741,6 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   setResourceOwner(data: ResourceSetOwnerInput!): Resource!
   signup(data: SignupInput!): Auth!
-  signupPreviewAccount(data: SignupPreviewAccountInput!): AuthPreviewAccount!
   signupWithBusinessEmail(data: SignupWithBusinessEmailInput!): Boolean!
   startRedesign(data: WhereUniqueInput!): Resource
 
@@ -1785,6 +1776,7 @@ type Mutation {
   updateResourceRelation(data: ResourceRelationUpdateInput!, resource: WhereUniqueInput!): Relation!
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   updateResourceSettings(data: ResourceSettingsUpdateInput!, where: WhereUniqueInput!): ResourceSettings
+  updateRole(data: RoleUpdateInput!, where: WhereUniqueInput!): Role!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateTeam(data: TeamUpdateInput!, where: WhereUniqueInput!): Team!
@@ -2276,6 +2268,7 @@ type Query {
   package(where: WhereUniqueInput!): Package
   packageList(orderBy: PackageOrderByInput, skip: Int, take: Int, where: PackageWhereInput): [Package!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  permissions: [String!]!
   pluginInstallation(where: WhereUniqueInput!): PluginInstallation
   pluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
@@ -2289,12 +2282,15 @@ type Query {
   relations(orderBy: RelationOrderByInput, skip: Int, take: Int, where: RelationWhereInput): [Relation!]!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   resource(where: WhereUniqueInput!): Resource
+  resourcePermissions(where: WhereUniqueInput!): [String!]!
   resourceRole(version: Float, where: WhereUniqueInput!): ResourceRole
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resourceSettings(where: WhereUniqueInput!): ResourceSettings
   resourceVersion(where: WhereUniqueInput!): ResourceVersion!
   resourceVersions(orderBy: ResourceVersionOrderByInput, skip: Int, take: Int, where: ResourceVersionWhereInput): [ResourceVersion!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
+  role(where: WhereUniqueInput!): Role
+  roles(orderBy: RoleOrderByInput, skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   serviceTemplates(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInputWithPropertiesFilter): [Resource!]!
   serviceTopics(where: WhereUniqueInput!): ServiceTopics
@@ -2303,6 +2299,7 @@ type Query {
   teams(orderBy: TeamOrderByInput, skip: Int, take: Int, where: TeamWhereInput): [Team!]!
   topic(where: WhereUniqueInput!): Topic
   topics(orderBy: TopicOrderByInput, skip: Int, take: Int, where: TopicWhereInput): [Topic!]!
+  user(where: WhereUniqueInput!): User
   userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
@@ -2449,6 +2446,7 @@ type Resource {
   serviceTemplate: Resource
   serviceTemplateVersion: String
   settings: ResourceSettings
+  teamAssignments: [TeamAssignment!]
   updatedAt: DateTime!
   version: ResourceVersion
 }
@@ -2582,7 +2580,6 @@ input ResourceSettingsUpdateInput {
 
 input ResourceUpdateInput {
   description: String
-  gitRepositoryOverride: Boolean
   name: String
   properties: JSONObject
 }
@@ -2661,11 +2658,41 @@ input ResourceWhereInputWithPropertiesFilter {
   updatedAt: DateTimeFilter
 }
 
-enum Role {
-  Admin
-  OrganizationAdmin
-  ProjectAdmin
-  User
+type Role {
+  createdAt: DateTime!
+  description: String
+  id: String!
+  key: String!
+  name: String!
+  permissions: [String!]
+  updatedAt: DateTime!
+}
+
+input RoleAddRemovePermissionsInput {
+  permissions: [String!]!
+}
+
+input RoleCreateInput {
+  name: String!
+}
+
+input RoleOrderByInput {
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+}
+
+input RoleUpdateInput {
+  description: String
+  key: String
+  name: String
+}
+
+input RoleWhereInput {
+  deletedAt: DateTimeFilter
+  id: String
+  key: String
+  name: StringFilter
 }
 
 input ScaffoldServiceFromTemplateInput {
@@ -2811,11 +2838,6 @@ input SignupInput {
   workspaceName: String!
 }
 
-input SignupPreviewAccountInput {
-  previewAccountEmail: String!
-  previewAccountType: EnumPreviewAccountType!
-}
-
 input SignupWithBusinessEmailInput {
   email: String!
 }
@@ -2851,6 +2873,18 @@ type Team {
   id: String!
   members: [User!]
   name: String!
+  roles: [Role!]
+  updatedAt: DateTime!
+}
+
+type TeamAssignment {
+  createdAt: DateTime!
+  id: String!
+  resource: Resource!
+  resourceId: String!
+  roles: [Role!]
+  team: Team
+  teamId: String
   updatedAt: DateTime!
 }
 
@@ -2872,6 +2906,10 @@ input TeamUpdateInput {
 
 input TeamUpdateMembersInput {
   userIds: [String!]!
+}
+
+input TeamUpdateRolesInput {
+  roleIds: [String!]!
 }
 
 input TeamWhereInput {
@@ -2959,8 +2997,8 @@ type User {
   id: String!
   isOwner: Boolean!
   lastActive: DateTime
+  teams: [Team!]!
   updatedAt: DateTime!
-  userRoles: [UserRole!]
   workspace: Workspace
 }
 
@@ -2977,13 +3015,6 @@ type UserAction {
   user: User!
   userActionType: EnumUserActionType!
   userId: String!
-}
-
-type UserRole {
-  createdAt: DateTime!
-  id: String!
-  role: Role!
-  updatedAt: DateTime!
 }
 
 input WhereBlueprintRelationUniqueInput {
@@ -3013,6 +3044,11 @@ input WherePrivatePluginVersionUniqueInput {
 input WherePropertyUniqueInput {
   moduleDto: WhereUniqueInput!
   propertyName: String!
+}
+
+input WhereTeamAssignmentInput {
+  resourceId: String!
+  teamId: String!
 }
 
 input WhereUniqueInput {

@@ -7,6 +7,11 @@ import { AppContext } from "../context/appContext";
 import { EnumResourceType } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import ServiceTemplateList from "./ServiceTemplateList";
+import useResourcePermissions from "../Resource/hooks/useResourcePermissions";
+import {
+  ResourceContextInterface,
+  ResourceContextProvider,
+} from "../context/resourceContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -26,6 +31,17 @@ const ProjectPlatformPage: React.FC<Props> = ({
   const { pendingChanges } = useContext(AppContext);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
+
+  //we use resource context for the project configuration resource to check permissions on the project level
+  const { projectConfigurationResource } = useContext(AppContext);
+  const permissions = useResourcePermissions(projectConfigurationResource?.id);
+  const context: ResourceContextInterface = {
+    resourceId: projectConfigurationResource?.id,
+    resource: projectConfigurationResource,
+    lastSuccessfulGitBuild: undefined,
+    lastSuccessfulGitBuildPluginVersions: undefined,
+    permissions,
+  };
 
   //count how many unique resources in the pending changes
   const publishCount = useMemo(() => {
@@ -71,14 +87,18 @@ const ProjectPlatformPage: React.FC<Props> = ({
     ];
   }, [match.url, publishCount, tabs, pendingChanges]);
 
-  return match.isExact || currentRouteIsTab ? (
-    <>
-      <PageLayout className={moduleClass} tabs={tabItems}>
-        {match.isExact ? <ServiceTemplateList /> : tabRoutes}
-      </PageLayout>
-    </>
-  ) : (
-    innerRoutes
+  return (
+    <ResourceContextProvider newVal={context}>
+      {match.isExact || currentRouteIsTab ? (
+        <>
+          <PageLayout className={moduleClass} tabs={tabItems}>
+            {match.isExact ? <ServiceTemplateList /> : tabRoutes}
+          </PageLayout>
+        </>
+      ) : (
+        innerRoutes
+      )}
+    </ResourceContextProvider>
   );
 };
 

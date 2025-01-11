@@ -8,9 +8,10 @@ type Props = {
   customProperty: models.CustomProperty;
   onOptionDelete?: (option: models.CustomPropertyOption) => void;
   onOptionAdd?: (option: models.CustomProperty) => void;
+  disabled?: boolean;
 };
 const CustomPropertyOptionList = React.memo(
-  ({ customProperty, onOptionDelete, onOptionAdd }: Props) => {
+  ({ customProperty, onOptionDelete, onOptionAdd, disabled }: Props) => {
     const onPropertyOptionChanged = useCallback(() => {
       onOptionAdd && onOptionAdd(customProperty);
     }, [customProperty, onOptionAdd]);
@@ -19,10 +20,13 @@ const CustomPropertyOptionList = React.memo(
       <>
         <List
           headerContent={
-            <NewCustomPropertyOption
-              customProperty={customProperty}
-              onOptionAdd={onOptionAdd}
-            />
+            !disabled && (
+              <NewCustomPropertyOption
+                customProperty={customProperty}
+                onOptionAdd={onOptionAdd}
+                disabled={disabled}
+              />
+            )
           }
         >
           {customProperty?.options?.map((property, index) => (
@@ -32,6 +36,7 @@ const CustomPropertyOptionList = React.memo(
               customPropertyOption={property}
               onOptionChanged={onPropertyOptionChanged}
               onOptionDelete={onOptionDelete}
+              disabled={disabled}
             />
           ))}
         </List>

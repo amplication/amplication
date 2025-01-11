@@ -6,6 +6,8 @@ import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
 import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
 import { IBlueprintsMap } from "../Blueprints/hooks/useBlueprintsMap";
+import { IPermissions } from "../Workspaces/hooks/usePermissions";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -13,7 +15,6 @@ export interface AppContextInterface {
   createWorkspace: (data: CreateWorkspaceType) => void;
   subscriptionPlan: models.EnumSubscriptionPlan;
   subscriptionStatus: models.EnumSubscriptionStatus;
-  isPreviewPlan: boolean;
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
@@ -75,13 +76,13 @@ export interface AppContextInterface {
   errorCreateServiceFromTemplate: Error | undefined;
   customPropertiesMap: Record<string, models.CustomProperty>;
   blueprintsMap: IBlueprintsMap;
+  permissions: IPermissions;
 }
 
 const initialContext: AppContextInterface = {
   currentWorkspace: undefined,
   subscriptionPlan: models.EnumSubscriptionPlan.Free,
   subscriptionStatus: models.EnumSubscriptionStatus.Active,
-  isPreviewPlan: false,
   handleSetCurrentWorkspace: () => {},
   createWorkspace: () => {},
   createNewWorkspaceError: undefined,
@@ -155,6 +156,11 @@ const initialContext: AppContextInterface = {
     ready: false,
     blueprintsMap: {},
     blueprintsMapById: {},
+  },
+  permissions: {
+    allowedTasks: {} as Record<RolesPermissions, boolean>,
+    canPerformTask: () => false,
+    isAdmin: false,
   },
 };
 

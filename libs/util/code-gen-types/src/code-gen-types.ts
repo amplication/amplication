@@ -422,7 +422,6 @@ export {
   EnumGitProvider,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-  EnumPreviewAccountType,
   EnumResourceType,
   CodeGeneratorVersionStrategy,
   MessagePatternCreateInput,

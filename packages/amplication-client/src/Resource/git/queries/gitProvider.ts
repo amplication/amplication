@@ -8,8 +8,8 @@ export const START_AUTH_APP_WITH_GITHUB = gql`
   }
 `;
 
-export const CONNECT_GIT_PROVIDER_REPOSITORY = gql`
-  mutation connectGitRepository(
+export const CONNECT_RESOURCE_TO_NEW_REMOTE_GIT_REPOSITORY = gql`
+  mutation connectResourceToNewRemoteGitRepository(
     $gitProvider: EnumGitProvider!
     $gitOrganizationId: String!
     $resourceId: String
@@ -17,7 +17,7 @@ export const CONNECT_GIT_PROVIDER_REPOSITORY = gql`
     $isPublic: Boolean!
     $groupName: String
   ) {
-    connectGitRepository(
+    connectResourceToNewRemoteGitRepository(
       data: {
         name: $name
         isPublic: $isPublic

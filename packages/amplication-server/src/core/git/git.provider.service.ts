@@ -273,12 +273,51 @@ export class GitProviderService {
     );
   }
 
-  async connectGitRepository(
+  async connectResourceToNewRemoteGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<Resource | boolean> {
     const remoteRepository = await this.createRemoteGitRepository(args);
 
     const { groupName, gitOrganizationId, resourceId } = args;
+
+    //validate that the resourceId belongs to the same workspace as the gitOrganizationId
+    if (resourceId) {
+      const resource = await this.prisma.resource.findUnique({
+        where: {
+          id: resourceId,
+        },
+        select: {
+          project: {
+            select: {
+              workspaceId: true,
+            },
+          },
+        },
+      });
+
+      if (!resource) {
+        throw new AmplicationError(INVALID_RESOURCE_ID);
+      }
+
+      const gitOrganization = await this.prisma.gitOrganization.findUnique({
+        where: {
+          id: gitOrganizationId,
+        },
+        select: {
+          workspace: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (resource.project.workspaceId !== gitOrganization.workspace.id) {
+        throw new AmplicationError(
+          "The resource does not belong to the same workspace as the git organization"
+        );
+      }
+    }
 
     return resourceId
       ? await this.connectResourceGitRepository({
@@ -290,11 +329,67 @@ export class GitProviderService {
       : true;
   }
 
+  //validate that the organization exists and the resource is connected to the organization
+  async validateGitOrganization(
+    gitOrganizationId: string,
+    resourceId: string
+  ): Promise<boolean> {
+    const gitOrg = await this.prisma.gitOrganization.findUnique({
+      where: {
+        id: gitOrganizationId,
+        workspace: {
+          projects: {
+            some: {
+              resources: {
+                some: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+        },
+      },
+      select: {
+        workspace: {
+          select: {
+            projects: {
+              where: {
+                resources: {
+                  some: {
+                    id: resourceId,
+                  },
+                },
+              },
+              select: {
+                resources: {
+                  where: {
+                    id: resourceId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!gitOrg.workspace.projects?.[0]?.resources?.length) {
+      throw new AmplicationError("Git Organization not found");
+    }
+
+    return true;
+  }
+
   async createRemoteGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<RemoteGitRepository> {
     // negate the isPublic flag to get the isPrivate flag
     const isPrivateRepository = args.isPublic ? !args.isPublic : true;
+
+    const { gitOrganizationId, resourceId } = args;
+
+    await this.validateGitOrganization(gitOrganizationId, resourceId);
+
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId,
@@ -361,7 +456,10 @@ export class GitProviderService {
     return this.prisma.gitRepository.update(args);
   }
 
-  async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {
+  async disconnectResourceGitRepository(
+    resourceId: string,
+    overrideProjectSettings?: boolean
+  ): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
@@ -372,6 +470,25 @@ export class GitProviderService {
     });
 
     if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
+
+    if (
+      resource.resourceType !== EnumResourceType.ProjectConfiguration &&
+      overrideProjectSettings
+    ) {
+      await this.prisma.resource.update({
+        where: {
+          id: resourceId,
+        },
+        data: {
+          gitRepositoryOverride: true,
+        },
+      });
+      return resource;
+    }
+
+    if (isEmpty(resource.gitRepositoryId)) {
+      return resource;
+    }
 
     const resourcesToDisconnect = await this.getInheritProjectResources(
       resource.projectId,
@@ -441,6 +558,7 @@ export class GitProviderService {
         id: resourceId,
       },
       data: {
+        gitRepositoryOverride: false,
         gitRepository: {
           connect: {
             id: projectConfigurationRepository.id,
@@ -464,6 +582,8 @@ export class GitProviderService {
     if (gitRepository) {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
+
+    await this.validateGitOrganization(gitOrganizationId, resourceId);
 
     const resource = await this.resourceService.resource({
       where: {

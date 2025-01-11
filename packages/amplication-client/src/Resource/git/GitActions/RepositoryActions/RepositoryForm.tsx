@@ -20,6 +20,7 @@ import {
   FeatureIndicatorContainer,
 } from "../../../../Components/FeatureIndicatorContainer";
 import { FeatureIndicator } from "../../../../Components/FeatureIndicator";
+import { useResourceContext } from "../../../../context/resourceContext";
 
 type Props = {
   onSubmit: (values: models.GitRepository) => void;
@@ -52,6 +53,9 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
     } as models.GitRepository;
   }, [defaultValues]);
 
+  const { permissions } = useResourceContext();
+  const canEdit = permissions.canPerformTask("git.repo.settings.edit");
+
   return (
     <FeatureIndicatorContainer
       featureId={BillingFeature.ChangeGitBaseBranch}
@@ -83,12 +87,11 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
             onSubmit={onSubmit}
           >
             <Form childrenAsBlocks>
-              <FormikAutoSave debounceMS={1000} />
-
+              {!disabled && canEdit && <FormikAutoSave debounceMS={1000} />}
               <FlexItem>
                 <DisplayNameField
                   labelType="normal"
-                  disabled={disabled}
+                  disabled={disabled || !canEdit}
                   name="baseBranchName"
                   label="Base Branch"
                   inputToolTip={{

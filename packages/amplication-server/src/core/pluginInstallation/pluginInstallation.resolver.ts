@@ -49,7 +49,11 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   @Mutation(() => PluginOrder, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.id",
+    "resource.*.edit"
+  )
   async setPluginOrder(
     @Args() args: SetPluginOrderArgs,
     @UserEntity() user: User

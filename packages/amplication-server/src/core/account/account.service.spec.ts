@@ -1,7 +1,6 @@
 import { PrismaService, Account } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AccountService } from "./account.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { IdentityProvider } from "../auth/auth.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
@@ -22,8 +21,6 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const segmentAnalyticsIdentifyMock = jest.fn(() => {

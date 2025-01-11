@@ -10,7 +10,6 @@ import {
 import { EntityService, ResourceService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
@@ -50,6 +49,7 @@ import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
+import { TeamAssignment } from "../../models/TeamAssignment";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -70,7 +70,6 @@ export class ResourceResolver {
   ) {}
 
   @Query(() => Resource, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
@@ -79,7 +78,6 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
@@ -91,7 +89,6 @@ export class ResourceResolver {
   @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
@@ -105,7 +102,6 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async messageBrokerConnectedServices(
     @Args() args: FindOneArgs
@@ -143,10 +139,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createMessageBroker"
   )
   async createMessageBroker(
     @Args() args: CreateOneResourceArgs,
@@ -156,7 +152,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -169,10 +164,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.create"
   )
   async createComponent(
     @Args() args: CreateOneResourceArgs,
@@ -182,10 +177,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createService"
   )
   async createService(
     @Args() args: CreateOneResourceArgs,
@@ -195,10 +190,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.resource.project.connect.id"
+    "data.resource.project.connect.id",
+    "resource.createService"
   )
   async createServiceWithEntities(
     @Args() args: CreateServiceWithEntitiesArgs,
@@ -210,7 +205,11 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.delete"
+  )
   async deleteResource(
     @Args() args: FindOneArgs,
     @UserEntity() user: User
@@ -221,7 +220,11 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateResource(
     @Args() args: UpdateOneResourceArgs,
     @UserEntity() user: User
@@ -230,7 +233,11 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.resourceId",
+    "resource.*.edit"
+  )
   async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
@@ -249,8 +256,11 @@ export class ResourceResolver {
   }
 
   @Mutation(() => UserAction, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.projectId",
+    "resource.*.edit"
+  )
   async redesignProject(
     @Args() args: RedesignProjectArgs,
     @UserEntity() user: User
@@ -261,7 +271,11 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateCodeGeneratorVersion(
     @Args() args: UpdateCodeGeneratorVersionArgs,
     @UserEntity() user: User
@@ -394,5 +408,16 @@ export class ResourceResolver {
         id: resource.id,
       },
     });
+  }
+
+  @ResolveField(() => [TeamAssignment], { nullable: true })
+  async teamAssignments(
+    @Parent() resource: Resource
+  ): Promise<TeamAssignment[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceService.getTeamAssignments(resource.id);
   }
 }
