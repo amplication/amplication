@@ -43,7 +43,7 @@ export class BuildResolver {
 
   @ResolveField()
   async createdBy(@Parent() build: Build): Promise<User> {
-    if (build.createdAt === null) {
+    if (!build.createdBy) {
       return this.userService.findUser({ where: { id: build.userId } }, true);
     }
     return build.createdBy;
@@ -51,7 +51,7 @@ export class BuildResolver {
 
   @ResolveField()
   async action(@Parent() build: Build): Promise<Action> {
-    if (build.action === null) {
+    if (!build.action) {
       return this.actionService.findOne({ where: { id: build.actionId } });
     }
     return build.action;
