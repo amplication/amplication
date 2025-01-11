@@ -26,7 +26,7 @@ export class CommitResolver {
 
   @ResolveField(() => User)
   async user(@Parent() commit: Commit): Promise<User> {
-    if (commit.user === null) {
+    if (!commit.user) {
       return this.userService.findUser(
         {
           where: {
@@ -64,7 +64,7 @@ export class CommitResolver {
     @Args() args: FindManyBuildArgs
   ): Promise<Build[]> {
     let builds: Build[] = [];
-    if (commit.builds === null) {
+    if (!commit.builds) {
       builds = await this.buildService.findMany({
         ...args,
         where: {
