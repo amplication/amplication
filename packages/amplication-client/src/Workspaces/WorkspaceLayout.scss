@@ -6,6 +6,17 @@
   flex-direction: column;
   background-color: var(--surface);
   color: var(--gray-base);
+  flex: 1;
+
+  .amp-page-layout {
+    max-width: 100vw;
+  }
+
+  &--with-side-panel {
+    .amp-page-layout {
+      max-width: calc(100vw - var(--changes-menu-width) - 2px);
+    }
+  }
 
   &__page_content {
     display: flex;
@@ -16,6 +27,19 @@
   &__main_content {
     flex: 1;
     display: flex;
+  }
+
+  &__assistant__wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+  }
+  &__assistant {
+    background: var(--menu-background-color);
+    border-right: $border-dark;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--gray-full);
   }
 
   &__changes_menu {

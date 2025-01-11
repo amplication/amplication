@@ -9,10 +9,7 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import { useQuery } from "@apollo/client";
-import { useContext } from "react";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
-import { AppContext } from "../context/appContext";
+import { useContactUs } from "../Workspaces/hooks/useContactUs";
 import "./FeatureIndicator.scss";
 import { IconType } from "./FeatureIndicatorContainer";
 import "./PremiumFeatureHeader.scss";
@@ -25,11 +22,7 @@ type Props = {
 };
 
 export const PremiumFeatureHeader = ({ title, message }: Props) => {
-  const { currentWorkspace } = useContext(AppContext);
-
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const { contactUsLink } = useContactUs({});
 
   return (
     <div className={CLASS_NAME}>
@@ -58,7 +51,6 @@ export const PremiumFeatureHeader = ({ title, message }: Props) => {
         </Text>
         <Text
           textWeight={EnumTextWeight.Regular}
-          textColor={EnumTextColor.Black20}
           textAlign={EnumTextAlign.Center}
         >
           {message}
@@ -68,8 +60,8 @@ export const PremiumFeatureHeader = ({ title, message }: Props) => {
           textColor={EnumTextColor.Black20}
           textAlign={EnumTextAlign.Center}
         >
-          {data && (
-            <a href={data.contactUsLink} target="blank">
+          {contactUsLink && (
+            <a href={contactUsLink} target="blank">
               <Text textColor={EnumTextColor.ThemeTurquoise}>
                 {"Contact us"}
               </Text>{" "}

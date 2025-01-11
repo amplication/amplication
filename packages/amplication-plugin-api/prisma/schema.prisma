@@ -10,22 +10,24 @@ generator client {
 }
 
 model Plugin {
-  createdAt      DateTime @default(now())
-  description    String?
-  downloads      Int?
-  github         String?
-  icon           String?
-  id             String   @id @default(cuid())
-  name           String?
-  npm            String?
-  pluginId       String?  @unique
-  taggedVersions Json?
-  categories     Json?    @default("[]")
-  updatedAt      DateTime @updatedAt
-  website        String?
+  categories        Json?    @default("[]")
+  codeGeneratorName String   @default("NodeJs")
+  createdAt         DateTime @default(now())
+  description       String?
+  downloads         Int?
+  github            String?
+  icon              String?
+  id                String   @id @default(cuid())
+  name              String?
+  npm               String?
+  pluginId          String?  @unique
+  taggedVersions    Json?
+  updatedAt         DateTime @updatedAt
+  website           String?
 }
 
 model PluginVersion {
+  configurations  Json?
   createdAt       DateTime @default(now())
   deprecated      String?
   id              String   @id @default(cuid())
@@ -33,7 +35,6 @@ model PluginVersion {
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?
-  configurations  Json?
   updatedAt       DateTime @updatedAt
   version         String?
 }

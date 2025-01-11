@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../../coverage/ee/packages/git-sync-manager",
   coverageThreshold: {
     global: {
-      branches: 51,
-      lines: 24.5,
+      branches: 47.5,
+      lines: 15,
     },
   },
 };

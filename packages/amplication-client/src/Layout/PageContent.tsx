@@ -9,6 +9,11 @@ export enum EnumPageWidth {
   Full = "full",
 }
 
+export enum EnumPageContentPadding {
+  Default = "default",
+  None = "none",
+}
+
 type Props = {
   children: React.ReactNode;
   sideContent?: React.ReactNode;
@@ -18,6 +23,7 @@ type Props = {
   pageWidth?: EnumPageWidth;
   contentTitle?: string;
   contentSubTitle?: string;
+  pageContentPadding?: EnumPageContentPadding;
 };
 
 const CLASS_NAME = "amp-page-content";
@@ -31,6 +37,7 @@ function PageContent({
   pageWidth = EnumPageWidth.Default,
   contentTitle,
   contentSubTitle,
+  pageContentPadding = EnumPageContentPadding.Default,
 }: Props) {
   return (
     <>
@@ -41,6 +48,7 @@ function PageContent({
         className={classNames(
           CLASS_NAME,
           `${CLASS_NAME}--width-${pageWidth}`,
+          `${CLASS_NAME}--content-padding-${pageContentPadding}`,
           className
         )}
       >

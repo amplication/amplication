@@ -7,12 +7,14 @@ describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<UserService>();
   const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
-    userService.findOne.mockClear();
+    userService.user.mockClear();
   });
   it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
-    userService.findOne
-      .calledWith({ where: { username: TEST_USER.username } })
+    userService.user
+      .calledWith({
+        where: { username: TEST_USER.username },
+      })
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({

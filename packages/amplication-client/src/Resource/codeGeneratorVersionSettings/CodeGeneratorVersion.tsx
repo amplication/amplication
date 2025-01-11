@@ -39,7 +39,12 @@ export type TCodeGeneratorVersion = {
 };
 
 export type TCodeGeneratorVersionListData = {
-  versions: CodeGeneratorVersionData[];
+  generators: {
+    id: string;
+    name: string;
+    fullName: string;
+    version: CodeGeneratorVersionData[];
+  }[];
 };
 
 export type TCodeGeneratorVersionLastBuild = {
@@ -83,6 +88,14 @@ const defaultValues = (
   };
 };
 
+const CODE_GENERATOR_ENUM_TO_NAME: {
+  [key in models.EnumCodeGenerator]: string;
+} = {
+  [models.EnumCodeGenerator.NodeJs]: "NodeJS",
+  [models.EnumCodeGenerator.DotNet]: "DotNET",
+  [models.EnumCodeGenerator.Blueprint]: "Blueprint",
+};
+
 const CodeGeneratorVersion = () => {
   const { currentResource, updateCodeGeneratorVersion } =
     useContext(AppContext);
@@ -95,6 +108,7 @@ const CodeGeneratorVersion = () => {
       },
       variables: {
         getCodeGeneratorVersionInput: {
+          codeGeneratorFullName: "data-service-generator",
           codeGeneratorStrategy: currentResource?.codeGeneratorStrategy,
           codeGeneratorVersion: currentResource?.codeGeneratorVersion,
         },
@@ -126,7 +140,8 @@ const CodeGeneratorVersion = () => {
         clientName: "codeGeneratorCatalogHttpLink",
       },
       variables: {
-        codeGeneratorStrategy: models.CodeGeneratorVersionStrategy.Specific,
+        generatorName:
+          CODE_GENERATOR_ENUM_TO_NAME[currentResource.codeGenerator],
         where: {
           isActive: {
             equals: true,
@@ -162,7 +177,9 @@ const CodeGeneratorVersion = () => {
 
   const codeGeneratorVersionNameList = useMemo(() => {
     if (!codeGeneratorVersionList) return [];
-    return codeGeneratorVersionList?.versions.map((version) => version.name);
+    return codeGeneratorVersionList?.generators[0]?.version?.map(
+      (version) => version.name
+    );
   }, [codeGeneratorVersionList]);
 
   return (
@@ -203,7 +220,9 @@ const CodeGeneratorVersion = () => {
             textColor={EnumTextColor.White}
           >
             {codeGeneratorVersionLastBuild?.resource?.builds[0]
-              ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]}
+              ?.codeGeneratorVersion ?? codeGeneratorVersionNameList?.length
+              ? codeGeneratorVersionNameList[0]
+              : "N/A"}
           </Text>
         </FlexItem>
         <FlexItem
@@ -235,9 +254,9 @@ const CodeGeneratorVersion = () => {
       <HorizontalRule />
 
       <PanelCollapsible headerContent={"Version History"}>
-        {codeGeneratorVersionList?.versions.length && (
+        {codeGeneratorVersionList?.generators[0]?.version.length && (
           <List>
-            {codeGeneratorVersionList.versions.map((version) => (
+            {codeGeneratorVersionList.generators[0].version.map((version) => (
               <DSGCatalog
                 name={version.name}
                 changelog={version.changelog}

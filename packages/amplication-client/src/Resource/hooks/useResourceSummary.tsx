@@ -5,7 +5,7 @@ import { DATE_CREATED_FIELD } from "../../Modules/ModuleNavigationList";
 import usePlugins, {
   SortedPluginInstallation,
 } from "../../Plugins/hooks/usePlugins";
-import { GET_ROLES } from "../../Roles/RoleList";
+import { GET_ROLES } from "../../ResourceRoles/RoleList";
 import * as models from "../../models";
 import { GET_CATEGORIES } from "./categoriesQueries";
 
@@ -53,7 +53,9 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     roles: 0,
   });
   const { pluginInstallations, loadingPluginInstallation } = usePlugins(
-    currentResource.id
+    currentResource.id,
+    null,
+    currentResource.codeGenerator
   );
 
   const { data: categoriesData, loading: categoriesLoading } = useQuery<{
@@ -92,7 +94,7 @@ export const useResourceSummary = (currentResource: models.Resource) => {
     });
 
     const installedCategories = pluginInstallations.reduce((acc, plugin) => {
-      const categories = plugin.categories || [];
+      const categories = plugin?.categories || [];
       categories.forEach((category) => {
         if (!category) return;
         const categoryObj =

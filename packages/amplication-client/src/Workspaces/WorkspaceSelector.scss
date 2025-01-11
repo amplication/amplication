@@ -20,6 +20,7 @@
   &__plan {
     font-size: 10px;
     color: var(--gray-30);
+    color: var(--secondary);
 
     &.free {
       color: var(--secondary);
@@ -31,6 +32,9 @@
 
     &.enterprise {
       color: var(--theme-green);
+    }
+    &.essential {
+      color: var(--theme-blue);
     }
   }
 

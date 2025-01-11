@@ -11,8 +11,15 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, IsDate, IsBoolean } from "class-validator";
+import {
+  IsString,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+  IsBoolean,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { Generator } from "../../generator/base/Generator";
 
 @ObjectType()
 class Version {
@@ -47,6 +54,15 @@ class Version {
   deletedAt!: Date | null;
 
   @ApiProperty({
+    required: false,
+    type: () => Generator,
+  })
+  @ValidateNested()
+  @Type(() => Generator)
+  @IsOptional()
+  generator?: Generator | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
@@ -74,15 +90,12 @@ class Version {
   isDeprecated!: boolean | null;
 
   @ApiProperty({
-    required: false,
+    required: true,
     type: String,
   })
   @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  name!: string | null;
+  @Field(() => String)
+  name!: string;
 
   @ApiProperty({
     required: true,

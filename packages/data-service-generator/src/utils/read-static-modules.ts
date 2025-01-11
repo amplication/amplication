@@ -8,7 +8,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../plugin-wrapper";
-import { getFileEncoding } from "./get-file-encoding";
+import { getFileEncoding } from "@amplication/dsg-utils";
 import DsgContext from "../dsg-context";
 
 const filesToFilter = /(\._.*)|(.DS_Store)$/;
@@ -38,7 +38,7 @@ export async function readStaticModulesInner({
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,
-    ignore: ["**.js", "**.js.map", "**.d.ts"],
+    ignore: ["**.js", "**.js.map"],
   });
 
   const modules = await Promise.all(

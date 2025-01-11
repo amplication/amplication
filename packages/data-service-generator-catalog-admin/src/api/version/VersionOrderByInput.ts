@@ -4,6 +4,7 @@ export type VersionOrderByInput = {
   changelog?: SortOrder;
   createdAt?: SortOrder;
   deletedAt?: SortOrder;
+  generatorId?: SortOrder;
   id?: SortOrder;
   isActive?: SortOrder;
   isDeprecated?: SortOrder;

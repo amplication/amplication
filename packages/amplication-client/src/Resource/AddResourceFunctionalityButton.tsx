@@ -13,12 +13,12 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import { Link } from "react-router-dom";
-import { useAppContext } from "../context/appContext";
-import { PluginCategory } from "./hooks/useResourceSummary";
 import { useCallback } from "react";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { Link } from "react-router-dom";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import { PluginCategory } from "./hooks/useResourceSummary";
 
 type Props = {
   availableCategories: PluginCategory[];
@@ -27,9 +27,9 @@ type Props = {
 const EVENT_LOCATION = "AddFunctionalityButton";
 
 const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
-  const { currentProject, currentResource, currentWorkspace } = useAppContext();
   const { trackEvent } = useTracking();
 
+  const { baseUrl } = useResourceBaseUrl();
   const handleClick = useCallback(
     (category: PluginCategory) => {
       trackEvent({
@@ -53,12 +53,13 @@ const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
         <SelectMenuList>
           {categories.map((category) => (
             <Link
+              key={category.name}
               onClick={() => {
                 handleClick(category);
               }}
-              to={`/${currentWorkspace.id}/${currentProject.id}/${
-                currentResource.id
-              }/plugins/catalog/${encodeURIComponent(category.name)}`}
+              to={`${baseUrl}/plugins/catalog/${encodeURIComponent(
+                category.name
+              )}`}
             >
               <SelectMenuItem
                 key={category.name}
@@ -83,9 +84,7 @@ const AddResourceFunctionalityButton = ({ availableCategories }: Props) => {
             </Link>
           ))}
           <HorizontalRule />
-          <Link
-            to={`/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog`}
-          >
+          <Link to={`${baseUrl}/plugins/catalog`}>
             <SelectMenuItem closeAfterSelectionChange>
               <FlexItem
                 itemsAlign={EnumItemsAlign.Center}

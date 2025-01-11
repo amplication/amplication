@@ -31,6 +31,10 @@ const CompleteInvitation = () => {
       history.replace("/");
       window.location.reload();
     },
+    onError: (error) => {
+      console.error(error);
+      setInvitationToken("");
+    },
   });
 
   useEffect(() => {

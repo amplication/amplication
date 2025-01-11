@@ -100,14 +100,20 @@ const ModuleActionForm = ({
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
-      inputType: {
-        ...INITIAL_VALUES.inputType,
-        ...sanitizedDefaultValues.inputType,
-      },
-      outputType: {
-        ...INITIAL_VALUES.outputType,
-        ...sanitizedDefaultValues.outputType,
-      },
+      inputType:
+        defaultValues?.actionType === models.EnumModuleActionType.Custom
+          ? {
+              ...INITIAL_VALUES.inputType,
+              ...sanitizedDefaultValues.inputType,
+            }
+          : undefined,
+      outputType:
+        defaultValues?.actionType === models.EnumModuleActionType.Custom
+          ? {
+              ...INITIAL_VALUES.outputType,
+              ...sanitizedDefaultValues.outputType,
+            }
+          : undefined,
     } as models.ModuleAction;
   }, [defaultValues]);
 

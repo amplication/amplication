@@ -1,257 +1,210 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { User } from "../../models";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { RolesPermissions } from "@amplication/util-roles-types";
+import { AuthUser } from "../auth/types";
+import { VALIDATION_FUNCTIONS } from "./validation-functions";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class PermissionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
+  ) {}
 
   async validateAccess(
-    user: User,
+    user: AuthUser,
     originType: AuthorizableOriginParameter,
-    originId: string
+    originId: string,
+    requiredPermissions: RolesPermissions[] | undefined
   ): Promise<boolean> {
     const { workspace } = user;
 
-    const checkByResourceParameters = {
-      where: {
-        id: originId,
-        resource: {
-          deletedAt: null,
+    if (!originId && originType !== AuthorizableOriginParameter.None) {
+      return false;
+    }
+
+    const validationResponse = await VALIDATION_FUNCTIONS[originType](
+      this.prisma,
+      originId,
+      workspace.id,
+      user
+    );
+
+    if (!validationResponse || !validationResponse.canAccessWorkspace) {
+      return false;
+    }
+
+    return this.validatePermissions(
+      user,
+      requiredPermissions,
+      validationResponse.requestedResourceId,
+      validationResponse.requestedProjectId
+    );
+  }
+
+  async validatePermissions(
+    user: AuthUser,
+    requiredPermissions: RolesPermissions[] | undefined,
+    requestedResourceId?: string,
+    requestedProjectId?: string
+  ): Promise<boolean> {
+    //return true if no specific permissions are required
+    if (!requiredPermissions || requiredPermissions.length === 0) {
+      return true;
+    }
+
+    //return true if user has all permissions
+    if (user.permissions.includes("*")) {
+      return true;
+    }
+
+    //check if the user has the required permissions on the team level
+    const hasTeamLevelPermissions = this.matchPermissions(
+      requiredPermissions,
+      user.permissions
+    );
+    if (hasTeamLevelPermissions) {
+      return true;
+    }
+
+    //check if the user has the required permissions on the resource level
+    const hasResourceLevelPermissions =
+      await this.validateTeamAssignmentPermissions(
+        user,
+        requiredPermissions,
+        requestedResourceId,
+        requestedProjectId
+      );
+    if (hasResourceLevelPermissions) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async validateTeamAssignmentPermissions(
+    user: AuthUser,
+    requiredPermissions: RolesPermissions[],
+    requestedResourceId: string,
+    requestedProjectId: string
+  ) {
+    const permissions = await this.getUserResourceOrProjectPermissions(
+      user,
+      requestedResourceId,
+      requestedProjectId
+    );
+
+    return this.matchPermissions(requiredPermissions, permissions);
+  }
+
+  //This function accepts a resourceId or a projectId.
+  //The resourceId can also be a project configuration resource id
+  async getUserResourceOrProjectPermissions(
+    user: AuthUser,
+    requestedResourceId: string,
+    requestedProjectId: string
+  ): Promise<RolesPermissions[]> {
+    const resourceIds: string[] = [];
+
+    if (requestedProjectId) {
+      const projectResource = await this.prisma.resource.findFirst({
+        where: {
+          projectId: requestedProjectId,
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!projectResource) {
+        this.logger.error(
+          `Project configuration resource not found for project ${requestedProjectId}`
+        );
+        return [];
+      }
+      resourceIds.push(projectResource.id);
+    }
+
+    if (requestedResourceId) {
+      const projectResource = await this.prisma.resource.findFirst({
+        where: {
           project: {
-            workspace: {
-              id: workspace.id,
+            resources: {
+              some: {
+                id: requestedResourceId,
+              },
             },
+          },
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!projectResource) {
+        this.logger.error(
+          `Project configuration resource not found for resource ${requestedResourceId}`
+        );
+      } else {
+        resourceIds.push(projectResource.id);
+      }
+
+      resourceIds.push(requestedResourceId);
+    }
+
+    if (resourceIds.length === 0) {
+      return [];
+    }
+
+    const teamAssignments = await this.prisma.teamAssignment.findMany({
+      where: {
+        team: {
+          deletedAt: null,
+          members: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+        resourceId: {
+          in: resourceIds,
+        },
+      },
+      select: {
+        roles: {
+          where: {
+            deletedAt: null,
+          },
+          select: {
+            permissions: true,
           },
         },
       },
-    };
+    });
 
-    if (originType === AuthorizableOriginParameter.WorkspaceId) {
-      return originId === workspace.id;
-    }
+    const permissions = Array.from(
+      new Set(
+        teamAssignments.flatMap((assignment) =>
+          assignment.roles.flatMap((role) => role.permissions)
+        )
+      )
+    ) as RolesPermissions[];
 
-    if (originType === AuthorizableOriginParameter.GitOrganizationId) {
-      const matching = await this.prisma.gitOrganization.count({
-        where: {
-          id: originId,
-          workspace: {
-            id: workspace.id,
-          },
-        },
-      });
-      return matching === 1;
-    }
+    return permissions;
+  }
 
-    if (originType === AuthorizableOriginParameter.GitRepositoryId) {
-      const matching = await this.prisma.gitRepository.count({
-        where: {
-          id: originId,
-        },
-      });
-      return matching === 1;
-    }
-
-    if (originType === AuthorizableOriginParameter.ProjectId) {
-      const matching = await this.prisma.project.count({
-        where: {
-          deletedAt: null,
-          id: originId,
-          workspace: {
-            id: workspace.id,
-          },
-        },
-      });
-      return matching === 1;
-    }
-
-    if (originType === AuthorizableOriginParameter.ResourceId) {
-      const matching = await this.prisma.resource.count({
-        where: {
-          deletedAt: null,
-          archived: { not: true },
-          id: originId,
-          project: {
-            workspace: {
-              id: workspace.id,
-            },
-          },
-        },
-      });
-      return matching === 1;
-    }
-
-    if (originType === AuthorizableOriginParameter.InvitationId) {
-      const matching = await this.prisma.invitation.count({
-        where: {
-          id: originId,
-          workspace: {
-            id: workspace.id,
-          },
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.ApiTokenId) {
-      const matching = await this.prisma.apiToken.count({
-        where: {
-          id: originId,
-          userId: user.id,
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.ActionId) {
-      const matching = await this.prisma.action.count({
-        where: {
-          // eslint-disable-next-line  @typescript-eslint/naming-convention
-          OR: [
-            {
-              id: originId,
-              deployments: {
-                some: {
-                  build: {
-                    resource: {
-                      deletedAt: null,
-                      project: {
-                        workspaceId: workspace.id,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              id: originId,
-              builds: {
-                some: {
-                  resource: {
-                    deletedAt: null,
-                    project: {
-                      workspaceId: workspace.id,
-                    },
-                  },
-                },
-              },
-            },
-            {
-              id: originId,
-              userAction: {
-                some: {
-                  resource: {
-                    deletedAt: null,
-                    project: {
-                      workspaceId: workspace.id,
-                    },
-                  },
-                },
-              },
-            },
-          ],
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.DeploymentId) {
-      const matching = await this.prisma.deployment.count({
-        where: {
-          id: originId,
-          environment: {
-            resource: {
-              deletedAt: null,
-              project: {
-                workspaceId: workspace.id,
-              },
-            },
-          },
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.EntityFieldId) {
-      const matching = await this.prisma.entityField.count({
-        where: {
-          id: originId,
-          entityVersion: {
-            entity: {
-              resource: {
-                deletedAt: null,
-                project: {
-                  workspaceId: workspace.id,
-                },
-              },
-            },
-          },
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.EntityPermissionFieldId) {
-      const matching = await this.prisma.entityPermissionField.count({
-        where: {
-          id: originId,
-          field: {
-            entityVersion: {
-              entity: {
-                resource: {
-                  deletedAt: null,
-                  project: {
-                    workspaceId: workspace.id,
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.EntityId) {
-      const matching = await this.prisma.entity.count(
-        checkByResourceParameters
-      );
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.BlockId) {
-      const matching = await this.prisma.block.count(checkByResourceParameters);
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.BuildId) {
-      const matching = await this.prisma.build.count(checkByResourceParameters);
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.UserActionId) {
-      const matching = await this.prisma.userAction.count(
-        checkByResourceParameters
-      );
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.ResourceRoleId) {
-      const matching = await this.prisma.resourceRole.count(
-        checkByResourceParameters
-      );
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.EnvironmentId) {
-      const matching = await this.prisma.environment.count(
-        checkByResourceParameters
-      );
-      return matching === 1;
-    }
-    if (originType === AuthorizableOriginParameter.CommitId) {
-      const matching = await this.prisma.commit.count({
-        where: {
-          id: originId,
-          project: {
-            deletedAt: null,
-            workspaceId: workspace.id,
-          },
-        },
-      });
-      return matching === 1;
-    }
-
-    throw new Error(`Unexpected origin type ${originType}`);
+  private matchPermissions(
+    permissionsToMatch: string[],
+    userPermissions: string[]
+  ): boolean {
+    return (
+      userPermissions.includes("*") ||
+      permissionsToMatch.some((r) => userPermissions.includes(r))
+    );
   }
 }

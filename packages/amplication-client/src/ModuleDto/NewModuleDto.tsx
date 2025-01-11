@@ -1,11 +1,11 @@
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { EnumButtonStyle } from "../Components/Button";
 import NewModuleChild from "../Modules/NewModuleChild";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModuleDto from "./hooks/useModuleDto";
 
 type Props = {
@@ -14,22 +14,7 @@ type Props = {
   onDtoCreated?: (moduleAction: models.ModuleDto) => void;
   buttonStyle?: EnumButtonStyle;
   onDismiss?: () => void;
-};
-
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
-const INITIAL_VALUES: Partial<models.ModuleDto> = {
-  name: "",
-  displayName: "",
-  description: "",
+  navigateToDtoOnCreate?: boolean;
 };
 
 const NewModuleDto = ({
@@ -38,9 +23,10 @@ const NewModuleDto = ({
   onDtoCreated,
   buttonStyle = EnumButtonStyle.Primary,
   onDismiss,
+  navigateToDtoOnCreate = true,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const {
     createModuleDto,
@@ -71,9 +57,11 @@ const NewModuleDto = ({
             if (onDtoCreated && result && result.data) {
               onDtoCreated(result.data.createModuleDto);
             }
-            history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
-            );
+            if (navigateToDtoOnCreate) {
+              history.push(
+                `${baseUrl}/modules/${moduleId}/dtos/${result.data.createModuleDto.id}`
+              );
+            }
           }
         });
     },
@@ -82,19 +70,17 @@ const NewModuleDto = ({
       resourceId,
       onDtoCreated,
       history,
-      currentWorkspace?.id,
-      currentProject?.id,
+      baseUrl,
+      navigateToDtoOnCreate,
     ]
   );
 
   const errorMessage = formatError(error);
 
   return (
-    <NewModuleChild<models.ModuleDto>
+    <NewModuleChild
       resourceId={resourceId}
       moduleId={moduleId}
-      validationSchema={FORM_SCHEMA}
-      initialValues={INITIAL_VALUES}
       loading={loading}
       errorMessage={errorMessage}
       typeName={"DTO"}

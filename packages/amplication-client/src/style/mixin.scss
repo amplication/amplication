@@ -216,6 +216,8 @@ $bullet-size: 6px;
   }
 
   .text-input {
+    margin-bottom: var(--large-spacing);
+
     input {
       max-width: none;
     }
@@ -236,7 +238,6 @@ $bullet-size: 6px;
   }
 
   .amp-button {
-    margin-top: var(--large-spacing);
     margin-bottom: 0;
     width: 100%;
   }

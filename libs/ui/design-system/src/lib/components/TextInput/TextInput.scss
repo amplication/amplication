@@ -3,13 +3,6 @@
 .text-input {
   position: relative;
 
-  &__invalid {
-    color: var(--theme-red);
-    position: absolute;
-    right: 8px;
-    bottom: 10px;
-  }
-
   label {
     @include label;
     position: relative;
@@ -42,6 +35,10 @@
     box-sizing: border-box;
     height: var(--textarea-height);
     resize: none;
+  }
+
+  textarea.text-input__textarea--small {
+    height: var(--textarea-height-small);
   }
 
   &--has-error {

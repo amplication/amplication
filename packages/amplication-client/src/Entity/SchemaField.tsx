@@ -84,6 +84,19 @@ export const SchemaField = ({
         case "object": {
           return <OptionSet label={label} name={fieldName} />;
         }
+        case "string": {
+          return (
+            <SelectField
+              label={label}
+              name={fieldName}
+              // If enumOptions is null, options will be an empty array and will allow the user to create new options
+              options={enumOptions || []}
+              isMulti
+              isClearable
+              isCreatable={enumOptions === null}
+            />
+          );
+        }
         default: {
           throw new Error(
             `Unexpected propertySchema.items.type: ${propertySchema.type}`

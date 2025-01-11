@@ -7,14 +7,21 @@ ARG GIT_SHA
 
 RUN apk add g++ make python3
 
+
 WORKDIR /workspace/packages/data-service-generator
-COPY ./dist/packages/data-service-generator .
+
+# copy package.json and install dependencies first to cache deps
+COPY ./dist/packages/data-service-generator/package.json .
 RUN npm i --omit-dev
+
+# copy the rest of the files
+COPY ./dist/packages/data-service-generator .
+
 
 # Copy unpublished amplication libraries
 COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
 COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
-COPY ./dist/packages/amplication-code-gen-types node_modules/@amplication/code-gen-types
+COPY ./dist/libs/util/code-gen-types node_modules/@amplication/code-gen-types
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}

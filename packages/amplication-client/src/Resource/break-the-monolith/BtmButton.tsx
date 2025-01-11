@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   ConfirmationDialog,
@@ -16,32 +15,34 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import BreakTheMonolith from "./BreakTheMonolith";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
+  FeatureIndicator,
+} from "../../Components/FeatureIndicator";
+import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
 import { useAppContext } from "../../context/appContext";
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
   Resource,
 } from "../../models";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import useModelOrganizerPersistentData from "../../Project/ArchitectureConsole/hooks/useModelOrganizerPersistentData";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import {
-  FeatureIndicator,
-  tooltipDefaultText,
-  tooltipDefaultTextUpgrade,
-} from "../../Components/FeatureIndicator";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { getCookie, setCookie } from "../../util/cookie";
+import useAbTesting from "../../VersionControl/hooks/useABTesting";
+import BreakTheMonolith from "./BreakTheMonolith";
 
 export enum EnumButtonLocation {
   Project = "Project",
   Resource = "Resource",
   EntityList = "EntityList",
   SchemaUpload = "SchemaUpload",
-  PreviewBtm = "PreviewBtm",
   Architecture = "Architecture",
 }
 
@@ -76,10 +77,11 @@ export const BtmButton: React.FC<Props> = ({
     resources,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
   } = useAppContext();
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
+  const { upgradeCtaVariationData } = useAbTesting();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
@@ -89,10 +91,10 @@ export const BtmButton: React.FC<Props> = ({
   );
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const [tooltipText, setTooltipText] = useState<string>(tooltipDefaultText);
-  const [upgradeTooltipText, setUpgradeTooltipText] = useState<string>(
-    tooltipDefaultTextUpgrade
-  );
+  const [tooltipTextStart, setTooltipTextStart] = useState<string>("");
+  const [tooltipTextEnd, setTooltipTextEnd] = useState<string>("");
+
+  const [showTooltipLink, setShowTooltipLink] = useState<boolean>(true);
 
   const hasRedesignArchitectureFeature = stigg.getBooleanEntitlement({
     featureId: BillingFeature.RedesignArchitecture,
@@ -103,39 +105,43 @@ export const BtmButton: React.FC<Props> = ({
   useEffect(() => {
     if (
       hasRedesignArchitectureFeature &&
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       subscriptionStatus === EnumSubscriptionStatus.Trailing
     ) {
-      setTooltipText(tooltipDefaultText);
-      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+      setTooltipTextStart(DEFAULT_TEXT_START);
+      setTooltipTextEnd(DEFAULT_TEXT_END);
+      setShowTooltipLink(true);
     }
 
     if (!hasRedesignArchitectureFeature) {
-      setTooltipText(NO_ACCESS_TEXT);
-      setUpgradeTooltipText(tooltipDefaultTextUpgrade);
+      setTooltipTextStart(NO_ACCESS_TEXT);
+      setTooltipTextEnd(DISABLED_DEFAULT_TEXT_END);
+      setShowTooltipLink(true);
     }
 
     if (hasRedesignArchitectureFeature && !allowLLMFeature) {
-      setTooltipText(
+      setTooltipTextStart(
         "This feature is turned off because it relies on LLMs, and your workspace settings forbid their use."
       );
-      setUpgradeTooltipText("");
+      setShowTooltipLink(false);
     }
 
     if (
       hasRedesignArchitectureFeature &&
-      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-        subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
-        isPreviewPlan)
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      subscriptionStatus !== EnumSubscriptionStatus.Trailing
     ) {
-      setTooltipText(FULL_ACCESS_TEXT);
-      setUpgradeTooltipText("");
+      setTooltipTextStart(FULL_ACCESS_TEXT);
+      setShowTooltipLink(false);
     }
   }, [
+    allowLLMFeature,
     hasRedesignArchitectureFeature,
-    isPreviewPlan,
     subscriptionPlan,
     subscriptionStatus,
+    upgradeCtaVariationData?.linkMessage,
   ]);
 
   const toggleIsOpen = useCallback(() => {
@@ -188,9 +194,6 @@ export const BtmButton: React.FC<Props> = ({
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
       selectResourceToBreak(itemData);
-      const previewPlanCookie = getCookie("preview-user-break-monolith");
-      !previewPlanCookie &&
-        setCookie("changesConfirmationMessageType", "aiProcess");
     },
     [selectResourceToBreak]
   );
@@ -204,8 +207,9 @@ export const BtmButton: React.FC<Props> = ({
       {currentResource || selectedEditableResource ? (
         <FeatureIndicator
           featureName={BillingFeature.RedesignArchitecture}
-          text={tooltipText}
-          linkText={upgradeTooltipText}
+          textStart={tooltipTextStart}
+          textEnd={tooltipTextEnd}
+          showTooltipLink={showTooltipLink}
           element={
             <Button
               iconPosition={EnumIconPosition.Left}
@@ -221,8 +225,9 @@ export const BtmButton: React.FC<Props> = ({
       ) : (
         <FeatureIndicator
           featureName={BillingFeature.RedesignArchitecture}
-          text={tooltipText}
-          linkText={upgradeTooltipText}
+          textStart={tooltipTextStart}
+          textEnd={tooltipTextEnd}
+          showTooltipLink={showTooltipLink}
           element={
             <SelectMenu
               title={buttonText}
@@ -245,10 +250,7 @@ export const BtmButton: React.FC<Props> = ({
                         itemsAlign={EnumItemsAlign.Center}
                         end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
                       >
-                        <ResourceCircleBadge
-                          type={resource.resourceType}
-                          size="small"
-                        />
+                        <ResourceTypeBadge resource={resource} size="small" />
                         <span>{resource.name}</span>
                       </FlexItem>
                     </SelectMenuItem>
@@ -292,7 +294,7 @@ export const BtmButton: React.FC<Props> = ({
           open
           onCloseEvent={toggleIsOpen}
           fullScreen={true}
-          showCloseButton={!isPreviewPlan}
+          showCloseButton={true}
         >
           <BreakTheMonolith
             resource={selectedResource}

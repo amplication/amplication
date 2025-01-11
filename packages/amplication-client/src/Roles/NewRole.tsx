@@ -1,86 +1,56 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
-import { gql, useMutation, Reference } from "@apollo/client";
-import { Formik, Form } from "formik";
-import { isEmpty } from "lodash";
+import { Snackbar, TextField } from "@amplication/ui/design-system";
 import classNames from "classnames";
-import { camelCase } from "camel-case";
-import { TextField, Snackbar } from "@amplication/ui/design-system";
-import { formatError } from "../util/error";
+import { Form, Formik } from "formik";
+import { isEmpty } from "lodash";
+import { useCallback, useRef, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import * as models from "../models";
-import {
-  validate,
-  validationErrorMessages,
-} from "../util/formikValidateJsonSchema";
-import "./NewRole.scss";
-import { AppContext } from "../context/appContext";
 import {
   LicenseIndicatorContainer,
   LicensedResourceType,
 } from "../Components/LicenseIndicatorContainer";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
+import useRoles from "./hooks/useRoles";
+import "./NewRole.scss";
 
-const INITIAL_VALUES: Partial<models.ResourceRole> = {
+const INITIAL_VALUES: Partial<models.Role> = {
   name: "",
-  displayName: "",
-  description: "",
 };
 
 type Props = {
-  resourceId: string;
-  onRoleAdd?: (role: models.ResourceRole) => void;
+  onRoleAdd?: (role: models.Role) => void;
+  disabled?: boolean;
 };
 
 const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
-  required: ["displayName"],
+  required: ["name"],
   properties: {
-    displayName: {
+    name: {
       type: "string",
       minLength: 2,
     },
   },
   errorMessage: {
     properties: {
-      displayName: AT_LEAST_TWO_CHARACTERS,
+      name: AT_LEAST_TWO_CHARACTERS,
     },
   },
 };
 const CLASS_NAME = "new-role";
 
-const NewRole = ({ onRoleAdd, resourceId }: Props) => {
-  const { addEntity, currentResource } = useContext(AppContext);
-  const licensed = currentResource?.licensed ?? true;
+const NewRole = ({ onRoleAdd, disabled }: Props) => {
+  const {
+    createRole,
+    createRoleError: error,
+    createRoleLoading: loading,
+  } = useRoles();
 
-  const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const newResourceRole = data.createResourceRole;
-
-      cache.modify({
-        fields: {
-          resourceRoles(existingResourceRoleRefs = [], { readField }) {
-            const newResourceRoleRef = cache.writeFragment({
-              data: newResourceRole,
-              fragment: NEW_ROLE_FRAGMENT,
-            });
-
-            if (
-              existingResourceRoleRefs.some(
-                (resourceRoleRef: Reference) =>
-                  readField("id", resourceRoleRef) === newResourceRole.id
-              )
-            ) {
-              return existingResourceRoleRefs;
-            }
-
-            return [...existingResourceRoleRefs, newResourceRoleRef];
-          },
-        },
-      });
-    },
-  });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
@@ -89,25 +59,19 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
       setAutoFocus(true);
       createRole({
         variables: {
-          data: {
-            ...data,
-            name: camelCase(data.displayName),
-
-            resource: { connect: { id: resourceId } },
-          },
+          data,
         },
       })
         .then((result) => {
           if (onRoleAdd) {
-            onRoleAdd(result.data.createResourceRole);
+            onRoleAdd(result.data.createRole);
           }
-          addEntity(result.data.createResourceRole.id);
           actions.resetForm();
           inputRef.current?.focus();
         })
         .catch(console.error);
     },
-    [createRole, resourceId, onRoleAdd, addEntity]
+    [createRole, onRoleAdd]
   );
 
   const errorMessage = formatError(error);
@@ -116,7 +80,7 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
     <div className={CLASS_NAME}>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Partial<models.ResourceRole>) =>
+        validate={(values: Partial<models.Role>) =>
           validate(values, FORM_SCHEMA)
         }
         validateOnBlur={false}
@@ -126,9 +90,9 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
           <Form className={`${CLASS_NAME}__add-field`}>
             <TextField
               required
-              name="displayName"
+              name="name"
               label="New Role Name"
-              disabled={loading}
+              disabled={loading || disabled}
               inputRef={inputRef}
               placeholder="Add role"
               autoComplete="off"
@@ -158,23 +122,3 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
 };
 
 export default NewRole;
-
-const CREATE_ROLE = gql`
-  mutation createResourceRole($data: ResourceRoleCreateInput!) {
-    createResourceRole(data: $data) {
-      id
-      name
-      displayName
-      description
-    }
-  }
-`;
-
-const NEW_ROLE_FRAGMENT = gql`
-  fragment NewResourceRole on ResourceRole {
-    id
-    name
-    displayName
-    description
-  }
-`;

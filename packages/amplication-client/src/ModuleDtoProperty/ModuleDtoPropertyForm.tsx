@@ -126,7 +126,6 @@ const ModuleDtoPropertyForm = ({
               disabled={disabled}
             />
           </FlexItem>
-          <HorizontalRule />
 
           <DtoPropertyTypesField name="propertyTypes" />
         </Form>

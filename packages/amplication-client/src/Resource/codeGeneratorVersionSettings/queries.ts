@@ -2,11 +2,21 @@ import { gql } from "@apollo/client";
 
 //// get all versions of dsg
 export const GET_CODE_GENERATOR_VERSIONS = gql`
-  query Versions($where: VersionWhereInput, $orderBy: [VersionOrderByInput!]) {
-    versions(where: $where, orderBy: $orderBy) {
+  query Versions(
+    $where: VersionWhereInput
+    $orderBy: [VersionOrderByInput!]
+    $generatorName: String!
+  ) {
+    generators(where: { name: { equals: $generatorName } }) {
+      id
       name
-      changelog
-      isDeprecated
+      fullName
+      version(where: $where, orderBy: $orderBy) {
+        id
+        name
+        changelog
+        isDeprecated
+      }
     }
   }
 `;

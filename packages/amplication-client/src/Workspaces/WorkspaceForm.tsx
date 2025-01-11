@@ -8,9 +8,14 @@ import {
   Text,
   TextField,
   ToggleField,
+  Form,
+  EnumFlexItemMargin,
+  TabContentTitle,
+  Panel,
+  EnumPanelStyle,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Form, Formik } from "formik";
+import { Formik } from "formik";
 import { useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
@@ -91,10 +96,17 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <div className={CLASS_NAME}>
       <Text textStyle={EnumTextStyle.H4}>Workspace Settings</Text>
+      <FlexItem
+        direction={EnumFlexDirection.Row}
+        margin={EnumFlexItemMargin.Top}
+      >
+        <Text textStyle={EnumTextStyle.Label}>ID: </Text>
+        <Text textStyle={EnumTextStyle.Label}>{currentWorkspace?.id}</Text>
+      </FlexItem>
 
-      <HorizontalRule doubleSpacing />
+      <HorizontalRule />
 
       {currentWorkspace && (
         <Formik
@@ -105,31 +117,47 @@ function WorkspaceForm() {
         >
           {(formik) => {
             return (
-              <Form>
+              <Form childrenAsBlocks>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Workspace Name" />
-                <FlexItem
-                  gap={EnumGapSize.Default}
-                  direction={EnumFlexDirection.Column}
-                >
+                <div>
+                  <TabContentTitle title="AI-powered features" />
+                  <Panel panelStyle={EnumPanelStyle.Bordered}>
+                    <Text textStyle={EnumTextStyle.Tag}>
+                      <FlexItem
+                        direction={EnumFlexDirection.Column}
+                        gap={EnumGapSize.Small}
+                      >
+                        <div>
+                          Manage Amplication AI-powered features and
+                          enable/disable advanced features using artificial
+                          intelligence. These include personalized
+                          recommendations, and automation of tasks.
+                        </div>
+                        <div>
+                          Note: This may involve processing your data with AI
+                          technologies while keeping your data secure. When
+                          disabled, we will never share your data with any AI or
+                          large language model services.
+                        </div>
+                      </FlexItem>
+                    </Text>
+                  </Panel>
+
                   <ToggleField
                     name="allowLLMFeatures"
-                    label="allow LLM features"
+                    label="Enable AI-powered features"
                     disabled={!hasRedesignArchitectureFeature}
                   />
-                </FlexItem>
+                </div>
               </Form>
             );
           }}
         </Formik>
       )}
 
-      <FlexItem direction={EnumFlexDirection.Column}>
-        <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
-        <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
-      </FlexItem>
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-    </PageContent>
+    </div>
   );
 }
 

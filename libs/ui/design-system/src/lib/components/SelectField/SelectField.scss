@@ -22,6 +22,7 @@
   .select-field__control {
     @include textField;
     padding: 0;
+    height: auto;
 
     &--is-focused,
     &:hover {
@@ -85,5 +86,9 @@
       color: var(--primary);
       font-weight: 500;
     }
+  }
+
+  &__value-container {
+    display: flex !important;
   }
 }

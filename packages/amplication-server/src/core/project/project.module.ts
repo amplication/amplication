@@ -10,6 +10,7 @@ import { ProjectResolver } from "./project.resolver";
 import { ProjectService } from "./project.service";
 import { GitProviderModule } from "../git/git.provider.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
+import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SubscriptionModule } from "../subscription/subscription.module";
     BillingModule,
     GitProviderModule,
     SubscriptionModule,
+    ResourceVersionModule,
   ],
   providers: [ProjectResolver, ProjectService],
   exports: [ProjectResolver, ProjectService],

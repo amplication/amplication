@@ -1,0 +1,120 @@
+{
+  "name": "createModuleAction",
+  "description": "creates a new Action for a module in a service. Action can also be referred as API, API Endpoint or Operation.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "moduleId": {
+        "type": "string",
+        "description": "the ID of the module in which the action is created. The moduleId is different then the serviceID. The moduleId is the ID of the module in which the action is created. The serviceId is the ID of the service in which the module exist. You can use the function get getServiceModules to get a list of available modules in a service. "
+      },
+      "serviceId": {
+        "type": "string",
+        "description": "the ID of the service in which the Action is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+      },
+      "actionName": {
+        "type": "string",
+        "description": "the name of the action. e.g.: 'Create Customer'"
+      },
+      "actionDescription": {
+        "type": "string",
+        "description": "the description of the action. e.g.: 'Creates a new customer'"
+      },
+      "gqlOperation": {
+        "type": "string",
+        "description": "the GraphQL operation of the action. e.g.: 'mutation'",
+        "enum": ["Query", "Mutation"]
+      },
+      "restVerb": {
+        "type": "string",
+        "description": "the REST verb of the action. e.g.: 'POST'",
+        "enum": ["Get", "Post", "Put", "Delete", "Patch"]
+      },
+      "path": {
+        "type": "string",
+        "description": "the path of the action in REST api, without the controller name. e.g.: '/:id'"
+      },
+      "inputType": {
+        "type": "object",
+        "required": ["type", "isArray"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "String",
+              "Boolean",
+              "Integer",
+              "Float",
+              "DateTime",
+              "Dto"
+            ],
+            "description": "The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules."
+          },
+          "isArray": {
+            "type": "boolean",
+            "description": "whether the property is an array or not"
+          },
+          "dtoId": {
+            "type": "string",
+            "description": "the ID of the DTO. If the type is a DTO ."
+          }
+        }
+      },
+      "outputType": {
+        "type": "object",
+        "required": ["type", "isArray"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "String",
+              "Boolean",
+              "Integer",
+              "Float",
+              "DateTime",
+              "Dto"
+            ],
+            "description": "The type of the input. When the type is Dto, the dtoId property is required. You can use the function getModuleDtosAndEnums to get a list of available DTOs in the module or other modules."
+          },
+          "isArray": {
+            "type": "boolean",
+            "description": "whether the property is an array or not"
+          },
+          "dtoId": {
+            "type": "string",
+            "description": "the ID of the DTO. If the type is a DTO ."
+          }
+        }
+      },
+      "restInputSource": {
+        "type": "string",
+        "description": "the source of the input in the REST API. e.g.: 'Query'",
+        "enum": ["Query", "Params", "Body", "Split"]
+      },
+      "restInputParamsPropertyName": {
+        "type": "string",
+        "description": "When restInputSource is 'Split', this is the name of the property that will be received in the params part of the URL"
+      },
+      "restInputBodyPropertyName": {
+        "type": "string",
+        "description": "When restInputSource is 'Split', this is the name of the property that will be received in the body of the request"
+      },
+      "restInputQueryPropertyName": {
+        "type": "string",
+        "description": "When restInputSource is 'Split', this is the name of the property that will be received in the query part of the URL"
+      }
+    },
+    "required": [
+      "moduleId",
+      "serviceId",
+      "actionName",
+      "actionDescription",
+      "gqlOperation",
+      "restVerb",
+      "path",
+      "inputType",
+      "outputType",
+      "restInputSource"
+    ]
+  }
+}

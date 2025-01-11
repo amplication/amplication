@@ -1,0 +1,15 @@
+{
+  "name": "getPlugins",
+  "description": "Get a list of all available plugins for a code generator, such as Kafka, auth providers, architecture, databases and more",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "codeGenerator": {
+        "type": "string",
+        "enum": ["DotNet", "NodeJs"],
+        "description": "The type of code generator of the service. When not available, fetch the service details to find the codeGenerator."
+      }
+    },
+    "required": ["codeGenerator"]
+  }
+}

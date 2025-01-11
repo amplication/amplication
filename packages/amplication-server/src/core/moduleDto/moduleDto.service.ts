@@ -30,6 +30,14 @@ import { CreateModuleDtoEnumMemberArgs } from "./dto/CreateModuleDtoEnumMemberAr
 import { ModuleDtoEnumMember } from "./dto/ModuleDtoEnumMember";
 import { UpdateModuleDtoEnumMemberArgs } from "./dto/UpdateModuleDtoEnumMemberArgs";
 import { DeleteModuleDtoEnumMemberArgs } from "./dto/DeleteModuleDtoEnumMemberArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
+import { QueryMode } from "../../enums/QueryMode";
+import { validateCustomActionsEntitlement } from "../block/block.util";
+import { JsonArray } from "type-fest";
+import { PropertyTypeDef } from "./dto/propertyTypes/PropertyTypeDef";
 
 const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
   isArray: false,
@@ -41,6 +49,11 @@ const DEFAULT_DTO_PROPERTY: Omit<ModuleDtoProperty, "name"> = {
     },
   ],
 };
+
+const UNSUPPORTED_TYPES = [
+  EnumModuleDtoPropertyType.Null,
+  EnumModuleDtoPropertyType.Undefined,
+];
 
 @Injectable()
 export class ModuleDtoService extends BlockTypeService<
@@ -56,10 +69,13 @@ export class ModuleDtoService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    protected readonly billingService: BillingService,
+    protected readonly logger: AmplicationLogger,
+    protected readonly analytics: SegmentAnalyticsService,
     private readonly prisma: PrismaService,
     private configService: ConfigService
   ) {
-    super(blockService);
+    super(blockService, logger);
 
     this.customActionsEnabled = Boolean(
       this.configService.get<string>(Env.FEATURE_CUSTOM_ACTIONS_ENABLED) ===
@@ -72,13 +88,104 @@ export class ModuleDtoService extends BlockTypeService<
   ): Promise<ModuleDto[]> {
     //todo: extend query to return shared dtos from other resources in the project
 
-    return super.findMany(args);
+    return this.findMany(args);
   }
 
-  validateModuleDtoName(moduleDtoName: string): void {
+  async findMany(
+    args: FindManyModuleDtoArgs,
+    user?: User
+  ): Promise<ModuleDto[]> {
+    const { includeCustomDtos, includeDefaultDtos, ...rest } = args.where || {};
+
+    const prismaArgs = {
+      ...args,
+      where: {
+        ...rest,
+      },
+    };
+
+    //when undefined the default value is true
+    const includeCustomDtosBoolean = includeCustomDtos !== false;
+    const includeDefaultDtosBoolean = includeDefaultDtos !== false;
+
+    if (includeCustomDtosBoolean && includeDefaultDtosBoolean) {
+      return super.findMany(prismaArgs);
+    } else if (includeCustomDtosBoolean) {
+      return super.findManyBySettings(prismaArgs, [
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.Custom,
+        },
+        {
+          path: ["dtoType"],
+          equals: EnumModuleDtoType.CustomEnum,
+        },
+      ]);
+    } else if (includeDefaultDtosBoolean) {
+      return super.findManyBySettings(
+        prismaArgs,
+        [
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.Custom,
+          },
+          {
+            path: ["dtoType"],
+            not: EnumModuleDtoType.CustomEnum,
+          },
+        ],
+        "AND"
+      );
+    } else {
+      return [];
+    }
+  }
+
+  async validateModuleDtoName(
+    moduleDtoName: string,
+    resourceId?: string,
+    blockId?: string
+  ): Promise<void> {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleDtoName)) {
       throw new AmplicationError("Invalid moduleDto name");
+    }
+
+    if (!resourceId) return;
+
+    let duplicateDtoName: ModuleDto[] = [];
+
+    if (!blockId) {
+      duplicateDtoName = await super.findMany({
+        where: {
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
+    } else {
+      duplicateDtoName = await super.findMany({
+        where: {
+          id: {
+            not: blockId,
+          },
+          displayName: {
+            equals: moduleDtoName,
+            mode: QueryMode.Insensitive,
+          },
+          resource: {
+            id: resourceId,
+          },
+        },
+      });
+    }
+
+    if (duplicateDtoName.length > 0) {
+      throw new AmplicationError("Invalid DTO name, name already exists");
     }
   }
 
@@ -86,15 +193,61 @@ export class ModuleDtoService extends BlockTypeService<
     if (!this.customActionsEnabled) {
       return null;
     }
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserDTO,
+    });
+
+    //make sure the properties are initialized correctly
+    const properties: ModuleDtoProperty[] = (
+      args.properties as unknown as JsonArray
+    )?.map((property) => {
+      return {
+        ...DEFAULT_DTO_PROPERTY,
+        ...property,
+        propertyTypes: property.propertyTypes.map((propertyType) => {
+          return {
+            ...DEFAULT_DTO_PROPERTY.propertyTypes[0],
+            ...propertyType,
+          };
+        }),
+      };
+    });
+
+    if (properties) {
+      for (const property of properties) {
+        await this.validateTypes(
+          args.data.resource.connect.id,
+          property.propertyTypes,
+          UNSUPPORTED_TYPES
+        );
+      }
+    }
 
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          properties: [],
+          properties: (properties as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.Custom,
         },
@@ -105,7 +258,11 @@ export class ModuleDtoService extends BlockTypeService<
 
   async update(args: UpdateModuleDtoArgs, user: User): Promise<ModuleDto> {
     //todo: validate that only the enabled field can be updated for default actions
-    this.validateModuleDtoName(args.data.name);
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
 
     const existingDto = await super.findOne({
       where: { id: args.where.id },
@@ -115,6 +272,12 @@ export class ModuleDtoService extends BlockTypeService<
       throw new AmplicationError(`Module DTO not found, ID: ${args.where.id}`);
     }
 
+    await this.validateModuleDtoName(
+      args.data.name,
+      existingDto.resourceId,
+      existingDto.id
+    );
+
     if (existingDto.dtoType !== EnumModuleDtoType.Custom) {
       if (existingDto.name !== args.data.name) {
         throw new AmplicationError("Cannot update the name of a default DTO");
@@ -123,6 +286,19 @@ export class ModuleDtoService extends BlockTypeService<
 
     args.data.displayName = args.data.name;
 
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        dtoParameters: args.data,
+        operation: "edit",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
+
     return super.update(args, user);
   }
 
@@ -130,20 +306,41 @@ export class ModuleDtoService extends BlockTypeService<
     args: DeleteModuleDtoArgs,
     @UserEntity() user: User
   ): Promise<ModuleDto> {
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
+
     const moduleDto = await super.findOne(args);
 
-    if (moduleDto?.dtoType !== EnumModuleDtoType.Custom) {
+    if (
+      moduleDto?.dtoType !== EnumModuleDtoType.Custom &&
+      moduleDto?.dtoType !== EnumModuleDtoType.CustomEnum
+    ) {
       throw new AmplicationError(
         "Cannot delete a default DTO. To delete it, you must delete the entity"
       );
     }
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: moduleDto.name,
+        operation: "delete",
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.InteractUserDTO,
+    });
 
     return super.delete(args, user);
   }
 
   async createDefaultDtosForEntityModule(
     entity: Entity,
-    module: Module,
+    moduleId: Module["id"],
     user: User
   ): Promise<ModuleDto[]> {
     if (!this.customActionsEnabled) {
@@ -153,36 +350,60 @@ export class ModuleDtoService extends BlockTypeService<
     const defaultDtos = await getDefaultDtosForEntity(
       entity as unknown as CodeGenTypes.Entity
     );
-    return await Promise.all(
-      Object.keys(defaultDtos).map((dto) => {
-        const dtoData = defaultDtos[dto];
+    const existingModuleDtosForEntity = await this.findMany({
+      where: {
+        parentBlock: {
+          id: moduleId,
+        },
+      },
+    });
 
-        return (
-          defaultDtos[dto] &&
-          super.create(
-            {
-              data: {
-                ...dtoData,
-                displayName: defaultDtos[dto].name,
-                properties: [], //default DTOs do not have properties
-                parentBlock: {
-                  connect: {
-                    id: module.id,
+    const existingModuleDtosForEntityMap = existingModuleDtosForEntity.reduce(
+      (map, dto) => {
+        map[dto.dtoType] = dto;
+        return map;
+      },
+      {} as Record<string, ModuleDto>
+    );
+
+    const promisesResults = await Promise.allSettled(
+      Object.entries(defaultDtos).map(async ([dtoType, dtoData]) => {
+        return existingModuleDtosForEntityMap[dtoType]
+          ? null
+          : super.create(
+              {
+                data: {
+                  ...dtoData,
+                  displayName: dtoData.name,
+                  properties: [], //default DTOs do not have properties
+                  parentBlock: {
+                    connect: {
+                      id: moduleId,
+                    },
                   },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
+                  resource: {
+                    connect: {
+                      id: entity.resourceId,
+                    },
                   },
                 },
               },
-            },
-            user
-            //@todo: create properties
-          )
-        );
+              user
+              //@todo: create properties
+            );
       })
     );
+
+    return promisesResults.reduce((acc, result) => {
+      // if the promise was rejected or the moduleDto Block was already created, we return the accumulator
+      if (result.status === "rejected") {
+        const error = result.reason as Error;
+        this.logger.error(error.message, error, ModuleDtoService.name);
+        return acc;
+      }
+
+      return result.value ? [...acc, result.value] : acc;
+    }, [] as ModuleDto[]);
   }
 
   //call this function when the entity names changes, and we need to update the default dtos
@@ -244,7 +465,7 @@ export class ModuleDtoService extends BlockTypeService<
     entity: Entity,
     relatedField: EntityField,
     relatedEntity: Entity,
-    moduleId: string,
+    moduleId: ModuleDto["id"],
     user: User
   ): Promise<ModuleDto[]> {
     if (!this.customActionsEnabled) {
@@ -257,7 +478,7 @@ export class ModuleDtoService extends BlockTypeService<
 
     //We only need to create default DTOs for many-to-one relations
     if (!properties.allowMultipleSelection) {
-      return null;
+      return [];
     }
 
     //Check if a default dto already exists for this relation
@@ -275,42 +496,57 @@ export class ModuleDtoService extends BlockTypeService<
       }
     );
 
-    if (existingDefaultDto.length > 0) {
-      return existingDefaultDto;
-    }
-
     const defaultDtos = await getDefaultDtosForRelatedEntity(
       entity as unknown as CodeGenTypes.Entity,
       relatedEntity as unknown as CodeGenTypes.Entity
     );
-    return await Promise.all(
-      Object.keys(defaultDtos).map((dto) => {
-        return (
-          defaultDtos[dto] &&
-          super.create(
-            {
-              data: {
-                ...defaultDtos[dto],
-                displayName: defaultDtos[dto].name,
-                relatedEntityId: relatedEntity.id,
-                properties: [], //default DTOs do not have properties
-                parentBlock: {
-                  connect: {
-                    id: moduleId,
+
+    const existingModuleDtosForRelationMap = existingDefaultDto.reduce(
+      (map, dto) => {
+        map[dto.dtoType] = dto;
+        return map;
+      },
+      {} as Record<string, ModuleDto>
+    );
+
+    const promisesResults = await Promise.allSettled(
+      Object.entries(defaultDtos).map(([dtoType, dtoData]) => {
+        return existingModuleDtosForRelationMap[dtoType]
+          ? null
+          : super.create(
+              {
+                data: {
+                  ...dtoData,
+                  displayName: dtoData.name,
+                  relatedEntityId: relatedEntity.id,
+                  properties: [], //default DTOs do not have properties
+                  parentBlock: {
+                    connect: {
+                      id: moduleId,
+                    },
                   },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
+                  resource: {
+                    connect: {
+                      id: entity.resourceId,
+                    },
                   },
                 },
               },
-            },
-            user
-          )
-        );
+              user
+            );
       })
     );
+
+    return promisesResults.reduce((acc, result) => {
+      // if the promise was rejected or the moduleDto Block was already created, we return the accumulator
+      if (result.status === "rejected") {
+        const error = result.reason as Error;
+        this.logger.error(error.message, error, ModuleDtoService.name);
+        return acc;
+      }
+
+      return result.value ? [...acc, result.value] : acc;
+    }, [] as ModuleDto[]);
   }
 
   async updateDefaultDtosForRelatedEntity(
@@ -513,6 +749,12 @@ export class ModuleDtoService extends BlockTypeService<
         );
       }
     }
+
+    await this.validateTypes(
+      dto.resourceId,
+      args.data.propertyTypes,
+      UNSUPPORTED_TYPES
+    );
 
     const existingProperty = dto.properties[existingPropertyIndex];
 
@@ -732,15 +974,35 @@ export class ModuleDtoService extends BlockTypeService<
     if (!this.customActionsEnabled) {
       return null;
     }
+    await validateCustomActionsEntitlement(
+      user.workspace?.id,
+      this.billingService,
+      this.logger
+    );
 
-    this.validateModuleDtoName(args.data.name);
+    await this.validateModuleDtoName(
+      args.data.name,
+      args.data.resource.connect.id
+    );
+
+    const subscription = await this.billingService.getSubscription(
+      user.workspace?.id
+    );
+
+    await this.analytics.trackWithContext({
+      properties: {
+        name: args.data.name,
+        planType: subscription.subscriptionPlan,
+      },
+      event: EnumEventType.CreateUserDTO,
+    });
 
     return super.create(
       {
         ...args,
         data: {
           ...args.data,
-          properties: [],
+          members: (args.members as unknown as JsonArray) ?? [],
           enabled: true,
           dtoType: EnumModuleDtoType.CustomEnum,
         },
@@ -910,5 +1172,53 @@ export class ModuleDtoService extends BlockTypeService<
     );
 
     return deleted;
+  }
+
+  async validateTypes(
+    resourceId: string,
+    types: PropertyTypeDef[],
+    unsupportedTypes?: EnumModuleDtoPropertyType[]
+  ): Promise<void> {
+    for (const type of types) {
+      if (!type) {
+        throw new AmplicationError("Type is required");
+      }
+
+      if (!type.type) {
+        throw new AmplicationError("Type is required");
+      }
+
+      if (unsupportedTypes?.includes(type.type as EnumModuleDtoPropertyType)) {
+        throw new AmplicationError(
+          `The type ${type.type} is not supported yet`
+        );
+      }
+
+      if (
+        type.type === EnumModuleDtoPropertyType.Dto ||
+        type.type === EnumModuleDtoPropertyType.Enum
+      ) {
+        if (!type.dtoId) {
+          throw new AmplicationError(
+            `dtoId is required when type is ${type.type}`
+          );
+        }
+
+        const existingDto = await this.availableDtosForResource({
+          where: {
+            resource: {
+              id: resourceId,
+            },
+            id: {
+              equals: type.dtoId,
+            },
+          },
+        });
+
+        if (!existingDto || existingDto.length === 0) {
+          throw new AmplicationError(`Dto with id ${type.dtoId} not found`);
+        }
+      }
+    }
   }
 }

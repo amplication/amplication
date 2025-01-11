@@ -12,8 +12,6 @@ import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { FeatureIndicator } from "../Components/FeatureIndicator";
-import { BillingFeature } from "@amplication/util-billing-types";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
   name: "",

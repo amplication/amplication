@@ -1,0 +1,34 @@
+{
+  "name": "generator--blueprints",
+  "version": "0.3.0",
+  "scripts": {
+    "bpg:package:container": "./scripts/package-container.sh"
+  },
+  "dependencies": {
+    "@amplication/util-logging": "0.0.2",
+    "@amplication/code-gen-types": "*",
+    "@amplication/dsg-utils": "*",
+    "ast-types": "^0.14.2",
+    "axios": "^0.28.0",
+    "camel-case": "4.1.2",
+    "download": "^8.0.0",
+    "fast-glob": "^3.3.1",
+    "json-schema": "^0.4.0",
+    "json-schema-to-typescript": "^14.0.4",
+    "lodash": "^4.17.21",
+    "logform": "2.5.1",
+    "normalize-path": "^3.0.0",
+    "pascal-case": "^3.1.2",
+    "pluralize": "^8.0.0",
+    "prisma-schema-dsl-types": "^1.1.2",
+    "semver": "^7.5.2",
+    "triple-beam": "1.4.1",
+    "tslib": "^2.6.2",
+    "type-fest": "^3.13.0",
+    "util": "0.12.5",
+    "winston": "3.8.2",
+    "yaml": "2.2.2",
+    "@amplication/csharp-ast": "*",
+    "pacote": "^19.0.0"
+  }
+}

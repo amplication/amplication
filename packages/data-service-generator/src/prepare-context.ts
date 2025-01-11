@@ -17,12 +17,14 @@ import {
   entityRelatedFieldDefaultActions,
   serverDirectories,
   types,
+  EnumModuleDtoPropertyType,
+  PropertyTypeDef,
 } from "@amplication/code-gen-types";
 import {
   getDefaultActionsForEntity,
   getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
 import { join } from "path";
@@ -32,7 +34,8 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { resolveTopicNames } from "./utils/message-broker";
+import { resolveMessageBrokerTopicNames } from "@amplication/dsg-utils";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -82,7 +85,8 @@ export async function prepareContext(
   context.moduleActionsAndDtoMap = prepareModuleActionsAndDtos(
     moduleContainers,
     moduleActions,
-    moduleDtos
+    moduleDtos,
+    context.appInfo.settings.serverSettings.generateGraphQL
   );
 
   context.entityActionsMap = prepareEntityActions(
@@ -170,7 +174,7 @@ export function shouldGenerateGrpc(
 }
 
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {
-  return resolveTopicNames(
+  return resolveMessageBrokerTopicNames(
     dSGResourceData.serviceTopics || [],
     dSGResourceData.otherResources?.filter(
       (resource) => resource.resourceType === EnumResourceType.MessageBroker
@@ -380,7 +384,8 @@ function prepareEntityActions(
 function prepareModuleActionsAndDtos(
   moduleContainers: ModuleContainer[],
   moduleActions: ModuleAction[],
-  moduleDtos: ModuleDto[]
+  moduleDtos: ModuleDto[],
+  generateGraphQL: boolean
 ): ModuleActionsAndDtosMap {
   const dtosMap = Object.fromEntries(
     moduleDtos.map((moduleDto) => {
@@ -396,17 +401,11 @@ function prepareModuleActionsAndDtos(
         const propertyTypes = property.propertyTypes;
         if (propertyTypes) {
           propertyTypes.forEach((propertyType) => {
-            const dtoId = propertyType.dtoId;
-            if (dtoId) {
-              const dto = dtosMap[dtoId];
-              if (dto) {
-                propertyType.dto = dto;
-              } else {
-                throw new Error(
-                  `Could not find dto with the ID ${dtoId} referenced in dto property ${property.name}`
-                );
-              }
-            }
+            resolvePropTypeDtoFromDtoId(
+              propertyType,
+              dtosMap,
+              `dto property ${property.name} of moduleDto ${moduleDto.name}`
+            );
           });
         }
       });
@@ -421,14 +420,23 @@ function prepareModuleActionsAndDtos(
 
     const actionInputType = moduleAction.inputType;
     if (actionInputType) {
-      const dtoId = actionInputType.dtoId;
-      if (dtoId) {
-        const dto = dtosMap[dtoId];
-        if (dto) {
-          actionInputType.dto = dto;
-        } else {
-          throw new Error(
-            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} input type`
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionInputType,
+          dtosMap,
+          `action ${moduleAction.name} input type`
+        )
+      ) {
+        if (generateGraphQL) {
+          addDecoratorToDto(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.ArgsType
+          );
+          setDtoNestedDecorator(
+            actionInputType.dto,
+            EnumModuleDtoDecoratorType.InputType,
+            dtosMap,
+            true // the top level DTO has ArgsType and doesn't also need InputType
           );
         }
       }
@@ -436,14 +444,18 @@ function prepareModuleActionsAndDtos(
 
     const actionOutputType = moduleAction.outputType;
     if (actionOutputType) {
-      const dtoId = actionOutputType.dtoId;
-      if (dtoId) {
-        const dto = dtosMap[dtoId];
-        if (dto) {
-          actionOutputType.dto = dto;
-        } else {
-          throw new Error(
-            `Could not find dto with the ID ${dtoId} referenced in action ${moduleAction.name} output type`
+      if (
+        resolvePropTypeDtoFromDtoId(
+          actionOutputType,
+          dtosMap,
+          `action ${moduleAction.name} output type`
+        )
+      ) {
+        if (generateGraphQL) {
+          setDtoNestedDecorator(
+            actionOutputType.dto,
+            EnumModuleDtoDecoratorType.ObjectType,
+            dtosMap
           );
         }
       }
@@ -471,4 +483,65 @@ function prepareModuleActionsAndDtos(
       return [moduleContainer.name, moduleActionsAndDtos];
     })
   );
+}
+
+function setDtoNestedDecorator(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType,
+  dtosMap: { [k: string]: ModuleDto },
+  decorateOnlySubProperties = false
+) {
+  if (dto.decorators && dto.decorators.find((dec) => dec === decorator)) return;
+
+  if (!decorateOnlySubProperties) {
+    addDecoratorToDto(dto, decorator);
+  }
+
+  if (dto.properties) {
+    dto.properties.forEach((prop) => {
+      if (prop.propertyTypes) {
+        prop.propertyTypes.forEach((propType) => {
+          if (propType.type === EnumModuleDtoPropertyType.Dto) {
+            if (
+              resolvePropTypeDtoFromDtoId(
+                propType,
+                dtosMap,
+                `DTO ${dto.name} in property ${prop.name}`
+              )
+            ) {
+              setDtoNestedDecorator(propType.dto, decorator, dtosMap);
+            }
+          }
+        });
+      }
+    });
+  }
+}
+
+function addDecoratorToDto(
+  dto: ModuleDto,
+  decorator: EnumModuleDtoDecoratorType
+) {
+  if (!dto.decorators) dto.decorators = [];
+  dto.decorators.push(decorator);
+}
+
+function resolvePropTypeDtoFromDtoId(
+  propertyType: PropertyTypeDef,
+  dtosMap: { [k: string]: ModuleDto },
+  referencedIn: string
+): boolean {
+  const dtoId = propertyType.dtoId;
+  if (dtoId) {
+    const dto = dtosMap[dtoId];
+    if (dto) {
+      propertyType.dto = dto;
+      return true;
+    } else {
+      throw new Error(
+        `Could not find dto with the ID ${dtoId} referenced in ${referencedIn}`
+      );
+    }
+  }
+  return false;
 }

@@ -9,13 +9,13 @@ export type PrepareOperation = (
 
 export type PrepareOperationInput = {
   inputSchema: string;
-  existingEntities: ExistingEntitySelect[];
+  existingEntities: ExistingEntitiesWithFieldsMap;
   actionContext: ActionContext;
 };
 
 export type PrepareOperationIO = {
   builder: ConcretePrismaSchemaBuilder;
-  existingEntities: ExistingEntitySelect[];
+  existingEntities: ExistingEntitiesWithFieldsMap;
   mapper: Mapper;
   actionContext: ActionContext;
 };
@@ -53,6 +53,14 @@ export type ConvertPrismaSchemaForImportObjectsResponse = {
   log: ActionLog[];
 };
 
-export type ExistingEntitySelect = {
-  name: string;
+export type ExistingEntitiesWithFieldsMap = {
+  [key: string]: {
+    id: string;
+    fields: {
+      [key: string]: {
+        id: string;
+        permanentId: string;
+      };
+    };
+  };
 };

@@ -1,0 +1,54 @@
+@import "../../style/index.scss";
+
+.amp-data-grid {
+  --rdg-color: var(--gray-base);
+  --rdg-border-color: var(--border-color);
+  --rdg-summary-border-color: var(--border-color);
+  --rdg-background-color: var(--gray-90);
+  --rdg-header-background-color: var(--gray-full);
+  --rdg-row-hover-background-color: vaR(--gray-80);
+  --rdg-row-selected-background-color: var(--gray-60);
+  --rdg-row-selected-hover-background-color: var(--gray-60);
+  overflow-y: scroll;
+  border-radius: var(--default-border-radius);
+  @include scrollbars($default-scroll-width, var(--gray-30), transparent);
+  block-size: 100%;
+
+  .rdg-cell {
+    border-right-color: transparent;
+    padding-right: var(--default-spacing);
+    padding-left: var(--default-spacing);
+
+    &[aria-selected="true"] {
+      outline: none;
+    }
+  }
+
+  .rdg-header-row {
+    .rdg-cell {
+      font-weight: 400;
+      font-size: var(--tag-font-size);
+      &:hover {
+        color: var(--gray-10);
+        background-color: var(--gray-80);
+      }
+    }
+
+    .rdg-cell-resizable {
+      > div {
+        width: 4px;
+        &:hover {
+          background-color: var(--theme-turquoise);
+        }
+      }
+    }
+  }
+
+  &__expand-button {
+    transform: rotate(0deg);
+    transition: transform 0.1s ease-in;
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+}

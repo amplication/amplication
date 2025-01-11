@@ -21,7 +21,6 @@ export class SegmentAnalyticsModule {
   ): DynamicModule {
     return {
       module: SegmentAnalyticsModule,
-      imports: [],
       providers: [
         SegmentAnalyticsService,
         ...this.createConnectProviders(options),

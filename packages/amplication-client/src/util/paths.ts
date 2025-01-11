@@ -1,9 +1,6 @@
 export function commitPath(
-  currentWorkspaceId: string,
-  currentProjectId: string,
+  baseProjectPath: string,
   lastCommitId?: string
 ): string {
-  return `/${currentWorkspaceId}/${currentProjectId}/commits/${
-    lastCommitId || ""
-  }`;
+  return `${baseProjectPath}/commits/${lastCommitId || ""}`;
 }

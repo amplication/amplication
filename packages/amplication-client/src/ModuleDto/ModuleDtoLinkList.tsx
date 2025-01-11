@@ -7,10 +7,11 @@ import {
   VerticalNavigation,
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
-import React, { useContext, useEffect } from "react";
-import { AppContext } from "../context/appContext";
+import React, { useEffect } from "react";
 import * as models from "../models";
+import { ModulesFilter } from "../Modules/ModuleNavigationList";
 import { formatError } from "../util/error";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModuleDto from "./hooks/useModuleDto";
 
 const DATE_CREATED_FIELD = "createdAt";
@@ -18,18 +19,18 @@ const DATE_CREATED_FIELD = "createdAt";
 type Props = {
   moduleId: string;
   resourceId: string;
+  filters: ModulesFilter;
 };
 
 export const ModuleDtoLinkList = React.memo(
-  ({ moduleId, resourceId }: Props) => {
-    const { currentWorkspace, currentProject } = useContext(AppContext);
-
+  ({ moduleId, resourceId, filters }: Props) => {
     const {
       findModuleDtos,
       findModuleDtosData: data,
       findModuleDtosError: errorLoading,
       findModuleDtosLoading: loading,
     } = useModuleDto();
+    const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
     useEffect(() => {
       findModuleDtos({
@@ -38,13 +39,15 @@ export const ModuleDtoLinkList = React.memo(
             parentBlock: { id: moduleId },
             resource: { id: resourceId },
             displayName: undefined,
+            includeDefaultDtos: filters.showDefaultObjects,
+            includeCustomDtos: filters.showCustomObjects,
           },
           orderBy: {
             [DATE_CREATED_FIELD]: models.SortOrder.Asc,
           },
         },
       });
-    }, [moduleId, findModuleDtos, resourceId]);
+    }, [moduleId, findModuleDtos, resourceId, filters]);
 
     const errorMessage = formatError(errorLoading);
 
@@ -58,7 +61,7 @@ export const ModuleDtoLinkList = React.memo(
               <VerticalNavigationItem
                 key={dto.id}
                 icon="zap"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/dtos/${dto.id}`}
+                to={`${baseUrl}/modules/${moduleId}/dtos/${dto.id}`}
               >
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}

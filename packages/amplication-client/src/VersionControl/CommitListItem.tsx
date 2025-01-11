@@ -21,9 +21,7 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
       to={`/${currentWorkspace?.id}/${projectId}/commits/${commit.id}`}
     >
       <FlexItem>
-        <FlexItem.FlexStart>
-          <CommitData commit={commit} />
-        </FlexItem.FlexStart>
+        <CommitData commit={commit} />
         <FlexItem.FlexEnd minWidthAuto={true}>
           <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
         </FlexItem.FlexEnd>

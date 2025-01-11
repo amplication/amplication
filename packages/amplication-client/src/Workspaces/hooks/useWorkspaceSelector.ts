@@ -40,7 +40,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     useState<models.EnumSubscriptionStatus>(
       models.EnumSubscriptionStatus.Active
     );
-  const [isPreviewPlan, setIsPreviewPlan] = useState<boolean>(false);
 
   const [
     getCurrentWorkspace,
@@ -79,10 +78,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
         data.currentWorkspace?.subscription?.subscriptionPlan
       );
       setSubscriptionStatus(data.currentWorkspace?.subscription?.status);
-      const previewPlans = [
-        models.EnumSubscriptionPlan.PreviewBreakTheMonolith,
-      ];
-      setIsPreviewPlan(previewPlans.includes(subscriptionPlan));
     }
   }, [currentWorkspace, data, loadingCurrentWorkspace, subscriptionPlan]);
 
@@ -196,7 +191,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     currentWorkspace,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
     loadingWorkspace: loadingCurrentWorkspace,
     handleSetCurrentWorkspace,
     createWorkspace,

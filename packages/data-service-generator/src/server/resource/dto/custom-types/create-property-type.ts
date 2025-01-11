@@ -1,10 +1,15 @@
 import {
   EnumModuleDtoPropertyType,
+  EnumModuleDtoType,
   PropertyTypeDef,
 } from "@amplication/code-gen-types";
 import { builders } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { INPUT_JSON_VALUE_KEY } from "../constants";
+import {
+  StringLiteralEnumMember,
+  createEnumMemberName,
+} from "../create-enum-dto";
 
 export const DATE_ID = builders.identifier("Date");
 
@@ -61,10 +66,21 @@ export function createPropTypeFromTypeDef(
         `Property with type "DTO" and dtoId "${typeDef.dtoId}" is missing reference to the referenced DTO}`
       );
     }
-
     baseType = builders.tsTypeReference(builders.identifier(typeDef.dto.name));
-  } else if (typeDef.type === EnumModuleDtoPropertyType.Enum) {
-    baseType = builders.tsTypeReference(builders.identifier("enumName"));
+
+    if (typeDef.dto.dtoType === EnumModuleDtoType.CustomEnum) {
+      const members = typeDef.dto.members.map(
+        (member) =>
+          builders.tsEnumMember(
+            builders.identifier(createEnumMemberName(member.name)),
+            builders.stringLiteral(member.value)
+          ) as StringLiteralEnumMember
+      );
+
+      baseType = builders.tsUnionType(
+        members.map((member) => builders.tsLiteralType(member.initializer))
+      );
+    }
   } else {
     baseType = TYPE_DEF_TO_TYPE[typeDef.type];
   }

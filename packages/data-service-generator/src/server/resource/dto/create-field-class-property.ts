@@ -10,9 +10,11 @@ import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../utils/ast";
 import {
   isEnumField,
+  isNumericField,
   isOneToOneRelationField,
+  isTextField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
@@ -25,6 +27,9 @@ import {
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
+  MAX_ID,
+  MAX_LENGTH_ID,
+  MIN_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import {
@@ -156,6 +161,15 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
+function createMinMaxDecorator(
+  identifierName: namedTypes.Identifier,
+  value: number
+): namedTypes.Decorator {
+  return builders.decorator(
+    builders.callExpression(identifierName, [builders.numericLiteral(value)])
+  );
+}
+
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -261,6 +275,29 @@ export function createFieldClassProperty(
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
     decorators.push(createTypeDecorator(DATE_ID));
+  }
+  if (!isQuery && isNumericField(field)) {
+    const minValue = field.properties?.minimumValue;
+    const maxValue = field.properties?.maximumValue;
+
+    if (minValue) {
+      const minDecorator = createMinMaxDecorator(MIN_ID, minValue);
+      decorators.push(minDecorator);
+    }
+
+    if (maxValue) {
+      const maxDecorator = createMinMaxDecorator(MAX_ID, maxValue);
+      decorators.push(maxDecorator);
+    }
+  }
+  if (!isQuery && isTextField(field)) {
+    const maxLengthValue = field.properties?.maxLength;
+    // min length is not exposed in the UI. We have a default value of 1 but we don't want to enforce it
+
+    if (maxLengthValue) {
+      const maxDecorator = createMinMaxDecorator(MAX_LENGTH_ID, maxLengthValue);
+      decorators.push(maxDecorator);
+    }
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));

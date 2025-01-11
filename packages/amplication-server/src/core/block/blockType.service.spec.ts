@@ -6,6 +6,9 @@ import { IBlock, BlockInputOutput, Block, User } from "../../models";
 import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
 import { DeleteUserArgs } from "../workspace/dto";
+import { BillingService } from "../billing/billing.service";
+import { BooleanEntitlement } from "@stigg/node-server-sdk";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_IBLOCK_ID = "exampleIblockId";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
@@ -31,6 +34,11 @@ const EXAMPLE_BLOCK: Block = {
   displayName: EXAMPLE_DISPLAY_NAME,
   blockType: EXAMPLE_BLOCK_TYPE,
   resourceId: EXAMPLE_RESOURCE_ID,
+};
+
+export const EXAMPLE_BOOLEAN_ENTITLEMENT: BooleanEntitlement = {
+  hasAccess: true,
+  isFallback: false,
 };
 
 const EXAMPLE_IBLOCK: IBlock = {
@@ -65,6 +73,10 @@ const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_IBLOCK;
 });
 
+export const billingServiceGetBooleanEntitlementMock = jest.fn(() => {
+  return EXAMPLE_BOOLEAN_ENTITLEMENT;
+});
+
 const blockServiceFindManyByBlockTypeMock = jest.fn(() => {
   return [EXAMPLE_IBLOCK];
 });
@@ -97,6 +109,20 @@ describe("BlockTypeService", () => {
             findManyByBlockType: blockServiceFindManyByBlockTypeMock,
             create: blockServiceCreateMock,
             update: blockServiceUpdateMock,
+          })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+          })),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn(() => ({
+            error: jest.fn(() => {
+              return null;
+            }),
           })),
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -135,7 +161,8 @@ describe("BlockTypeService", () => {
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledTimes(1);
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledWith(
       args,
-      service.blockType
+      service.blockType,
+      undefined
     );
   });
 

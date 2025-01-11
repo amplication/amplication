@@ -1,3 +1,4 @@
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { sampleServiceResourceWithEntities } from "../constants";
 import { EnumTemplateType } from "./wizard-pages/interfaces";
 
@@ -101,7 +102,7 @@ const StructureType = {
 const DatabaseType = {
   properties: {
     databaseType: {
-      enum: ["postgres", "mongo", "mysql", "sqlserver"],
+      type: "string",
     },
   },
   required: ["databaseType"],
@@ -119,7 +120,7 @@ const TemplateType = {
 const Auth = {
   properties: {
     authType: {
-      enum: ["core", "no"],
+      type: "string",
     },
   },
   required: ["authType"],
@@ -150,9 +151,9 @@ export const ResourceInitialValues = {
   isGenerateCompleted: null,
   structureType: "Mono",
   baseDir: "./apps",
-  databaseType: "postgres",
+  databaseType: "db-postgres",
   templateType: "empty",
-  authType: "core",
+  authType: "no",
   gitProvider: null,
   connectToDemoRepo: false,
 };
@@ -168,21 +169,6 @@ export interface TemplateSettings {
   eventName: string;
   entities: any;
 }
-
-export const templateMapping: { [key: string]: TemplateSettings } = {
-  [EnumTemplateType.empty]: {
-    type: EnumTemplateType.empty,
-    description: "",
-    eventName: "createResourceFromScratch",
-    entities: [],
-  },
-  [EnumTemplateType.orderManagement]: {
-    type: EnumTemplateType.orderManagement,
-    description: "Sample service for e-commerce",
-    eventName: "createResourceFromSample",
-    entities: sampleServiceResourceWithEntities,
-  },
-};
 
 export const wizardProgressBarSchema = [
   {

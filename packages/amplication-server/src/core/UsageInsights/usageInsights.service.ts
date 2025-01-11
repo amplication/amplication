@@ -14,12 +14,22 @@ import {
 } from "./dtos/UsageInsights.object";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 
+const LOC_INFRASTRUCTURE_DISCOUNT_RATIO = 5;
+
 @Injectable()
 export class UsageInsightsService {
   constructor(
     private readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService
   ) {}
+
+  private projectIdsFilter = (projectIds: string[]) => {
+    let filter = Prisma.empty;
+    if (projectIds.length > 0) {
+      filter = Prisma.sql`AND r."projectId" IN (${Prisma.join(projectIds)})`;
+    }
+    return filter;
+  };
 
   async countLinesOfCode({
     projectIds,
@@ -89,7 +99,7 @@ export class UsageInsightsService {
     JOIN "Resource" r ON b."resourceId" = r."id"
     WHERE b."createdAt" >= ${startDate}
     AND b."createdAt" <= ${endDate}
-    AND r."projectId" IN (${Prisma.join(projectIds)})
+    ${this.projectIdsFilter(projectIds)}
     GROUP BY year, month, time_group
     ORDER BY year, month, time_group;
   `;
@@ -110,8 +120,8 @@ export class UsageInsightsService {
     FROM "EntityVersion" ev
     JOIN "Entity" e ON ev."entityId" = e."id"
     JOIN "Resource" r ON e."resourceId" = r."id"
-    WHERE r."projectId" IN (${Prisma.join(projectIds)})
-    AND ev."updatedAt" >= ${startDate} AND ev."updatedAt" <= ${endDate}
+    WHERE ev."updatedAt" >= ${startDate} AND ev."updatedAt" <= ${endDate}
+    ${this.projectIdsFilter(projectIds)}
     GROUP BY year, month, time_group
     ORDER BY year, month, time_group;
   `;
@@ -129,7 +139,8 @@ export class UsageInsightsService {
     timeGroup,
   }: BlockChangesArgs): Promise<UsageInsights> {
     let results: QueryRawResult[];
-    // Prisma query row doesn't work as expected with enums, so we use switch case instead of one query with ${blokType}
+
+    // Prisma query raw doesn't work as expected with enums, so we use switch case instead of one query with ${blockType}
     switch (blockType) {
       case EnumBlockType.ModuleAction:
         results = await this.prisma.$queryRaw`
@@ -138,7 +149,7 @@ export class UsageInsightsService {
           JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE b."blockType" = 'ModuleAction'
-          AND r."projectId" IN (${Prisma.join(projectIds)})
+          ${this.projectIdsFilter(projectIds)}
           AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
           GROUP BY year, month, time_group
           ORDER BY year, month, time_group;
@@ -151,7 +162,7 @@ export class UsageInsightsService {
           JOIN "Block" b ON bv."blockId" = b."id"
           JOIN "Resource" r ON b."resourceId" = r."id"
           WHERE b."blockType" = 'PluginInstallation'
-          AND r."projectId" IN (${Prisma.join(projectIds)})
+          ${this.projectIdsFilter(projectIds)}
           AND bv."updatedAt" >= ${startDate} AND bv."updatedAt" <= ${endDate}
           GROUP BY year, month, time_group
           ORDER BY year, month, time_group;
@@ -180,13 +191,6 @@ export class UsageInsightsService {
       blockType: EnumBlockType.PluginInstallation,
     });
 
-    this.logger.debug("Usage insights result", {
-      builds,
-      entities,
-      moduleActions,
-      plugins,
-    });
-
     return {
       builds,
       entities,
@@ -203,13 +207,6 @@ export class UsageInsightsService {
     const costSaved = await this.evaluateCostSaved(loc);
     const codeQuality = await this.evaluateCodeQuality(loc);
 
-    this.logger.debug("Evaluation insights result", {
-      loc,
-      timeSaved,
-      costSaved,
-      codeQuality,
-    });
-
     return {
       loc,
       timeSaved,
@@ -221,13 +218,13 @@ export class UsageInsightsService {
   private async evaluateTimeSaved(linesOfCode: number) {
     const divisor = 10.41;
     const timeSaved = linesOfCode / divisor;
-    return Math.round(timeSaved);
+    return Math.round(timeSaved / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private async evaluateCostSaved(linesOfCode: number) {
     const multiplier = 12;
     const coastSaved = multiplier * linesOfCode;
-    return Math.round(coastSaved);
+    return Math.round(coastSaved / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private async evaluateCodeQuality(linesOfCode: number) {
@@ -235,7 +232,7 @@ export class UsageInsightsService {
     const divisor = 1000;
     const bugsPrevented = (multiplier * linesOfCode) / divisor;
 
-    return Math.round(bugsPrevented);
+    return Math.round(bugsPrevented / LOC_INFRASTRUCTURE_DISCOUNT_RATIO);
   }
 
   private parseQueryRaw(results: QueryRawResult[]) {

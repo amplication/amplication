@@ -32,7 +32,7 @@ import {
   importContainedIdentifiers,
   getMethods,
 } from "../../../utils/ast";
-import { isToManyRelationField } from "../../../utils/field";
+import { isToManyRelationField } from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";

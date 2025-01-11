@@ -79,9 +79,10 @@ export function BlockTypeResolver<
       "where.resource.id"
     )
     async findMany(
-      @Args({ type: () => findManyArgsRef }) args: FindManyArgs
+      @Args({ type: () => findManyArgsRef }) args: FindManyArgs,
+      @UserEntity() user: User
     ): Promise<T[]> {
-      return this.service.findMany(args);
+      return this.service.findMany(args, user);
     }
 
     @Mutation(() => classRef, {
@@ -90,7 +91,8 @@ export function BlockTypeResolver<
     })
     @AuthorizeContext(
       AuthorizableOriginParameter.ResourceId,
-      "data.resource.connect.id"
+      "data.resource.connect.id",
+      "resource.*.edit"
     )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
@@ -103,12 +105,16 @@ export function BlockTypeResolver<
       name: updateName,
       nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+    @AuthorizeContext(
+      AuthorizableOriginParameter.BlockId,
+      "where.id",
+      "resource.*.edit"
+    )
     async [updateName](
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.update(args, user);
+      return this.service.update(args, user, []);
     }
 
     @ResolveField(() => User, { nullable: true })
@@ -128,12 +134,16 @@ export function BlockTypeResolver<
       name: deleteName,
       nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+    @AuthorizeContext(
+      AuthorizableOriginParameter.BlockId,
+      "where.id",
+      "resource.*.edit"
+    )
     async [deleteName](
       @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
       @UserEntity() user: User
     ): Promise<T> {
-      return this.service.delete(args, user);
+      return this.service.delete(args, user, true);
     }
   }
   return BaseResolverHost;

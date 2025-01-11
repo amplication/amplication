@@ -11,9 +11,9 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
-import { useCallback, useContext } from "react";
-import { AppContext } from "../context/appContext";
+import { useCallback } from "react";
 import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModuleAction from "./hooks/useModuleAction";
 
 type Props = {
@@ -51,9 +51,8 @@ export const ModuleActionListItem = ({
   tagStyle,
   disabled,
 }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
   const { updateModuleAction } = useModuleAction();
+  const { baseUrl } = useResourceBaseUrl();
 
   const onEnableChanged = useCallback(
     (value: boolean) => {
@@ -64,11 +63,6 @@ export const ModuleActionListItem = ({
           },
           data: {
             enabled: value,
-            gqlOperation: moduleAction.gqlOperation,
-            restVerb: moduleAction.restVerb,
-            name: moduleAction.name,
-            displayName: moduleAction.displayName,
-            description: moduleAction.description,
           },
         },
       }).catch(console.error);
@@ -78,7 +72,7 @@ export const ModuleActionListItem = ({
 
   if (!module) return null;
 
-  const actionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions/${moduleAction.id}`;
+  const actionUrl = `${baseUrl}/modules/${module.id}/actions/${moduleAction.id}`;
 
   return (
     <ClickableListItemWithInnerActions

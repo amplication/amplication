@@ -108,7 +108,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
 
   return (
     <Panel
-      panelStyle={EnumPanelStyle.Default}
+      panelStyle={EnumPanelStyle.Bordered}
       themeColor={EnumTextColor.ThemeTurquoise}
       className={CLASS_NAME}
     >
@@ -126,18 +126,18 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
         <Text textStyle={EnumTextStyle.H4}>Productivity Metrics</Text>
       </FlexItem>
       <FlexItem
-        direction={EnumFlexDirection.Row}
+        direction={EnumFlexDirection.Column}
         className={`${CLASS_NAME}__chart-container`}
         itemsAlign={EnumItemsAlign.Stretch}
-        gap={EnumGapSize.Large}
+        gap={EnumGapSize.Small}
       >
         <Panel
           className={`${CLASS_NAME}__chart`}
-          panelStyle={EnumPanelStyle.Bold}
+          panelStyle={EnumPanelStyle.Surface}
         >
           {usageInsightsDataset && (
             <BarChart
-              height={300}
+              height={250}
               dataset={usageInsightsDataset}
               yAxis={[
                 {
@@ -156,7 +156,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
               series={[
                 {
                   dataKey: "entities",
-                  label: "Entities changed",
+                  label: "Entity Changes",
                   valueFormatter,
                   color: chartColors[0],
                 },
@@ -168,13 +168,13 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
                 },
                 {
                   dataKey: "plugins",
-                  label: "Plugins",
+                  label: "Plugin Updates",
                   valueFormatter,
                   color: chartColors[2],
                 },
                 {
                   dataKey: "moduleActions",
-                  label: "APIs changed",
+                  label: "API Changes",
                   valueFormatter,
                   color: chartColors[3],
                 },
@@ -186,9 +186,10 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
         {(evaluationInsightsLoading ||
           (evaluationInsights && evaluationInsights.loc !== 0)) && (
           <FlexItem
-            direction={EnumFlexDirection.Column}
+            direction={EnumFlexDirection.Row}
             className={`${CLASS_NAME}__chart-side`}
-            gap={EnumGapSize.Large}
+            itemsAlign={EnumItemsAlign.Stretch}
+            gap={EnumGapSize.Small}
           >
             <>
               <UsageInsightsDataBox
@@ -223,7 +224,7 @@ export const UsageInsights: React.FC<Props> = ({ projectIds }) => {
       {(evaluationInsightsLoading ||
         (evaluationInsights && evaluationInsights.loc !== 0)) && (
         <>
-          <FlexItem gap={EnumGapSize.Large}>
+          <FlexItem gap={EnumGapSize.Small}>
             <UsageInsightsDataBox
               loading={evaluationInsightsLoading}
               value={evaluationInsights?.costSaved}

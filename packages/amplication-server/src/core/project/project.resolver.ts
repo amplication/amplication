@@ -14,7 +14,6 @@ import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { ProjectService } from "./project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { Roles } from "../../decorators/roles.decorator";
 import { Inject, UseFilters, UseGuards } from "@nestjs/common";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
@@ -43,7 +42,6 @@ export class ProjectResolver {
   ) {}
 
   @Query(() => [Project], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -53,17 +51,16 @@ export class ProjectResolver {
   }
 
   @Query(() => Project, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
   async project(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.findUnique(args);
   }
 
   @Mutation(() => Project, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "project.create"
   )
   async createProject(
     @Args() args: ProjectCreateArgs,
@@ -73,13 +70,21 @@ export class ProjectResolver {
   }
 
   @Mutation(() => Project, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.id",
+    "project.delete"
+  )
   async deleteProject(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.deleteProject(args);
   }
 
   @Mutation(() => Project, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "where.id",
+    "project.settings.edit"
+  )
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
     return this.projectService.updateProject(args);
   }

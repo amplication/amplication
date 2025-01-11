@@ -12,12 +12,12 @@ export interface NpmDownloads {
 }
 
 export interface PluginData {
-  plugin: PluginYml;
+  pluginCatalogEntry: PluginCatalogEntryYml;
   npm: NpmTags;
   downloads: number;
 }
 
-export interface PluginYml {
+export interface PluginCatalogEntryYml {
   id: string;
   name: string;
   description: string;
@@ -30,6 +30,7 @@ export interface PluginYml {
   categories: string;
   resourceTypes: string;
   pluginId?: string;
+  generator: string[] | string;
 }
 
 export interface PluginList {

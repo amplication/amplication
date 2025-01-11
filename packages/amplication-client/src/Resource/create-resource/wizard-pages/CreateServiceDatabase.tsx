@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
@@ -10,21 +10,63 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
+import { Plugin } from "../../../Plugins/hooks/usePluginCatalog";
 
-interface Props extends WizardStepProps {
-  PostgresPng: React.ReactElement<any, any>;
-  MongoPng: React.ReactElement<any, any>;
-  MysqlPng: React.ReactElement<any, any>;
-  MsSqlPng: React.ReactElement<any, any>;
-}
+import { PluginLogo } from "../../../Plugins/PluginLogo";
+import { EnumCodeGenerator } from "../../../models";
 
-const CreateServiceDatabase: React.FC<Props> = ({
-  formik,
-  PostgresPng,
-  MongoPng,
-  MysqlPng,
-  MsSqlPng,
-}) => {
+const NODE_DB_PLUGINS = ["db-postgres", "db-mongo", "db-mysql", "db-mssql"];
+const DOTNET_DB_PLUGINS = ["dotnet-db-sqlserver", "dotnet-db-postgres"];
+
+const OVERRIDE_PLUGIN_NAME = {
+  "dotnet-db-postgres": "PostgreSQL DB",
+  "dotnet-db-sqlserver": "MS SQL Server DB",
+};
+const OVERRIDE_PLUGIN_DESCRIPTION = {
+  "db-postgres":
+    "Open-source object-relational database with a strong community",
+  "db-mongo": "Scalable NoSQL database for unstructured data",
+  "db-mysql": "Reliable open-source relational database for web applications",
+  "db-mssql": "High-performance, secure relational database by Microsoft",
+  "dotnet-db-postgres":
+    "Open-source object-relational database with a strong community",
+  "dotnet-db-sqlserver":
+    "High-performance, secure relational database by Microsoft",
+};
+
+type Props = WizardStepProps & {
+  pluginCatalog: { [key: string]: Plugin };
+};
+
+const CreateServiceDatabase: React.FC<Props> = ({ formik, pluginCatalog }) => {
+  const pluginList = useMemo(() => {
+    if (!pluginCatalog) {
+      return [];
+    }
+
+    if (formik.values.codeGenerator === EnumCodeGenerator.DotNet) {
+      return DOTNET_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
+    } else {
+      return NODE_DB_PLUGINS.map((plugin) => pluginCatalog[plugin]).filter(
+        (plugin) => plugin
+      );
+    }
+  }, [formik, pluginCatalog]);
+
+  useEffect(() => {
+    if (
+      pluginList &&
+      pluginList.length > 0 &&
+      !pluginList.find(
+        (plugin) => plugin.pluginId === formik.values.databaseType
+      )
+    ) {
+      formik.setFieldValue("databaseType", pluginList[0].pluginId);
+    }
+  }, [formik, pluginList]);
+
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(
@@ -35,7 +77,7 @@ const CreateServiceDatabase: React.FC<Props> = ({
         true
       );
     },
-    [formik.values]
+    [formik]
   );
   return (
     <Layout.Split>
@@ -50,42 +92,23 @@ const CreateServiceDatabase: React.FC<Props> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.SelectorWrapper>
-          <LabelDescriptionSelector
-            name="postgres"
-            image={PostgresPng}
-            imageSize="large"
-            label="PostgreSQL"
-            description="Open-source object-relational database with a strong community"
-            onClick={handleDatabaseSelect}
-            currentValue={formik.values.databaseType}
-          />
-          <LabelDescriptionSelector
-            name="mongo"
-            image={MongoPng}
-            imageSize="large"
-            label="MongoDB"
-            description="Scalable NoSQL database for unstructured data"
-            onClick={handleDatabaseSelect}
-            currentValue={formik.values.databaseType}
-          />
-          <LabelDescriptionSelector
-            name="mysql"
-            image={MysqlPng}
-            imageSize="large"
-            label="MySQL"
-            description="Reliable open-source relational database for web applications"
-            onClick={handleDatabaseSelect}
-            currentValue={formik.values.databaseType}
-          />
-          <LabelDescriptionSelector
-            name="sqlserver"
-            imageSize="large"
-            image={MsSqlPng}
-            label="MS SQL Server"
-            description="High-performance, secure relational database by Microsoft"
-            onClick={handleDatabaseSelect}
-            currentValue={formik.values.databaseType}
-          />
+          {pluginList.map(
+            (plugin) =>
+              plugin && (
+                <LabelDescriptionSelector
+                  name={plugin.pluginId}
+                  label={OVERRIDE_PLUGIN_NAME[plugin.pluginId] || plugin.name}
+                  excludeImageWrapper
+                  image={<PluginLogo plugin={plugin} />}
+                  description={
+                    OVERRIDE_PLUGIN_DESCRIPTION[plugin.pluginId] ||
+                    plugin.description
+                  }
+                  onClick={handleDatabaseSelect}
+                  currentValue={formik.values.databaseType}
+                />
+              )
+          )}
         </Layout.SelectorWrapper>
         <FlexItem margin={EnumFlexItemMargin.Top}>
           <Text textStyle={EnumTextStyle.Tag}>

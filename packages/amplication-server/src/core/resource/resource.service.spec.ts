@@ -1,72 +1,76 @@
+import { BillingFeature } from "@amplication/util-billing-types";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
+import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import cuid from "cuid";
-import {
-  INVALID_RESOURCE_ID,
-  INVALID_DELETE_PROJECT_CONFIGURATION,
-  ResourceService,
-} from "./resource.service";
-import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
   BlockVersion,
   Commit,
   EntityVersion,
-  Project,
-  GitRepository,
   GitOrganization,
+  GitRepository,
+  Project,
 } from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
 import { Resource } from "../../models/Resource";
 import { User } from "../../models/User";
+import { EnumResourceType, Prisma, PrismaService } from "../../prisma";
+import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { ActionService } from "../action/action.service";
+import { BillingService } from "../billing/billing.service";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
 import { EntityService } from "../entity/entity.service";
-import { Environment } from "../environment/dto/Environment";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumOwnershipType } from "../ownership/dto/Ownership";
+import { OwnershipService } from "../ownership/ownership.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ProjectService } from "../project/project.service";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { RelationService } from "../relation/relation.service";
+import { ServiceSettings } from "../serviceSettings/dto";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
+import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { Topic } from "../topic/dto/Topic";
+import { TopicService } from "../topic/topic.service";
+import { UserActionService } from "../userAction/userAction.service";
+import { DEFAULT_RESOURCE_COLORS } from "./constants";
 import {
-  DEFAULT_ENVIRONMENT_NAME,
-  EnvironmentService,
-} from "../environment/environment.service";
-import {
+  CodeGeneratorVersionStrategy,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
   ResourceCreateWithEntitiesResult,
 } from "./dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { PendingChange } from "./dto/PendingChange";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
-import { ServiceSettings } from "../serviceSettings/dto";
-import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { DEFAULT_RESOURCE_COLORS } from "./constants";
-import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
-import { ProjectService } from "../project/project.service";
-import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
-import { TopicService } from "../topic/topic.service";
-import { Topic } from "../topic/dto/Topic";
-import { ConfigService } from "@nestjs/config";
-import { BillingService } from "../billing/billing.service";
-import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
-import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
-import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
-import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
-import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
-import { ActionService } from "../action/action.service";
-import { UserActionService } from "../userAction/userAction.service";
-import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
+import {
+  INVALID_DELETE_PROJECT_CONFIGURATION,
+  INVALID_RESOURCE_ID,
+  ResourceService,
+} from "./resource.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -126,6 +130,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   project: { connect: { id: EXAMPLE_PROJECT_ID } },
   serviceSettings: EXAMPLE_SERVICE_SETTINGS,
   gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+  codeGenerator: EnumCodeGenerator.NodeJs,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -151,6 +156,8 @@ const EXAMPLE_RESOURCE: Resource = {
       message: "new build",
       actionId: "ExampleActionId",
       commitId: "exampleCommitId",
+      status: EnumBuildStatus.Completed,
+      gitStatus: EnumBuildGitStatus.Completed,
     },
   ],
   gitRepository: EXAMPLE_GIT_REPOSITORY,
@@ -207,8 +214,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -326,16 +331,6 @@ const EXAMPLE_COMMIT: Commit = {
   message: EXAMPLE_MESSAGE,
 };
 
-const EXAMPLE_ENVIRONMENT: Environment = {
-  id: "ExampleEnvironmentId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  address: "ExampleEnvironmentAddress",
-  name: DEFAULT_ENVIRONMENT_NAME,
-  resourceId: EXAMPLE_RESOURCE_ID,
-  description: "ExampleEnvironmentDescription",
-};
-
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: new Date(),
@@ -345,6 +340,8 @@ const EXAMPLE_BUILD: Build = {
   message: "new build",
   actionId: "ExampleActionId",
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
@@ -473,20 +470,22 @@ const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
   id: "USER_ENTITY_MOCK_ID",
+  name: USER_ENTITY_NAME,
 };
 
-const entityServiceCreateDefaultEntitiesMock = jest.fn();
+const entityServiceCreateDefaultUserEntityMock = jest.fn(() => {
+  return [USER_ENTITY_MOCK];
+});
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
 
 const mockedUpdateServiceLicensed = jest.fn();
 
+const pluginInstallationServiceCreateMock = jest.fn();
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
-  return EXAMPLE_ENVIRONMENT;
-});
+const templateCodeEngineVersionServiceUpdateMock = jest.fn();
 
 const projectServiceFindUniqueMock = jest.fn(() => ({
   ...EXAMPLE_PROJECT,
@@ -494,6 +493,12 @@ const projectServiceFindUniqueMock = jest.fn(() => ({
   workspace: {
     id: EXAMPLE_WORKSPACE_ID,
   },
+}));
+
+const ownershipServiceGetOwnershipMock = jest.fn(() => ({
+  id: "exampleOwnershipId",
+  owner: EXAMPLE_USER,
+  ownershipType: EnumOwnershipType.User,
 }));
 
 const prismaTransactionMock = jest.fn(() => [
@@ -525,7 +530,7 @@ describe("ResourceService", () => {
           provide: PluginInstallationService,
           useValue: { get: () => "" },
           useClass: jest.fn(() => ({
-            create: jest.fn(),
+            create: pluginInstallationServiceCreateMock,
           })),
         },
         MockedSegmentAnalyticsProvider(),
@@ -543,15 +548,35 @@ describe("ResourceService", () => {
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
+            getBooleanEntitlement: jest.fn(() => {
+              return {
+                hasAccess: true,
+              };
+            }),
             reportUsage: jest.fn(() => {
               return {};
             }),
           },
         },
         {
+          provide: GitProviderService,
+          useValue: {},
+        },
+        {
+          provide: CustomPropertyService,
+          useValue: {},
+        },
+        {
           provide: BuildService,
           useClass: jest.fn(() => ({
             create: buildServiceCreateMock,
+          })),
+        },
+        {
+          provide: TemplateCodeEngineVersionService,
+          useClass: jest.fn(() => ({
+            update: templateCodeEngineVersionServiceUpdateMock,
+            getCurrent: jest.fn(),
           })),
         },
         {
@@ -589,7 +614,7 @@ describe("ResourceService", () => {
             createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
             createOneEntity: entityServiceCreateOneEntityMock,
             releaseLock: entityServiceReleaseLockMock,
-            createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
+            createDefaultUserEntity: entityServiceCreateDefaultUserEntityMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
@@ -608,13 +633,7 @@ describe("ResourceService", () => {
             releaseLock: blockServiceReleaseLockMock,
           },
         },
-        {
-          provide: EnvironmentService,
-          useClass: jest.fn().mockImplementation(() => ({
-            createDefaultEnvironment:
-              environmentServiceCreateDefaultEnvironmentMock,
-          })),
-        },
+
         {
           provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
@@ -654,8 +673,18 @@ describe("ResourceService", () => {
           useClass: jest.fn(() => ({})),
         },
         {
+          provide: RelationService,
+          useClass: jest.fn(() => ({})),
+        },
+        {
           provide: UserActionService,
           useClass: jest.fn(() => ({})),
+        },
+        {
+          provide: OwnershipService,
+          useClass: jest.fn(() => ({
+            getOwnership: ownershipServiceGetOwnershipMock,
+          })),
         },
 
         MockedAmplicationLoggerProvider,
@@ -682,6 +711,7 @@ describe("ResourceService", () => {
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
           wizardType: "create resource",
+          codeGenerator: EnumCodeGenerator.NodeJs,
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
@@ -697,61 +727,72 @@ describe("ResourceService", () => {
       await service.createService(
         createResourceArgs.args,
         createResourceArgs.user,
-        null,
+        false,
         true
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(1);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
       EXAMPLE_USER
     );
-
-    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
-    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
-      EXAMPLE_RESOURCE_ID
-    );
   });
 
-  describe("createPreviewService", () => {
-    it("should create a preview service", async () => {
-      const createResourceArgs = {
-        args: {
-          data: {
-            name: EXAMPLE_RESOURCE_NAME,
-            description: EXAMPLE_RESOURCE_DESCRIPTION,
-            color: DEFAULT_RESOURCE_COLORS.service,
-            resourceType: EnumResourceType.Service,
-            wizardType: "create resource",
-            project: {
-              connect: {
-                id: EXAMPLE_PROJECT_ID,
-              },
+  it("should create a repo on the project when creating a service with a repo and there is no repo on the project ", async () => {
+    const createResourceArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_RESOURCE_NAME,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
+          codeGenerator: EnumCodeGenerator.NodeJs,
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID,
             },
-            serviceSettings: EXAMPLE_SERVICE_SETTINGS,
-            gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: {
+            ...EXAMPLE_GIT_REPOSITORY_INPUT,
+            isOverrideGitRepository: false, //even if isOverride is false, it should create a repo on the project
           },
         },
-        user: EXAMPLE_USER,
-      };
-      const user = EXAMPLE_USER;
-      const nonDefaultPluginsToInstall = [];
-      const requireAuthenticationEntity = true;
+      },
+      user: EXAMPLE_USER,
+    };
 
-      const result = await service.createPreviewService({
-        args: createResourceArgs.args,
-        user,
-        nonDefaultPluginsToInstall,
-        requireAuthenticationEntity,
-      });
+    jest.spyOn(service, "projectConfiguration").mockReturnValueOnce(
+      Promise.resolve({
+        ...EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
 
-      expect(result).toEqual(EXAMPLE_RESOURCE);
-      expect(prismaResourceCreateMock).toBeCalledTimes(1);
-      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
-      expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
-        EXAMPLE_RESOURCE_ID
-      );
+        gitRepository: null,
+        gitRepositoryId: null,
+      })
+    );
+
+    expect(
+      await service.createService(
+        createResourceArgs.args,
+        createResourceArgs.user,
+        false,
+        true
+      )
+    ).toEqual(EXAMPLE_RESOURCE);
+
+    expect(prismaGitRepositoryCreateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID },
+      data: {
+        gitRepository: {
+          connect: {
+            id: EXAMPLE_GIT_REPOSITORY.id,
+          },
+        },
+      },
     });
   });
 
@@ -763,6 +804,7 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          codeGenerator: EnumCodeGenerator.NodeJs,
           wizardType: "create resource",
           project: {
             connect: {
@@ -790,12 +832,12 @@ describe("ResourceService", () => {
       )
     ).rejects.toThrow(
       new BillingLimitationError(
-        "Your project exceeds its services limitation.",
+        "You have reached the maximum number of services allowed. To continue using additional services, please upgrade your plan.",
         BillingFeature.Services
       )
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(0);
-    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(0);
+    expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(0);
   });
 
   it("should fail to create resource with entities with a reserved name", async () => {
@@ -829,6 +871,7 @@ describe("ResourceService", () => {
                 pluginId: "auth-jwt",
                 settings: {},
                 configurations: {},
+                isPrivate: false,
                 resource: { connect: { id: "" } },
               },
             ],
@@ -892,8 +935,20 @@ describe("ResourceService", () => {
     ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
 
-    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            deletedAt: null,
+            archived: {
+              not: true,
+            },
+            project: { id: EXAMPLE_PROJECT_ID },
+            resourceType: { equals: EnumResourceType.Service },
+          },
+        },
+      ],
       [
         {
           where: {
@@ -1014,7 +1069,9 @@ describe("ResourceService", () => {
       data: { name: EXAMPLE_RESOURCE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID },
     };
-    expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(await service.updateResource(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_RESOURCE
+    );
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
   });
@@ -1129,9 +1186,69 @@ describe("ResourceService", () => {
         data: { name: EXAMPLE_RESOURCE_NAME },
         where: { id: EXAMPLE_RESOURCE_ID },
       };
-      await expect(service.updateResource(args)).rejects.toThrow(
+      await expect(service.updateResource(args, EXAMPLE_USER)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
     });
+  });
+
+  it("should create a service with default settings and install the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      true
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(1);
+  });
+
+  it("should create a service with default settings without installing the default DB plugin", async () => {
+    await service.createServiceWithDefaultSettings(
+      EXAMPLE_RESOURCE_NAME,
+      EXAMPLE_RESOURCE_DESCRIPTION,
+      EXAMPLE_PROJECT_ID,
+      EXAMPLE_USER,
+      false
+    );
+
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(pluginInstallationServiceCreateMock).toBeCalledTimes(0);
+  });
+
+  it("should update the code engine version block when updating the code engine version, when the resource type is template", async () => {
+    prismaResourceFindOneMock.mockImplementationOnce(() => {
+      return {
+        ...EXAMPLE_RESOURCE,
+        resourceType: EnumResourceType.ServiceTemplate,
+      };
+    });
+
+    const version = "1.0.0";
+    const strategy: CodeGeneratorVersionStrategy =
+      CodeGeneratorVersionStrategy.LatestMinor;
+
+    await service.updateCodeGeneratorVersion(
+      {
+        where: { id: EXAMPLE_RESOURCE_ID },
+        data: {
+          codeGeneratorVersionOptions: {
+            codeGeneratorVersion: version,
+            codeGeneratorStrategy: strategy,
+          },
+        },
+      },
+      EXAMPLE_USER
+    );
+
+    expect(templateCodeEngineVersionServiceUpdateMock).toHaveBeenCalledTimes(1);
+    expect(templateCodeEngineVersionServiceUpdateMock).toHaveBeenCalledWith(
+      EXAMPLE_RESOURCE_ID,
+      version,
+      strategy,
+      EXAMPLE_USER
+    );
   });
 });

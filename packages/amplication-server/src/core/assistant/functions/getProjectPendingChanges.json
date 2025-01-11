@@ -1,0 +1,14 @@
+{
+  "name": "getProjectPendingChanges",
+  "description": "Get a list of pending changes in a project",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "projectId": {
+        "type": "string",
+        "description": "The ID of the project"
+      }
+    },
+    "required": ["projectId"]
+  }
+}

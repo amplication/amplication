@@ -19,6 +19,7 @@ export enum EnumButtonStyle {
 export enum EnumButtonState {
   Default = "default",
   Danger = "danger",
+  Success = "success",
 }
 
 export enum EnumIconPosition {

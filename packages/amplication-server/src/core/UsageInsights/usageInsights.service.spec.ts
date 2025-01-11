@@ -251,7 +251,7 @@ describe("UsageInsightsService", () => {
       const endDate = new Date();
       const projectIds = ["project-id"];
 
-      jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(100);
+      jest.spyOn(service, "countLinesOfCode").mockResolvedValueOnce(500);
 
       const result = await service.getEvaluationInsights({
         projectIds,
@@ -263,7 +263,7 @@ describe("UsageInsightsService", () => {
         costSaved: 1200,
         codeQuality: 1,
         timeSaved: 10,
-        loc: 100,
+        loc: 500,
       };
 
       expect(result).toEqual(expectedResults);

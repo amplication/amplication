@@ -1,5 +1,5 @@
 import PendingChange, {
-  changeOriginMap,
+  PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP,
   EntityLinkAndDisplayName,
 } from "./PendingChange";
 
@@ -26,20 +26,20 @@ type Props = {
 const PendingChangesListGroup = ({ group }: Props) => {
   const groupData: EntityLinkAndDisplayName = useMemo(() => {
     if (group.type === "Entity") {
-      return changeOriginMap[models.EnumPendingChangeOriginType.Entity](
-        group.typeChanges[0].origin
-      );
+      return PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[
+        models.EnumPendingChangeOriginType.Entity
+      ](group.typeChanges[0].origin);
     } else {
-      return changeOriginMap[models.EnumPendingChangeOriginType.Block](
-        group.typeChanges[0].origin
-      );
+      return PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[
+        models.EnumPendingChangeOriginType.Block
+      ](group.typeChanges[0].origin);
     }
   }, [group]);
 
   return (
     <div className={`${CLASS_NAME}`}>
       <CollapsibleListItem
-        initiallyExpanded
+        initiallyExpanded={false}
         expandable
         icon={groupData.icon}
         childItems={group.typeChanges.map((change) => (
@@ -52,7 +52,7 @@ const PendingChangesListGroup = ({ group }: Props) => {
           className={`${CLASS_NAME}__header`}
           gap={EnumGapSize.Small}
         >
-          <Text textStyle={EnumTextStyle.Tag}>{groupData.type}</Text>{" "}
+          <Text textStyle={EnumTextStyle.Tag}>{groupData.pluralTypeName}</Text>{" "}
           {group.typeChanges.length}
         </FlexItem>
       </CollapsibleListItem>

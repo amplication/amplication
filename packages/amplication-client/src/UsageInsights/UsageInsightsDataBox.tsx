@@ -14,11 +14,9 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import React from "react";
-import "./UsageInsightsDataBox.scss";
 import { InfoButton } from "../Components/InfoButton";
-import { useQuery } from "@apollo/client";
-import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
-import { useAppContext } from "../context/appContext";
+import { useContactUs } from "../Workspaces/hooks/useContactUs";
+import "./UsageInsightsDataBox.scss";
 
 const CLASS_NAME = "usage-insights-data-box";
 
@@ -67,16 +65,13 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
   loading,
 }) => {
   const { icon, color, label, info, units, endnotes } = rawData;
-  const { currentWorkspace } = useAppContext();
 
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const { contactUsLink } = useContactUs({});
 
   const formattedValue = valueFormat ? formatValue(value, valueFormat) : value;
 
   return (
-    <Panel panelStyle={EnumPanelStyle.Bold} className={`${CLASS_NAME}`}>
+    <Panel panelStyle={EnumPanelStyle.Surface} className={`${CLASS_NAME}`}>
       <FlexItem
         direction={EnumFlexDirection.Column}
         itemsAlign={EnumItemsAlign.Start}
@@ -93,7 +88,7 @@ export const UsageInsightsDataBox: React.FC<Props> = ({
                 title={label}
                 explanation={info}
                 endnotes={endnotes}
-                linkUrl={data?.contactUsLink}
+                linkUrl={contactUsLink}
                 linkPlaceHolder="{{contactUsLink}}"
               />
             </div>

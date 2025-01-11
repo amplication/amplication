@@ -38,7 +38,7 @@ const userModuleDefaultActions: ModuleAction[] = [
     resourceId: "clraten1t0004c9yhz1t3o8bp",
     parentBlockId: USER_MODULE_ID,
     name: "_usersMeta",
-    path: "/:id/meta",
+    path: "/meta",
     enabled: true,
     restVerb: "Get",
     actionType: "Meta",

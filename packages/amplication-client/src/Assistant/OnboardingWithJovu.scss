@@ -1,0 +1,62 @@
+@import "../style/index.scss";
+
+$body-max-width: 800px;
+$starter-height: 90px;
+
+.onboarding-with-jovu {
+  height: 100%;
+  background-color: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &__body {
+    height: 100%;
+    max-width: $body-max-width;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 var(--default-spacing);
+  }
+
+  &__starters {
+    padding: var(--default-spacing);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--default-spacing);
+    margin-top: var(--default-spacing);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    .amp-panel {
+      text-align: center;
+      font-size: var(--tag-font-size);
+      color: var(--gray-20);
+      margin-bottom: 0;
+      height: $starter-height;
+    }
+  }
+
+  &__footer {
+    padding: var(--default-spacing);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .assistant-chat-input {
+      border: 1px solid var(--gray-70);
+      width: 100%;
+    }
+  }
+}

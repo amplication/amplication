@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+.catalog-graph-layout-settings {
+  label {
+    @include label;
+    position: relative;
+  }
+
+  &__picker {
+    box-sizing: border-box;
+    border: 1px solid var(--gray-70);
+    box-shadow: var(--menu-box-shadow);
+    padding: var(--default-spacing);
+
+    label {
+      color: var(--gray-base) !important;
+    }
+  }
+}

@@ -1,20 +1,24 @@
-import React, { useCallback, useMemo } from "react";
-import { useField, ErrorMessage } from "formik";
-import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
+import { ErrorMessage, useField } from "formik";
+import { useCallback, useMemo } from "react";
+import { Icon } from "../Icon/Icon";
 
 import Select, {
-  OptionProps,
   GroupBase,
   MultiValue,
+  MultiValueGenericProps,
+  OptionProps,
   SingleValue,
+  SingleValueProps,
 } from "react-select";
-import { OptionItem } from "../types";
-import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
+import Creatable from "react-select/creatable";
+import { LABEL_CLASS } from "../constants";
 import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
+import { OptionItem } from "../types";
 
-import "./SelectField.scss";
 import { Label } from "../Label/Label";
+import { Tag } from "../Tag/Tag";
+import "./SelectField.scss";
 
 export type Props = {
   label: string;
@@ -22,43 +26,64 @@ export type Props = {
   options: OptionItem[];
   isMulti?: boolean;
   isClearable?: boolean;
+  isCreatable?: boolean;
   disabled?: boolean;
   inputToolTip?: InputToolTipProps | undefined;
+  onChange?: (value: string | string[]) => void;
 };
 
 export const SelectField = ({
   label,
   name,
-  options,
+  options = [],
   isMulti,
   isClearable,
+  isCreatable,
   disabled,
   inputToolTip,
+  onChange,
 }: Props) => {
   const [field, meta, { setValue }] = useField<string | string[]>(name);
 
   const handleChange = useCallback(
     (selected: MultiValue<OptionItem> | SingleValue<OptionItem>) => {
       // React Select emits values instead of event onChange
+      let newValue;
+
       if (!selected) {
-        setValue([]);
+        newValue = isMulti ? [] : "";
       } else {
-        const values = isMulti
+        newValue = isMulti
           ? (selected as OptionItem[]).map((option: OptionItem) => option.value)
           : (selected as OptionItem).value;
-        setValue(values);
+      }
+      setValue(newValue);
+
+      if (onChange) {
+        onChange(newValue);
       }
     },
-    [setValue, isMulti]
+    [onChange, setValue, isMulti]
   );
 
   const value = useMemo(() => {
     const values = field.value || [];
 
+    if (isCreatable && isMulti && Array.isArray(values)) {
+      const currOptions = options.filter((option) =>
+        values.includes(option.value)
+      );
+      const newOptions = values
+        .filter((value) => !options.find((option) => option.value === value))
+        .map((value) => ({ value, label: value }));
+
+      return [...currOptions, ...newOptions];
+    }
+
     return isMulti
       ? options.filter((option) => values.includes(option.value))
       : options.find((option) => option.value === values);
-  }, [field, isMulti, options]);
+  }, [field, isMulti, options, isCreatable]);
 
   const groupedOptions = useMemo(() => {
     if (!options || options.length === 0) {
@@ -93,21 +118,79 @@ export const SelectField = ({
     >
       <label className={LABEL_CLASS}>
         <Label text={label} inputToolTip={inputToolTip} />
-        <Select
-          components={{ Option: CustomOption }}
-          className="select-field__container"
-          classNamePrefix="select-field"
-          {...field}
-          isMulti={isMulti}
-          isClearable={isClearable}
-          value={value}
-          onChange={handleChange}
-          options={groupedOptions}
-          isDisabled={disabled}
-        />
+        {isCreatable ? (
+          <Creatable
+            components={
+              options?.length
+                ? { Option: CustomOption }
+                : { DropdownIndicator: null }
+            }
+            className="select-field__container"
+            classNamePrefix="select-field"
+            {...field}
+            isMulti={isMulti}
+            isClearable={isClearable}
+            value={value}
+            onChange={handleChange}
+            options={groupedOptions}
+            isDisabled={disabled}
+          />
+        ) : (
+          <Select
+            components={{
+              Option: CustomOption,
+              MultiValueLabel: CustomMultiValueLabel,
+              SingleValue: CustomSingleValue,
+            }}
+            className="select-field__container"
+            classNamePrefix="select-field"
+            {...field}
+            isMulti={isMulti}
+            isClearable={isClearable}
+            value={value}
+            onChange={handleChange}
+            options={groupedOptions}
+            isDisabled={disabled}
+          />
+        )}
       </label>
       <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
+  );
+};
+
+const DEFAULT_TAG_COLOR = "var(--gray-base)";
+const CustomMultiValueLabel = <
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(
+  props: MultiValueGenericProps<Option, IsMulti, Group>
+) => {
+  const { data, innerProps } = props;
+
+  const color = (data as unknown as OptionItem).color || DEFAULT_TAG_COLOR;
+  const label = (data as unknown as OptionItem).label;
+
+  return <Tag {...innerProps} value={label} color={color} />;
+};
+
+const CustomSingleValue = <
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(
+  props: SingleValueProps<Option, IsMulti, Group>
+) => {
+  const { data, innerProps } = props;
+
+  const color = (data as unknown as OptionItem).color;
+  const label = (data as unknown as OptionItem).label;
+
+  return color ? (
+    <Tag {...innerProps} value={label} color={color} />
+  ) : (
+    <div {...innerProps}>{label}</div>
   );
 };
 
@@ -131,6 +214,7 @@ const CustomOption = <
   } = props;
 
   const icon = (data as unknown as OptionItem).icon;
+  const color = (data as unknown as OptionItem).color;
 
   return (
     <div
@@ -147,8 +231,14 @@ const CustomOption = <
       aria-disabled={isDisabled}
       {...innerProps}
     >
-      {icon && <Icon icon={icon} />}
-      {children}
+      {color ? (
+        <Tag value={children} color={color} />
+      ) : (
+        <>
+          {icon && <Icon icon={icon} />}
+          {children}
+        </>
+      )}
     </div>
   );
 };

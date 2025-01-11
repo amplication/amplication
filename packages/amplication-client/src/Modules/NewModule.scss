@@ -1,5 +1,8 @@
 @import "../style/index.scss";
 
+$image-height: 130px;
+$dropdown-max-height: 150px;
+
 .new-module {
   .text-input input {
     border-style: dashed;
@@ -17,6 +20,21 @@
 
       &--show {
         display: flex !important;
+      }
+    }
+  }
+
+  &__module-dialog {
+    @include modalForm;
+    .svg-theme-image {
+      height: $image-height;
+    }
+
+    .select-field {
+      max-width: none;
+
+      &__menu-list {
+        max-height: $dropdown-max-height;
       }
     }
   }

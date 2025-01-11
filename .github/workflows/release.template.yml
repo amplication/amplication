@@ -3,6 +3,11 @@ name: _Reusable Release template
 on:
   workflow_call:
     inputs:
+      default-branch:
+        type: string
+        description: Default branch of the repository. i.e github.event.repository.default_branch
+        required: true
+        default: main
       branch:
         type: string
         description: Name of the git branch
@@ -27,6 +32,11 @@ on:
         type: string
         description: Nx projects configured with deploy affected by the changes
         required: true
+      enable-custom-tags:
+        type: boolean
+        description: Enable custom tags for docker images
+        required: false
+        default: false
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         required: true
@@ -40,7 +50,9 @@ on:
         required: true
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   BRANCH: ${{ inputs.branch }}
+  ENABLE_CUSTOM_TAGS: ${{ inputs.enable-custom-tags }}
 
 jobs:
   package-container:
@@ -101,7 +113,9 @@ jobs:
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=${{ env.BRANCH }}
-            type=raw,value=latest,enable=${{ env.BRANCH == 'master' }}
+            type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
+            type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
+            type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
@@ -124,7 +138,7 @@ jobs:
           if [[ "${{ env.BRANCH }}" == "next" ]];
           then
             echo environment="sandbox" >> $GITHUB_OUTPUT
-          elif [[ "${{ env.BRANCH }}" == "master" ]];
+          elif [[ "${{ env.BRANCH }}" == ${{ inputs.default-branch }} ]];
           then
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;

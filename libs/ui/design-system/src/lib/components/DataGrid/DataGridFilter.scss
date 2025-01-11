@@ -1,0 +1,20 @@
+@import "../../style/index.scss";
+
+.data-grid-filter {
+  border: 1px solid var(--gray-70);
+  border-radius: var(--default-border-radius);
+  display: flex;
+  align-items: center;
+  gap: var(--icon-spacing);
+  padding-left: var(--icon-spacing);
+
+  &__remove {
+    .amp-icon {
+      padding-left: 0;
+    }
+  }
+
+  &__show-all {
+    padding-right: var(--icon-spacing);
+  }
+}

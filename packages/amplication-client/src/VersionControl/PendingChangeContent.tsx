@@ -7,10 +7,9 @@ import {
   Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 
 type Props = {
   change: models.PendingChange;
@@ -31,15 +30,22 @@ const PendingChangeContent = ({
   icon,
   type,
 }: Props) => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const isProjectConfigResourceType =
     change.resource.resourceType ===
     models.EnumResourceType.ProjectConfiguration;
 
+  const isPrivatePlugin =
+    change.originType === models.EnumPendingChangeOriginType.Block &&
+    (change.origin as models.Block).blockType ===
+      models.EnumBlockType.PrivatePlugin;
+
   const url = isProjectConfigResourceType
-    ? `/${currentWorkspace?.id}/${currentProject?.id}/settings/general`
-    : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/${relativeUrl}`;
+    ? `${baseUrl}/settings/general`
+    : isPrivatePlugin
+    ? `${baseUrl}/private-plugins/${change.originId}`
+    : `${baseUrl}/${change.resource.id}/${relativeUrl}`;
 
   const nameElement = (
     <FlexItem itemsAlign={EnumItemsAlign.Center} className={CLASS_NAME}>

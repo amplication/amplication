@@ -3,4 +3,5 @@ export type OptionItem = {
   label: string;
   icon?: string;
   group?: string;
+  color?: string;
 };

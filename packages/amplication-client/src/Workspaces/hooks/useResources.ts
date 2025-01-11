@@ -9,10 +9,13 @@ import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
+  CREATE_SERVICE_FROM_TEMPLATE,
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
+import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -20,6 +23,10 @@ type TGetResources = {
 
 type TCreateService = {
   createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
+};
+
+type TCreateServiceFromTemplate = {
+  createServiceFromTemplate: models.Resource;
 };
 
 export type TUpdateCodeGeneratorVersion = {
@@ -32,6 +39,10 @@ export type TUpdateCodeGeneratorVersion = {
 
 type TCreateMessageBroker = {
   createMessageBroker: models.Resource;
+};
+
+type TCreatePluginRepository = {
+  createPluginRepository: models.Resource;
 };
 
 const createGitRepositoryFullName = (
@@ -48,6 +59,10 @@ const createGitRepositoryFullName = (
       return `${gitRepository.groupName}/${gitRepository.name}`;
     case models.EnumGitProvider.AwsCodeCommit:
       return `${gitRepository.name}`;
+    case models.EnumGitProvider.GitLab:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
+    case models.EnumGitProvider.AzureDevOps:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
   }
 };
 
@@ -67,9 +82,10 @@ const useResources = (
     workspace: string;
     project: string;
     resource: string;
-  }>(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
-  );
+  }>([
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+    "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+  ]);
   const createResourceMatch:
     | (match & {
         params: { workspace: string; project: string };
@@ -80,6 +96,12 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
   );
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: false,
+  });
+  const { baseUrl: platformProjectBaseUrl } = useProjectBaseUrl({
+    overrideIsPlatformConsole: true,
+  });
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
@@ -88,7 +110,11 @@ const useResources = (
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
     useState<models.Resource | undefined>(undefined);
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
+
+  const [pluginRepositoryResource, setPluginRepositoryResource] = useState<
+    models.Resource | undefined
+  >(undefined);
+
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(
       currentResource?.gitRepository?.gitOrganization?.provider,
@@ -109,11 +135,9 @@ const useResources = (
     refetch: reloadResources,
   } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
-      projectId: currentProject?.id,
-      whereName:
-        searchPhrase !== ""
-          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-          : undefined,
+      where: {
+        project: { id: currentProject?.id },
+      } as models.ResourceWhereInputWithPropertiesFilter,
     },
     skip: !currentProject?.id,
   });
@@ -121,10 +145,10 @@ const useResources = (
   const resourceRedirect = useCallback(
     (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
+        pathname: `${projectBaseUrl}/${resourceId}`, //todo:change the route
       });
     },
-    [currentWorkspace, history, currentProject]
+    [projectBaseUrl, history]
   );
 
   const [
@@ -150,6 +174,8 @@ const useResources = (
           id: input.resourceId,
         },
       },
+    }).then(() => {
+      addEntity(input.resourceId);
     });
   };
 
@@ -187,26 +213,54 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-    createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      if (!result.data?.createServiceWithEntities.resource.id) return;
+    createServiceWithEntities({ variables: { data: data } })
+      .then((result) => {
+        if (!result.data?.createServiceWithEntities.resource.id) return;
 
-      setCreateServiceWithEntitiesResult(
-        result.data?.createServiceWithEntities
-      );
+        setCreateServiceWithEntitiesResult(
+          result.data?.createServiceWithEntities
+        );
 
-      const currentResourceId =
-        result.data?.createServiceWithEntities.resource.id;
-      addEntity(currentResourceId);
-      setCurrentResource(result.data?.createServiceWithEntities.resource);
-      expireCookie("signup");
-      reloadResources();
+        const currentResourceId =
+          result.data?.createServiceWithEntities.resource.id;
+        addEntity(currentResourceId);
+        setCurrentResource(result.data?.createServiceWithEntities.resource);
+        expireCookie("signup");
+        reloadResources();
+      })
+      .catch(console.error);
+  };
+
+  const [
+    createPluginRepositoryInternal,
+    {
+      loading: loadingCreatePluginRepository,
+      error: errorCreatePluginRepository,
+    },
+  ] = useMutation<TCreatePluginRepository>(CREATE_PLUGIN_REPOSITORY, {});
+
+  const createPluginRepository = (data: models.ResourceCreateInput) => {
+    trackEvent({
+      eventName: AnalyticsEventNames.CreatePluginRepository,
     });
+    createPluginRepositoryInternal({ variables: { data: data } }).then(
+      (result) => {
+        result.data?.createPluginRepository.id &&
+          addBlock(result.data.createPluginRepository.id);
+        result.data?.createPluginRepository.id &&
+          reloadResources().then(() => {
+            history.push({
+              pathname: `${platformProjectBaseUrl}/private-plugins/git-settings`,
+            });
+          });
+      }
+    );
   };
 
   const [
     createBroker,
     { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
-  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER);
+  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER, {});
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
@@ -249,6 +303,7 @@ const useResources = (
       projectConfigurationResource?.gitRepository?.gitOrganization?.provider
     );
   }, [
+    createResourceMatch,
     resourceMatch,
     currentResource,
     projectConfigurationResource,
@@ -263,6 +318,12 @@ const useResources = (
     const resource = [...resources, projectConfigurationResource].find(
       (resource: models.Resource) => resource.id === urlResource
     );
+
+    if (!resource) {
+      //reload resources but do not redirect to prevent an infinite loop
+      //this may be needed if the resource was created on the server side and is not known to the client yet
+      reloadResources();
+    }
 
     setCurrentResource(resource);
     setGitRepositoryFullName(
@@ -282,6 +343,7 @@ const useResources = (
       resource?.gitRepository?.gitOrganization?.provider
     );
   }, [
+    reloadResources,
     resourceMatch,
     resources,
     projectConfigurationResource,
@@ -290,53 +352,72 @@ const useResources = (
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
+
+    const pluginRepositoryResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.PluginRepository
+    );
+    setPluginRepositoryResource(pluginRepositoryResource);
+
     const projectConfigurationResource = resourcesData.resources.find(
       (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
     );
     setProjectConfigurationResource(projectConfigurationResource);
 
     const resources = resourcesData.resources.filter(
-      (r) => r.resourceType !== models.EnumResourceType.ProjectConfiguration
+      (r) =>
+        ![
+          models.EnumResourceType.ProjectConfiguration,
+          models.EnumResourceType.PluginRepository,
+        ].includes(r.resourceType)
     );
     setResources(resources);
   }, [resourcesData, loadingResources]);
 
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
+  // ***** section Create Service From Template *****
+
+  const [
+    createServiceFromTemplateInternal,
+    {
+      loading: loadingCreateServiceFromTemplate,
+      error: errorCreateServiceFromTemplate,
     },
-    [setSearchPhrase]
-  );
-  const setResource = useCallback(
-    (resource: models.Resource) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.ResourceCardClick,
-      });
-      setCurrentResource(resource);
-      currentWorkspace &&
-        currentProject &&
-        history.push(
-          `/${currentWorkspace.id}/${currentProject.id}/${resource.id}`
-        );
-    },
-    [currentProject, currentWorkspace, history, trackEvent]
-  );
+  ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
+
+  const createServiceFromTemplate = (
+    data: models.ServiceFromTemplateCreateInput
+  ) => {
+    createServiceFromTemplateInternal({ variables: { data: data } })
+      .then((result) => {
+        result.data?.createServiceFromTemplate.id &&
+          reloadResources().then(() => {
+            resourceRedirect(
+              result.data?.createServiceFromTemplate.id as string
+            );
+            result.data?.createServiceFromTemplate.id &&
+              addBlock(result.data.createServiceFromTemplate.id);
+          });
+      })
+      .catch(console.error);
+  };
+  // ***** end section Create Service From Template *****
 
   return {
     resources,
     projectConfigurationResource,
-    handleSearchChange,
+    pluginRepositoryResource,
     loadingResources,
     errorResources,
     reloadResources,
     currentResource,
-    setResource,
     createService,
     loadingCreateService,
     errorCreateService,
     createMessageBroker,
     loadingCreateMessageBroker,
     errorCreateMessageBroker,
+    createPluginRepository,
+    loadingCreatePluginRepository,
+    errorCreatePluginRepository,
     gitRepositoryFullName,
     gitRepositoryUrl,
     gitRepositoryOrganizationProvider,
@@ -344,6 +425,9 @@ const useResources = (
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,
+    createServiceFromTemplate,
+    loadingCreateServiceFromTemplate,
+    errorCreateServiceFromTemplate,
   };
 };
 

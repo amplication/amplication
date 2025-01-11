@@ -1,13 +1,17 @@
 import React, { Ref, useCallback } from "react";
-import { TreeView as MuiTreeView, TreeItem as MuiTreeItem } from "@mui/lab";
-import { TreeViewProps as MuiTreeViewProps } from "@mui/lab/TreeView";
-import { TreeItemProps as MuiTreeItemProps } from "@mui/lab/TreeItem";
+
+import {
+  SimpleTreeView as MuiTreeView,
+  TreeItem as MuiTreeItem,
+  TreeViewProps as MuiTreeViewProps,
+  TreeItemProps as MuiTreeItemProps,
+} from "@mui/x-tree-view";
 import { Icon } from "../Icon/Icon";
 import "./TreeView.scss";
 
 const CLASS_NAME = "amp-tree-view";
 
-export type TreeViewProps = MuiTreeViewProps & {
+export type TreeViewProps = MuiTreeViewProps<false> & {
   children?: React.ReactNode;
   ref?: Ref<HTMLLIElement> | undefined;
 };
@@ -31,22 +35,23 @@ export type TreeItemProps = MuiTreeItemProps & {
 };
 
 export function TreeItem({
-  nodeId,
+  itemId,
   label,
   icon,
   data,
   children,
   farContent,
   onNodeClick,
+  slots = {},
   ...rest
 }: TreeItemProps) {
   const onClick = useCallback(() => {
-    onNodeClick && onNodeClick(nodeId, data);
-  }, [onNodeClick, data, nodeId]);
+    onNodeClick && onNodeClick(itemId, data);
+  }, [onNodeClick, data, itemId]);
 
   const content = (
     <div className={`${CLASS_NAME}__Item__content`}>
-      <span>{label} </span> {farContent}
+      <span title={label}>{label} </span>
     </div>
   );
 
@@ -54,9 +59,14 @@ export function TreeItem({
     <MuiTreeItem
       {...rest}
       onClick={onClick}
-      nodeId={nodeId}
+      itemId={itemId}
       label={content}
-      icon={<Icon icon={icon} size="small" />}
+      slots={{
+        ...slots,
+        icon: () => {
+          return <>{farContent ?? <Icon icon={icon} />}</>;
+        },
+      }}
     >
       {children}
     </MuiTreeItem>

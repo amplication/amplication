@@ -11,14 +11,25 @@ import DsgContext from "../../../../dsg-context";
 import { classDeclaration } from "../../../../utils/ast";
 import { getDTONameToPath } from "../../create-dtos";
 import { createDTOModule, createDTOModulePath } from "../create-dto-module";
-import { OBJECT_TYPE_ID } from "../nestjs-graphql.util";
+import {
+  ARGS_TYPE_ID,
+  INPUT_TYPE_ID,
+  OBJECT_TYPE_ID,
+} from "../nestjs-graphql.util";
 import { createApiPropertyDecorator } from "./create-api-property-decorator";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createPropTypeFromTypeDefList } from "./create-property-type";
 import { createTypeDecorator } from "./create-type-decorator";
+import { createEnumDTOModule } from "../create-enum-dto-module";
 
-export const OBJECT_TYPE_DECORATOR = builders.decorator(
-  builders.callExpression(OBJECT_TYPE_ID, [])
+import {
+  StringLiteralEnumMember,
+  createEnumMemberName,
+} from "../create-enum-dto";
+import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types";
+
+const ARGS_TYPE_DECORATOR = builders.decorator(
+  builders.callExpression(ARGS_TYPE_ID, [])
 );
 
 type CustomDtoModuleMapWithAllDtoNameToPath = {
@@ -39,13 +50,25 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
       const { dtos } = module;
       return (
         dtos
-          ?.filter((dto) => dto.dtoType === EnumModuleDtoType.Custom)
+          ?.filter(
+            (dto) =>
+              dto.dtoType === EnumModuleDtoType.Custom ||
+              dto.dtoType === EnumModuleDtoType.CustomEnum
+          )
           .map((dto) => {
-            const path = createDTOModulePath(camelCase(moduleName), dto.name);
+            const path = createDTOModulePath(
+              camelCase(moduleName),
+              dto.name,
+              true
+            );
             customDtoNameToPath[dto.name] = path;
             return {
               path,
-              dto: createDto(dto),
+              dto:
+                dto.dtoType === EnumModuleDtoType.CustomEnum
+                  ? createEnumDTO(dto)
+                  : createDto(dto),
+              type: dto.dtoType,
             };
           }) || []
       );
@@ -57,7 +80,10 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
   const allDtoNameToPath = { ...dtoNameToPath, ...customDtoNameToPath };
 
   const dtoModules = dtos?.map((dto) => {
-    return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
+    if (dto.type === EnumModuleDtoType.CustomEnum) {
+      return createEnumDTOModule(dto.dto, allDtoNameToPath, dto.path, false);
+    }
+    return createDTOModule(dto.dto, allDtoNameToPath, dto.path, false, true);
   });
 
   dtoModules.forEach((module) => moduleMap.set(module));
@@ -71,16 +97,61 @@ export function createCustomDtos(): CustomDtoModuleMapWithAllDtoNameToPath {
 export function createDto(dto: ModuleDto): NamedClassDeclaration {
   const dtoProperties = createProperties(dto.properties);
 
+  const dtoDecorators = [];
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.ArgsType
+    ) != undefined
+  ) {
+    dtoDecorators.push(ARGS_TYPE_DECORATOR);
+  }
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.InputType
+    ) != undefined
+  ) {
+    const INPUT_TYPE_DECORATOR = builders.decorator(
+      builders.callExpression(INPUT_TYPE_ID, [
+        builders.stringLiteral(`${dto.name}Input`),
+      ])
+    );
+    dtoDecorators.push(INPUT_TYPE_DECORATOR);
+  }
+  if (
+    dto.decorators?.find(
+      (decorator) => decorator === EnumModuleDtoDecoratorType.ObjectType
+    ) != undefined
+  ) {
+    const OBJECT_TYPE_DECORATOR = builders.decorator(
+      builders.callExpression(OBJECT_TYPE_ID, [
+        builders.stringLiteral(`${dto.name}Object`),
+      ])
+    );
+    dtoDecorators.push(OBJECT_TYPE_DECORATOR);
+  }
+
   const dtoClass = classDeclaration(
     builders.identifier(dto.name),
     builders.classBody(dtoProperties),
     null,
-    //@todo: replace ObjectType with InputType or ArgsType when needed
-    // check whether a DTO is used as ArgsType or ObjectType and whetherGraphQL is enabled
-    [OBJECT_TYPE_DECORATOR]
+    dtoDecorators
   ) as NamedClassDeclaration;
 
   return dtoClass;
+}
+
+export function createEnumDTO(dto: ModuleDto): namedTypes.TSEnumDeclaration {
+  const membersToTsEnumMember = dto.members.map(
+    (member) =>
+      builders.tsEnumMember(
+        builders.identifier(createEnumMemberName(member.name)),
+        builders.stringLiteral(member.value)
+      ) as StringLiteralEnumMember
+  );
+  return builders.tsEnumDeclaration(
+    builders.identifier(dto.name),
+    membersToTsEnumMember
+  );
 }
 
 export function createProperties(
@@ -94,6 +165,9 @@ export function createProperty(
 ): namedTypes.ClassProperty {
   const { appInfo } = DsgContext.getInstance;
 
+  const isEnum =
+    property.propertyTypes[0].dto?.dtoType === EnumModuleDtoType.CustomEnum;
+
   const type = createPropTypeFromTypeDefList(property.propertyTypes);
   const tsTypeAnnotationNode = builders.tsTypeAnnotation(type);
 
@@ -104,7 +178,8 @@ export function createProperty(
 
   appInfo.settings.serverSettings.generateRestApi &&
     decorators.push(createApiPropertyDecorator(property));
-  decorators.push(createTypeDecorator(property));
+
+  !isEnum && decorators.push(createTypeDecorator(property));
 
   const propId = builders.identifier(property.name);
   const classProperty = builders.classProperty(

@@ -30,6 +30,9 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
+  DownloadPrivatePluginsArgs,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "./types";
 import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
 import { isFolderEmpty } from "./utils/is-folder-empty";
@@ -67,8 +70,23 @@ export class GitClientService {
     return this.provider.getOAuthTokens(authorizationCode);
   }
 
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    return this.provider.getCurrentOAuthUser(accessToken);
+  async getAuthData(): Promise<OAuthTokens | null> {
+    return this.provider.getAuthData();
+  }
+  isAuthDataRefreshed(): Promise<boolean> {
+    return this.provider.isAuthDataRefreshed();
+  }
+
+  async getCurrentOAuthUser(
+    accessToken: string,
+    state?: string,
+    amplicationWorkspaceId?: string
+  ): Promise<CurrentUser> {
+    return this.provider.getCurrentOAuthUser(
+      accessToken,
+      state,
+      amplicationWorkspaceId
+    );
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
@@ -87,6 +105,12 @@ export class GitClientService {
     return this.provider.getRepositories(getRepositoriesArgs);
   }
 
+  async getFolderContent(
+    args: getFolderContentArgs
+  ): Promise<GitFolderContent> {
+    return this.provider.getFolderContent(args);
+  }
+
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
@@ -99,6 +123,116 @@ export class GitClientService {
 
   async getOrganization(): Promise<RemoteGitOrganization> {
     return this.provider.getOrganization();
+  }
+
+  async downloadPrivatePlugins({
+    owner,
+    repositoryName,
+    repositoryGroupName,
+    cloneDirPath,
+    baseBranchName,
+    pluginsToDownload,
+    resourceId,
+    buildId,
+  }: DownloadPrivatePluginsArgs): Promise<{
+    pluginPaths: string[];
+    pluginVersions: string[];
+    cleanupPaths: string[];
+  }> {
+    const gitRepoDir = normalize(
+      join(
+        cloneDirPath,
+        this.provider.name,
+        owner,
+        repositoryGroupName
+          ? join(repositoryGroupName, repositoryName)
+          : repositoryName,
+        `${resourceId}-${buildId}`
+      )
+    );
+    const cloneUrl = await this.provider.getCloneUrl({
+      owner,
+      repositoryName,
+      repositoryGroupName,
+    });
+
+    let baseBranch: string;
+
+    //if not base branch name is provided, use the default branch of the repository
+    if (isEmpty(baseBranchName)) {
+      const repo = await this.provider.getRepository({
+        owner,
+        repositoryName,
+        groupName: repositoryGroupName,
+      });
+      baseBranch = repo.defaultBranch;
+    } else {
+      baseBranch = baseBranchName;
+      const branch = await this.provider.getBranch({
+        owner,
+        repositoryName,
+        branchName: baseBranch,
+        repositoryGroupName,
+      });
+
+      if (!branch) {
+        throw new InvalidBaseBranch(baseBranch);
+      }
+    }
+
+    const pluginsByGitRef = pluginsToDownload.reduce(
+      (acc: { [key: string]: string[] }, plugin) => {
+        const versionKey =
+          plugin.pluginVersion && !plugin.pluginVersion.includes("dev")
+            ? `${plugin.pluginId}@${plugin.pluginVersion}`
+            : baseBranch; // no version means use the base branch, otherwise use the version (tag/branch)
+        if (!acc[versionKey]) {
+          acc[versionKey] = [];
+        }
+        acc[versionKey].push(plugin.pluginId);
+        return acc;
+      },
+      {}
+    );
+
+    const pluginPaths: string[] = [];
+    const pluginVersions: string[] = [];
+
+    for (const [pluginVersion, pluginIds] of Object.entries(pluginsByGitRef)) {
+      const pluginVersionDir = join(gitRepoDir, pluginVersion);
+      pluginVersions.push(pluginVersion);
+
+      const gitCli = TraceWrapper.trace(
+        new GitCli(this.logger, {
+          originUrl: cloneUrl,
+          repositoryDir: pluginVersionDir,
+        }),
+        { logger: this.logger }
+      );
+
+      try {
+        await gitCli.deleteRepositoryDir();
+        await gitCli.clone();
+
+        await gitCli.sparseCheckout(
+          pluginVersion,
+          pluginIds.map((id) => `plugins/${id}`)
+        );
+
+        pluginPaths.push(
+          ...pluginIds.map((id) => `${pluginVersionDir}/plugins/${id}`)
+        );
+      } catch (error) {
+        await gitCli.deleteRepositoryDir();
+        throw error;
+      }
+    }
+
+    return {
+      pluginPaths,
+      pluginVersions,
+      cleanupPaths: [gitRepoDir],
+    };
   }
 
   async createPullRequest(
@@ -119,6 +253,7 @@ export class GitClientService {
       buildId,
       resourceId,
       baseBranchName,
+      overrideCustomizableFilesInGit,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
@@ -188,7 +323,7 @@ export class GitClientService {
         });
       }
 
-      const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
+      const amplicationIgnoreManager = await this.manageAmplicationIgnoreFile(
         owner,
         repositoryName,
         repositoryGroupName,
@@ -198,7 +333,8 @@ export class GitClientService {
       const preparedFiles = await prepareFilesForPullRequest(
         gitResourceMeta,
         files,
-        amplicationIgnoreManger
+        amplicationIgnoreManager,
+        overrideCustomizableFilesInGit
       );
 
       this.logger.info(`Got a ${pullRequestMode} pull request mode`);

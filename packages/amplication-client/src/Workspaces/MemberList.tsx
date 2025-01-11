@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import {
   CircularProgress,
   EnumTextStyle,
@@ -8,27 +7,34 @@ import {
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
+import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
-import * as models from "../models";
-import { formatError } from "../util/error";
-import InviteMember from "./InviteMember";
-import MemberListItem from "./MemberListItem";
-import { pluralize } from "../util/pluralize";
-import PageContent from "../Layout/PageContent";
+import { useCallback, useState } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { useStiggContext } from "@stigg/react-sdk";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import { pluralize } from "../util/pluralize";
+import InviteMember from "./InviteMember";
+import MemberListItem from "./MemberListItem";
+import { AppRouteProps } from "../routes/routesUtil";
+import { match } from "react-router-dom";
+import { useAppContext } from "../context/appContext";
 
 export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
 };
 
 const CLASS_NAME = "member-list";
-const PAGE_TITLE = "Members";
 
-function MemberList() {
-  const { refreshData } = useStiggContext();
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    user: string;
+  }>;
+};
+
+function MemberList({ match, innerRoutes }: Props) {
   const [error, setError] = useState<Error>();
   const {
     data,
@@ -39,50 +45,58 @@ function MemberList() {
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
+  const { permissions } = useAppContext();
+
+  const canRemoveUser = permissions.canPerformTask("workspace.member.remove");
+
   const handleDelete = useCallback(() => {
     refetch();
   }, [refetch]);
 
-  useEffect(() => {
-    refreshData();
-  }, []);
+  if (match.isExact) {
+    return (
+      <div className={CLASS_NAME}>
+        <FlexItem end={<InviteMember />}>
+          <Text textStyle={EnumTextStyle.H4}>Users</Text>
+        </FlexItem>
 
-  return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <FlexItem end={<InviteMember />}>
-        <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
-      </FlexItem>
+        <HorizontalRule />
 
-      <HorizontalRule />
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.workspaceMembers.length}{" "}
+          {pluralize(data?.workspaceMembers.length, "Member", "Members")}
+        </Text>
 
-      <Text textStyle={EnumTextStyle.Tag}>
-        {data?.workspaceMembers.length}{" "}
-        {pluralize(data?.workspaceMembers.length, "Member", "Members")}
-      </Text>
+        {loading && <CircularProgress centerToParent />}
 
-      {loading && <CircularProgress centerToParent />}
+        {isEmpty(data?.workspaceMembers) && !loading ? (
+          <EmptyState
+            image={EnumImages.CommitEmptyState}
+            message="There are no members to show"
+          />
+        ) : (
+          <List>
+            {data?.workspaceMembers.map((member, index) => (
+              <MemberListItem
+                canDelete={canRemoveUser}
+                member={member}
+                key={index}
+                onDelete={handleDelete}
+                onError={setError}
+              />
+            ))}
+          </List>
+        )}
 
-      {isEmpty(data?.workspaceMembers) && !loading ? (
-        <EmptyState
-          image={EnumImages.CommitEmptyState}
-          message="There are no members to show"
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
         />
-      ) : (
-        <List>
-          {data?.workspaceMembers.map((member, index) => (
-            <MemberListItem
-              member={member}
-              key={index}
-              onDelete={handleDelete}
-              onError={setError}
-            />
-          ))}
-        </List>
-      )}
-
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
-    </PageContent>
-  );
+      </div>
+    );
+  } else {
+    return innerRoutes;
+  }
 }
 
 export default MemberList;

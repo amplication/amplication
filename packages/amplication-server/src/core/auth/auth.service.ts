@@ -21,6 +21,7 @@ import {
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { Auth0Service } from "../idp/auth0.service";
+import { Auth0User } from "../idp/types";
 import { UserService } from "../user/user.service";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { WorkspaceService } from "../workspace/workspace.service";
@@ -33,18 +34,14 @@ import {
   JwtDto,
   SignupInput,
 } from "./dto";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { SignupWithBusinessEmailArgs } from "./dto/SignupWithBusinessEmailArgs";
 import { AuthProfile, AuthUser } from "./types";
-import { PreviewUserService } from "./previewUser.service";
-import { Auth0User } from "../idp/types";
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
 
 const AUTH_USER_INCLUDE = {
   account: true,
-  userRoles: true,
   workspace: true,
 };
 
@@ -70,9 +67,7 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly auth0Service: Auth0Service,
-    @Inject(forwardRef(() => PreviewUserService))
-    private readonly previewUserService: PreviewUserService
+    private readonly auth0Service: Auth0Service
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
   }
@@ -237,7 +232,6 @@ export class AuthService {
           lastName: profile.family_name || "",
           password: "",
           githubId: profile.sub,
-          previewAccountType: EnumPreviewAccountType.None,
         },
       },
       {
@@ -254,7 +248,7 @@ export class AuthService {
 
   async updateUser(
     user: AuthUser,
-    data: { githubId?: string; previewAccountType?: EnumPreviewAccountType }
+    data: { githubId?: string }
   ): Promise<AuthUser> {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
@@ -306,7 +300,7 @@ export class AuthService {
       },
       include: {
         currentUser: {
-          include: { workspace: true, userRoles: true, account: true },
+          include: { workspace: true, account: true },
         },
       },
     });
@@ -324,50 +318,41 @@ export class AuthService {
       throw new AmplicationError("Invalid password");
     }
 
-    return this.prepareToken(account.currentUser);
+    const authUser = await this.getAuthUser({
+      id: account.currentUser.id,
+    });
+
+    return this.prepareToken(authUser);
   }
 
   async setCurrentWorkspace(
     accountId: string,
     workspaceId: string
   ): Promise<string> {
-    const users = (await this.userService.findUsers({
-      where: {
-        workspace: {
-          id: workspaceId,
-        },
-        account: {
-          id: accountId,
-        },
+    const authUser = await this.getAuthUser({
+      workspace: {
+        id: workspaceId,
       },
-      include: {
-        userRoles: true,
-        account: true,
-        workspace: true,
+      account: {
+        id: accountId,
       },
-      take: 1,
-    })) as AuthUser[];
+    });
 
-    if (!users.length) {
+    if (!authUser) {
       throw new AmplicationError(
         `This account does not have an active user records in the selected workspace or workspace not found ${workspaceId}`
       );
     }
 
-    const [user] = users;
+    await this.accountService.setCurrentUser(accountId, authUser.id);
 
-    await this.accountService.setCurrentUser(accountId, user.id);
-
-    return this.prepareToken(user);
+    return this.prepareToken(authUser);
   }
 
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
-    const user = await this.prismaService.user.findFirst({
-      where: {
-        id: args.data.user.connect.id,
-        deletedAt: null,
-      },
-      include: { workspace: true, userRoles: true, account: true },
+    const user = await this.getAuthUser({
+      id: args.data.user.connect.id,
+      deletedAt: null,
     });
 
     if (!user) {
@@ -492,12 +477,11 @@ export class AuthService {
    * @returns new JWT token
    */
   async prepareToken(user: AuthUser): Promise<string> {
-    const roles = user.userRoles.map((role) => role.role);
-
     const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
-      roles,
+      roles: [],
+      permissions: user.permissions,
       workspaceId: user.workspace.id,
       type: EnumTokenType.User,
     };
@@ -510,12 +494,11 @@ export class AuthService {
    * @returns new JWT token
    */
   async prepareApiToken(user: AuthUser, tokenId: string): Promise<string> {
-    const roles = user.userRoles.map((role) => role.role);
-
     const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
-      roles,
+      roles: [],
+      permissions: user.permissions,
       workspaceId: user.workspace.id,
       type: EnumTokenType.ApiToken,
       tokenId: tokenId,
@@ -532,14 +515,32 @@ export class AuthService {
     name: string,
     account: Account
   ): Promise<Workspace & { users: AuthUser[] }> {
-    const workspace = await this.workspaceService.createWorkspace(account.id, {
-      data: {
-        name,
+    const workspace = await this.workspaceService.createWorkspace(
+      account.id,
+      {
+        data: {
+          name,
+        },
+        include: WORKSPACE_INCLUDE,
       },
-      include: WORKSPACE_INCLUDE,
-    });
+      true,
+      undefined,
+      true
+    );
 
-    return workspace as unknown as Workspace & { users: AuthUser[] };
+    const owner = workspace.users[0];
+
+    return {
+      ...workspace,
+      users: [
+        {
+          ...owner,
+          account: owner.account,
+          workspace: workspace,
+          permissions: ["*"], //the first user is the owner of the workspace
+        },
+      ],
+    };
   }
 
   async loginOrSignUp(profile: AuthProfile, response: Response): Promise<void> {
@@ -553,43 +554,31 @@ export class AuthService {
     let isNew: boolean;
     const existingUser = !!user;
 
-    const isFromPreviewUser =
-      user && user.account.previewAccountType !== EnumPreviewAccountType.None;
-    // to complete the preview account signup, after the user reset the password in Auth0 we need to update the account type and workspace subscription
-    if (isFromPreviewUser) {
-      await this.previewUserService.convertPreviewAccountToRegularAccountWithFreeTrail(
-        user
-      );
-      isNew = false;
-    } else {
-      if (!user) {
-        user = await this.createUser(profile);
-        isNew = true;
-      }
+    if (!user) {
+      user = await this.createUser(profile);
+      isNew = true;
+    }
 
-      if (!user.account.githubId || user.account.githubId !== profile.sub) {
-        user = await this.updateUser(user, { githubId: profile.sub });
-        isNew = false;
-      }
+    if (!user.account.githubId || user.account.githubId !== profile.sub) {
+      user = await this.updateUser(user, { githubId: profile.sub });
+      isNew = false;
     }
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
-    await this.configureJtw(response, user, isNew, isFromPreviewUser);
+    await this.configureJtw(response, user, isNew);
   }
 
   async configureJtw(
     response: Response,
     user: AuthUser,
-    isNew: boolean,
-    isFromPreviewUser = false
+    isNew: boolean
   ): Promise<void> {
     const token = await this.prepareToken(user);
     const url = stringifyUrl({
       url: this.clientHost,
       query: {
         "complete-signup": isNew ? "1" : "0",
-        "preview-user-login": isFromPreviewUser ? "1" : "0",
       },
     });
     const clientDomain = new URL(url).hostname;

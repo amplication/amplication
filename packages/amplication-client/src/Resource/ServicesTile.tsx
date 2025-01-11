@@ -1,18 +1,19 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
 import { EnumTextColor } from "@amplication/ui/design-system";
 
-import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
+
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   resourceId: string;
 };
 
 function ServicesTile({ resourceId }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { trackEvent } = useTracking();
 
@@ -29,7 +30,7 @@ function ServicesTile({ resourceId }: Props) {
       message="Connect services to the message broker for event-driven architecture."
       onClick={handleClick}
       themeColor={EnumTextColor.ThemePink}
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`}
+      to={`${baseUrl}/services`}
     />
   );
 }

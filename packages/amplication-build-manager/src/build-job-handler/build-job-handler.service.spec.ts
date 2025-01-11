@@ -5,7 +5,7 @@ import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
 import { Test, TestingModule } from "@nestjs/testing";
 import { BuildJobsHandlerService } from "./build-job-handler.service";
 import { BuildId, EnumDomainName, EnumJobStatus, JobBuildId } from "../types";

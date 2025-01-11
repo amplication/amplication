@@ -12,7 +12,6 @@ COPY ./dist/packages/data-service-generator .
 RUN npm i --omit-dev
 
 # Copy unpublished amplication libraries
-COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
 COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}

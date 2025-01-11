@@ -74,7 +74,7 @@ $tabs-width: 300px;
     overflow-y: auto;
     margin: var(--double-spacing);
     margin-right: 0;
-    @include scrollbars(16px, var(--gray-30), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
     .sub-list {
       margin-left: var(--triple-spacing);
@@ -90,7 +90,7 @@ $tabs-width: 300px;
     position: relative;
     box-sizing: border-box;
     overflow-y: auto;
-    @include scrollbars(16px, var(--gray-30), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
   }
 
   &__main {
@@ -99,12 +99,24 @@ $tabs-width: 300px;
     box-sizing: border-box;
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
-    padding-top: var(--default-spacing);
     min-height: calc(100% - (var(--double-spacing) * 2));
     height: 1px; //this is needed to allow the main content to grow
   }
 
   &__spacer {
     padding: var(--default-spacing);
+  }
+
+  &--content-padding-none {
+    .amp-page-content__main-scroll {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .amp-page-content__main {
+      margin-top: 0;
+      margin-bottom: 0;
+      min-height: 100%;
+    }
   }
 }

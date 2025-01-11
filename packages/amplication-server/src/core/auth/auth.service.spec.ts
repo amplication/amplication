@@ -3,26 +3,23 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Response } from "express";
-import { Role } from "../../enums/Role";
 import { Env } from "../../env";
-import { Account, Project, Resource, User, Workspace } from "../../models";
-import { PrismaService, UserRole } from "../../prisma";
+import { Account, Project, User, Workspace } from "../../models";
+import { PrismaService } from "../../prisma";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { Auth0Service } from "../idp/auth0.service";
 import { UserService } from "../user/user.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { AuthService } from "./auth.service";
 import { IdentityProvider } from "./auth.types";
 import { EnumTokenType } from "./dto";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
 import { AuthProfile, AuthUser } from "./types";
-import { Auth0Service } from "../idp/auth0.service";
-import { PreviewUserService } from "./previewUser.service";
+import { RolesPermissions } from "@amplication/util-roles-types";
+
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
-const WORK_EMAIL_INVALID = `Email must be a work email address`;
 
 const EXAMPLE_ACCOUNT: Account = {
   id: "alice",
@@ -33,21 +30,6 @@ const EXAMPLE_ACCOUNT: Account = {
   createdAt: new Date(),
   updatedAt: new Date(),
   githubId: null,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
-};
-
-const EXAMPLE_PREVIEW_ACCOUNT: Account = {
-  id: "alice",
-  email: "fake+example@amplication.com",
-  password: "PASSWORD",
-  firstName: "Alice",
-  lastName: "Appleseed",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  githubId: null,
-  previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
-  previewAccountEmail: "examplePreveiw@amplication.com",
 };
 
 const EXAMPLE_PROJECT: Project = {
@@ -61,17 +43,6 @@ const EXAMPLE_PROJECT: Project = {
   demoRepoName: null,
   licensed: true,
 };
-const NOW = new Date();
-const EXAMPLE_RESOURCE: Resource = {
-  id: "exampleResourceId",
-  resourceType: EnumResourceType.Service,
-  name: "Example Resource",
-  description: null,
-  licensed: true,
-  createdAt: NOW,
-  updatedAt: NOW,
-  gitRepositoryOverride: false,
-};
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
 const EXAMPLE_NEW_PASSWORD = "NEW PASSWORD";
@@ -79,8 +50,7 @@ const EXAMPLE_NEW_HASHED_PASSWORD = "NEW HASHED PASSWORD";
 
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 
-const urlQueryParamExample =
-  "https://server.amplication.com?complete-signup=0&preview-user-login=0";
+const urlQueryParamExample = "https://server.amplication.com?complete-signup=0";
 
 const EXAMPLE_USER: User = {
   id: "exampleUser",
@@ -108,14 +78,6 @@ const EXAMPLE_OTHER_WORKSPACE: Workspace = {
   allowLLMFeatures: true,
 };
 
-const EXAMPLE_USER_ROLE: UserRole = {
-  id: "admin",
-  role: Role.Admin,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  userId: EXAMPLE_USER.id,
-};
-
 const EXAMPLE_OTHER_USER: User = {
   id: "exampleOtherUser",
   createdAt: new Date(),
@@ -124,26 +86,24 @@ const EXAMPLE_OTHER_USER: User = {
   lastActive: null,
 };
 
-const EXAMPLE_OTHER_USER_ROLE: UserRole = {
-  id: "otherAdmin",
-  role: Role.Admin,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  userId: EXAMPLE_OTHER_USER.id,
-};
+const EXAMPLE_PERMISSIONS: RolesPermissions[] = [
+  "git.org.create",
+  "git.org.delete",
+  "privatePlugin.delete",
+];
 
 const EXAMPLE_AUTH_USER: AuthUser = {
   ...EXAMPLE_USER,
-  userRoles: [EXAMPLE_USER_ROLE],
   workspace: EXAMPLE_WORKSPACE,
   account: EXAMPLE_ACCOUNT,
+  permissions: EXAMPLE_PERMISSIONS,
 };
 
 const EXAMPLE_OTHER_AUTH_USER: AuthUser = {
   ...EXAMPLE_OTHER_USER,
-  userRoles: [EXAMPLE_OTHER_USER_ROLE],
   workspace: EXAMPLE_OTHER_WORKSPACE,
   account: EXAMPLE_ACCOUNT,
+  permissions: EXAMPLE_PERMISSIONS,
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
@@ -193,23 +153,10 @@ const getAuthUserMock = jest.fn().mockResolvedValue({
   },
 });
 const findUsersMock = jest.fn().mockResolvedValue([EXAMPLE_OTHER_AUTH_USER]);
-const previewUserConvertPreviewAccountToRegularAccountWithFreeTrailMock =
-  jest.fn();
 
 const createWorkspaceMock = jest.fn(() => ({
   ...EXAMPLE_WORKSPACE,
   users: [EXAMPLE_AUTH_USER],
-}));
-
-const convertPreviewSubscriptionToFreeWithTrialMock = jest.fn();
-
-const createPreviewEnvironmentMock = jest.fn(() => ({
-  workspace: {
-    ...EXAMPLE_WORKSPACE,
-    users: [EXAMPLE_AUTH_USER],
-  },
-  project: EXAMPLE_PROJECT,
-  resource: EXAMPLE_RESOURCE,
 }));
 
 const auth0ServiceCreateUserMock = jest.fn(() => ({
@@ -291,21 +238,9 @@ describe("AuthService", () => {
           })),
         },
         {
-          provide: PreviewUserService,
-          useClass: jest.fn(() => ({
-            convertPreviewAccountToRegularAccountWithFreeTrail:
-              previewUserConvertPreviewAccountToRegularAccountWithFreeTrailMock,
-            completeSignupPreviewAccount: jest.fn(),
-          })),
-        },
-        {
           provide: WorkspaceService,
           useClass: jest.fn(() => ({
             createWorkspace: createWorkspaceMock,
-            createPreviewWorkspace: createWorkspaceMock,
-            convertPreviewSubscriptionToFreeWithTrial:
-              convertPreviewSubscriptionToFreeWithTrialMock,
-            createPreviewEnvironment: createPreviewEnvironmentMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -374,25 +309,31 @@ describe("AuthService", () => {
     expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
     expect(createWorkspaceMock).toHaveBeenCalledTimes(1);
-    expect(createWorkspaceMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
-      data: {
-        name: EXAMPLE_WORKSPACE.name,
-      },
-      include: {
-        users: {
-          include: {
-            account: true,
-            userRoles: true,
-            workspace: true,
+    expect(createWorkspaceMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      {
+        data: {
+          name: EXAMPLE_WORKSPACE.name,
+        },
+        include: {
+          users: {
+            include: {
+              account: true,
+              workspace: true,
+            },
           },
         },
       },
-    });
+      true,
+      undefined,
+      true
+    );
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
-      roles: [EXAMPLE_USER_ROLE.role],
+      roles: [],
+      permissions: ["*"],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
@@ -411,7 +352,7 @@ describe("AuthService", () => {
       },
       include: {
         currentUser: {
-          include: { account: true, workspace: true, userRoles: true },
+          include: { account: true, workspace: true },
         },
       },
     });
@@ -424,35 +365,23 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_WORKSPACE.id,
-      roles: [EXAMPLE_USER_ROLE.role],
+      permissions: EXAMPLE_PERMISSIONS,
+      roles: [],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User,
     });
   });
 
   it("sets current workspace for existing user and existing workspace", async () => {
+    getAuthUserMock.mockResolvedValueOnce(EXAMPLE_OTHER_AUTH_USER);
+
     const result = await service.setCurrentWorkspace(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_OTHER_WORKSPACE.id
     );
+
     expect(result).toBe(EXAMPLE_TOKEN);
-    expect(findUsersMock).toHaveBeenCalledTimes(1);
-    expect(findUsersMock).toHaveBeenCalledWith({
-      where: {
-        workspace: {
-          id: EXAMPLE_OTHER_WORKSPACE.id,
-        },
-        account: {
-          id: EXAMPLE_ACCOUNT.id,
-        },
-      },
-      include: {
-        account: true,
-        workspace: true,
-        userRoles: true,
-      },
-      take: 1,
-    });
+
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
@@ -462,7 +391,8 @@ describe("AuthService", () => {
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       workspaceId: EXAMPLE_OTHER_WORKSPACE.id,
-      roles: [EXAMPLE_USER_ROLE.role],
+      permissions: EXAMPLE_PERMISSIONS,
+      roles: [],
       userId: EXAMPLE_OTHER_AUTH_USER.id,
       type: EnumTokenType.User,
     });
@@ -512,18 +442,6 @@ describe("AuthService", () => {
           },
         },
       });
-    });
-
-    it("should fail to signup a preview account when the email is not work email", async () => {
-      const email = "invalid@gmail.com";
-
-      await expect(
-        service.signupWithBusinessEmail({
-          data: {
-            email,
-          },
-        })
-      ).rejects.toThrow(WORK_EMAIL_INVALID);
     });
 
     it("when an amplication user already exists, should create only an Auth0 user (not an amplication user) and reset password if the user does not exist on Auth0", async () => {
@@ -677,15 +595,13 @@ describe("AuthService", () => {
             firstName: "",
             lastName: "",
             password: "",
-            previewAccountType: "None",
-            previewAccountEmail: "",
           },
           id: "",
           createdAt: undefined,
           updatedAt: undefined,
           workspace: new Workspace(),
-          userRoles: [],
           isOwner: false,
+          permissions: ["privatePlugin.create"],
         },
         false
       );
@@ -737,62 +653,6 @@ describe("AuthService", () => {
         expect(responseMock.redirect).toHaveBeenCalledWith(
           301,
           urlQueryParamExample
-        );
-      });
-
-      it("should update preview user and track the event", async () => {
-        const exampleUser = {
-          ...EXAMPLE_USER,
-          account: {
-            ...EXAMPLE_USER.account,
-            ...EXAMPLE_PREVIEW_ACCOUNT,
-          },
-          workspace: EXAMPLE_WORKSPACE,
-        };
-
-        getAuthUserMock.mockResolvedValueOnce({
-          ...EXAMPLE_AUTH_USER,
-          account: {
-            ...EXAMPLE_ACCOUNT,
-            ...EXAMPLE_PREVIEW_ACCOUNT,
-          },
-        });
-
-        const authProfile: AuthProfile = {
-          sub: "123",
-          email: exampleUser.account.previewAccountEmail,
-          nickname: "",
-          identityOrigin: "AnSSOIntegration",
-          loginsCount: 1,
-        };
-
-        await service.loginOrSignUp(authProfile, responseMock);
-
-        expect(responseMock.cookie).toHaveBeenCalledWith(
-          "AJWT",
-          expect.any(String),
-          {
-            domain: expectedDomain,
-            secure: true,
-          }
-        );
-        expect(createAccountMock).toHaveBeenCalledTimes(0);
-        expect(
-          previewUserConvertPreviewAccountToRegularAccountWithFreeTrailMock
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          previewUserConvertPreviewAccountToRegularAccountWithFreeTrailMock
-        ).toHaveBeenCalledWith({
-          ...EXAMPLE_AUTH_USER,
-          account: {
-            ...EXAMPLE_ACCOUNT,
-            ...EXAMPLE_PREVIEW_ACCOUNT,
-          },
-        });
-
-        expect(responseMock.redirect).toHaveBeenCalledWith(
-          301,
-          "https://server.amplication.com?complete-signup=0&preview-user-login=1"
         );
       });
     });

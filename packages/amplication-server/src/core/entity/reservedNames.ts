@@ -64,8 +64,9 @@ const RESERVED_NAMES = [
   "yield",
   "field",
   "app",
+  "auth",
 ];
 
 export function isReservedName(word: string): boolean {
-  return RESERVED_NAMES.includes(word);
+  return RESERVED_NAMES.includes(word.toLowerCase());
 }

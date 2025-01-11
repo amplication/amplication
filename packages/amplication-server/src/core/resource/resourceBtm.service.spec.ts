@@ -97,9 +97,6 @@ const billingServiceMock = {
   provisionCustomer: jest.fn(() => {
     return {};
   }),
-  provisionPreviewCustomer: jest.fn(() => {
-    return {};
-  }),
 };
 // This is important to mock the getter!!!
 Object.defineProperty(billingServiceMock, "isBillingEnabled", {

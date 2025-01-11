@@ -19,6 +19,7 @@ import { GitProviderModule } from "./git/git.provider.module";
 import { ProjectModule } from "./project/project.module";
 import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
+import { PrivatePluginModule } from "./privatePlugin/privatePlugin.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 import { UserActionModule } from "./userAction/userAction.module";
@@ -29,6 +30,16 @@ import { ModuleDtoModule } from "./moduleDto/moduleDto.module";
 import { AdministratorModule } from "./administrator/administrator.module";
 import { GptModule } from "./gpt/gpt.module";
 import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
+import { AssistantModule } from "./assistant/assistant.module";
+import { AwsMarketplaceModule } from "./aws-marketplace/aws-marketplace.module";
+import { PackageModule } from "./package/package.module";
+import { ResourceVersionModule } from "./resourceVersion/resourceVersion.module";
+import { OutdatedVersionAlertModule } from "./outdatedVersionAlert/outdatedVersionAlert.module";
+import { TeamModule } from "./team/team.module";
+import { CustomPropertyModule } from "./customProperty/customProperty.module";
+import { BlueprintModule } from "./blueprint/blueprint.module";
+import { RelationModule } from "./relation/relation.module";
+import { RoleModule } from "./role/role.module";
 
 @Module({
   imports: [
@@ -63,6 +74,17 @@ import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
     ModuleActionModule,
     ModuleDtoModule,
     GptModule,
+    AssistantModule,
+    AwsMarketplaceModule,
+    PrivatePluginModule,
+    PackageModule,
+    ResourceVersionModule,
+    OutdatedVersionAlertModule,
+    TeamModule,
+    CustomPropertyModule,
+    BlueprintModule,
+    RelationModule,
+    RoleModule,
   ],
   exports: [
     AccountModule,
@@ -93,6 +115,15 @@ import { UsageInsightsModule } from "./UsageInsights/usageInsights.module";
     ModuleActionModule,
     ModuleDtoModule,
     GptModule,
+    AssistantModule,
+    PrivatePluginModule,
+    ResourceVersionModule,
+    OutdatedVersionAlertModule,
+    TeamModule,
+    CustomPropertyModule,
+    BlueprintModule,
+    RelationModule,
+    RoleModule,
   ],
 })
 export class CoreModule {}

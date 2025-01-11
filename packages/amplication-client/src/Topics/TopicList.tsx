@@ -5,13 +5,13 @@ import {
 } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import InnerTabLink from "../Layout/InnerTabLink";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import NewTopic from "./NewTopic";
 import "./TopicList.scss";
 
@@ -30,7 +30,7 @@ type Props = {
 export const TopicList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
     const [searchPhrase, setSearchPhrase] = useState<string>("");
-    const { currentWorkspace, currentProject } = useContext(AppContext);
+    const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
     const handleSearchChange = useCallback(
       (value) => {
@@ -62,26 +62,19 @@ export const TopicList = React.memo(
 
     const handleTopicChange = useCallback(
       (topic: models.Topic) => {
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics/${topic.id}`;
+        const fieldUrl = `${baseUrl}/topics/${topic.id}`;
         history.push(fieldUrl);
       },
-      [history, resourceId, currentWorkspace, currentProject]
+      [history, baseUrl]
     );
 
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.topics)) {
         const topic = data.topics[0];
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics/${topic.id}`;
+        const fieldUrl = `${baseUrl}/topics/${topic.id}`;
         history.push(fieldUrl);
       }
-    }, [
-      data,
-      selectFirst,
-      resourceId,
-      history,
-      currentWorkspace,
-      currentProject,
-    ]);
+    }, [data, selectFirst, baseUrl, history]);
 
     return (
       <div className={CLASS_NAME}>
@@ -98,10 +91,7 @@ export const TopicList = React.memo(
         <div className={`${CLASS_NAME}__list`}>
           {data?.topics?.map((topic) => (
             <div key={topic.id} className={`${CLASS_NAME}__list__item`}>
-              <InnerTabLink
-                icon="topics"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics/${topic.id}`}
-              >
+              <InnerTabLink icon="topics" to={`${baseUrl}/topics/${topic.id}`}>
                 <span>{topic.displayName}</span>
               </InnerTabLink>
             </div>

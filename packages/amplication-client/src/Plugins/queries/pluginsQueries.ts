@@ -13,6 +13,7 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       version
       settings
       configurations
+      isPrivate
     }
   }
 `;
@@ -27,6 +28,7 @@ export const GET_PLUGIN_INSTALLATION = gql`
       version
       settings
       configurations
+      isPrivate
     }
   }
 `;
@@ -43,6 +45,7 @@ export const UPDATE_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      isPrivate
     }
   }
 `;
@@ -56,6 +59,7 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      isPrivate
     }
   }
 `;
@@ -87,8 +91,8 @@ export const UPDATE_PLUGIN_ORDER = gql`
 `;
 
 export const GET_PLUGIN_VERSIONS_CATALOG = gql`
-  query Plugins($where: PluginVersionWhereInput) {
-    plugins {
+  query Plugins($where: PluginVersionWhereInput, $codeGeneratorName: String!) {
+    plugins(where: { codeGeneratorName: { equals: $codeGeneratorName } }) {
       id
       pluginId
       name

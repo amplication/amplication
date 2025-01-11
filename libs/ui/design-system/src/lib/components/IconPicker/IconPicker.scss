@@ -1,0 +1,46 @@
+@import "../../style/index.scss";
+
+.amp-icon-picker {
+  &__button {
+    width: auto;
+    padding: 0 var(--default-spacing);
+  }
+
+  label {
+    @include label;
+    position: relative;
+  }
+
+  &__picker {
+    border: 1px solid var(--gray-70);
+    box-shadow: var(--menu-box-shadow);
+    width: 300px;
+
+    &__icons {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(24px, 1fr));
+      gap: var(--double-spacing);
+      row-gap: var(--double-spacing);
+      padding: var(--default-spacing);
+      max-height: 200px;
+      overflow-y: auto;
+
+      .amp-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &::before {
+          color: var(--gray-base);
+        }
+      }
+    }
+    label {
+      color: var(--gray-base) !important;
+    }
+  }
+
+  &__footer {
+    padding: 0 var(--default-spacing);
+  }
+}

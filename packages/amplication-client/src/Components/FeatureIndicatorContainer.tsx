@@ -12,7 +12,13 @@ import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
-import { FeatureIndicator, tooltipDefaultText } from "./FeatureIndicator";
+import {
+  FeatureIndicator,
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
+  EnumCtaType,
+} from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
 import { omit } from "lodash";
 import { EnumTextColor, Icon } from "@amplication/ui/design-system";
@@ -39,13 +45,16 @@ export type Props = {
   entitlementType: EntitlementType;
   featureIndicatorPlacement?: FeatureIndicatorPlacement;
   icon?: IconType | null;
-  featureText?: string;
   fullEnterpriseText?: string;
   limitationText?: string;
   children?: React.ReactElement;
   render?: (props: { disabled: boolean; icon?: IconType }) => ReactElement;
   reversePosition?: boolean;
   showTooltip?: boolean;
+  ctaType?: EnumCtaType;
+  actualUsage?: number | null;
+  paidPlansExclusive?: boolean;
+  canPerformTask?: boolean; //set the disabled property to false based on the user specific permissions, even if the feature is enabled
 };
 
 export const FeatureIndicatorContainer: FC<Props> = ({
@@ -53,16 +62,20 @@ export const FeatureIndicatorContainer: FC<Props> = ({
   entitlementType,
   featureIndicatorPlacement = FeatureIndicatorPlacement.Inside,
   children,
-  featureText = tooltipDefaultText,
   limitationText,
   fullEnterpriseText,
   render,
   reversePosition,
   showTooltip = true,
+  ctaType = EnumCtaType.Upgrade,
+  actualUsage,
+  paidPlansExclusive = true,
+  canPerformTask = true,
 }) => {
   const { stigg } = useStiggContext();
   const { currentWorkspace } = useContext(AppContext);
   const { subscription } = currentWorkspace;
+
   const subscriptionPlan = subscription?.subscriptionPlan;
   const status = subscription?.status;
 
@@ -89,23 +102,19 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (entitlementType === EntitlementType.Boolean) {
-      if (isPreviewPlan(subscriptionPlan) && hasBooleanAccess) {
-        setDisabled(null);
-        setIcon(null);
-        return;
-      }
       setDisabled(!hasBooleanAccess);
     }
 
     if (entitlementType === EntitlementType.Metered) {
-      const usageExceeded = usageLimit && currentUsage >= usageLimit;
+      const actualCurrentUsage =
+        actualUsage !== null ? actualUsage : currentUsage;
+      const usageExceeded = usageLimit && actualCurrentUsage >= usageLimit;
       const isDisabled = usageExceeded ?? !hasMeteredAccess;
-      if (isPreviewPlan(subscriptionPlan) && !isDisabled) {
-        setDisabled(null);
-        setIcon(null);
-        return;
-      }
-      setDisabled(isDisabled);
+
+      if (actualUsage !== null) {
+        // do not consider metered access if actual usage is provided
+        setDisabled(usageExceeded);
+      } else setDisabled(isDisabled);
     }
   }, [
     featureId,
@@ -116,33 +125,53 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     subscriptionPlan,
     status,
     entitlementType,
+    actualUsage,
   ]);
 
-  const text = useMemo(() => {
+  const textStart = useMemo(() => {
     if (disabled) {
       return limitationText;
     }
     if (
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      subscription.status !== EnumSubscriptionStatus.Trailing
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      status !== EnumSubscriptionStatus.Trailing
     ) {
       return fullEnterpriseText;
     }
 
-    return featureText;
-  }, [disabled, subscription, featureText, limitationText, fullEnterpriseText]);
+    return DEFAULT_TEXT_START;
+  }, [disabled, subscriptionPlan, status, limitationText, fullEnterpriseText]);
 
-  const linkText = useMemo(() => {
+  const textEnd = useMemo(() => {
+    if (disabled) {
+      return DISABLED_DEFAULT_TEXT_END;
+    }
     if (
-      isPreviewPlan(subscriptionPlan) ||
-      (subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-        subscription.status !== EnumSubscriptionStatus.Trailing)
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      status !== EnumSubscriptionStatus.Trailing
     ) {
-      return ""; // don't show the upgrade link when the plan is preview
+      return "";
     }
 
-    return undefined; // in case of null, it falls back to the default link text
-  }, [subscriptionPlan, subscription]);
+    return DEFAULT_TEXT_END;
+  }, [disabled, subscriptionPlan, status]);
+
+  const showTooltipLink = useMemo(() => {
+    if (
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      status !== EnumSubscriptionStatus.Trailing
+    ) {
+      return false; // don't show the upgrade link when the plan is preview
+    }
+
+    return true; // in case of null, it falls back to the default link text
+  }, [subscriptionPlan, status]);
 
   useEffect(() => {
     if (!subscriptionPlan || !status || !featureId) {
@@ -155,15 +184,18 @@ export const FeatureIndicatorContainer: FC<Props> = ({
     }
 
     if (
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-      status === EnumSubscriptionStatus.Trailing
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Essential ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      status === EnumSubscriptionStatus.Trailing &&
+      paidPlansExclusive
     ) {
       setIcon(IconType.Diamond);
     }
-  }, [featureId, subscriptionPlan, status, disabled]);
+  }, [featureId, subscriptionPlan, status, disabled, paidPlansExclusive]);
 
   const renderProps = {
-    disabled: disabled,
+    disabled: disabled || !canPerformTask,
     icon: icon,
     reversePosition,
   };
@@ -176,8 +208,10 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           featureName={featureId}
           element={render(renderProps)}
           icon={icon}
-          text={text}
-          linkText={linkText}
+          textStart={textStart}
+          textEnd={textEnd}
+          showTooltipLink={showTooltipLink}
+          ctaType={ctaType}
         ></FeatureIndicator>
       )}
       {!render &&
@@ -186,8 +220,10 @@ export const FeatureIndicatorContainer: FC<Props> = ({
           <FeatureIndicator
             featureName={featureId}
             icon={icon}
-            text={text}
-            linkText={linkText}
+            textStart={textStart}
+            textEnd={textEnd}
+            showTooltipLink={showTooltipLink}
+            ctaType={ctaType}
             element={
               featureIndicatorPlacement ===
               FeatureIndicatorPlacement.Outside ? (
@@ -209,12 +245,7 @@ export const FeatureIndicatorContainer: FC<Props> = ({
             }
           />
         ))}
-      {!render && !icon && children}
+      {!render && !icon && React.cloneElement(children, renderProps)}
     </div>
   );
 };
-
-export function isPreviewPlan(plan: EnumSubscriptionPlan) {
-  const previewPlans = [EnumSubscriptionPlan.PreviewBreakTheMonolith];
-  return previewPlans.includes(plan);
-}

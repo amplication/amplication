@@ -170,7 +170,7 @@ export default function ModelOrganizerToolbar({
                     location={EnumButtonLocation.Architecture}
                     openInFullScreen={false}
                     autoRedirectAfterCompletion
-                    buttonText="AI helper"
+                    buttonText="Break the Monolith"
                     selectedEditableResource={selectedEditableResource}
                   />
                 )}
@@ -188,7 +188,7 @@ export default function ModelOrganizerToolbar({
                 location={EnumButtonLocation.Architecture}
                 openInFullScreen={false}
                 autoRedirectAfterCompletion
-                buttonText="AI helper"
+                buttonText="Break the Monolith"
               />
             )}
             {!restrictedMode && !redesignMode && (

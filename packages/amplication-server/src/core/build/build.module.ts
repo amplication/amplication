@@ -13,7 +13,6 @@ import { BuildService } from "./build.service";
 import { BuildResolver } from "./build.resolver";
 import { BuildController } from "./build.controller";
 import { ActionModule } from "../action/action.module";
-import { BuildFilesSaver } from "./utils";
 import { CommitModule } from "../commit/commit.module";
 import { TopicModule } from "../topic/topic.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
@@ -24,6 +23,10 @@ import { GitProviderModule } from "../git/git.provider.module";
 import { ModuleModule } from "../module/module.module";
 import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
+import { PackageModule } from "../package/package.module";
+import { ProjectConfigurationSettingsModule } from "../projectConfigurationSettings/projectConfigurationSettings.module";
+import { PrivatePluginModule } from "../privatePlugin/privatePlugin.module";
+import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
 
 @Module({
   imports: [
@@ -48,8 +51,12 @@ import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
     ModuleModule,
     ModuleActionModule,
     ModuleDtoModule,
+    PackageModule,
+    ProjectConfigurationSettingsModule,
+    PrivatePluginModule,
+    ResourceSettingsModule,
   ],
-  providers: [BuildService, BuildResolver, BuildFilesSaver],
+  providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController],
 })

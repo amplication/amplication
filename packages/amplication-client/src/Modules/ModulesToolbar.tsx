@@ -10,7 +10,7 @@ import {
 import { EnumFlexDirection } from "@amplication/ui/design-system/components/FlexItem/FlexItem";
 import React, { useCallback } from "react";
 import NewModuleAction from "../ModuleActions/NewModuleAction";
-import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
+import NewModuleDtoSelectButton from "../ModuleDto/NewModuleDtoSelectButton";
 import "./ModulesToolbar.scss";
 import { useModulesContext } from "./modulesContext";
 
@@ -22,7 +22,7 @@ type Props = {
 const CLASS_NAME = "modules-toolbar";
 
 const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
-  const { setSearchPhrase } = useModulesContext();
+  const { setSearchPhrase, customActionsLicenseEnabled } = useModulesContext();
 
   let timeout;
   const handleSearchChange = useCallback(
@@ -49,14 +49,17 @@ const ModulesToolbar: React.FC<Props> = ({ moduleId, resourceId }) => {
         }
       >
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          <>
-            <NewModuleDtoButton resourceId={resourceId} moduleId={moduleId} />
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <NewModuleDtoSelectButton
+              resourceId={resourceId}
+              moduleId={moduleId}
+            />
             <NewModuleAction
               resourceId={resourceId}
               moduleId={moduleId}
               buttonStyle={EnumButtonStyle.Primary}
             />
-          </>
+          </FlexItem>
         </FlexItem.FlexEnd>
       </FlexItem>
     </Panel>

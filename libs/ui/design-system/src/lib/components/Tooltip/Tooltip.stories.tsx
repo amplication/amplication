@@ -11,7 +11,7 @@ export const Default = {
   render: (props: any) => {
     return (
       <div>
-        <Tooltip>hello</Tooltip>
+        <Tooltip {...props}>hello</Tooltip>
       </div>
     );
   },

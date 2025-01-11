@@ -1,6 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import { print } from "@amplication/code-gen-utils";
-import { Module } from "@amplication/code-gen-types";
+import { Module, NamedClassDeclaration } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
   addImports,
@@ -8,16 +8,19 @@ import {
   importDeclaration,
 } from "../../../utils/ast";
 import { createDTOFile } from "./create-dto-module";
-import { logger } from "../../../logging";
+import { logger } from "@amplication/dsg-utils";
 
 const REGISTER_ENUM_TYPE_ID = builders.identifier("registerEnumType");
 
 export function createEnumDTOModule(
-  dto: namedTypes.TSEnumDeclaration,
-  dtoNameToPath: Record<string, string>
+  dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
+  dtoNameToPath: Record<string, string>,
+  dtoPath: string = undefined,
+  shouldAddAutoGenerationComment = true
 ): Module {
   try {
-    const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
+    const path = dtoPath || dtoNameToPath[dto.id.name];
+    const file = createDTOFile(dto, path, dtoNameToPath);
 
     file.program.body
       .push(expressionStatement`${REGISTER_ENUM_TYPE_ID}(${dto.id}, {
@@ -27,7 +30,7 @@ export function createEnumDTOModule(
     addImports(file, [
       importDeclaration`import { ${REGISTER_ENUM_TYPE_ID} } from "@nestjs/graphql"`,
     ]);
-    addAutoGenerationComment(file);
+    shouldAddAutoGenerationComment && addAutoGenerationComment(file);
 
     return {
       code: print(file).code,

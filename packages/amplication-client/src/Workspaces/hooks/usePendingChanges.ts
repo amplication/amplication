@@ -23,7 +23,10 @@ export type PendingChangesByResourceAndType = {
   changes: PendingChangesByType[];
 };
 
-const usePendingChanges = (currentProject: models.Project | undefined) => {
+const usePendingChanges = (
+  currentProject: models.Project | undefined,
+  resourceTypeGroup: models.EnumResourceTypeGroup
+) => {
   const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
@@ -39,6 +42,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     skip: !currentProject,
     variables: {
       projectId: currentProject?.id,
+      resourceTypeGroup: resourceTypeGroup,
     },
   });
 
@@ -132,7 +136,9 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
           ([type, typeChanges]) =>
             ({
               type,
-              typeChanges,
+              typeChanges: typeChanges.sort((a, b) =>
+                a.origin.displayName.localeCompare(b.origin.displayName)
+              ),
             } as PendingChangesByType)
         );
 

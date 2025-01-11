@@ -10,6 +10,7 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { DeleteTopic } from "./DeleteTopic";
 import { Snackbar, HorizontalRule } from "@amplication/ui/design-system";
 import "./Topic.scss";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type TData = {
   topic: models.Topic;
@@ -25,12 +26,12 @@ const Topic = () => {
   const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
   const { topicId, resource } = match?.params ?? {};
   const {
-    currentWorkspace,
-    currentProject,
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
   } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resource });
   const history = useHistory();
 
   const { data, error, loading, refetch } = useQuery<TData>(GET_TOPIC, {
@@ -44,7 +45,7 @@ const Topic = () => {
 
     setResetPendingChangesIndicator(false);
     refetch();
-  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator, refetch]);
 
   const { trackEvent } = useTracking();
 
@@ -66,7 +67,7 @@ const Topic = () => {
         ...data,
       });
     },
-    [updateTopic, topicId]
+    [updateTopic, topicId, trackEvent, addEntity]
   );
 
   const hasError = Boolean(error) || Boolean(updateError);
@@ -74,10 +75,8 @@ const Topic = () => {
   const errorMessage = formatError(error) || formatError(updateError);
 
   const handleDeleteField = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/topics`
-    );
-  }, [history, currentWorkspace?.id, currentProject?.id, resource]);
+    history.push(`${baseUrl}/topics`);
+  }, [history, baseUrl]);
 
   return (
     <>

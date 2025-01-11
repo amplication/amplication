@@ -162,6 +162,9 @@ volumes:
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "moduleNameMapper": {
+      "@app/custom-validators": "<rootDir>/src/validators"
+    },
     "modulePathIgnorePatterns": ["<rootDir>/dist/"]
   }
 }
@@ -441,6 +444,9 @@ import {
   IsOptional,
   IsBoolean,
   IsNumber,
+  Min,
+  Max,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -536,6 +542,8 @@ class Customer {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -547,6 +555,8 @@ class Customer {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -569,6 +579,7 @@ class Customer {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -679,7 +690,10 @@ import {
   IsBoolean,
   IsDate,
   IsNumber,
+  Min,
+  Max,
   IsInt,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -751,6 +765,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -762,6 +778,8 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -784,6 +802,7 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -1225,7 +1244,10 @@ import {
   IsBoolean,
   IsDate,
   IsNumber,
+  Min,
+  Max,
   IsInt,
+  MaxLength,
   IsEnum,
   ValidateNested,
 } from "class-validator";
@@ -1300,6 +1322,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(100)
   @IsOptional()
   @Field(() => Float, {
     nullable: true,
@@ -1311,6 +1335,8 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Min(10)
+  @Max(9007199254740991)
   @IsOptional()
   @Field(() => GraphQLBigInt, {
     nullable: true,
@@ -1333,6 +1359,7 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(500)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -2656,28 +2683,28 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async customers<T extends Prisma.CustomerFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
+  async customers(
+    args: Prisma.CustomerFindManyArgs
   ): Promise<PrismaCustomer[]> {
-    return this.prisma.customer.findMany<Prisma.CustomerFindManyArgs>(args);
+    return this.prisma.customer.findMany(args);
   }
-  async customer<T extends Prisma.CustomerFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
+  async customer(
+    args: Prisma.CustomerFindUniqueArgs
   ): Promise<PrismaCustomer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async createCustomer<T extends Prisma.CustomerCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
+  async createCustomer(
+    args: Prisma.CustomerCreateArgs
   ): Promise<PrismaCustomer> {
-    return this.prisma.customer.create<T>(args);
+    return this.prisma.customer.create(args);
   }
-  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
+  async updateCustomer(
+    args: Prisma.CustomerUpdateArgs
   ): Promise<PrismaCustomer> {
-    return this.prisma.customer.update<T>(args);
+    return this.prisma.customer.update(args);
   }
-  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
+  async deleteCustomer(
+    args: Prisma.CustomerDeleteArgs
   ): Promise<PrismaCustomer> {
     return this.prisma.customer.delete(args);
   }
@@ -3707,29 +3734,19 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async empties<T extends Prisma.EmptyFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
-  ): Promise<PrismaEmpty[]> {
-    return this.prisma.empty.findMany<Prisma.EmptyFindManyArgs>(args);
+  async empties(args: Prisma.EmptyFindManyArgs): Promise<PrismaEmpty[]> {
+    return this.prisma.empty.findMany(args);
   }
-  async empty<T extends Prisma.EmptyFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
-  ): Promise<PrismaEmpty | null> {
+  async empty(args: Prisma.EmptyFindUniqueArgs): Promise<PrismaEmpty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async createEmpty<T extends Prisma.EmptyCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
-  ): Promise<PrismaEmpty> {
-    return this.prisma.empty.create<T>(args);
+  async createEmpty(args: Prisma.EmptyCreateArgs): Promise<PrismaEmpty> {
+    return this.prisma.empty.create(args);
   }
-  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
-  ): Promise<PrismaEmpty> {
-    return this.prisma.empty.update<T>(args);
+  async updateEmpty(args: Prisma.EmptyUpdateArgs): Promise<PrismaEmpty> {
+    return this.prisma.empty.update(args);
   }
-  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
-  ): Promise<PrismaEmpty> {
+  async deleteEmpty(args: Prisma.EmptyDeleteArgs): Promise<PrismaEmpty> {
     return this.prisma.empty.delete(args);
   }
 }
@@ -3977,6 +3994,13 @@ const { PORT = 3000 } = process.env;
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
+  // This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
   app.setGlobalPrefix("api");
   app.useGlobalPipes(
     new ValidationPipe({
@@ -3984,13 +4008,6 @@ async function main() {
       forbidUnknownValues: false,
     })
   );
-
-  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  BigInt.prototype.toJSON = function () {
-    return this.toString();
-  };
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
@@ -5308,29 +5325,19 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async orders<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
-  ): Promise<PrismaOrder[]> {
-    return this.prisma.order.findMany<Prisma.OrderFindManyArgs>(args);
+  async orders(args: Prisma.OrderFindManyArgs): Promise<PrismaOrder[]> {
+    return this.prisma.order.findMany(args);
   }
-  async order<T extends Prisma.OrderFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
-  ): Promise<PrismaOrder | null> {
+  async order(args: Prisma.OrderFindUniqueArgs): Promise<PrismaOrder | null> {
     return this.prisma.order.findUnique(args);
   }
-  async createOrder<T extends Prisma.OrderCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
-  ): Promise<PrismaOrder> {
-    return this.prisma.order.create<T>(args);
+  async createOrder(args: Prisma.OrderCreateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.create(args);
   }
-  async updateOrder<T extends Prisma.OrderUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
-  ): Promise<PrismaOrder> {
-    return this.prisma.order.update<T>(args);
+  async updateOrder(args: Prisma.OrderUpdateArgs): Promise<PrismaOrder> {
+    return this.prisma.order.update(args);
   }
-  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
-  ): Promise<PrismaOrder> {
+  async deleteOrder(args: Prisma.OrderDeleteArgs): Promise<PrismaOrder> {
     return this.prisma.order.delete(args);
   }
 
@@ -7072,30 +7079,28 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async organizations<T extends Prisma.OrganizationFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
+  async organizations(
+    args: Prisma.OrganizationFindManyArgs
   ): Promise<PrismaOrganization[]> {
-    return this.prisma.organization.findMany<Prisma.OrganizationFindManyArgs>(
-      args
-    );
+    return this.prisma.organization.findMany(args);
   }
-  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
+  async organization(
+    args: Prisma.OrganizationFindUniqueArgs
   ): Promise<PrismaOrganization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
+  async createOrganization(
+    args: Prisma.OrganizationCreateArgs
   ): Promise<PrismaOrganization> {
-    return this.prisma.organization.create<T>(args);
+    return this.prisma.organization.create(args);
   }
-  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
+  async updateOrganization(
+    args: Prisma.OrganizationUpdateArgs
   ): Promise<PrismaOrganization> {
-    return this.prisma.organization.update<T>(args);
+    return this.prisma.organization.update(args);
   }
-  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
+  async deleteOrganization(
+    args: Prisma.OrganizationDeleteArgs
   ): Promise<PrismaOrganization> {
     return this.prisma.organization.delete(args);
   }
@@ -8565,29 +8570,21 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async profiles<T extends Prisma.ProfileFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
-  ): Promise<PrismaProfile[]> {
-    return this.prisma.profile.findMany<Prisma.ProfileFindManyArgs>(args);
+  async profiles(args: Prisma.ProfileFindManyArgs): Promise<PrismaProfile[]> {
+    return this.prisma.profile.findMany(args);
   }
-  async profile<T extends Prisma.ProfileFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
+  async profile(
+    args: Prisma.ProfileFindUniqueArgs
   ): Promise<PrismaProfile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async createProfile<T extends Prisma.ProfileCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
-  ): Promise<PrismaProfile> {
-    return this.prisma.profile.create<T>(args);
+  async createProfile(args: Prisma.ProfileCreateArgs): Promise<PrismaProfile> {
+    return this.prisma.profile.create(args);
   }
-  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
-  ): Promise<PrismaProfile> {
-    return this.prisma.profile.update<T>(args);
+  async updateProfile(args: Prisma.ProfileUpdateArgs): Promise<PrismaProfile> {
+    return this.prisma.profile.update(args);
   }
-  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
-  ): Promise<PrismaProfile> {
+  async deleteProfile(args: Prisma.ProfileDeleteArgs): Promise<PrismaProfile> {
     return this.prisma.profile.delete(args);
   }
 
@@ -8833,6 +8830,117 @@ describe("Testing the HealthServiceBase", () => {
 
 export type InputJsonValue = Omit<JsonValue, "null">;
 ",
+  "server/src/user/PromoteUserArgs.ts": "import { ArgsType, Field } from "@nestjs/graphql";
+import { PromoteUserInput } from "./PromoteUserInput";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { UserWhereUniqueInput } from "./base/UserWhereUniqueInput";
+
+@ArgsType()
+class PromoteUserArgs {
+    @Field(() => PromoteUserInput, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => PromoteUserInput
+    })
+    @Type(() => PromoteUserInput)
+    data?: PromoteUserInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    where!: UserWhereUniqueInput;
+
+    @Field(() => UserWhereUniqueInput)
+    @ApiProperty({
+        required: true,
+        type: () => UserWhereUniqueInput
+    })
+    @Type(() => UserWhereUniqueInput)
+    query!: UserWhereUniqueInput;
+}
+
+export { PromoteUserArgs as PromoteUserArgs };",
+  "server/src/user/PromoteUserInput.ts": "import { ArgsType, InputType, ObjectType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../types";
+
+@ArgsType()
+@InputType("PromoteUserInputInput")
+@ObjectType("PromoteUserInputObject")
+class PromoteUserInput {
+    @Field(() => [String])
+    @ApiProperty({
+        required: true,
+        type: () => [String]
+    })
+    @Type(() => String)
+    userId!: string[];
+
+    @Field(() => Number)
+    @ApiProperty({
+        required: true,
+        type: () => Number
+    })
+    @Type(() => Number)
+    score!: number;
+
+    @Field(() => Boolean)
+    @ApiProperty({
+        required: true,
+        type: () => Boolean
+    })
+    @Type(() => Boolean)
+    isAdmin!: boolean;
+
+    @Field(() => Date)
+    @Type(() => Date)
+    lastLogin!: Date;
+
+    @Field(() => Number, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => Number
+    })
+    @Type(() => Number)
+    weightedScore?: number;
+
+    @Field(() => GraphQLJSON, {
+        nullable: true
+    })
+    extendedProfile?: InputJsonValue;
+
+    @Field(() => PromoteUserInput, {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => PromoteUserInput
+    })
+    @Type(() => PromoteUserInput)
+    selfReference?: PromoteUserInput;
+
+    @Field(() => [PromoteUserInput], {
+        nullable: true
+    })
+    @ApiProperty({
+        required: false,
+        type: () => [PromoteUserInput]
+    })
+    @Type(() => PromoteUserInput)
+    selfReferenceArray?: PromoteUserInput[];
+}
+
+export { PromoteUserInput as PromoteUserInput };",
   "server/src/user/base/CreateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -9016,115 +9124,6 @@ class OrganizationUpdateManyWithoutUsersInput {
 
 export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
 ",
-  "server/src/user/base/PromoteUserArgs.ts": "import { ObjectType, Field } from "@nestjs/graphql";
-import { PromoteUserInput } from "./PromoteUserInput";
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-
-@ObjectType()
-class PromoteUserArgs {
-    @Field(() => PromoteUserInput, {
-        nullable: true
-    })
-    @ApiProperty({
-        required: false,
-        type: () => PromoteUserInput
-    })
-    @Type(() => PromoteUserInput)
-    data?: PromoteUserInput;
-
-    @Field(() => UserWhereUniqueInput)
-    @ApiProperty({
-        required: true,
-        type: () => UserWhereUniqueInput
-    })
-    @Type(() => UserWhereUniqueInput)
-    where!: UserWhereUniqueInput;
-
-    @Field(() => UserWhereUniqueInput)
-    @ApiProperty({
-        required: true,
-        type: () => UserWhereUniqueInput
-    })
-    @Type(() => UserWhereUniqueInput)
-    query!: UserWhereUniqueInput;
-}
-
-export { PromoteUserArgs as PromoteUserArgs };",
-  "server/src/user/base/PromoteUserInput.ts": "import { ObjectType, Field } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
-
-@ObjectType()
-class PromoteUserInput {
-    @Field(() => [String])
-    @ApiProperty({
-        required: true,
-        type: () => [String]
-    })
-    @Type(() => String)
-    userId!: string[];
-
-    @Field(() => Number)
-    @ApiProperty({
-        required: true,
-        type: () => Number
-    })
-    @Type(() => Number)
-    score!: number;
-
-    @Field(() => Boolean)
-    @ApiProperty({
-        required: true,
-        type: () => Boolean
-    })
-    @Type(() => Boolean)
-    isAdmin!: boolean;
-
-    @Field(() => Date)
-    @Type(() => Date)
-    lastLogin!: Date;
-
-    @Field(() => Number, {
-        nullable: true
-    })
-    @ApiProperty({
-        required: false,
-        type: () => Number
-    })
-    @Type(() => Number)
-    weightedScore?: number;
-
-    @Field(() => GraphQLJSON, {
-        nullable: true
-    })
-    extendedProfile?: InputJsonValue;
-
-    @Field(() => PromoteUserInput, {
-        nullable: true
-    })
-    @ApiProperty({
-        required: false,
-        type: () => PromoteUserInput
-    })
-    @Type(() => PromoteUserInput)
-    selfReference?: PromoteUserInput;
-
-    @Field(() => [PromoteUserInput], {
-        nullable: true
-    })
-    @ApiProperty({
-        required: false,
-        type: () => [PromoteUserInput]
-    })
-    @Type(() => PromoteUserInput)
-    selfReferenceArray?: PromoteUserInput[];
-}
-
-export { PromoteUserInput as PromoteUserInput };",
   "server/src/user/base/UpdateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -9183,8 +9182,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsOptional,
   IsEnum,
@@ -9254,6 +9255,7 @@ class User {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -9270,6 +9272,8 @@ class User {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -9405,8 +9409,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   IsString,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsOptional,
   IsEnum,
@@ -9478,6 +9484,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @Field(() => Number)
   age!: number;
 
@@ -9494,6 +9501,8 @@ class UserCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @Field(() => Number)
   score!: number;
 
@@ -10002,8 +10011,10 @@ import {
   IsString,
   IsOptional,
   IsInt,
+  Max,
   IsDate,
   IsNumber,
+  Min,
   ValidateNested,
   IsEnum,
   IsBoolean,
@@ -10092,6 +10103,7 @@ class UserUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Max(120)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -10114,6 +10126,8 @@ class UserUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Min(1)
+  @Max(999)
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -10713,7 +10727,7 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
-import { PromoteUserInput } from "./PromoteUserInput";
+import { PromoteUserInput } from "../PromoteUserInput";
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
@@ -11173,8 +11187,8 @@ import { UserFindManyArgs } from "./UserFindManyArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
-import { PromoteUserArgs } from "./PromoteUserArgs";
-import { PromoteUserInput } from "./PromoteUserInput";
+import { PromoteUserArgs } from "../PromoteUserArgs";
+import { PromoteUserInput } from "../PromoteUserInput";
 import { UserService } from "../user.service";
 @graphql.Resolver(() => User)
 export class UserResolverBase {
@@ -11358,8 +11372,8 @@ import {
   Profile as PrismaProfile,
 } from "@prisma/client";
 
-import { PromoteUserArgs } from "./PromoteUserArgs";
-import { PromoteUserInput } from "./PromoteUserInput";
+import { PromoteUserArgs } from "../PromoteUserArgs";
+import { PromoteUserInput } from "../PromoteUserInput";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11368,29 +11382,19 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async users<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-  ): Promise<PrismaUser[]> {
-    return this.prisma.user.findMany<Prisma.UserFindManyArgs>(args);
+  async users(args: Prisma.UserFindManyArgs): Promise<PrismaUser[]> {
+    return this.prisma.user.findMany(args);
   }
-  async user<T extends Prisma.UserFindUniqueArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
-  ): Promise<PrismaUser | null> {
+  async user(args: Prisma.UserFindUniqueArgs): Promise<PrismaUser | null> {
     return this.prisma.user.findUnique(args);
   }
-  async createUser<T extends Prisma.UserCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
-  ): Promise<PrismaUser> {
-    return this.prisma.user.create<T>(args);
+  async createUser(args: Prisma.UserCreateArgs): Promise<PrismaUser> {
+    return this.prisma.user.create(args);
   }
-  async updateUser<T extends Prisma.UserUpdateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-  ): Promise<PrismaUser> {
-    return this.prisma.user.update<T>(args);
+  async updateUser(args: Prisma.UserUpdateArgs): Promise<PrismaUser> {
+    return this.prisma.user.update(args);
   }
-  async deleteUser<T extends Prisma.UserDeleteArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
-  ): Promise<PrismaUser> {
+  async deleteUser(args: Prisma.UserDeleteArgs): Promise<PrismaUser> {
     return this.prisma.user.delete(args);
   }
 

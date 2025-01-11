@@ -13,7 +13,6 @@ interface UpgradeButtonData {
   showUpgradeTrialButton: boolean;
   showUpgradeDefaultButton: boolean;
   isCompleted?: boolean;
-  isPreviewPlan?: boolean;
 }
 
 export const useUpgradeButtonData = (
@@ -25,7 +24,6 @@ export const useUpgradeButtonData = (
     {
       showUpgradeTrialButton: false,
       showUpgradeDefaultButton: true,
-      isPreviewPlan: false,
     }
   );
 
@@ -43,12 +41,11 @@ export const useUpgradeButtonData = (
       await stigg.setCustomerId(currentWorkspace.id);
       const [subscription] = await stigg.getActiveSubscriptions();
 
-      if (isPreviewPlan(subscription.plan.id)) {
+      if (!subscription) {
         setUpgradeButtonData({
           showUpgradeTrialButton: false,
-          showUpgradeDefaultButton: false,
+          showUpgradeDefaultButton: true,
           isCompleted: true,
-          isPreviewPlan: true,
         });
         return;
       }
@@ -71,19 +68,16 @@ export const useUpgradeButtonData = (
           showUpgradeDefaultButton: !showUpgradeTrialButton,
           isCompleted: true,
         });
-      } else if (
-        subscription.plan.id === BillingPlan.Enterprise &&
-        subscription.trialEndDate
-      ) {
+      } else if (subscription.trialEndDate) {
         const trialDaysLeft = Math.round(
           Math.abs((subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY)
         );
 
-        const trialLenghtInDays = Math.max(
-          subscription.plan.defaultTrialConfig.duration,
+        const trialLengthInDays = Math.max(
+          subscription.plan.defaultTrialConfig?.duration,
           trialDaysLeft
         );
-        const trialLeftProgress = (100 * trialDaysLeft) / trialLenghtInDays;
+        const trialLeftProgress = (100 * trialDaysLeft) / trialLengthInDays;
 
         setUpgradeButtonData({
           trialDaysLeft,
@@ -92,28 +86,15 @@ export const useUpgradeButtonData = (
           showUpgradeDefaultButton: false,
           isCompleted: true,
         });
-      } else if (
-        subscription.plan.id === BillingPlan.Enterprise &&
-        !subscription.trialEndDate
-      ) {
+      } else {
         setUpgradeButtonData({
           showUpgradeTrialButton: false,
           showUpgradeDefaultButton: false,
           isCompleted: true,
         });
-      } else {
-        setUpgradeButtonData({
-          showUpgradeTrialButton: false,
-          showUpgradeDefaultButton: true,
-          isCompleted: true,
-        });
       }
     })();
-  }, [currentWorkspace]);
+  }, [currentWorkspace, stigg]);
 
   return upgradeButtonData;
 };
-
-function isPreviewPlan(planId: string) {
-  return planId.includes("preview");
-}

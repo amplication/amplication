@@ -1,0 +1,34 @@
+{
+  "name": "createService",
+  "description": "Create a service in a project, with a list of plugins to install on the service. After using this function, it is best to also create a few default entities and fields unless specifically requested not to do so",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "serviceName": {
+        "type": "string",
+        "description": "the name of the service"
+      },
+      "serviceDescription": {
+        "type": "string",
+        "description": "the description of the service"
+      },
+      "projectId": {
+        "type": "string",
+        "description": "the ID of the project in which to create the service"
+      },
+      "codeGenerator": {
+        "type": "string",
+        "description": "Optional. The code generator to use for the service. Leave blank unless a specific code generator was asked by the user",
+        "enum": ["DotNet", "NodeJs"]
+      },
+      "pluginIds": {
+        "type": "array",
+        "description": "a list of IDs of the plugins to install",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["serviceName", "projectId"]
+  }
+}

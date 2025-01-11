@@ -1,6 +1,9 @@
 @import "../style/index.scss";
 
 .build-status-icon {
+  display: flex;
+  align-items: center;
+
   &__status {
     display: flex;
     justify-content: center;

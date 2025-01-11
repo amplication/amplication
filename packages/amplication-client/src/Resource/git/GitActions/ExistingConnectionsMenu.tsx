@@ -7,11 +7,11 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
-import { gitLogoMap } from "../git-provider-icon-map";
-import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import { useRef } from "react";
+import { GitOrganizationFromGitRepository } from "../ResourceGitSettingsPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
-import { useRef } from "react";
+import { useAppContext } from "../../../context/appContext";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -32,34 +32,35 @@ export default function ExistingConnectionsMenu({
 }: Props) {
   const selectRef = useRef(null);
 
+  const { permissions } = useAppContext();
+
+  const canCreateGitOrganization = permissions.canPerformTask("git.org.create");
+
   return (
     <>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select organization" />
+        <Label text="Select Git Organization" />
       </div>
       <SelectMenu
         selectRef={selectRef}
         title={
           selectedGitOrganization?.name ? (
             <GitOrganizationMenuItemContent
-              gitAvatar={gitLogoMap[selectedGitOrganization.provider]}
+              gitProvider={selectedGitOrganization.provider}
               gitOrganization={selectedGitOrganization}
-              isMenuTitle
             />
           ) : (
             "select organization" // temporary
           )
         }
-        buttonStyle={EnumButtonStyle.Text}
-        className={`${CLASS_NAME}__menu`}
+        buttonStyle={EnumButtonStyle.Outline}
         icon="chevron_down"
       >
-        <SelectMenuModal className={`${CLASS_NAME}__list`}>
-          <SelectMenuList className={`${CLASS_NAME}__select-menu`}>
+        <SelectMenuModal>
+          <SelectMenuList>
             <>
               {gitOrganizations.map((gitOrganization) => (
                 <SelectMenuItem
-                  className={`${CLASS_NAME}__item`}
                   closeAfterSelectionChange
                   selected={selectedGitOrganization?.id === gitOrganization.id}
                   key={gitOrganization.id}
@@ -68,23 +69,27 @@ export default function ExistingConnectionsMenu({
                   }}
                 >
                   <GitOrganizationMenuItemContent
-                    gitAvatar={gitLogoMap[gitOrganization.provider]}
+                    gitProvider={gitOrganization.provider}
                     gitOrganization={gitOrganization}
                   />
                 </SelectMenuItem>
               ))}
             </>
+            {canCreateGitOrganization && (
+              <SelectMenuItem
+                closeAfterSelectionChange
+                selected={false}
+                onSelectionChange={() => {
+                  onAddGitOrganization && onAddGitOrganization();
+                }}
+              >
+                <div className={`${CLASS_NAME}__add-item`}>
+                  <Icon icon="plus" size="xsmall" />
+                  <span>Add Organization</span>
+                </div>
+              </SelectMenuItem>
+            )}
           </SelectMenuList>
-          <div
-            className={`${CLASS_NAME}__add-item`}
-            onClick={() => {
-              selectRef.current.firstChild.click();
-              onAddGitOrganization && onAddGitOrganization();
-            }}
-          >
-            <Icon icon="plus" size="xsmall" />
-            <span>Add Organization</span>
-          </div>
         </SelectMenuModal>
       </SelectMenu>
     </>

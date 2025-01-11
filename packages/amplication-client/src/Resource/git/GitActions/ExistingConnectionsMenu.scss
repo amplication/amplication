@@ -7,88 +7,9 @@
     color: var(--gray-20);
   }
 
-  &__select-menu {
-    background: var(--gray-full);
-    width: 268px;
-    margin: 0px;
-  }
-
-  &__menu {
-    width: 268px;
-    border: 1px solid #373d57;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background-color: var(--gray-full);
-    position: relative;
-
-    .amp-button {
-      height: 28px;
-      width: 100%;
-      justify-content: space-between;
-      padding: 5px 8px;
-      background: var(--gray-full);
-
-      .menu-item-content__text {
-        max-width: 180px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: var(--menu-item-active-color);
-      }
-    }
-
-    &__add-icon {
-      position: absolute;
-      margin-right: var(--double-spacing);
-    }
-  }
-
-  &__list {
-    top: 28px;
-    & div {
-      width: 265px;
-      border: 1px solid var(--gray-70);
-      margin: 0;
-    }
-  }
-
-  &__item {
-    background-color: transparent;
-    border: none;
-    width: 268px;
-    padding: 0;
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: flex-start;
-    justify-content: flex-end;
-    padding: 5px 0px 5px 6px;
-
-    & svg {
-      margin-top: 5px;
-      margin-left: 6px;
-    }
-    & .menu-item-content__text {
-      width: 200px;
-    }
-  }
-
-  &__item:hover {
-    background-color: var(--gray-80);
-  }
-
   &__add-item {
-    background-color: var(--gray-80);
-    height: 34px;
+    padding: var(--icon-spacing) 0;
     display: flex;
-    color: var(--menu-item-active-color);
-
     align-items: center;
-    & i {
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-  }
-  &__add-item:hover {
-    cursor: pointer;
   }
 }

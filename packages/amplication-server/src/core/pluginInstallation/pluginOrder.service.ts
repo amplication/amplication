@@ -8,6 +8,7 @@ import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { FindManyPluginOrderArgs } from "./dto/FindManyPluginOrderArgs";
 import { PluginOrder } from "./dto/PluginOrder";
 import { UpdatePluginOrderArgs } from "./dto/UpdatePluginOrderArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class PluginOrderService extends BlockTypeService<
@@ -19,8 +20,11 @@ export class PluginOrderService extends BlockTypeService<
 > {
   blockType = EnumBlockType.PluginOrder;
 
-  constructor(protected readonly blockService: BlockService) {
-    super(blockService);
+  constructor(
+    protected readonly blockService: BlockService,
+    protected readonly logger: AmplicationLogger
+  ) {
+    super(blockService, logger);
   }
 
   async findByResourceId(args: FindOneArgs): Promise<PluginOrder | null> {

@@ -1,0 +1,53 @@
+@import "../style/index.scss";
+
+$input-line-height: 18px;
+$input-max-height: 100px;
+
+.assistant-chat-input {
+  display: flex;
+  gap: var(--default-spacing-small);
+  align-items: center;
+  background-color: var(--gray-full);
+  border-radius: var(--default-border-radius);
+  padding: var(--default-spacing) var(--icon-spacing);
+
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: var(--default-spacing);
+    align-items: flex-end;
+
+    .text-input {
+      flex: 1;
+
+      label {
+        margin: 0;
+      }
+
+      textarea {
+        --input-line-height: #{$input-line-height};
+        --input-lines: 1;
+        max-width: none;
+        background: transparent;
+        border: none;
+        height: calc(
+          (var(--input-lines) * var(--input-line-height)) +
+            var(--default-spacing)
+        );
+        max-height: $input-max-height;
+
+        &:focus,
+        &:active,
+        &:hover {
+          outline: none;
+          border: none;
+        }
+      }
+    }
+  }
+
+  .amp-button {
+    height: calc((1 * var(--input-line-height)) + var(--default-spacing));
+  }
+}

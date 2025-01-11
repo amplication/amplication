@@ -36,6 +36,9 @@ import {
   CurrentUser,
   GitHubProviderOrganizationProperties,
   Commit,
+  GitFolderContentItem,
+  getFolderContentArgs,
+  GitFolderContent,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -48,6 +51,16 @@ import { NoChangesOnPullRequest } from "../../errors/NoChangesOnPullRequest";
 const GITHUB_FILE_TYPE = "file";
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
+
+const DIRECTORY_ITEM_TYPE_TO_GIT_FOLDER_CONTENT_ITEM_TYPE: Record<
+  DirectoryItem["type"],
+  GitFolderContentItem["type"]
+> = {
+  file: "File",
+  dir: "Dir",
+  submodule: "Other",
+  symlink: "Other",
+};
 
 export class GithubService implements GitProvider {
   private app: App;
@@ -63,6 +76,14 @@ export class GithubService implements GitProvider {
     private readonly providerConfiguration: GitHubConfiguration,
     private readonly logger: ILogger
   ) {}
+
+  getAuthData(): Promise<OAuthTokens | null> {
+    return Promise.resolve(null);
+  }
+
+  isAuthDataRefreshed(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
 
   async init(): Promise<void> {
     const {
@@ -158,7 +179,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     }));
   }
@@ -182,7 +202,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
     }));
 
     return {
@@ -223,11 +242,10 @@ export class GithubService implements GitProvider {
       url,
     };
     if (!permissions) {
-      return { ...baseRepository, admin: false };
+      return { ...baseRepository };
     }
     const { admin } = permissions;
     return {
-      admin,
       defaultBranch,
       fullName,
       name,
@@ -275,7 +293,6 @@ export class GithubService implements GitProvider {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     };
   }
@@ -316,6 +333,42 @@ export class GithubService implements GitProvider {
       type: EnumGitOrganizationType[type],
       useGroupingForRepositories: false, // with GitHub, we don't have the option to use grouping
     };
+  }
+
+  async getFolderContent({
+    owner,
+    repositoryName,
+    path,
+    ref,
+  }: getFolderContentArgs): Promise<GitFolderContent> {
+    try {
+      // Fetch the contents of the directory
+      const response = await this.octokit.rest.repos.getContent({
+        owner,
+        repo: repositoryName,
+        path,
+        ref: ref ?? undefined,
+      });
+
+      // Check if the response is an array (directory contents)
+      if (Array.isArray(response.data)) {
+        const content = response.data.map((item) => ({
+          name: item.name,
+          path: item.path,
+          type: DIRECTORY_ITEM_TYPE_TO_GIT_FOLDER_CONTENT_ITEM_TYPE[item.type],
+        }));
+        return { content };
+      }
+
+      // If the response is not an array, it's not a directory
+      throw new Error("The specified path is not a directory");
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch folder contents for ${owner}/${repositoryName}/${path}`,
+        error
+      );
+      throw error;
+    }
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {

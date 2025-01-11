@@ -1,7 +1,7 @@
-import { useCallback, useContext } from "react";
-import * as models from "../models";
 import Chip from "@mui/material/Chip";
+import { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import * as models from "../models";
 
 import {
   EnumFlexDirection,
@@ -14,12 +14,13 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import { Link, useHistory } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
 import { LATEST_VERSION_TAG } from "./constant";
-import { Plugin, PluginVersion } from "./hooks/usePlugins";
+import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
+import InstalledPluginVersionIndicator from "./InstalledPluginVersionIndicator";
 
 type Props = {
   plugin: Plugin;
@@ -45,8 +46,8 @@ function PluginsCatalogItem({
 }: Props) {
   const { name, description } = plugin || {};
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl();
 
   const handlePromote = useCallback(() => {
     order &&
@@ -79,11 +80,12 @@ function PluginsCatalogItem({
     onEnableStateChange && onEnableStateChange(pluginInstallation);
   }, [onEnableStateChange, pluginInstallation]);
 
-  const handleChipClick = useCallback((category) => {
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/plugins/catalog/${category}`
-    );
-  }, []);
+  const handleChipClick = useCallback(
+    (category) => {
+      history.push(`${baseUrl}/plugins/catalog/${category}`);
+    },
+    [baseUrl, history]
+  );
 
   return (
     <ListItem>
@@ -98,6 +100,10 @@ function PluginsCatalogItem({
                   checked={pluginInstallation.enabled}
                 />
               </FlexItem.FlexStart>
+              <InstalledPluginVersionIndicator
+                plugin={plugin}
+                pluginInstallation={pluginInstallation}
+              />
               <FlexItem.FlexEnd>
                 {isDraggable && (
                   <div className={`${CLASS_NAME}__order`}>
@@ -139,9 +145,7 @@ function PluginsCatalogItem({
               Install
             </Button>
           ) : (
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
-            >
+            <Link to={`${baseUrl}/plugins/installed/${pluginInstallation.id}`}>
               <Button
                 className={`${CLASS_NAME}__install`}
                 buttonStyle={EnumButtonStyle.Outline}

@@ -6,6 +6,7 @@ import {
   Text,
   TextField,
   EnumTextAlign,
+  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -32,6 +33,9 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
+import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
+import { over } from "lodash";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -81,6 +85,8 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const history = useHistory();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const { findModuleRefetch } = useModule();
@@ -195,7 +201,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         },
       }).catch(console.error);
     },
-    [createEntity, setConfirmInstall, resourceId]
+    [createEntity, resourceId]
   );
 
   const handleDismissConfirmationInstall = useCallback(() => {
@@ -214,28 +220,18 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   useEffect(() => {
     if (data) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${data.createOneEntity.id}`
-      );
+      history.push(`${baseUrl}/entities/${data.createOneEntity.id}`);
     }
-  }, [history, data, resourceId, currentWorkspace, currentProject]);
+  }, [history, data, baseUrl]);
 
   useEffect(() => {
     if (defaultEntityData) {
       const userEntity = defaultEntityData.createDefaultEntities.find(
         (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${userEntity.id}`
-      );
+      history.push(`${baseUrl}/entities/${userEntity.id}`);
     }
-  }, [
-    history,
-    defaultEntityData,
-    resourceId,
-    currentWorkspace,
-    currentProject,
-  ]);
+  }, [history, defaultEntityData, baseUrl]);
 
   const errorMessage = formatError(error);
 
@@ -295,13 +291,24 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
                 placeholder="Type New Entity Name"
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                margin={EnumFlexItemMargin.None}
               >
-                Create Entity
-              </Button>
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                >
+                  Create Entity
+                </Button>
+                <CreateWithJovuButton
+                  message={`Create a new entity ${formik.values.displayName}. Create common fields that should be part of this data model, and create relations to other entities when needed.`}
+                  onCreateWithJovuClicked={onSuccess}
+                  disabled={!formik.isValid || loading}
+                  eventOriginLocation="New Entity Dialog"
+                />
+              </FlexItem>
             </Form>
           );
         }}

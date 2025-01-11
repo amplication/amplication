@@ -1,14 +1,14 @@
 import { Snackbar } from "@amplication/ui/design-system";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import NewModuleChild from "../Modules/NewModuleChild";
 import { useModulesContext } from "../Modules/modulesContext";
-import { AppContext } from "../context/appContext";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import * as models from "../models";
 import { formatError } from "../util/error";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModuleAction from "./hooks/useModuleAction";
 
 type Props = {
@@ -18,22 +18,6 @@ type Props = {
   buttonStyle?: EnumButtonStyle;
 };
 
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
-const INITIAL_VALUES: Partial<models.ModuleAction> = {
-  name: "",
-  displayName: "",
-  description: "",
-};
-
 const NewModuleAction = ({
   resourceId,
   moduleId,
@@ -41,8 +25,8 @@ const NewModuleAction = ({
   buttonStyle = EnumButtonStyle.Primary,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { customActionsLicenseEnabled } = useModulesContext();
 
@@ -78,21 +62,13 @@ const NewModuleAction = ({
               onActionCreated(result.data.createModuleAction);
             }
             history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${result.data.createModuleAction.id}`
+              `${baseUrl}/modules/${moduleId}/actions/${result.data.createModuleAction.id}`
             );
           }
         });
       setDialogOpen(false);
     },
-    [
-      createModuleAction,
-      resourceId,
-      moduleId,
-      onActionCreated,
-      history,
-      currentWorkspace?.id,
-      currentProject?.id,
-    ]
+    [createModuleAction, resourceId, onActionCreated, history, baseUrl]
   );
 
   const errorMessage = formatError(error);
@@ -100,11 +76,9 @@ const NewModuleAction = ({
   return (
     <div>
       {dialogOpen && (
-        <NewModuleChild<models.ModuleAction>
+        <NewModuleChild
           resourceId={resourceId}
           moduleId={moduleId}
-          validationSchema={FORM_SCHEMA}
-          initialValues={INITIAL_VALUES}
           loading={loading}
           errorMessage={errorMessage}
           typeName={"Action"}
