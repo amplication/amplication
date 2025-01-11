@@ -72,9 +72,13 @@ export class NpmPluginVersionService {
    * @param plugins
    * @return PluginVersion[]
    */
-  async *getPluginVersion(
-    plugins: Plugin[]
-  ): AsyncGenerator<(PluginVersion & { tarballUrl: string })[], void> {
+  async *getPluginVersions(plugins: Plugin[]): AsyncGenerator<
+    {
+      pluginId: string;
+      versions: (PluginVersion & { tarballUrl: string })[];
+    },
+    void
+  > {
     try {
       const pluginLength = plugins?.length || 0;
       let index = 0;
@@ -101,9 +105,12 @@ export class NpmPluginVersionService {
           plugins[index].pluginId
         );
 
-        ++index;
+        yield {
+          pluginId: plugins[index].pluginId,
+          versions: pluginVersionArr,
+        };
 
-        yield pluginVersionArr;
+        ++index;
       } while (pluginLength > index);
     } catch (error) {
       this.logger.error(error.message, error);
@@ -114,18 +121,29 @@ export class NpmPluginVersionService {
    * @param plugins
    * @returns
    */
-  async updatePluginsVersion(
-    plugins: Plugin[]
-  ): Promise<(PluginVersion & { tarballUrl: string })[]> {
+  async getAllPluginsVersions(plugins: Plugin[]): Promise<{
+    [pluginId: string]: (PluginVersion & { tarballUrl: string })[];
+  }> {
     try {
-      const pluginsVersions: (PluginVersion & { tarballUrl: string })[] = [];
-      if (!plugins?.length) return pluginsVersions;
+      const allVersionsByPlugin: {
+        [pluginId: string]: (PluginVersion & { tarballUrl: string })[];
+      } = {};
 
-      for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
-        pluginVersionArr && pluginsVersions.push(...pluginVersionArr);
+      if (!plugins?.length) return allVersionsByPlugin;
+
+      for await (const pluginVersionResult of this.getPluginVersions(plugins)) {
+        if (!pluginVersionResult) continue;
+
+        this.logger.debug("pluginVersionResult", {
+          pluginId: pluginVersionResult.pluginId,
+          versions: pluginVersionResult.versions.map((v) => v.version),
+        });
+
+        allVersionsByPlugin[pluginVersionResult.pluginId] =
+          pluginVersionResult.versions;
       }
 
-      return pluginsVersions;
+      return allVersionsByPlugin;
     } catch (error) {
       this.logger.error(error.message, error);
     }

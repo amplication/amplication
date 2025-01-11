@@ -16,7 +16,6 @@ import {
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
@@ -34,8 +33,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_UPDATED_ACCOUNT = {
@@ -62,8 +59,6 @@ const UPDATE_ACCOUNT_MUTATION = gql`
       firstName
       lastName
       password
-      previewAccountType
-      previewAccountEmail
     }
   }
 `;

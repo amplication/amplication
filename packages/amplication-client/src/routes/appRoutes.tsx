@@ -15,6 +15,7 @@ export interface RouteDef {
   routeTrackType?: string;
   permission?: boolean;
   isAnalytics?: boolean;
+  iconName?: string;
 }
 
 export const Routes: RouteDef[] = [
@@ -34,6 +35,14 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         tabRoutes: [
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/graph",
+            Component: lazy(() => import("../Workspaces/WorkspaceGraph")),
+            moduleName: "",
+            displayName: "Architecture",
+            exactPath: false,
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/projects",
             Component: lazy(() => import("../Workspaces/WorkspaceOverview")),
             moduleName: "",
@@ -42,34 +51,62 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
+            Component: lazy(() => import("../Blueprints/BlueprintsPage")),
+            moduleName: "",
+            displayName: "Blueprints",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/blueprints/:blueprint([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Blueprints/Blueprint")),
+                moduleName: "",
+                displayName: "Blueprint",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
             Component: lazy(
               () => import("../Workspaces/WorkspaceSettingsPage")
             ),
-            moduleName: "",
+            moduleName: "app-settings",
             displayName: "Settings",
             exactPath: false,
             tabRoutes: [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/members",
                 Component: lazy(() => import("../Workspaces/MemberList")),
-                moduleName: "",
-                displayName: "Members",
-                exactPath: true,
-                routes: [],
+                iconName: "user",
+                displayName: "Users",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/members/:user([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../User/User")),
+                    iconName: "user",
+                    displayName: "Users",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
                 isAnalytics: true,
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams",
                 Component: lazy(() => import("../Teams/TeamsPage")),
-                moduleName: "",
+                iconName: "users",
                 displayName: "Teams",
                 exactPath: false,
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams/:team([A-Za-z0-9-]{20,})",
                     Component: lazy(() => import("../Teams/Team")),
-                    moduleName: "",
                     displayName: "Team",
                     exactPath: true,
                     routes: [],
@@ -79,17 +116,17 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints",
-                Component: lazy(() => import("../Blueprints/BlueprintsPage")),
-                moduleName: "",
-                displayName: "Blueprints",
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles",
+                Component: lazy(() => import("../Roles/RolesPage")),
+                iconName: "roles_outline",
+                displayName: "Roles",
                 exactPath: false,
                 routes: [
                   {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/blueprints/:blueprint([A-Za-z0-9-]{20,})",
-                    Component: lazy(() => import("../Blueprints/Blueprint")),
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles/:role([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../Roles/Role")),
                     moduleName: "",
-                    displayName: "Blueprint",
+                    displayName: "Role",
                     exactPath: true,
                     routes: [],
                     isAnalytics: true,
@@ -97,12 +134,13 @@ export const Routes: RouteDef[] = [
                 ],
                 isAnalytics: true,
               },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
                 Component: lazy(
                   () => import("../CustomProperties/CustomPropertiesPage")
                 ),
-                moduleName: "",
+                iconName: "multi_select_option_set",
                 displayName: "Catalog Properties",
                 exactPath: false,
                 routes: [
@@ -125,6 +163,18 @@ export const Routes: RouteDef[] = [
           },
         ],
         routes: [
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
+            Component: lazy(
+              () =>
+                import("../Resource/create-resource-page/CreateResourcePage")
+            ),
+            moduleName: "CreateResourcePage",
+            moduleClass: "create-resource-page",
+            exactPath: true,
+            routes: [],
+          },
+
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Platform/ProjectPlatformPage")),
@@ -274,26 +324,26 @@ export const Routes: RouteDef[] = [
             moduleClass: "project-page",
             exactPath: false,
             tabRoutes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
-                Component: lazy(
-                  () =>
-                    import("../Project/ArchitectureConsole/ArchitectureConsole")
-                ),
-                moduleName: "ProjectArchitecture",
-                displayName: "Architecture",
-                moduleClass: "",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-              },
+              // {
+              //   path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
+              //   Component: lazy(
+              //     () =>
+              //       import("../Project/ArchitectureConsole/ArchitectureConsole")
+              //   ),
+              //   moduleName: "ProjectArchitecture",
+              //   displayName: "Architecture",
+              //   moduleClass: "",
+              //   routeTrackType: "",
+              //   exactPath: false,
+              //   isAnalytics: true,
+              // },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
-                  () => import("../Resource/git/SyncWithGithubPage")
+                  () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
-                displayName: "Sync with Git",
+                displayName: "Git Settings",
                 moduleClass: "",
                 routeTrackType: "",
                 exactPath: false,
@@ -389,6 +439,17 @@ export const Routes: RouteDef[] = [
                     exactPath: false,
                     isAnalytics: true,
                   },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/permissions",
+                    Component: lazy(
+                      () => import("../Teams/ResourceTeamAssignmentsPage")
+                    ),
+                    moduleName: "ProjectTeamAssignmentsPage",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
                 ],
               },
             ],
@@ -441,17 +502,7 @@ export const Routes: RouteDef[] = [
                 exactPath: true,
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
-                Component: lazy(
-                  () => import("../User/CompletePreviewSignupPage")
-                ),
-                moduleName: "CompletePreviewSignupPage",
-                moduleClass: "complete-preview-signup-page",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
                 Component: lazy(() => import("../Resource/ResourceHome")),
@@ -530,6 +581,17 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
   },
   {
+    path: "/azure-devops-auth/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithAzureDevopsCallback")
+    ),
+    moduleName: "AuthResourceWithAzureDevopsCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
     path: "/signup",
     Component: lazy(() => import("../User/Signup")),
     moduleName: "Signup",
@@ -537,36 +599,5 @@ export const Routes: RouteDef[] = [
     routeTrackType: "signup",
     exactPath: true,
     isAnalytics: true,
-  },
-  {
-    path: "/signup/preview-account",
-    Component: lazy(() => import("../User/SignupPreviewAccount")),
-    moduleName: "SignupPreviewAccount",
-    moduleClass: "signupPreviewAccount-page",
-    routeTrackType: "signupPreviewAccount",
-    exactPath: true,
-    isAnalytics: true,
-  },
-  {
-    path: "/select-preview-env",
-    Component: lazy(
-      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
-    ),
-    moduleName: "SelectPreviewEnvPage",
-    moduleClass: "select-preview-env-page",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-    permission: true,
-  },
-  {
-    path: "/onboarding-preview",
-    Component: lazy(() => import("../OnboardingPreview/OnboardingPreviewPage")),
-    moduleName: "OnboardingPreview",
-    moduleClass: "onboarding-preview",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-    permission: true,
   },
 ];

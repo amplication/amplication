@@ -4,4 +4,7 @@ import { ArgsType, Field } from "@nestjs/graphql";
 export class DisconnectGitRepositoryArgs {
   @Field(() => String, { nullable: false })
   resourceId!: string;
+
+  @Field(() => Boolean, { nullable: true })
+  overrideProjectSettings?: boolean | null;
 }

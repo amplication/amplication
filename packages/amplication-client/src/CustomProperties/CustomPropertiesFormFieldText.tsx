@@ -1,17 +1,22 @@
 import { TextField } from "@amplication/ui/design-system";
 import { CustomProperty } from "../models";
-import { CLASS_NAME } from "./CustomPropertiesFormFields";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
+  disabled: boolean;
 };
 
-function CustomPropertiesFormFieldText({ property }: Props) {
+function CustomPropertiesFormFieldText({
+  property,
+  fieldNamePrefix,
+  disabled,
+}: Props) {
   return (
     <TextField
-      className={`${CLASS_NAME}__field__text`}
+      disabled={disabled}
       label={property.name}
-      name={`properties.${property.key}`}
+      name={`${fieldNamePrefix}properties.${property.key}`}
     />
   );
 }

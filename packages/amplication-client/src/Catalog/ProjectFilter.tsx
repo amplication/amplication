@@ -12,6 +12,7 @@ export const ProjectFilter = ({
   onChange,
   onRemove,
   columnKey,
+  disabled,
 }: DataGridRenderFilterProps) => {
   const { projectsList } = useAppContext();
 
@@ -44,6 +45,8 @@ export const ProjectFilter = ({
         selectedValue={selectedValue}
         onChange={handleOnChange}
         onRemove={handleOnRemove}
+        disabled={disabled}
+        isMulti={true}
       />
     </>
   );

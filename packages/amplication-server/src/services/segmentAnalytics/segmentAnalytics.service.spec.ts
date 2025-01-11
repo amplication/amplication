@@ -6,11 +6,6 @@ import { PrismaService } from "../../prisma";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { EnumEventType } from "./segmentAnalytics.types";
 import { RequestContext } from "nestjs-request-context";
-import { BillingService } from "../../core/billing/billing.service";
-import {
-  billingServiceMock,
-  subscriptionPlanMock,
-} from "../../core/billing/billing.service.mock";
 
 jest.mock("@segment/analytics-node");
 
@@ -36,10 +31,6 @@ describe("SegmentAnalyticsService", () => {
           useValue: {
             segmentWriteKey: "segmentWriteKey",
           },
-        },
-        {
-          provide: BillingService,
-          useValue: billingServiceMock,
         },
       ],
     }).compile();
@@ -104,7 +95,6 @@ describe("SegmentAnalyticsService", () => {
         properties: {
           workspaceId: "workspaceId",
           entityName: "entityName",
-          planType: subscriptionPlanMock,
           $groups: {
             groupWorkspace: "workspaceId",
           },
@@ -159,7 +149,6 @@ describe("SegmentAnalyticsService", () => {
             workspaceId: "workspaceId",
             resourceId,
             projectId,
-            planType: subscriptionPlanMock,
             $groups: {
               groupWorkspace: "workspaceId",
             },
@@ -193,7 +182,6 @@ describe("SegmentAnalyticsService", () => {
             workspaceId: "workspaceId",
             resourceId,
             projectId,
-            planType: subscriptionPlanMock,
             $groups: {
               groupWorkspace: "workspaceId",
             },

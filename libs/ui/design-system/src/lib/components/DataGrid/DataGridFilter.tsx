@@ -1,19 +1,9 @@
 import {
   Button,
   EnumButtonStyle,
-  EnumGapSize,
-  EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
-  FlexItem,
   OptionItem,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
-  Text,
+  SelectPanel,
 } from "@amplication/ui/design-system";
-import { useMemo } from "react";
 import "./DataGridFilter.scss";
 
 const CLASS_NAME = "data-grid-filter";
@@ -22,9 +12,11 @@ type Props = {
   filterKey: string;
   filterLabel: string;
   options: OptionItem[];
-  onChange: (filterKey: string, value: string | null) => void;
+  onChange: (filterKey: string, value: string | string[] | null) => void;
   onRemove: (filterKey: string) => void;
-  selectedValue: string;
+  selectedValue: string | string[] | null;
+  disabled?: boolean;
+  isMulti?: boolean;
 };
 
 export const DataGridFilter = ({
@@ -34,63 +26,32 @@ export const DataGridFilter = ({
   selectedValue,
   onChange,
   onRemove,
+  disabled,
+  isMulti,
 }: Props) => {
-  const selectedItem = useMemo(() => {
-    return options.find((option) => option.value === selectedValue);
-  }, [options, selectedValue]);
-
   return (
     <div className={CLASS_NAME}>
-      <Button
-        buttonStyle={EnumButtonStyle.Text}
-        icon="close"
-        onClick={() => {
-          onRemove(filterKey);
+      {!disabled && (
+        <Button
+          className={`${CLASS_NAME}__remove`}
+          buttonStyle={EnumButtonStyle.Text}
+          icon="close"
+          onClick={() => {
+            onRemove(filterKey);
+          }}
+        ></Button>
+      )}
+      <SelectPanel
+        label={filterLabel}
+        options={options}
+        selectedValue={selectedValue}
+        onChange={(value) => onChange(filterKey, value)}
+        disabled={disabled}
+        isMulti={isMulti}
+        buttonProps={{
+          buttonStyle: EnumButtonStyle.Text,
         }}
-      ></Button>
-      <SelectMenu
-        open
-        title={
-          <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>
-            <Text
-              textColor={EnumTextColor.Black20}
-              textStyle={EnumTextStyle.Tag}
-            >
-              {filterLabel}
-            </Text>
-            {!selectedItem ? (
-              <span className={`${CLASS_NAME}__show-all`}>All</span>
-            ) : (
-              <span className={`${CLASS_NAME}__show-all`}>
-                {selectedItem.label}
-              </span>
-            )}
-          </FlexItem>
-        }
-        buttonStyle={EnumButtonStyle.Text}
-      >
-        <SelectMenuModal>
-          <SelectMenuList>
-            <SelectMenuItem
-              closeAfterSelectionChange
-              selected={null === selectedValue}
-              onSelectionChange={() => onChange(filterKey, null)}
-            >
-              All
-            </SelectMenuItem>
-            {options.map((option) => (
-              <SelectMenuItem
-                closeAfterSelectionChange
-                key={option.value}
-                selected={option.value === selectedValue}
-                onSelectionChange={() => onChange(filterKey, option.value)}
-              >
-                {option.label}
-              </SelectMenuItem>
-            ))}
-          </SelectMenuList>
-        </SelectMenuModal>
-      </SelectMenu>
+      />
     </div>
   );
 };

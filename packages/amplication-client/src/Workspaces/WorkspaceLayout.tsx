@@ -35,6 +35,9 @@ import { AssistantContextProvider } from "../Assistant/context/AssistantContext"
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import classNames from "classnames";
 import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertiesMap";
+import { CatalogContextProvider } from "../Catalog/CatalogContext";
+import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
+import usePermissions from "./hooks/usePermissions";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -59,7 +62,6 @@ const WorkspaceLayout: React.FC<Props> = ({
     currentWorkspace,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
     handleSetCurrentWorkspace,
     createWorkspace,
     createNewWorkspaceError,
@@ -77,6 +79,8 @@ const WorkspaceLayout: React.FC<Props> = ({
     onNewProjectCompleted,
     currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
+
+  const blueprintsMap = useBlueprintsMap();
 
   const { isPlatformConsole } = useProjectBaseUrl();
 
@@ -101,12 +105,12 @@ const WorkspaceLayout: React.FC<Props> = ({
 
   const commitUtils = useCommits(currentProject?.id);
 
+  const permissions = usePermissions();
+
   const {
     resources,
     projectConfigurationResource,
     pluginRepositoryResource,
-    handleSearchChange,
-    setPropertiesFilter: setResourcePropertiesFilter,
     loadingResources,
     errorResources,
     reloadResources,
@@ -130,9 +134,6 @@ const WorkspaceLayout: React.FC<Props> = ({
     createServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     errorCreateServiceFromTemplate,
-    createComponent,
-    loadingCreateComponent,
-    errorCreateComponent,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   const { customPropertiesMap } = useCustomPropertiesMap();
@@ -192,7 +193,6 @@ const WorkspaceLayout: React.FC<Props> = ({
         currentWorkspace,
         subscriptionPlan,
         subscriptionStatus,
-        isPreviewPlan,
         handleSetCurrentWorkspace,
         createWorkspace,
         currentProjectConfiguration,
@@ -208,8 +208,6 @@ const WorkspaceLayout: React.FC<Props> = ({
         setNewService: createService,
         projectConfigurationResource,
         pluginRepositoryResource,
-        handleSearchChange,
-        setResourcePropertiesFilter,
         loadingResources,
         reloadResources,
         errorResources,
@@ -249,63 +247,64 @@ const WorkspaceLayout: React.FC<Props> = ({
         loadingCreateServiceFromTemplate,
         errorCreateServiceFromTemplate,
         customPropertiesMap,
-        createComponent,
-        loadingCreateComponent,
-        errorCreateComponent,
+        blueprintsMap,
+        permissions,
       }}
     >
       <AssistantContextProvider>
-        {isMobileOnly ? (
-          <MobileMessage />
-        ) : (
-          <StiggProvider
-            apiKey={REACT_APP_BILLING_API_KEY}
-            customerId={currentWorkspace.id}
-          >
-            <Track>
-              <div className={`${moduleClass}__assistant__wrapper`}>
-                {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
-                  <div className={`${moduleClass}__assistant`}>
-                    <Assistant />
+        <CatalogContextProvider>
+          {isMobileOnly ? (
+            <MobileMessage />
+          ) : (
+            <StiggProvider
+              apiKey={REACT_APP_BILLING_API_KEY}
+              customerId={currentWorkspace.id}
+            >
+              <Track>
+                <div className={`${moduleClass}__assistant__wrapper`}>
+                  {REACT_APP_FEATURE_AI_ASSISTANT_ENABLED === "true" && (
+                    <div className={`${moduleClass}__assistant`}>
+                      <Assistant />
+                    </div>
+                  )}
+                  <div
+                    className={classNames(moduleClass, {
+                      [`${moduleClass}--with-side-panel`]: showSideBar,
+                    })}
+                  >
+                    <WorkspaceHeader />
+                    <CompleteInvitation />
+                    <RedeemCoupon />
+
+                    <div className={`${moduleClass}__page_content`}>
+                      <ResponsiveContainer
+                        className={`${moduleClass}__main_content`}
+                      >
+                        {innerRoutes}
+                      </ResponsiveContainer>
+
+                      {showSideBar ? (
+                        <div className={`${moduleClass}__changes_menu`}>
+                          <PendingChanges projectId={currentProject.id} />
+                          {!isPlatformConsole && commitUtils.lastCommit && (
+                            <LastCommit lastCommit={commitUtils.lastCommit} />
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
+                    <HubSpotChatComponent
+                      setChatStatus={setChatStatus}
+                      chatStatus={chatStatus}
+                    />
+                    <ScreenResolutionMessage />
                   </div>
-                )}
-                <div
-                  className={classNames(moduleClass, {
-                    [`${moduleClass}--with-side-panel`]: showSideBar,
-                  })}
-                >
-                  <WorkspaceHeader />
-                  <CompleteInvitation />
-                  <RedeemCoupon />
-
-                  <div className={`${moduleClass}__page_content`}>
-                    <ResponsiveContainer
-                      className={`${moduleClass}__main_content`}
-                    >
-                      {innerRoutes}
-                    </ResponsiveContainer>
-
-                    {showSideBar ? (
-                      <div className={`${moduleClass}__changes_menu`}>
-                        <PendingChanges projectId={currentProject.id} />
-                        {!isPlatformConsole && commitUtils.lastCommit && (
-                          <LastCommit lastCommit={commitUtils.lastCommit} />
-                        )}
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
-                  <HubSpotChatComponent
-                    setChatStatus={setChatStatus}
-                    chatStatus={chatStatus}
-                  />
-                  <ScreenResolutionMessage />
                 </div>
-              </div>
-            </Track>
-          </StiggProvider>
-        )}
+              </Track>
+            </StiggProvider>
+          )}
+        </CatalogContextProvider>
       </AssistantContextProvider>
     </AppContextProvider>
   ) : (

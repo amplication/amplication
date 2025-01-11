@@ -1,34 +1,40 @@
-import React, { useCallback } from "react";
-import { useRouteMatch } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@amplication/ui/design-system";
+import {
+  FlexItem,
+  Snackbar,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
+import { useCallback } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { formatError } from "../util/error";
+import useRoles from "./hooks/useRoles";
 import RoleForm from "./RoleForm";
-import * as models from "../models";
-
-type TData = {
-  resourceRole: models.ResourceRole;
-};
+import { DeleteRole } from "./DeleteRole";
+import { useAppContext } from "../context/appContext";
+import RolePermissionList from "./RolePermissionList";
 
 const Role = () => {
   const match = useRouteMatch<{
-    resource: string;
     roleId: string;
-  }>([
-    "/:workspace/platform/:project/:resource/roles/:roleId",
-    "/:workspace/:project/:resource/roles/:roleId",
-  ]);
+  }>(["/:workspace/settings/roles/:roleId"]);
+
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canDelete = permissions.canPerformTask("role.delete");
+  const canEdit = permissions.canPerformTask("role.edit");
+
+  const baseUrl = `/${currentWorkspace?.id}/settings`;
+  const history = useHistory();
 
   const { roleId } = match?.params ?? {};
 
-  const { data, error, loading } = useQuery<TData>(GET_ROLE, {
-    variables: {
-      roleId,
-    },
-  });
-
-  const [updateRole, { error: updateError }] = useMutation(UPDATE_ROLE);
+  const {
+    getRoleData: data,
+    getRoleError: error,
+    getRoleLoading: loading,
+    updateRole,
+    updateRoleError: updateError,
+  } = useRoles(roleId);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -44,42 +50,41 @@ const Role = () => {
     [updateRole, roleId]
   );
 
+  const handleDeleteModule = useCallback(() => {
+    history.push(`${baseUrl}/roles`);
+  }, [history, baseUrl]);
+
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
 
   return (
     <>
+      <FlexItem>
+        <TabContentTitle
+          title={data?.role?.name}
+          subTitle={data?.role?.description}
+        />
+        <FlexItem.FlexEnd>
+          {data?.role && canDelete && (
+            <DeleteRole role={data?.role} onDelete={handleDeleteModule} />
+          )}
+        </FlexItem.FlexEnd>
+      </FlexItem>
       {!loading && (
-        <RoleForm onSubmit={handleSubmit} defaultValues={data?.resourceRole} />
+        <RoleForm
+          onSubmit={handleSubmit}
+          defaultValues={data?.role}
+          disabled={!canEdit}
+        />
       )}
+      <TabContentTitle
+        title="Permissions"
+        subTitle="Add or remove role permissions"
+      />
+      <RolePermissionList role={data?.role} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
 };
 
 export default Role;
-
-const GET_ROLE = gql`
-  query getResourceRole($roleId: String!) {
-    resourceRole(where: { id: $roleId }) {
-      id
-      name
-      displayName
-      description
-    }
-  }
-`;
-
-const UPDATE_ROLE = gql`
-  mutation updateResourceRole(
-    $data: ResourceRoleUpdateInput!
-    $where: WhereUniqueInput!
-  ) {
-    updateResourceRole(data: $data, where: $where) {
-      id
-      name
-      displayName
-      description
-    }
-  }
-`;

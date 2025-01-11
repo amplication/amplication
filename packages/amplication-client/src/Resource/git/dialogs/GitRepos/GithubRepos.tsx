@@ -1,31 +1,31 @@
 import {
   CircularProgress,
-  Snackbar,
-  Tooltip,
+  EnumHorizontalRuleStyle,
+  HorizontalRule,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  HorizontalRule,
-  EnumHorizontalRuleStyle,
-  Label,
+  Snackbar,
+  Tooltip,
 } from "@amplication/ui/design-system";
 
-import { NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
-import React, { useCallback, useEffect, useState } from "react";
+import { NetworkStatus, useLazyQuery, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
-  EnumGitProvider,
-  RemoteGitRepository,
-  RemoteGitRepos,
   EnumGitOrganizationType,
+  EnumGitProvider,
+  RemoteGitRepos,
+  RemoteGitRepository,
 } from "../../../../models";
 import { formatError } from "../../../../util/error";
+import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
+import { GitSelectGroup } from "../../select/GitSelectGroup";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
-import { GitSelectMenu } from "../../select/GitSelectMenu";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
+import { useResourceContext } from "../../../../context/resourceContext";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10;
@@ -67,7 +67,14 @@ function GitRepos({
 }: Props) {
   const [page, setPage] = useState(1);
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { permissions } = useResourceContext();
+  const canCreateRepo = permissions.canPerformTask("git.repo.create");
+
+  const {
+    data: gitGroupsData,
+    error: gitGroupsError,
+    loading: loadingGroups,
+  } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -82,7 +89,7 @@ function GitRepos({
     if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
       setRepositoryGroup(gitGroups[0]);
     }
-  }, [gitGroups]);
+  }, [gitGroups, repositoryGroup]);
 
   const [
     getRepos,
@@ -120,7 +127,7 @@ function GitRepos({
         },
       });
     }
-  }, [getRepos, repositoryGroup, page]);
+  }, [gitOrganization, repositoryGroup, getRepos, page]);
 
   useEffect(() => {
     getReposFunc();
@@ -137,7 +144,7 @@ function GitRepos({
         srcType,
       });
     },
-    [gitOrganization.id, onGitRepositoryConnected]
+    [gitOrganization, onGitRepositoryConnected, srcType]
   );
   const handleRefresh = useCallback(() => {
     refetch();
@@ -153,22 +160,19 @@ function GitRepos({
     if (pages && pages > 1) setNumberOfPages(pages);
   }, [data]);
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(error) || formatError(gitGroupsError);
 
   return (
     <div className={CLASS_NAME}>
       {gitOrganization.useGroupingForRepositories && (
         <>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-          <Label
-            className={`${CLASS_NAME}__change-label`}
-            text="Change workspace"
-          />
-          <GitSelectMenu
+          <GitSelectGroup
             gitProvider={gitProvider}
             selectedItem={repositoryGroup}
             items={gitGroups}
             onSelect={setRepositoryGroup}
+            loadingGroups={loadingGroups}
           />
         </>
       )}
@@ -228,36 +232,38 @@ function GitRepos({
             </>
           )}
         </div>
-        <div className={`${CLASS_NAME}__header-right`}>
-          {gitOrganization.type === EnumGitOrganizationType.Organization && (
-            <Button
-              className={`${CLASS_NAME}__header-create`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={(e) => {
-                openCreateNewRepo();
-              }}
-              type="button"
-            >
-              Create repository
-            </Button>
-          )}
-          {gitOrganization.type === EnumGitOrganizationType.User &&
-            gitOrganization.provider === EnumGitProvider.Github && (
-              <a
-                href={`https://github.com/new?&owner=${gitOrganization.name}`}
-                target="_blank"
-                rel="noreferrer"
+        {canCreateRepo && (
+          <div className={`${CLASS_NAME}__header-right`}>
+            {gitOrganization.type === EnumGitOrganizationType.Organization && (
+              <Button
+                className={`${CLASS_NAME}__header-create`}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={(e) => {
+                  openCreateNewRepo();
+                }}
+                type="button"
               >
-                <Button
-                  className={`${CLASS_NAME}__header-create`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  type="button"
-                >
-                  Create repository
-                </Button>
-              </a>
+                Create repository
+              </Button>
             )}
-        </div>
+            {gitOrganization.type === EnumGitOrganizationType.User &&
+              gitOrganization.provider === EnumGitProvider.Github && (
+                <a
+                  href={`https://github.com/new?&owner=${gitOrganization.name}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button
+                    className={`${CLASS_NAME}__header-create`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    type="button"
+                  >
+                    Create repository
+                  </Button>
+                </a>
+              )}
+          </div>
+        )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (
@@ -267,7 +273,10 @@ function GitRepos({
             onSelectRepo={handleRepoSelected}
           />
         ))}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error) || Boolean(gitGroupsError)}
+        message={errorMessage}
+      />
     </div>
   );
 }

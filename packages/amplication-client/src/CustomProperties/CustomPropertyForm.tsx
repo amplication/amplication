@@ -1,4 +1,9 @@
-import { Form, TextField, SelectField } from "@amplication/ui/design-system";
+import {
+  Form,
+  TextField,
+  ToggleField,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
 import { useMemo } from "react";
@@ -13,6 +18,7 @@ import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 type Props = {
   onSubmit: (values: models.CustomProperty) => void;
   defaultValues?: models.CustomProperty;
+  disabled?: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -23,9 +29,15 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "options",
 ];
 
+const NON_VALIDATED_TYPES = [
+  models.EnumCustomPropertyType.Select,
+  models.EnumCustomPropertyType.MultiSelect,
+];
+
 export const INITIAL_VALUES: Partial<models.CustomProperty> = {
   name: "",
   description: "",
+  required: false,
 };
 
 const FORM_SCHEMA = {
@@ -34,7 +46,7 @@ const FORM_SCHEMA = {
   errorMessage: {},
 };
 
-const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
+const CustomPropertyForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -56,16 +68,66 @@ const CustomPropertyForm = ({ onSubmit, defaultValues }: Props) => {
         enableReinitialize
         onSubmit={onSubmit}
       >
-        <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
+        {(formik) => (
+          <Form childrenAsBlocks>
+            <FormikAutoSave debounceMS={1000} />
 
-          <DisplayNameField name="name" label="Name" minLength={1} />
-          <TextField name="key" label="Key" />
+            <DisplayNameField
+              name="name"
+              label="Name"
+              minLength={1}
+              disabled={disabled}
+            />
+            <TextField name="key" label="Key" disabled={disabled} />
 
-          <OptionalDescriptionField name="description" label="Description" />
+            <OptionalDescriptionField
+              name="description"
+              label="Description"
+              disabled={disabled}
+            />
+            <div>
+              <ToggleField
+                name="required"
+                label="Required"
+                disabled={disabled}
+              />
+            </div>
+            <CustomPropertyTypeSelectField
+              name="type"
+              label="Type"
+              disabled={disabled}
+            />
 
-          <CustomPropertyTypeSelectField name="type" label="Type" />
-        </Form>
+            {!NON_VALIDATED_TYPES.includes(formik.values.type) && (
+              <>
+                <TabContentTitle
+                  title="Validation"
+                  subTitle="Use regex to validate the property value"
+                />
+                <TextField
+                  name="validationRule"
+                  label="Validation (Regex)"
+                  placeholder="^.{4}$"
+                  inputToolTip={{
+                    content:
+                      "Use regex to validate the property value. For example, ^.{4}$ will require the field to be 4 characters long.",
+                  }}
+                  disabled={disabled}
+                />
+                <TextField
+                  name="validationMessage"
+                  label="Validation Message"
+                  placeholder="Field must be 4 characters long"
+                  inputToolTip={{
+                    content:
+                      "The message that will be displayed if the validation fails.",
+                  }}
+                  disabled={disabled}
+                />
+              </>
+            )}
+          </Form>
+        )}
       </Formik>
     </>
   );

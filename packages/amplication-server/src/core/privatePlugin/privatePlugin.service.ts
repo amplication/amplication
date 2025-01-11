@@ -22,6 +22,11 @@ import { UpdatePrivatePluginVersionArgs } from "./dto/UpdatePrivatePluginVersion
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { BlockSettingsProperties } from "../block/types";
 import { JsonFilter } from "../../dto/JsonFilter";
+import { WhereUniqueInput } from "../../dto";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumGitFolderContentItemType } from "../git/dto/objects/EnumGitFolderContentItemType";
+import { GitFolderContent } from "../git/dto/objects/GitFolderContent";
+import { ProjectService } from "../project/project.service";
 
 const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   deprecated: false,
@@ -29,6 +34,8 @@ const DEFAULT_PRIVATE_PLUGIN_VERSION: Omit<PrivatePluginVersion, "version"> = {
   settings: null,
   configurations: null,
 };
+
+const REMOTE_GIT_PLUGIN_PATH = "plugins";
 
 export type PrivatePluginBlockVersionSettings =
   BlockSettingsProperties<PrivatePlugin> & {
@@ -52,25 +59,50 @@ export class PrivatePluginService extends BlockTypeService<
     protected readonly logger: AmplicationLogger,
     protected readonly billingService: BillingService,
     @Inject(forwardRef(() => ResourceService))
-    protected readonly resourceService: ResourceService
+    protected readonly resourceService: ResourceService,
+    protected readonly gitProviderService: GitProviderService,
+    @Inject(forwardRef(() => ProjectService))
+    protected readonly projectService: ProjectService
   ) {
     super(blockService, logger);
   }
 
-  //return all private plugins in the resource's project
+  //return all private plugins in the resource's project, and other public projects in the workspace
   //disabled plugins can be used for setup - but should not be used in build time
   async availablePrivatePluginsForResource(
     args: FindManyPrivatePluginArgs
   ): Promise<PrivatePlugin[]> {
-    const resource = await this.resourceService.resource({
-      where: {
-        id: args.where?.resource.id,
+    const resource = await this.resourceService.resource(
+      {
+        where: {
+          id: args.where?.resource.id,
+        },
       },
-    });
+      {
+        project: true,
+      }
+    );
 
     if (!resource) {
       return [];
     }
+
+    const workspaceId = resource.project?.workspaceId;
+
+    if (!resource) {
+      return [];
+    }
+
+    const publicProjects = await this.projectService.findProjects({
+      where: {
+        workspace: {
+          id: workspaceId,
+        },
+        platformIsPublic: {
+          equals: true,
+        },
+      },
+    });
 
     const filter: JsonFilter[] = [
       {
@@ -99,7 +131,13 @@ export class PrivatePluginService extends BlockTypeService<
             archived: {
               not: true,
             },
-            projectId: resource.projectId,
+
+            projectId: {
+              in: [
+                ...publicProjects.map((project) => project.id),
+                resource.projectId,
+              ],
+            },
           },
         },
       },
@@ -140,6 +178,8 @@ export class PrivatePluginService extends BlockTypeService<
   ): Promise<PrivatePlugin> {
     await this.validateLicense(user.workspace?.id);
 
+    await this.validatePluginId(user.workspace?.id, args.data.pluginId);
+
     const privatePlugin = await super.create(args, user);
 
     await this.createVersion(
@@ -153,6 +193,35 @@ export class PrivatePluginService extends BlockTypeService<
     );
 
     return privatePlugin;
+  }
+
+  async validatePluginId(workspaceId: string, pluginId: string): Promise<void> {
+    const filter = {
+      path: ["pluginId"],
+      equals: pluginId,
+    };
+
+    const existingPlugins = await this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            project: {
+              workspace: {
+                id: workspaceId,
+              },
+            },
+          },
+        },
+      },
+      filter,
+      undefined
+    );
+
+    if (existingPlugins.length > 0) {
+      throw new AmplicationError(
+        `A plugin with the same ID already exists in the workspace. Plugin IDs must be unique across all projects in the workspace.`
+      );
+    }
   }
 
   async validateLicense(workspaceId: string): Promise<void> {
@@ -252,5 +321,21 @@ export class PrivatePluginService extends BlockTypeService<
     );
 
     return updatedVersion;
+  }
+
+  async getPrivatePluginListFromRemoteRepository(
+    resource: WhereUniqueInput
+  ): Promise<GitFolderContent> {
+    const folderContent =
+      await this.gitProviderService.getGitFolderContentForResourceRepo({
+        resourceId: resource.id,
+        path: REMOTE_GIT_PLUGIN_PATH,
+      });
+
+    return {
+      content: folderContent.content.filter(
+        (item) => item.type === EnumGitFolderContentItemType.Dir.toString()
+      ),
+    };
   }
 }

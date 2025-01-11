@@ -1,14 +1,16 @@
 import {
-  EnumFlexItemMargin,
-  EnumTextStyle,
-  FlexItem,
+  HorizontalRule,
   Snackbar,
-  Text,
+  TabContentTitle,
   TextField,
 } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { OwnerSelector } from "../Components/OwnerSelector";
+import { useAppContext } from "../context/appContext";
+import CustomPropertiesFormFields from "../CustomProperties/CustomPropertiesFormFields";
+import getPropertiesValidationSchemaUtil from "../CustomProperties/getPropertiesValidationSchemaUtil";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -18,16 +20,14 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import {
   GET_RESOURCE,
   UPDATE_RESOURCE,
 } from "../Workspaces/queries/resourcesQueries";
-import { OwnerSelector } from "../Components/OwnerSelector";
-import ResourcePropertiesFields from "../CustomProperties/CustomPropertiesFormFields";
 
 type Props = {
   resourceId: string;
+  disabled: boolean;
 };
 
 type TData = {
@@ -56,7 +56,7 @@ const FORM_SCHEMA = {
 
 const CLASS_NAME = "resource-form";
 
-function ResourceForm({ resourceId }: Props) {
+function ResourceForm({ resourceId, disabled }: Props) {
   const { data, error } = useQuery<{
     resource: models.Resource;
   }>(GET_RESOURCE, {
@@ -65,18 +65,12 @@ function ResourceForm({ resourceId }: Props) {
     },
   });
 
+  const { customPropertiesMap } = useAppContext();
+
   const { trackEvent } = useTracking();
 
-  const [updateResource, { error: updateError }] = useMutation<TData>(
-    UPDATE_RESOURCE,
-    {
-      refetchQueries: [
-        {
-          query: GET_PROJECTS,
-        },
-      ],
-    }
-  );
+  const [updateResource, { error: updateError }] =
+    useMutation<TData>(UPDATE_RESOURCE);
 
   const handleSubmit = useCallback(
     (data: models.Resource) => {
@@ -98,13 +92,47 @@ function ResourceForm({ resourceId }: Props) {
     [updateResource, resourceId, trackEvent]
   );
 
+  const propertiesSchema = useMemo(() => {
+    return getPropertiesValidationSchemaUtil(
+      Object.values(customPropertiesMap)
+    );
+  }, [customPropertiesMap]);
+
+  const validationSchema = {
+    ...FORM_SCHEMA,
+    properties: {
+      ...FORM_SCHEMA.properties,
+      properties: propertiesSchema.schema,
+    },
+  };
+
+  const initialValue = useMemo(() => {
+    //in case properties were disabled - we need to remove them from the form to avoid validation errors
+    const properties = Object.keys(data?.resource.properties || {}).reduce(
+      (acc, key) => {
+        if (propertiesSchema.schema.properties?.[key]) {
+          acc[key] = data?.resource.properties[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...data?.resource,
+      properties,
+    };
+  }, [data?.resource, propertiesSchema]);
+
   const errorMessage = formatError(error || updateError);
   return (
     <div className={CLASS_NAME}>
       {data?.resource && (
         <Formik
-          initialValues={data.resource}
-          validate={(values: models.Resource) => validate(values, FORM_SCHEMA)}
+          initialValues={initialValue}
+          validate={(values: models.Resource) =>
+            validate(values, validationSchema)
+          }
           enableReinitialize
           onSubmit={handleSubmit}
         >
@@ -112,18 +140,19 @@ function ResourceForm({ resourceId }: Props) {
             return (
               <>
                 <Form>
-                  <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                    <Text textStyle={EnumTextStyle.H4}>
-                      {data.resource.resourceType ===
+                  <TabContentTitle
+                    title={`${
+                      data.resource.resourceType ===
                       models.EnumResourceType.ProjectConfiguration
                         ? "Project"
-                        : "Resource"}{" "}
-                      Settings
-                    </Text>
-                  </FlexItem>
-                  <FormikAutoSave debounceMS={1000} />
-                  <TextField name="name" label="Name" />
+                        : "Resource"
+                    } Settings`}
+                  />
+
+                  {!disabled && <FormikAutoSave debounceMS={1000} />}
+                  <TextField name="name" label="Name" disabled={disabled} />
                   <TextField
+                    disabled={disabled}
                     autoComplete="off"
                     textarea
                     rows={3}
@@ -131,9 +160,11 @@ function ResourceForm({ resourceId }: Props) {
                     label="Description"
                   />
                 </Form>
-                <OwnerSelector resource={data.resource} />
+                <OwnerSelector resource={data.resource} disabled={disabled} />
+                <HorizontalRule doubleSpacing />
 
-                <ResourcePropertiesFields />
+                <TabContentTitle title={`Catalog Properties`} />
+                <CustomPropertiesFormFields disabled={disabled} />
               </>
             );
           }}

@@ -9,6 +9,8 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     enabled
     codeGenerator
     blueprints
+    icon
+    color
     versions {
       version
       deprecated
@@ -77,6 +79,18 @@ export const UPDATE_PRIVATE_PLUGIN = gql`
   ) {
     updatePrivatePlugin(data: $data, where: $where) {
       ...PrivatePluginFields
+    }
+  }
+`;
+
+export const GET_PLUGIN_REPOSITORY_REMOTE_PLUGINS = gql`
+  query pluginRepositoryRemotePlugins($where: WhereUniqueInput!) {
+    pluginRepositoryRemotePlugins(where: $where) {
+      content {
+        name
+        type
+        path
+      }
     }
   }
 `;

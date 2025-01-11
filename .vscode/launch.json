@@ -47,7 +47,14 @@
     },
     {
       "type": "node",
-      "name": "Attach Amplication PR service",
+      "name": "Attach Amplication Plugin API",
+      "request": "attach",
+      "sourceMaps": true,
+      "port": 7005
+    },
+    {
+      "type": "node",
+      "name": "Attach Amplication Git Sync Manager",
       "request": "attach",
       "sourceMaps": true,
       "port": 7001

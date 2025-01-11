@@ -59,6 +59,11 @@ export enum EnumEventType {
   TeamDelete = "TeamDelete",
   TeamAddMembers = "TeamAddMembers",
   TeamRemoveMembers = "TeamRemoveMembers",
+  TeamAddRoles = "TeamAddRoles",
+  TeamRemoveRoles = "TeamRemoveRoles",
+  TeamDeleteAssignment = "TeamDeleteAssignment",
+  TeamAssignmentAddRoles = "TeamAssignmentAddRoles",
+  TeamAssignmentRemoveRoles = "TeamAssignmentRemoveRoles",
 
   //Custom Properties
   CustomPropertyCreate = "CustomPropertyCreate",
@@ -69,4 +74,9 @@ export enum EnumEventType {
   BlueprintCreate = "BlueprintCreate",
   BlueprintUpdate = "BlueprintUpdate",
   BlueprintDelete = "BlueprintDelete",
+
+  //Roles
+  RoleCreate = "RoleCreate",
+  RoleUpdate = "RoleUpdate",
+  RoleDelete = "RoleDelete",
 }

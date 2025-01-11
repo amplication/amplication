@@ -56,6 +56,7 @@ import {
   DownloadPrivatePluginsFailure,
   CodeGenerationFailure,
   PluginNotifyVersion,
+  DownloadPrivatePluginsRequestTypes,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -69,6 +70,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
   [EnumGitProvider.GitLab]: "GitLab",
+  [EnumGitProvider.AzureDevOps]: "Azure DevOps",
 };
 import { encryptString } from "../../util/encryptionUtil";
 import { ModuleDtoService } from "../moduleDto/moduleDto.service";
@@ -77,6 +79,8 @@ import { PackageService } from "../package/package.service";
 import omitDeep from "deepdash/omitDeep";
 import { PrivatePluginService } from "../privatePlugin/privatePlugin.service";
 import { compareBuild } from "semver";
+import { BuildPlugin } from "./dto/BuildPlugin";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -235,6 +239,7 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly resourceSettingsService: ResourceSettingsService,
     private readonly packageService: PackageService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
 
@@ -433,6 +438,14 @@ export class BuildService {
     return generateStep;
   }
 
+  async getBuildPlugins(buildId: string): Promise<BuildPlugin[]> {
+    return this.prisma.buildPlugin.findMany({
+      where: {
+        buildId: buildId,
+      },
+    });
+  }
+
   async onCodeGenerationSuccess(buildId: string): Promise<void> {
     const step = await this.getBuildStep(buildId, GENERATE_STEP_NAME);
     if (!step) {
@@ -600,15 +613,44 @@ export class BuildService {
         });
 
         try {
-          const pluginRepoGitSettings =
-            await this.resourceService.getPluginRepositoryGitSettingsByResource(
-              resourceId
-            );
-
+          //get the specific version number needed for each plugin based on the installation settings
           const pluginVersions = await this.getPrivatePluginsWithVersion(
             resourceId,
             privatePlugins
           );
+
+          //prepare the list of plugins grouped by the plugin repository
+          const pluginRepositoryResourceIds = pluginVersions.map(
+            (pluginVersion) => pluginVersion.pluginRepositoryResourceId
+          );
+
+          const uniqueResourceIds = Array.from(
+            new Set(pluginRepositoryResourceIds)
+          );
+
+          const repositoryPlugins: DownloadPrivatePluginsRequestTypes.RepositoryPlugins[] =
+            [];
+
+          for (const pluginRepositoryResourceId of uniqueResourceIds) {
+            const pluginRepoGitSettings =
+              await this.resourceService.getPluginRepositoryGitSettingsByResource(
+                pluginRepositoryResourceId
+              );
+
+            repositoryPlugins.push({
+              ...pluginRepoGitSettings,
+              pluginsToDownload: pluginVersions
+                .filter(
+                  (pluginVersion) =>
+                    pluginVersion.pluginRepositoryResourceId ===
+                    pluginRepositoryResourceId
+                )
+                .map((pluginVersion) => ({
+                  pluginId: pluginVersion.pluginId,
+                  pluginVersion: pluginVersion.pluginVersion,
+                })),
+            });
+          }
 
           //report the private plugins build version
           const buildPluginPromises = pluginVersions.map((pluginVersion) =>
@@ -628,13 +670,9 @@ export class BuildService {
                 resourceId,
               },
               value: {
-                ...pluginRepoGitSettings,
                 buildId: build.id,
                 resourceId,
-                pluginsToDownload: pluginVersions.map((pluginVersion) => ({
-                  pluginId: pluginVersion.pluginId,
-                  pluginVersion: pluginVersion.pluginVersion,
-                })),
+                repositoryPlugins: repositoryPlugins,
               },
             };
 
@@ -674,10 +712,12 @@ export class BuildService {
   ): Promise<
     (PluginDownloadItem & {
       requestedFullPackageName: string;
+      pluginRepositoryResourceId: string;
     })[]
   > {
     const pluginsToDownload: (PluginDownloadItem & {
       requestedFullPackageName: string;
+      pluginRepositoryResourceId: string;
     })[] = [];
 
     const privatePluginBlocks =
@@ -690,18 +730,19 @@ export class BuildService {
       });
 
     for (const privatePlugin of privatePlugins) {
+      const privatePluginBlock = privatePluginBlocks.find(
+        (block) => block.pluginId === privatePlugin.pluginId
+      );
+
       if (privatePlugin.version !== "latest") {
         pluginsToDownload.push({
           pluginId: privatePlugin.pluginId,
           pluginVersion: privatePlugin.version,
           requestedFullPackageName: `${privatePlugin.pluginId}@${privatePlugin.version}`,
+          pluginRepositoryResourceId: privatePluginBlock.resourceId,
         });
         continue;
       }
-
-      const privatePluginBlock = privatePluginBlocks.find(
-        (block) => block.pluginId === privatePlugin.pluginId
-      );
 
       const sortedEnabledVersions = privatePluginBlock.versions
         .filter(
@@ -721,6 +762,7 @@ export class BuildService {
         pluginId: privatePlugin.pluginId,
         pluginVersion: pluginVersion.version,
         requestedFullPackageName: `${privatePlugin.pluginId}@latest`,
+        pluginRepositoryResourceId: privatePluginBlock.resourceId,
       });
     }
 
@@ -814,13 +856,6 @@ export class BuildService {
         build.id,
         EnumBuildStatus.Completed,
         EnumBuildGitStatus.Completed
-      );
-
-      //In case this is a preview user - a success email will be sent after the first code generation
-      await this.userService.handleUserPullRequestCompleted(
-        build.userId,
-        build.id,
-        response.url
       );
 
       const workspace = await this.resourceService.getResourceWorkspace(
@@ -1351,6 +1386,13 @@ export class BuildService {
       where: { resource: { id: resourceId } },
     });
 
+    const relations = await this.resourceService.getRelations(resourceId);
+
+    const resourceSettings =
+      await this.resourceSettingsService.getResourceSettingsBlock({
+        where: { id: resourceId },
+      });
+
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -1398,10 +1440,12 @@ export class BuildService {
       );
     }
 
-    const dsgResourceData = {
+    const dsgResourceData: CodeGenTypes.DSGResourceData = {
       entities: rootGeneration ? await this.getOrderedEntities(buildId) : [],
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: orderedPlugins,
+      resourceSettings: resourceSettings,
+      relations: relations,
       moduleContainers: modules,
       moduleActions: moduleActions,
       moduleDtos: moduleDtos,
@@ -1414,6 +1458,7 @@ export class BuildService {
       }),
       buildId: buildId,
       resourceInfo: {
+        properties: resource.properties,
         name: resource.name,
         description: resource.description,
         version: buildVersion,

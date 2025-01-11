@@ -12,10 +12,22 @@ import { AssistantContext } from "./dto/AssistantContext";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { AssistantFunctionsService } from "./assistantFunctions.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { Account } from "../../models";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
 const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: "alice",
+  email: "example@amplication.com",
+  password: "PASSWORD",
+  firstName: "Alice",
+  lastName: "Appleseed",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  githubId: null,
+};
 
 const EXAMPLE_ASSISTANT_CONTEXT: AssistantContext = {
   user: {
@@ -30,6 +42,8 @@ const EXAMPLE_ASSISTANT_CONTEXT: AssistantContext = {
     createdAt: new Date(),
     updatedAt: new Date(),
     isOwner: true,
+    permissions: [],
+    account: EXAMPLE_ACCOUNT,
   },
   workspaceId: EXAMPLE_WORKSPACE_ID,
 };

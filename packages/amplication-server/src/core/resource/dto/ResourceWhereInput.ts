@@ -38,7 +38,7 @@ export class ResourceWhereInput {
   project?: ProjectWhereInput | null;
 
   @Field(() => String, { nullable: true })
-  projectId?: string | null;
+  projectId?: string | StringFilter | null;
 
   @Field(() => String, { nullable: true })
   serviceTemplateId?: string | null;
@@ -53,8 +53,8 @@ export class ResourceWhereInput {
   })
   ownership?: OwnershipWhereInput | null;
 
-  @Field(() => String, { nullable: true })
-  blueprintId?: string | null;
+  @Field(() => StringFilter, { nullable: true })
+  blueprintId?: StringFilter | string | null;
 
   @Field(() => BlueprintWhereInput, {
     nullable: true,

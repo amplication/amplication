@@ -20,12 +20,7 @@ import { QueryMode } from "../../enums/QueryMode";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Entity, GitOrganization, Project, Resource, User } from "../../models";
-import {
-  EnumResourceType,
-  GitRepository,
-  Prisma,
-  PrismaService,
-} from "../../prisma";
+import { EnumResourceType, Prisma, PrismaService } from "../../prisma";
 import { EnumResourceType as AmplicationEnumResourceType } from "../resource/dto/EnumResourceType";
 
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -71,16 +66,21 @@ import {
 import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
 import { GitProviderService } from "../git/git.provider.service";
 import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 import { OwnershipService } from "../ownership/ownership.service";
+import { RelationService } from "../relation/relation.service";
 import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
-import { RelationService } from "../relation/relation.service";
+import { ResourceInclude } from "./dto/ResourceInclude";
+import { Relation } from "../relation/dto/Relation";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
+import { TeamAssignment } from "../../models/TeamAssignment";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -116,27 +116,6 @@ const DEFAULT_DOTNET_DB_PLUGIN: PluginInstallationCreateInput = {
   resource: undefined,
   isPrivate: false,
 };
-
-const DEFAULT_AUTH_PLUGINS: PluginInstallationCreateInput[] = [
-  {
-    displayName: "Auth-core",
-    pluginId: "auth-core",
-    npm: "@amplication/plugin-auth-core",
-    version: "latest",
-    enabled: true,
-    resource: undefined,
-    isPrivate: false,
-  },
-  {
-    displayName: "Auth-jwt",
-    pluginId: "auth-jwt",
-    npm: "@amplication/plugin-auth-jwt",
-    version: "latest",
-    enabled: true,
-    resource: undefined,
-    isPrivate: false,
-  },
-];
 
 const RESOURCE_TYPE_TO_EVENT_TYPE: {
   [key in EnumResourceType]: EnumEventType;
@@ -200,7 +179,8 @@ export class ResourceService {
     private readonly gitProviderService: GitProviderService,
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
     private readonly ownershipService: OwnershipService,
-    private readonly relationService: RelationService
+    private readonly relationService: RelationService,
+    private readonly customPropertyService: CustomPropertyService
   ) {}
 
   async createProjectConfiguration(
@@ -559,7 +539,7 @@ export class ResourceService {
   }
 
   /**
-   * Create a resource of type "Component"
+   * Create a resource of type "Component" (blueprint)
    */
   async createComponent(
     args: CreateOneResourceArgs,
@@ -700,61 +680,6 @@ export class ResourceService {
     );
 
     return userEntity;
-  }
-
-  async createPreviewService(
-    args: CreateOneResourceArgs,
-    user: User,
-    nonDefaultPluginsToInstall: PluginInstallationCreateInput[],
-    requireAuthenticationEntity: boolean
-  ): Promise<Resource> {
-    const { serviceSettings, ...rest } = args.data;
-    const resource = await this.createResource(
-      {
-        data: {
-          ...rest,
-          resourceType: EnumResourceType.Service,
-        },
-      },
-      user
-    );
-
-    await this.prisma.resourceRole.create({
-      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
-    });
-
-    if (requireAuthenticationEntity) {
-      const [userEntity] = await this.entityService.createDefaultUserEntity(
-        resource.id,
-        user
-      );
-      serviceSettings.authEntityName = userEntity.name;
-    }
-
-    await this.serviceSettingsService.createDefaultServiceSettings(
-      resource.id,
-      user,
-      serviceSettings
-    );
-
-    const plugins = [
-      DEFAULT_NODEJS_DB_PLUGIN,
-      ...(requireAuthenticationEntity ? DEFAULT_AUTH_PLUGINS : []),
-      ...nonDefaultPluginsToInstall,
-    ];
-
-    await this.installPlugins(resource.id, plugins, user);
-
-    const project = await this.projectService.findUnique({
-      where: { id: resource.projectId },
-    });
-
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Services
-    );
-
-    return resource;
   }
 
   private createMovedEntitiesByResourceMapping(movedEntities): {
@@ -1591,17 +1516,23 @@ export class ResourceService {
     };
   }
 
-  async resource(args: FindOneArgs): Promise<Resource | null> {
+  async resource(
+    args: FindOneArgs,
+    include?: ResourceInclude | undefined
+  ): Promise<Resource | null> {
     return this.prisma.resource.findFirst({
       where: {
         id: args.where.id,
         deletedAt: null,
         archived: { not: true },
       },
+      include,
     });
   }
 
-  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+  private async prepareResourceFindManyArgsForQuery(
+    args: FindManyResourceArgs
+  ): Promise<Prisma.ResourceFindManyArgs> {
     const { serviceTemplateId, ...where } = args.where;
 
     let resourceIds: string[] = undefined;
@@ -1620,13 +1551,19 @@ export class ResourceService {
       );
     }
 
+    //since we can't expose the StringFilter as union type, we use a separate field for the projectId filter and then merge it back to the where object
+    if (where.projectIdFilter) {
+      where.projectId = where.projectIdFilter;
+      delete where.projectIdFilter;
+    }
+
     const { properties: whereProperties, ...whereElse } = where;
     const wherePropertiesFilter = jsonPathStringFilterToPrismaFilter(
       whereProperties,
       "properties"
     );
 
-    return this.prisma.resource.findMany({
+    return {
       ...args,
       where: {
         ...(whereElse as Prisma.ResourceWhereInput),
@@ -1635,7 +1572,32 @@ export class ResourceService {
         archived: { not: true },
         ...wherePropertiesFilter,
       },
-    });
+    };
+  }
+
+  async searchResourcesWithCount(
+    args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    const [count, resources] = await Promise.all([
+      this.prisma.resource.count({
+        where: preparedArgs.where,
+      }),
+
+      this.prisma.resource.findMany(preparedArgs),
+    ]);
+
+    return {
+      totalCount: count,
+      data: resources,
+    };
+  }
+
+  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
+    const preparedArgs = await this.prepareResourceFindManyArgsForQuery(args);
+
+    return this.prisma.resource.findMany(preparedArgs);
   }
 
   async resourcesByIds(ids: string[]): Promise<Resource[]> {
@@ -1771,7 +1733,40 @@ export class ResourceService {
     return resource;
   }
 
-  async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {
+  async validateResourceProperties(
+    values: Record<string, unknown>,
+    user: User
+  ): Promise<void> {
+    if (!values || Object.keys(values).length === 0) {
+      return;
+    }
+
+    const customProperties = await this.customPropertyService.customProperties({
+      where: {
+        workspace: {
+          id: user.workspace.id,
+        },
+        enabled: true,
+      },
+    });
+
+    const validationResults =
+      await this.customPropertyService.validateCustomProperties(
+        customProperties,
+        values
+      );
+
+    if (!validationResults.isValid) {
+      throw new AmplicationError(
+        `Validation failed for resource properties: ${validationResults.errorText}`
+      );
+    }
+  }
+
+  async updateResource(
+    args: UpdateOneResourceArgs,
+    user: User
+  ): Promise<Resource | null> {
     const resource = await this.resource({
       where: {
         id: args.where.id,
@@ -1781,6 +1776,11 @@ export class ResourceService {
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
     }
+
+    await this.validateResourceProperties(
+      args.data.properties as Record<string, unknown>,
+      user
+    );
 
     if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
       await this.projectService.updateProject({
@@ -1818,7 +1818,7 @@ export class ResourceService {
     });
   }
 
-  async gitRepository(resourceId: string): Promise<GitRepository | null> {
+  async gitRepository(resourceId: string) {
     if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({
@@ -2030,6 +2030,16 @@ export class ResourceService {
     }
   }
 
+  async getRelations(resourceId: string): Promise<Relation[]> {
+    return await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+  }
+
   async getRelatedResource(resourceId: string): Promise<Resource[]> {
     const relations = await this.relationService.findMany({
       where: {
@@ -2044,5 +2054,21 @@ export class ResourceService {
     );
 
     return this.resourcesByIds(resourceIds);
+  }
+
+  async getTeamAssignments(resourceId: string): Promise<TeamAssignment[]> {
+    return this.prisma.teamAssignment.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+        team: {
+          deletedAt: null,
+        },
+      },
+      include: {
+        roles: { where: { deletedAt: null } },
+      },
+    });
   }
 }

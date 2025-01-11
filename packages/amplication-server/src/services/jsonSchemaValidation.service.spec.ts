@@ -9,6 +9,12 @@ jest.mock("ajv");
 describe("JsonSchemaValidationService", () => {
   let service: JsonSchemaValidationService;
 
+  beforeAll(() => {
+    Ajv.prototype._opts = {
+      allErrors: true,
+    };
+  });
+
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({

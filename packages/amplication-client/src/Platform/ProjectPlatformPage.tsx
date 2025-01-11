@@ -2,12 +2,16 @@ import { EnumTextColor, TabItem } from "@amplication/ui/design-system";
 import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
+import { EnumResourceType } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import ServiceTemplateList from "./ServiceTemplateList";
-import { EnumResourceType } from "../models";
+import useResourcePermissions from "../Resource/hooks/useResourcePermissions";
+import {
+  ResourceContextInterface,
+  ResourceContextProvider,
+} from "../context/resourceContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -24,11 +28,20 @@ const ProjectPlatformPage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { currentProject, pendingChanges } = useContext(AppContext);
-
-  useBreadcrumbs(currentProject?.name, match.url);
+  const { pendingChanges } = useContext(AppContext);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
+
+  //we use resource context for the project configuration resource to check permissions on the project level
+  const { projectConfigurationResource } = useContext(AppContext);
+  const permissions = useResourcePermissions(projectConfigurationResource?.id);
+  const context: ResourceContextInterface = {
+    resourceId: projectConfigurationResource?.id,
+    resource: projectConfigurationResource,
+    lastSuccessfulGitBuild: undefined,
+    lastSuccessfulGitBuildPluginVersions: undefined,
+    permissions,
+  };
 
   //count how many unique resources in the pending changes
   const publishCount = useMemo(() => {
@@ -76,9 +89,11 @@ const ProjectPlatformPage: React.FC<Props> = ({
 
   return match.isExact || currentRouteIsTab ? (
     <>
-      <PageLayout className={moduleClass} tabs={tabItems}>
-        {match.isExact ? <ServiceTemplateList /> : tabRoutes}
-      </PageLayout>
+      <ResourceContextProvider newVal={context}>
+        <PageLayout className={moduleClass} tabs={tabItems}>
+          {match.isExact ? <ServiceTemplateList /> : tabRoutes}
+        </PageLayout>
+      </ResourceContextProvider>
     </>
   ) : (
     innerRoutes

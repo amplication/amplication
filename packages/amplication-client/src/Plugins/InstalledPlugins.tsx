@@ -78,7 +78,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
 
-  const { resourceSettings } = useResource(resource);
+  const { serviceSettings } = useResource(resource);
 
   const [pluginInstallationData, setPluginInstallationData] =
     useState<Plugin>(null);
@@ -95,14 +95,14 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   });
 
   const userEntity = useMemo(() => {
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
 
     if (!authEntity) {
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities?.entities, resourceSettings?.serviceSettings?.authEntityName]);
+  }, [entities?.entities, serviceSettings?.serviceSettings?.authEntityName]);
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {

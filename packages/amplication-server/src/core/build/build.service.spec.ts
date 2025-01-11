@@ -42,6 +42,7 @@ import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings"
 import { EnumGitProvider } from "@amplication/util/git";
 import { PrivatePlugin } from "../privatePlugin/dto/PrivatePlugin";
 import { PrivatePluginVersion } from "../privatePlugin/dto/PrivatePluginVersion";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -64,8 +65,6 @@ const EXAMPLE_USER: User = {
     firstName: "exampleFirstName",
     lastName: "exampleLastName",
     password: "",
-    previewAccountType: "None",
-    previewAccountEmail: "",
   },
 };
 
@@ -285,6 +284,12 @@ describe("BuildService", () => {
           })),
         },
         {
+          provide: ResourceSettingsService,
+          useClass: jest.fn(() => ({
+            getResourceSettingsBlock: jest.fn(),
+          })),
+        },
+        {
           provide: KafkaProducerService,
           useClass: jest.fn(() => ({
             emitMessage: kafkaServiceEmitMessageMock,
@@ -371,6 +376,7 @@ describe("BuildService", () => {
           useClass: jest.fn(() => ({
             resource: resourceServiceFindOneMock,
             resources: resourceServiceFindManyMock,
+            getRelations: jest.fn(() => []),
             getPluginRepositoryGitSettingsByResource:
               resourceServiceGetPluginRepositoryGitSettingsByResourceMock,
           })),
@@ -578,17 +584,21 @@ describe("BuildService", () => {
             resourceId: EXAMPLE_RESOURCE_ID,
           },
           value: {
-            ...EXAMPLE_GIT_SETTINGS,
             buildId: EXAMPLE_BUILD_ID,
             resourceId: EXAMPLE_RESOURCE_ID,
-            pluginsToDownload: [
+            repositoryPlugins: [
               {
-                pluginId: EXAMPLE_PRIVATE_PLUGIN_ID,
-                pluginVersion: "1.1.0",
-              },
-              {
-                pluginId: EXAMPLE_PRIVATE_PLUGIN_ID_2,
-                pluginVersion: "1.0.0",
+                ...EXAMPLE_GIT_SETTINGS,
+                pluginsToDownload: [
+                  {
+                    pluginId: EXAMPLE_PRIVATE_PLUGIN_ID,
+                    pluginVersion: "1.1.0",
+                  },
+                  {
+                    pluginId: EXAMPLE_PRIVATE_PLUGIN_ID_2,
+                    pluginVersion: "1.0.0",
+                  },
+                ],
               },
             ],
           },

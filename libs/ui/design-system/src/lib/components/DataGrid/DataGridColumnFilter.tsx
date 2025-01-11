@@ -42,7 +42,7 @@ export function DataGridColumnFilter<T>({
       buttonIconPosition={EnumIconPosition.Left}
       title={
         <FlexItem gap={EnumGapSize.Small} itemsAlign={EnumItemsAlign.Center}>
-          <Icon icon="filter" />
+          <Icon icon="option_set" />
         </FlexItem>
       }
       buttonStyle={EnumButtonStyle.Text}

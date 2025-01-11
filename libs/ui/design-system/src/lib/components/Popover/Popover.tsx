@@ -10,9 +10,23 @@ export type Props = Omit<TooltipProps, "title"> & {
   content: NonNullable<React.ReactNode>;
 };
 
-export function Popover({ className, content, children, ...props }: Props) {
+export function Popover({
+  className,
+  content,
+  children,
+  onClose,
+  disableHoverListener = true,
+  ...props
+}: Props) {
   return (
     <Tooltip
+      disableHoverListener={disableHoverListener}
+      onClose={(event) => {
+        //raise the onclose event if it is a keyboard event
+        if (event.type === "keydown") {
+          onClose?.(event);
+        }
+      }}
       classes={{
         popper: classNames(`${CLASS_NAME}__popper`, className),
         tooltip: `${CLASS_NAME} ${CLASS_NAME}__content`,

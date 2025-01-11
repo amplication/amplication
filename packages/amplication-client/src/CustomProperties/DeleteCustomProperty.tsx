@@ -4,6 +4,7 @@ import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import useCustomProperties from "./hooks/useCustomProperties";
 import { formatError } from "../util/error";
+import { useAppContext } from "../context/appContext";
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -11,13 +12,19 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 type Props = {
   customProperty: models.CustomProperty;
   onDelete?: () => void;
+  showLabel: boolean;
 };
 
 const CLASS_NAME = "delete-custom-property";
 
-export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
+export const DeleteCustomProperty = ({
+  customProperty,
+  onDelete,
+  showLabel,
+}: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
+  const { permissions } = useAppContext();
   const { deleteCustomProperty, deleteCustomPropertyError } =
     useCustomProperties();
 
@@ -64,11 +71,12 @@ export const DeleteCustomProperty = ({ customProperty, onDelete }: Props) => {
 
       <div className={CLASS_NAME}>
         <Button
+          disabled={!permissions.allowedTasks["property.delete"]}
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleDelete}
         >
-          {"Delete"}
+          {showLabel && "Delete"}
         </Button>
       </div>
       <Snackbar open={hasError} message={errorMessage} />

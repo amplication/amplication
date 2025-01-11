@@ -3,9 +3,15 @@ import { CustomProperty } from "../models";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
+  disabled: boolean;
 };
 
-function CustomPropertiesFormFieldSelect({ property }: Props) {
+function CustomPropertiesFormFieldSelect({
+  property,
+  fieldNamePrefix,
+  disabled,
+}: Props) {
   const options = property.options?.map((option) => ({
     value: option.value,
     label: option.value,
@@ -14,8 +20,9 @@ function CustomPropertiesFormFieldSelect({ property }: Props) {
 
   return (
     <SelectField
+      disabled={disabled}
       label={property.name}
-      name={`properties.${property.key}`}
+      name={`${fieldNamePrefix}properties.${property.key}`}
       options={options || []}
     />
   );

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { isEmpty, snakeCase, toUpper } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { Blueprint } from "../../models";
+import { Blueprint, CustomProperty } from "../../models";
 import { Blueprint as PrismaBlueprint, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
@@ -14,6 +14,7 @@ import { BlueprintRelation } from "../../models/BlueprintRelation";
 import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 import { JsonArray } from "type-fest";
 import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 
@@ -21,7 +22,8 @@ export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 export class BlueprintService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly customPropertyService: CustomPropertyService
   ) {}
 
   async blueprints(args: BlueprintFindManyArgs): Promise<Blueprint[]> {
@@ -243,5 +245,13 @@ export class BlueprintService {
     });
 
     return deleted;
+  }
+
+  async properties(args: FindOneArgs): Promise<CustomProperty[]> {
+    return this.customPropertyService.customProperties({
+      where: {
+        blueprintId: args.where.id,
+      },
+    });
   }
 }

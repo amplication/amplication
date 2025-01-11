@@ -1,11 +1,18 @@
-import { Button, Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
-import { useState } from "react";
+import {
+  Button,
+  Dialog,
+  EnumButtonStyle,
+  Tooltip,
+} from "@amplication/ui/design-system";
+import React, { useState } from "react";
 import * as models from "../models";
 import BlueprintRelationForm from "./BlueprintRelationForm";
 
 type Props = {
   blueprint: models.Blueprint;
   onSubmit: (relation: models.BlueprintRelation) => void;
+  buttonStyle?: EnumButtonStyle;
+  buttonContent?: React.ReactNode;
 };
 
 const DEFAULT_RELATION_VALUES: models.BlueprintRelation = {
@@ -17,7 +24,12 @@ const DEFAULT_RELATION_VALUES: models.BlueprintRelation = {
   required: false,
 };
 
-const BlueprintRelationAddButton = ({ blueprint, onSubmit }: Props) => {
+const BlueprintRelationAddButton = ({
+  blueprint,
+  onSubmit,
+  buttonContent = "Add Relation",
+  buttonStyle = EnumButtonStyle.Outline,
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = (relation: models.BlueprintRelation) => {
@@ -40,14 +52,16 @@ const BlueprintRelationAddButton = ({ blueprint, onSubmit }: Props) => {
         )}
       </Dialog>
 
-      <Button
-        buttonStyle={EnumButtonStyle.Outline}
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        Add Relation
-      </Button>
+      <Tooltip title="Add Relation">
+        <Button
+          buttonStyle={buttonStyle}
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
+          {buttonContent}
+        </Button>
+      </Tooltip>
     </>
   );
 };

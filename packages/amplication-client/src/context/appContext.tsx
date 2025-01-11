@@ -5,6 +5,9 @@ import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
 import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
+import { IBlueprintsMap } from "../Blueprints/hooks/useBlueprintsMap";
+import { IPermissions } from "../Workspaces/hooks/usePermissions";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -12,7 +15,6 @@ export interface AppContextInterface {
   createWorkspace: (data: CreateWorkspaceType) => void;
   subscriptionPlan: models.EnumSubscriptionPlan;
   subscriptionStatus: models.EnumSubscriptionStatus;
-  isPreviewPlan: boolean;
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
@@ -29,8 +31,6 @@ export interface AppContextInterface {
   ) => void;
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
-  handleSearchChange: (searchResults: string) => void;
-  setResourcePropertiesFilter: (filters: models.JsonPathStringFilter) => void;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
@@ -75,16 +75,14 @@ export interface AppContextInterface {
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;
   customPropertiesMap: Record<string, models.CustomProperty>;
-  createComponent: (data: models.ResourceCreateInput) => void;
-  loadingCreateComponent: boolean;
-  errorCreateComponent: Error | undefined;
+  blueprintsMap: IBlueprintsMap;
+  permissions: IPermissions;
 }
 
 const initialContext: AppContextInterface = {
   currentWorkspace: undefined,
   subscriptionPlan: models.EnumSubscriptionPlan.Free,
   subscriptionStatus: models.EnumSubscriptionStatus.Active,
-  isPreviewPlan: false,
   handleSetCurrentWorkspace: () => {},
   createWorkspace: () => {},
   createNewWorkspaceError: undefined,
@@ -100,8 +98,6 @@ const initialContext: AppContextInterface = {
   setNewService: () => {},
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
-  handleSearchChange: () => {},
-  setResourcePropertiesFilter: () => {},
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},
@@ -156,9 +152,16 @@ const initialContext: AppContextInterface = {
   loadingCreateServiceFromTemplate: false,
   errorCreateServiceFromTemplate: undefined,
   customPropertiesMap: {},
-  createComponent: () => {},
-  loadingCreateComponent: false,
-  errorCreateComponent: undefined,
+  blueprintsMap: {
+    ready: false,
+    blueprintsMap: {},
+    blueprintsMapById: {},
+  },
+  permissions: {
+    allowedTasks: {} as Record<RolesPermissions, boolean>,
+    canPerformTask: () => false,
+    isAdmin: false,
+  },
 };
 
 export const AppContext =

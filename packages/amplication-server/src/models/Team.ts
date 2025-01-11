@@ -1,6 +1,7 @@
 import { Workspace } from "./Workspace";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "./User";
+import { Role } from "./Role";
 
 @ObjectType({
   isAbstract: true,
@@ -42,4 +43,9 @@ export class Team {
     nullable: true,
   })
   color?: string;
+
+  @Field(() => [Role], {
+    nullable: true,
+  })
+  roles?: Role[];
 }

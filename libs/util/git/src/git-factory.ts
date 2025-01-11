@@ -7,6 +7,8 @@ import { BitBucketService } from "./providers/bitbucket/bitbucket.service";
 import { GitProviderArgs, GitProvidersConfiguration } from "./types";
 import { AwsCodeCommitService } from "./providers/aws/aws-code-commit.service";
 import { isValidGitProviderProperties } from "./git-provider-properties.map";
+import { GitLabService } from "./providers/gitlab/gitlab.service";
+import { AzureDevOpsService } from "./providers/azure-devops/azure-devops.service";
 
 export class GitFactory {
   public static async getProvider(
@@ -37,6 +39,32 @@ export class GitFactory {
           gitProvider = new BitBucketService(
             providerOrganizationProperties,
             providersConfiguration.bitBucketConfiguration,
+            logger
+          );
+          await gitProvider.init();
+          return gitProvider;
+        }
+        break;
+      case EnumGitProvider.GitLab:
+        if (
+          isValidGitProviderProperties[provider](providerOrganizationProperties)
+        ) {
+          gitProvider = new GitLabService(
+            providerOrganizationProperties,
+            providersConfiguration.gitLabConfiguration,
+            logger
+          );
+          await gitProvider.init();
+          return gitProvider;
+        }
+        break;
+      case EnumGitProvider.AzureDevOps:
+        if (
+          isValidGitProviderProperties[provider](providerOrganizationProperties)
+        ) {
+          gitProvider = new AzureDevOpsService(
+            providerOrganizationProperties,
+            providersConfiguration.azureDevopsConfiguration,
             logger
           );
           await gitProvider.init();

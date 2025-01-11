@@ -1,8 +1,6 @@
 @import "../style/index.scss";
 
 .modules-toolbar {
-  margin-top: calc(var(--default-spacing) * -1);
-
   .search-field {
     max-width: 100px;
   }

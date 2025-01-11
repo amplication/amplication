@@ -54,7 +54,6 @@ export enum KAFKA_TOPICS {
   USER_ACTION_TOPIC = "user-action.internal.1",
   USER_BUILD_TOPIC = "user-build.internal.1",
   USER_ANNOUNCEMENT_TOPIC = "user-announcement.internal.1",
-  USER_PREVIEW_GENERATION_COMPLETED_TOPIC = "user-preview-generation-completed.internal.1",
   TECH_DEBT_CREATED_TOPIC = "platform.internal.tech-debt.created.1",
 
   /// ai
@@ -68,3 +67,5 @@ export enum KAFKA_TOPICS {
   PACKAGE_MANAGER_CREATE_SUCCESS = "package.manager.create-packages.success.0",
   PACKAGE_MANAGER_CREATE_FAILURE = "package.manager.create-packages.failure.0",
 }
+
+export * as DownloadPrivatePluginsRequestTypes from "./lib/download-private-plugins-request/types";

@@ -1,20 +1,23 @@
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
+import {
+  DownloadPrivatePluginsRequestTypes,
+  KAFKA_TOPICS,
+  DownloadPrivatePluginsRequest,
+} from "@amplication/schema-registry";
 import {
   GitClientService,
   GitProvidersConfiguration,
 } from "@amplication/util/git";
-import { Env } from "../env";
+import { LogLevel } from "@amplication/util/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import {
-  DownloadPrivatePluginsRequest,
-  KAFKA_TOPICS,
-} from "@amplication/schema-registry";
-import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 import { copy, pathExists } from "fs-extra";
+import { existsSync } from "node:fs";
+import { rm } from "node:fs/promises";
 import { join } from "path";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { LogLevel } from "@amplication/util/logging";
+import { Env } from "../env";
 
 @Traceable()
 @Injectable()
@@ -33,6 +36,27 @@ export class PrivatePluginService {
     const bitbucketClientSecret = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_SECRET
     );
+    const gitLabClientId = this.configService.get<string>(Env.GITLAB_CLIENT_ID);
+    const gitLabClientSecret = this.configService.get<string>(
+      Env.GITLAB_CLIENT_SECRET
+    );
+    const gitLabRedirectUri = this.configService.get<string>(
+      Env.GITLAB_REDIRECT_URI
+    );
+
+    const azureDevopsClientId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_ID
+    );
+    const azureDevopsClientSecret = this.configService.get<string>(
+      Env.AZURE_DEVOPS_CLIENT_SECRET
+    );
+    const azureDevopsRedirectUri = this.configService.get<string>(
+      Env.AZURE_DEVOPS_REDIRECT_URI
+    );
+    const azureDevopsTenantId = this.configService.get<string>(
+      Env.AZURE_DEVOPS_TENANT_ID
+    );
+
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -59,6 +83,17 @@ export class PrivatePluginService {
         clientId: bitbucketClientId,
         clientSecret: bitbucketClientSecret,
       },
+      gitLabConfiguration: {
+        clientId: gitLabClientId,
+        clientSecret: gitLabClientSecret,
+        redirectUri: gitLabRedirectUri,
+      },
+      azureDevopsConfiguration: {
+        clientId: azureDevopsClientId,
+        clientSecret: azureDevopsClientSecret,
+        tenantId: azureDevopsTenantId,
+        redirectUri: azureDevopsRedirectUri,
+      },
     };
   }
 
@@ -82,19 +117,54 @@ export class PrivatePluginService {
     );
   }
 
-  async downloadPrivatePlugins({
-    resourceId,
-    buildId,
-    gitProvider,
-    gitProviderProperties,
-    gitOrganizationName: owner,
-    gitRepositoryName: repo,
-    repositoryGroupName,
-    baseBranchName,
-    pluginsToDownload,
-  }: DownloadPrivatePluginsRequest.Value): Promise<{
+  async downloadPrivatePlugins(
+    downloadPrivatePluginsRequest: DownloadPrivatePluginsRequest.Value
+  ): Promise<{
     pluginPaths: string[];
   }> {
+    const {
+      resourceId,
+      buildId,
+      repositoryPlugins: repositories,
+    } = downloadPrivatePluginsRequest;
+
+    const newPluginPaths: string[] = [];
+
+    //we execute each "plugin repo" in sequence to avoid override or conflicts when multiple "plugin repos" are connected to the same repository in git
+    for (const repositoryPlugins of repositories) {
+      const results = await this.downloadPrivatePluginsFromSingleRepo({
+        resourceId,
+        buildId,
+        repositoryPlugins: repositoryPlugins,
+      });
+
+      newPluginPaths.push(...results.pluginPaths);
+    }
+
+    return { pluginPaths: newPluginPaths };
+  }
+
+  async downloadPrivatePluginsFromSingleRepo({
+    resourceId,
+    buildId,
+    repositoryPlugins,
+  }: {
+    resourceId: string;
+    buildId: string;
+    repositoryPlugins: DownloadPrivatePluginsRequestTypes.RepositoryPlugins;
+  }): Promise<{
+    pluginPaths: string[];
+  }> {
+    const {
+      gitProvider,
+      gitProviderProperties,
+      gitOrganizationName: owner,
+      gitRepositoryName: repo,
+      repositoryGroupName,
+      baseBranchName,
+      pluginsToDownload,
+    } = repositoryPlugins;
+
     const logger = this.logger.child({ resourceId });
     const gitClientService = TraceWrapper.trace(
       await new GitClientService().create(
@@ -113,8 +183,11 @@ export class PrivatePluginService {
         },
       }
     );
-    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
-    const { pluginPaths, pluginVersions } =
+    const cloneDirPath = join(
+      this.configService.get<string>(Env.CLONES_FOLDER),
+      "private-plugins"
+    );
+    const { pluginPaths, pluginVersions, cleanupPaths } =
       await gitClientService.downloadPrivatePlugins({
         owner,
         repositoryName: repo,
@@ -139,6 +212,8 @@ export class PrivatePluginService {
       resourceId,
       buildId
     );
+    await this.cleanupPluginsDir(cleanupPaths);
+
     return { pluginPaths: newPluginPaths };
   }
 
@@ -169,5 +244,24 @@ export class PrivatePluginService {
     }
 
     return { newPluginPaths };
+  }
+  async cleanupPluginsDir(cleanupPaths: string[]): Promise<void> {
+    for (const path of cleanupPaths) {
+      if (existsSync(path)) {
+        await rm(path, {
+          recursive: true,
+          force: true,
+          maxRetries: 3,
+        }).catch((error) => {
+          this.logger.error(
+            `Failed to delete private plugins repository dir`,
+            error,
+            {
+              repositoryDir: path,
+            }
+          );
+        });
+      }
+    }
   }
 }

@@ -9,25 +9,41 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Text,
+  Tooltip,
 } from "@amplication/ui/design-system";
-import { Fragment, ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  Fragment,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const CLASS_NAME = "data-grid-filters";
 
 type Props<T> = {
-  onChange: (filters: Record<string, string | null> | null) => void;
+  onChange: (filters: Record<string, string | string[] | null> | null) => void;
   columns: DataGridColumn<T>[];
+  fixedFilters?: Record<string, string | string[] | null>;
+  fixedFiltersKey: string; //this must be a unique key to describe the fixed filters (e.g. {currentProjectId})
 };
 
-export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
+export function DataGridFilters<T>({
+  onChange,
+  columns,
+  fixedFilters = {},
+  fixedFiltersKey,
+}: Props<T>) {
   //the selected values for each filter
   const [selectedValues, setSelectedValues] = useState<
-    Record<string, string | null>
+    Record<string, string | string[] | null>
   >({});
   //the filters that are currently visible
   const [visibleFilters, setVisibleFilters] = useState<string[]>([]);
@@ -66,6 +82,10 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
 
   const onRemoveFilter = useCallback(
     (propertyKey: string) => {
+      if (fixedFilters[propertyKey]) {
+        return;
+      }
+
       setVisibleFilters((prevFilters) =>
         prevFilters.filter((key) => key !== propertyKey)
       );
@@ -78,15 +98,31 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
         return newFilters;
       });
     },
-    [onChange]
+    [fixedFilters, onChange]
   );
+
+  useEffect(() => {
+    //reset the filters on first load
+
+    setVisibleFilters(Object.keys(fixedFilters));
+    setSelectedValues(() => {
+      onChange(fixedFilters);
+
+      return fixedFilters;
+    });
+    //do not other deps to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixedFiltersKey]);
 
   //get the filterable properties that are not currently visible for the "add filter" menu
   const filterableColumns = useMemo(() => {
     return columns.filter(
-      (column) => column.filterable && !visibleFilters.includes(column.key)
+      (column) =>
+        column.filterable &&
+        !visibleFilters.includes(column.key) &&
+        !fixedFilters[column.key]
     );
-  }, [columns, visibleFilters]);
+  }, [columns, fixedFilters, visibleFilters]);
 
   const columnsMap = useMemo(() => {
     return columns.reduce((acc, column) => {
@@ -100,9 +136,11 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
       direction={EnumFlexDirection.Row}
       gap={EnumGapSize.Large}
       itemsAlign={EnumItemsAlign.Center}
-      margin={EnumFlexItemMargin.Bottom}
       className={CLASS_NAME}
     >
+      <Tooltip title="Filters" direction="s">
+        <Icon icon="filter" color={EnumTextColor.Black20} />
+      </Tooltip>
       {visibleFilters.map((key) => {
         const columnFilter = columnsMap[key]?.renderFilter;
 
@@ -117,13 +155,14 @@ export function DataGridFilters<T>({ onChange, columns }: Props<T>) {
                 selectedValue={selectedValues[key]}
                 onChange={setFilter}
                 onRemove={onRemoveFilter}
+                disabled={!!fixedFilters[key]}
               />
             ) : (
               <Text
                 textColor={EnumTextColor.ThemeRed}
                 textStyle={EnumTextStyle.Tag}
               >
-                filter is missing
+                filter is missing ({key})
               </Text>
             )}
           </Fragment>
@@ -180,6 +219,7 @@ const FilterComponent = ({
   selectedValue,
   onChange,
   onRemove,
+  disabled,
 }: FilterComponentProps) => {
   return (
     <Fragment key={key}>
@@ -190,6 +230,7 @@ const FilterComponent = ({
         selectedValue,
         onChange,
         onRemove,
+        disabled,
       })}
     </Fragment>
   );

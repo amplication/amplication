@@ -1,0 +1,96 @@
+@import "../../../style/index.scss";
+
+.blueprint-node {
+  overflow: hidden;
+  border-radius: var(--default-border-radius);
+  background-color: vaR(--gray-full);
+  border: 1px solid var(--gray-70);
+  padding: var(--default-spacing);
+  box-sizing: border-box;
+  border-top: 3px solid var(--gray-base);
+
+  &--draggable {
+    .blueprint-node__header {
+      .amp-text {
+        color: var(--gray-base) !important;
+      }
+    }
+  }
+
+  &--highlight {
+    .blueprint-node__header {
+      .amp-text {
+        color: var(--theme-orange) !important;
+      }
+    }
+  }
+
+  &__header {
+    border-bottom: 1px solid var(--gray-70);
+    padding-bottom: var(--default-spacing);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__title {
+    .amp-text {
+      color: var(--gray-20) !important;
+    }
+  }
+
+  &__child-item {
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--icon-spacing);
+    border: 1px solid var(--gray-70);
+    border-radius: var(--default-border-radius);
+
+    &:hover {
+      background-color: var(--gray-80);
+      cursor: pointer;
+    }
+
+    &--add {
+      border: 1px dashed var(--gray-70);
+    }
+  }
+
+  &__handles-container {
+    display: flex;
+    position: relative;
+  }
+
+  &__handle {
+    &_left {
+      left: -3px !important;
+      top: 23px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      background-color: transparent !important;
+    }
+
+    &_right {
+      right: -3px !important;
+      top: 23px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      background-color: transparent !important;
+    }
+  }
+
+  &__handles-container {
+    .blueprint-node__handle {
+      &_left {
+        top: 17px !important;
+        left: -13px !important;
+      }
+
+      &_right {
+        top: 17px !important;
+        right: -13px !important;
+      }
+    }
+  }
+}

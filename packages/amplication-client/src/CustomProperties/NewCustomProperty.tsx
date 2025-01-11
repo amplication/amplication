@@ -24,6 +24,7 @@ const INITIAL_VALUES: Partial<models.CustomProperty> = {
 type Props = {
   onCustomPropertyAdd?: (customProperty: models.CustomProperty) => void;
   disabled?: boolean;
+  blueprintId?: string;
 };
 
 const { AT_LEAST_TWO_CHARACTERS } = validationErrorMessages;
@@ -44,7 +45,11 @@ const FORM_SCHEMA = {
 };
 const CLASS_NAME = "new-custom-property";
 
-const NewCustomProperty = ({ onCustomPropertyAdd, disabled }: Props) => {
+const NewCustomProperty = ({
+  onCustomPropertyAdd,
+  disabled,
+  blueprintId,
+}: Props) => {
   const {
     createCustomProperty,
     createCustomPropertyError: error,
@@ -59,7 +64,12 @@ const NewCustomProperty = ({ onCustomPropertyAdd, disabled }: Props) => {
       setAutoFocus(true);
       createCustomProperty({
         variables: {
-          data,
+          data: {
+            ...data,
+            blueprint: blueprintId
+              ? { connect: { id: blueprintId } }
+              : undefined,
+          },
         },
       })
         .then((result) => {
@@ -71,7 +81,7 @@ const NewCustomProperty = ({ onCustomPropertyAdd, disabled }: Props) => {
         })
         .catch(console.error);
     },
-    [createCustomProperty, onCustomPropertyAdd]
+    [blueprintId, createCustomProperty, onCustomPropertyAdd]
   );
 
   const errorMessage = formatError(error);

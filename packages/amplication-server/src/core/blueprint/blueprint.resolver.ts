@@ -1,15 +1,21 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Blueprint, User } from "../../models";
+import { Blueprint, CustomProperty, User } from "../../models";
 import { BlueprintService } from "./blueprint.service";
 import { BlueprintCreateArgs } from "./dto/BlueprintCreateArgs";
 import { BlueprintFindManyArgs } from "./dto/BlueprintFindManyArgs";
@@ -25,7 +31,6 @@ export class BlueprintResolver {
   constructor(private blueprintService: BlueprintService) {}
 
   @Query(() => [Blueprint], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -35,17 +40,16 @@ export class BlueprintResolver {
   }
 
   @Query(() => Blueprint, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
   async blueprint(@Args() args: FindOneArgs): Promise<Blueprint | null> {
     return this.blueprintService.blueprint(args);
   }
 
   @Mutation(() => Blueprint, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "blueprint.create"
   )
   async createBlueprint(
     @Args() args: BlueprintCreateArgs,
@@ -55,15 +59,21 @@ export class BlueprintResolver {
   }
 
   @Mutation(() => Blueprint, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.id",
+    "blueprint.delete"
+  )
   async deleteBlueprint(@Args() args: FindOneArgs): Promise<Blueprint | null> {
     return this.blueprintService.deleteBlueprint(args);
   }
 
   @Mutation(() => Blueprint, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.BlueprintId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.id",
+    "blueprint.edit"
+  )
   async updateBlueprint(@Args() args: UpdateBlueprintArgs): Promise<Blueprint> {
     return this.blueprintService.updateBlueprint(args);
   }
@@ -73,7 +83,8 @@ export class BlueprintResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlueprintId,
-    "where.blueprint.id"
+    "where.blueprint.id",
+    "blueprint.edit"
   )
   async upsertBlueprintRelation(
     @Args() args: UpsertBlueprintRelationArgs
@@ -86,11 +97,21 @@ export class BlueprintResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlueprintId,
-    "where.blueprint.id"
+    "where.blueprint.id",
+    "blueprint.edit"
   )
   async deleteBlueprintRelation(
     @Args() args: DeleteBlueprintRelationArgs
   ): Promise<BlueprintRelation> {
     return this.blueprintService.deleteRelation(args);
+  }
+
+  @ResolveField(() => [CustomProperty])
+  async properties(@Parent() blueprint: Blueprint): Promise<CustomProperty[]> {
+    return this.blueprintService.properties({
+      where: {
+        id: blueprint.id,
+      },
+    });
   }
 }

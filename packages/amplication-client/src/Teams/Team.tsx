@@ -1,5 +1,6 @@
 import {
   FlexItem,
+  HorizontalRule,
   Snackbar,
   TabContentTitle,
 } from "@amplication/ui/design-system";
@@ -11,14 +12,19 @@ import useTeams from "./hooks/useTeams";
 import TeamForm from "./TeamForm";
 import { DeleteTeam } from "./DeleteTeam";
 import { useAppContext } from "../context/appContext";
-import TeamMemberList from "./TeamMemberList";
+import TeamMemberList from "./Members/TeamMemberList";
+import TeamRoleList from "./Roles/TeamRoleList";
 
 const Team = () => {
   const match = useRouteMatch<{
     teamId: string;
   }>(["/:workspace/settings/teams/:teamId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
+
+  const canDeleteTeam = permissions.canPerformTask("team.delete");
+  const canEditTeam = permissions.canPerformTask("team.edit");
+
   const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
@@ -61,16 +67,26 @@ const Team = () => {
           subTitle={data?.team?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.team && (
+          {data?.team && canDeleteTeam && (
             <DeleteTeam team={data?.team} onDelete={handleDeleteModule} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
       {!loading && (
-        <TeamForm onSubmit={handleSubmit} defaultValues={data?.team} />
+        <TeamForm
+          onSubmit={handleSubmit}
+          defaultValues={data?.team}
+          disabled={!canEditTeam}
+        />
       )}
       <TabContentTitle title="Members" subTitle="Add or remove team members" />
       <TeamMemberList team={data?.team} />
+      <HorizontalRule />
+      <TabContentTitle
+        title="Default Roles"
+        subTitle="Default team roles affect all projects and resources. Specific roles can be set per project if needed."
+      />
+      <TeamRoleList team={data?.team} />
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );

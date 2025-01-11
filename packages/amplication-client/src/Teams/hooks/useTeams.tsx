@@ -2,13 +2,16 @@ import { Reference, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
+  ADD_MEMBER_TO_TEAMS,
   ADD_MEMBERS_TO_TEAM,
+  ADD_ROLES_TO_TEAM,
   CREATE_TEAM,
   DELETE_TEAM,
   FIND_TEAMS,
   GET_TEAM,
   GET_WORKSPACE_USERS,
   REMOVE_MEMBERS_FROM_TEAM,
+  REMOVE_ROLES_FROM_TEAM,
   TEAM_FIELDS_FRAGMENT,
   UPDATE_TEAM,
 } from "../queries/teamsQueries";
@@ -16,6 +19,7 @@ import {
   GET_WORKSPACE_MEMBERS,
   TData as MemberListData,
 } from "../../Workspaces/MemberList";
+import { USER_FIELDS_FRAGMENT } from "../../User/queries/userQueries";
 
 export type WorkspaceUsersData = {
   workspaceUsers: Array<models.User>;
@@ -90,6 +94,7 @@ const useTeams = (teamId?: string) => {
             const newTeamRef = cache.writeFragment({
               data: newTeam,
               fragment: TEAM_FIELDS_FRAGMENT,
+              fragmentName: "TeamFields",
             });
 
             if (
@@ -180,10 +185,54 @@ const useTeams = (teamId?: string) => {
     }
   );
 
+  //Team members
+
   const [
     addMembersToTeamInternal,
     { error: addMembersToTeamError, loading: addMembersToTeamLoading },
-  ] = useMutation<TUpdateData>(ADD_MEMBERS_TO_TEAM, {});
+  ] = useMutation<{
+    addMembersToTeam: models.Team;
+  }>(ADD_MEMBERS_TO_TEAM, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const updatedTeam = data.addMembersToTeam;
+
+      // Iterate over each member in the updated team
+      updatedTeam.members.forEach((member) => {
+        // Identify the user's cache entry
+        const userId = cache.identify({ __typename: "User", id: member.id });
+
+        if (!userId) return; // If the user is not in the cache, skip
+
+        // Modify the user's teams field
+        cache.modify({
+          id: userId,
+          fields: {
+            teams(existingTeamsRefs = [], { readField }) {
+              // Check if the team is already in the user's teams to avoid duplicates
+              const isAlreadyInTeams = existingTeamsRefs.some(
+                (teamRef: any) => readField("id", teamRef) === updatedTeam.id
+              );
+
+              if (isAlreadyInTeams) {
+                return existingTeamsRefs;
+              }
+
+              // Create a reference to the updated team
+              const newTeamRef = cache.writeFragment({
+                data: updatedTeam,
+                fragment: TEAM_FIELDS_FRAGMENT,
+                fragmentName: "TeamFields",
+              });
+
+              return [...existingTeamsRefs, newTeamRef];
+            },
+          },
+        });
+      });
+    },
+  });
 
   const addMembersToTeam = useCallback(
     (userIds: string[]) => {
@@ -196,12 +245,78 @@ const useTeams = (teamId?: string) => {
             userIds: userIds,
           },
         },
-      }).then(() => {
-        refetchAvailableMembers();
-        getTeamRefetch();
-      });
+      })
+        .then(() => {
+          refetchAvailableMembers();
+          getTeamRefetch();
+        })
+        .catch(console.error);
     },
     [addMembersToTeamInternal, teamId, refetchAvailableMembers, getTeamRefetch]
+  );
+
+  const [
+    addMemberToTeamsInternal,
+    { error: addMemberToTeamsError, loading: addMemberToTeamsLoading },
+  ] = useMutation<{
+    addMemberToTeams: models.User;
+  }>(ADD_MEMBER_TO_TEAMS, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const updatedUser = data.addMemberToTeams;
+
+      // Iterate over each member in the updated team
+      updatedUser.teams.forEach((team) => {
+        // Identify the user's cache entry
+        const teamId = cache.identify({ __typename: "Team", id: team.id });
+
+        if (!teamId) return; // If the user is not in the cache, skip
+
+        // Modify the user's teams field
+        cache.modify({
+          id: teamId,
+          fields: {
+            members(existingMembersRefs = [], { readField }) {
+              // Check if the team is already in the user's teams to avoid duplicates
+              const isAlreadyInTeams = existingMembersRefs.some(
+                (memberRef: any) =>
+                  readField("id", memberRef) === updatedUser.id
+              );
+
+              if (isAlreadyInTeams) {
+                return existingMembersRefs;
+              }
+
+              // Create a reference to the updated team
+              const newMemberRef = cache.writeFragment({
+                data: updatedUser,
+                fragment: USER_FIELDS_FRAGMENT,
+                fragmentName: "UserFields",
+              });
+
+              return [...existingMembersRefs, newMemberRef];
+            },
+          },
+        });
+      });
+    },
+  });
+
+  const addMemberToTeams = useCallback(
+    (userId: string, teamIds: string[]) => {
+      addMemberToTeamsInternal({
+        variables: {
+          where: {
+            id: userId,
+          },
+          data: {
+            teamIds: teamIds,
+          },
+        },
+      }).catch(console.error);
+    },
+    [addMemberToTeamsInternal]
   );
 
   const [
@@ -210,10 +325,12 @@ const useTeams = (teamId?: string) => {
       error: removeMembersFromTeamError,
       loading: removeMembersFromTeamLoading,
     },
-  ] = useMutation<TUpdateData>(REMOVE_MEMBERS_FROM_TEAM, {});
+  ] = useMutation<{
+    removeMembersFromTeam: models.Team;
+  }>(REMOVE_MEMBERS_FROM_TEAM, {});
 
   const removeMembersFromTeam = useCallback(
-    (userIds: string[]) => {
+    (teamId: string, userIds: string[]) => {
       removeMembersFromTeamInternal({
         variables: {
           where: {
@@ -223,10 +340,37 @@ const useTeams = (teamId?: string) => {
             userIds: userIds,
           },
         },
-      }).then(() => {
-        refetchAvailableMembers();
-        getTeamRefetch();
-      });
+        update(cache, { data }) {
+          if (!data) return;
+
+          const updatedTeam = data.removeMembersFromTeam;
+
+          // Iterate over each removed member ID
+          userIds.forEach((memberId) => {
+            // Identify the user's cache entry
+            const userId = cache.identify({ __typename: "User", id: memberId });
+
+            if (!userId) return; // If the user is not in the cache, skip
+
+            // Modify the user's teams field to remove the team
+            cache.modify({
+              id: userId,
+              fields: {
+                teams(existingTeamsRefs: any[] = [], { readField }) {
+                  return existingTeamsRefs.filter(
+                    (teamRef) => readField("id", teamRef) !== updatedTeam.id
+                  );
+                },
+              },
+            });
+          });
+        },
+      })
+        .then(() => {
+          refetchAvailableMembers();
+          getTeamRefetch();
+        })
+        .catch(console.error);
     },
     [
       removeMembersFromTeamInternal,
@@ -234,6 +378,58 @@ const useTeams = (teamId?: string) => {
       refetchAvailableMembers,
       getTeamRefetch,
     ]
+  );
+
+  //Team Roles
+
+  const [
+    addRolesToTeamInternal,
+    { error: addRolesToTeamError, loading: addRolesToTeamLoading },
+  ] = useMutation<TUpdateData>(ADD_ROLES_TO_TEAM, {});
+
+  const addRolesToTeam = useCallback(
+    (roleIds: string[]) => {
+      addRolesToTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            roleIds: roleIds,
+          },
+        },
+      })
+        .then(() => {
+          getTeamRefetch();
+        })
+        .catch(console.error);
+    },
+    [addRolesToTeamInternal, teamId, getTeamRefetch]
+  );
+
+  const [
+    removeRolesFromTeamInternal,
+    { error: removeRolesFromTeamError, loading: removeRolesFromTeamLoading },
+  ] = useMutation<TUpdateData>(REMOVE_ROLES_FROM_TEAM, {});
+
+  const removeRolesFromTeam = useCallback(
+    (roleIds: string[]) => {
+      removeRolesFromTeamInternal({
+        variables: {
+          where: {
+            id: teamId,
+          },
+          data: {
+            roleIds: roleIds,
+          },
+        },
+      })
+        .then(() => {
+          getTeamRefetch();
+        })
+        .catch(console.error);
+    },
+    [removeRolesFromTeamInternal, teamId, getTeamRefetch]
   );
 
   return {
@@ -266,6 +462,15 @@ const useTeams = (teamId?: string) => {
     removeMembersFromTeam,
     removeMembersFromTeamError,
     removeMembersFromTeamLoading,
+    addRolesToTeam,
+    addRolesToTeamError,
+    addRolesToTeamLoading,
+    removeRolesFromTeam,
+    removeRolesFromTeamError,
+    removeRolesFromTeamLoading,
+    addMemberToTeams,
+    addMemberToTeamsError,
+    addMemberToTeamsLoading,
   };
 };
 

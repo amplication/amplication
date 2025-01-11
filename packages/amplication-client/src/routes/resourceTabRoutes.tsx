@@ -83,14 +83,14 @@ export const resourceTabRoutes = (projectBasePath) => [
   },
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/roles`,
-    Component: lazy(() => import("../Roles/RolesPage")),
+    Component: lazy(() => import("../ResourceRoles/RolesPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
     routes: [
       {
         path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/roles/:roleId`,
-        Component: lazy(() => import("../Roles/Role")),
+        Component: lazy(() => import("../ResourceRoles/Role")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,
@@ -147,7 +147,7 @@ export const resourceTabRoutes = (projectBasePath) => [
 
   {
     path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/git-sync`,
-    Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
+    Component: lazy(() => import("../Resource/git/ResourceGitSettingsPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,

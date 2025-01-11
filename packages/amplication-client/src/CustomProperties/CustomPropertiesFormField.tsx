@@ -6,23 +6,55 @@ import CustomPropertiesFormFieldText from "./CustomPropertiesFormFieldText";
 
 type Props = {
   property: CustomProperty;
+  fieldNamePrefix?: string;
+  disabled: boolean;
 };
 
-function CustomPropertiesFormField({ property }: Props) {
+function CustomPropertiesFormField({
+  property,
+  fieldNamePrefix,
+  disabled,
+}: Props) {
+  const prefix = fieldNamePrefix || "";
+
   if (property.type === EnumCustomPropertyType.Text) {
-    return <CustomPropertiesFormFieldText property={property} />;
+    return (
+      <CustomPropertiesFormFieldText
+        disabled={disabled}
+        property={property}
+        fieldNamePrefix={prefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.Link) {
-    return <CustomPropertiesFormFieldLink property={property} />;
+    return (
+      <CustomPropertiesFormFieldLink
+        disabled={disabled}
+        property={property}
+        fieldNamePrefix={prefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.Select) {
-    return <CustomPropertiesFormFieldSelect property={property} />;
+    return (
+      <CustomPropertiesFormFieldSelect
+        disabled={disabled}
+        property={property}
+        fieldNamePrefix={prefix}
+      />
+    );
   }
 
   if (property.type === EnumCustomPropertyType.MultiSelect) {
-    return <CustomPropertiesFormFieldMultiSelect property={property} />;
+    return (
+      <CustomPropertiesFormFieldMultiSelect
+        disabled={disabled}
+        property={property}
+        fieldNamePrefix={prefix}
+      />
+    );
   }
 
   return null;

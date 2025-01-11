@@ -7,47 +7,49 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
+import { EntityService, ResourceService } from "..";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { Roles } from "../../decorators/roles.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
+import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Resource, Entity, User, Project, Team, Blueprint } from "../../models";
+import { Blueprint, Entity, Project, Resource, Team, User } from "../../models";
 import { GitRepository } from "../../models/GitRepository";
-import { ResourceService, EntityService } from "..";
+import { BlueprintService } from "../blueprint/blueprint.service";
 import { BuildService } from "../build/build.service";
 import { Build } from "../build/dto/Build";
 import { FindManyBuildArgs } from "../build/dto/FindManyBuildArgs";
 import { FindManyEntityArgs } from "../entity/dto";
 import { Environment } from "../environment/dto/Environment";
 import { EnvironmentService } from "../environment/environment.service";
-import {
-  CreateServiceWithEntitiesArgs,
-  CreateOneResourceArgs,
-  FindManyResourceArgs,
-  UpdateOneResourceArgs,
-  ResourceCreateWithEntitiesResult,
-  UpdateCodeGeneratorVersionArgs,
-} from "./dto";
-import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
-import { UserAction } from "../userAction/dto";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
-import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
-import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
-import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { Owner } from "../ownership/dto/Owner";
 import { OwnershipService } from "../ownership/ownership.service";
-import { Ownership } from "../ownership/dto/Ownership";
-import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { ProjectService } from "../project/project.service";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { BlueprintService } from "../blueprint/blueprint.service";
 import { Relation } from "../relation/dto/Relation";
 import { RelationService } from "../relation/relation.service";
+import { ResourceSettings } from "../resourceSettings/dto";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
+import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { UserAction } from "../userAction/dto";
+import {
+  CreateOneResourceArgs,
+  CreateServiceWithEntitiesArgs,
+  FindManyResourceArgs,
+  ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
+  UpdateOneResourceArgs,
+} from "./dto";
+import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
+import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
+import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
+import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
+import { TeamAssignment } from "../../models/TeamAssignment";
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -63,11 +65,11 @@ export class ResourceResolver {
     private readonly ownershipService: OwnershipService,
     private readonly projectService: ProjectService,
     private readonly blueprintService: BlueprintService,
-    private readonly relationService: RelationService
+    private readonly relationService: RelationService,
+    private readonly resourceSettingsService: ResourceSettingsService
   ) {}
 
   @Query(() => Resource, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
@@ -76,7 +78,6 @@ export class ResourceResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
@@ -85,22 +86,22 @@ export class ResourceResolver {
     return this.resourceService.resources(args);
   }
 
-  @Query(() => [Resource], {
+  @Query(() => PaginatedResourceQueryResult, {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.project.workspace.id"
   )
-  async catalog(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
-    return this.resourceService.resources(args);
+  async catalog(
+    @Args() args: FindManyResourceArgs
+  ): Promise<PaginatedResourceQueryResult> {
+    return this.resourceService.searchResourcesWithCount(args);
   }
 
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async messageBrokerConnectedServices(
     @Args() args: FindOneArgs
@@ -138,10 +139,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createMessageBroker"
   )
   async createMessageBroker(
     @Args() args: CreateOneResourceArgs,
@@ -151,7 +152,6 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
@@ -164,10 +164,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.create"
   )
   async createComponent(
     @Args() args: CreateOneResourceArgs,
@@ -177,10 +177,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createService"
   )
   async createService(
     @Args() args: CreateOneResourceArgs,
@@ -190,10 +190,10 @@ export class ResourceResolver {
   }
 
   @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.resource.project.connect.id"
+    "data.resource.project.connect.id",
+    "resource.createService"
   )
   async createServiceWithEntities(
     @Args() args: CreateServiceWithEntitiesArgs,
@@ -205,7 +205,11 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.delete"
+  )
   async deleteResource(
     @Args() args: FindOneArgs,
     @UserEntity() user: User
@@ -216,29 +220,47 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateResource(
-    @Args() args: UpdateOneResourceArgs
+    @Args() args: UpdateOneResourceArgs,
+    @UserEntity() user: User
   ): Promise<Resource | null> {
-    return this.resourceService.updateResource(args);
+    return this.resourceService.updateResource(args, user);
   }
 
-  @Mutation(() => Ownership, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  @Mutation(() => Resource, { nullable: false })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "data.resourceId",
+    "resource.*.edit"
+  )
   async setResourceOwner(
     @Args() args: SetResourceOwnerArgs,
     @UserEntity() user: User
-  ): Promise<Ownership> {
-    return this.resourceService.setOwner(
+  ): Promise<Resource> {
+    await this.resourceService.setOwner(
       args.data.resourceId,
       args.data.userId,
       args.data.teamId
     );
+
+    return this.resourceService.resource({
+      where: {
+        id: args.data.resourceId,
+      },
+    });
   }
 
   @Mutation(() => UserAction, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "data.projectId")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    "data.projectId",
+    "resource.*.edit"
+  )
   async redesignProject(
     @Args() args: RedesignProjectArgs,
     @UserEntity() user: User
@@ -249,7 +271,11 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateCodeGeneratorVersion(
     @Args() args: UpdateCodeGeneratorVersionArgs,
     @UserEntity() user: User
@@ -367,5 +393,31 @@ export class ResourceResolver {
         },
       },
     });
+  }
+
+  @ResolveField(() => ResourceSettings, { nullable: true })
+  async settings(
+    @Parent() resource: Resource
+  ): Promise<ResourceSettings | null> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceSettingsService.getResourceSettingsBlock({
+      where: {
+        id: resource.id,
+      },
+    });
+  }
+
+  @ResolveField(() => [TeamAssignment], { nullable: true })
+  async teamAssignments(
+    @Parent() resource: Resource
+  ): Promise<TeamAssignment[]> {
+    if (!resource.id) {
+      return null;
+    }
+
+    return await this.resourceService.getTeamAssignments(resource.id);
   }
 }

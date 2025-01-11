@@ -3,7 +3,7 @@ import React from "react";
 
 import OnboardingWithJovu from "./OnboardingWithJovu";
 
-const OnboardingPreviewPage: React.FC = () => {
+const OnboardingWithJovuPage: React.FC = () => {
   return (
     <Modal open fullScreen showCloseButton={false}>
       <OnboardingWithJovu />
@@ -11,4 +11,4 @@ const OnboardingPreviewPage: React.FC = () => {
   );
 };
 
-export default OnboardingPreviewPage;
+export default OnboardingWithJovuPage;

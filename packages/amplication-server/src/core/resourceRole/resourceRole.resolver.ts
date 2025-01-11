@@ -44,7 +44,8 @@ export class ResourceRoleResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
+    "data.resource.connect.id",
+    "resource.*.edit"
   )
   async createResourceRole(
     @Args() args: CreateResourceRoleArgs
@@ -55,7 +56,11 @@ export class ResourceRoleResolver {
   @Mutation(() => ResourceRole, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceRoleId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceRoleId,
+    "where.id",
+    "resource.*.edit"
+  )
   async deleteResourceRole(
     @Args() args: DeleteResourceRoleArgs
   ): Promise<ResourceRole | null> {
@@ -65,7 +70,11 @@ export class ResourceRoleResolver {
   @Mutation(() => ResourceRole, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceRoleId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceRoleId,
+    "where.id",
+    "resource.*.edit"
+  )
   async updateResourceRole(
     @Args() args: UpdateOneResourceRoleArgs
   ): Promise<ResourceRole | null> {

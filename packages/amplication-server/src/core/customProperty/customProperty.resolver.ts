@@ -2,7 +2,6 @@ import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -26,7 +25,6 @@ export class CustomPropertyResolver {
   constructor(private customPropertyService: CustomPropertyService) {}
 
   @Query(() => [CustomProperty], { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
     "where.workspace.id"
@@ -38,7 +36,6 @@ export class CustomPropertyResolver {
   }
 
   @Query(() => CustomProperty, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.CustomPropertyId, "where.id")
   async customProperty(
     @Args() args: FindOneArgs
@@ -47,10 +44,10 @@ export class CustomPropertyResolver {
   }
 
   @Mutation(() => CustomProperty, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    "data.workspace.connect.id"
+    "data.workspace.connect.id",
+    "property.create"
   )
   async createCustomProperty(
     @Args() args: CustomPropertyCreateArgs,
@@ -60,8 +57,11 @@ export class CustomPropertyResolver {
   }
 
   @Mutation(() => CustomProperty, { nullable: true })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.CustomPropertyId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.CustomPropertyId,
+    "where.id",
+    "property.delete"
+  )
   async deleteCustomProperty(
     @Args() args: FindOneArgs
   ): Promise<CustomProperty | null> {
@@ -69,8 +69,11 @@ export class CustomPropertyResolver {
   }
 
   @Mutation(() => CustomProperty, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.CustomPropertyId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.CustomPropertyId,
+    "where.id",
+    "property.edit"
+  )
   async updateCustomProperty(
     @Args() args: UpdateCustomPropertyArgs
   ): Promise<CustomProperty> {
@@ -82,7 +85,8 @@ export class CustomPropertyResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.CustomPropertyId,
-    "data.customProperty.connect.id"
+    "data.customProperty.connect.id",
+    "property.edit"
   )
   async createCustomPropertyOption(
     @Args() args: CreateCustomPropertyOptionArgs
@@ -95,7 +99,8 @@ export class CustomPropertyResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.CustomPropertyId,
-    "where.customProperty.id"
+    "where.customProperty.id",
+    "property.edit"
   )
   async updateCustomPropertyOption(
     @Args() args: UpdateCustomPropertyOptionArgs
@@ -108,7 +113,8 @@ export class CustomPropertyResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.CustomPropertyId,
-    "where.customProperty.id"
+    "where.customProperty.id",
+    "property.edit"
   )
   async deleteCustomPropertyOption(
     @Args() args: DeleteCustomPropertyOptionArgs

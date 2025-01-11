@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
 import { useAppContext } from "../context/appContext";
 import ResourceRelationsForm from "./ResourceRelationForm";
 import useResourceRelations from "./hooks/useResourceRelations";
@@ -7,9 +6,10 @@ import useResourceRelations from "./hooks/useResourceRelations";
 const CLASS_NAME = "resource-relations";
 
 function ResourceRelations() {
-  const { blueprintsMap } = useBlueprintsMap();
-
-  const { currentResource } = useAppContext();
+  const {
+    blueprintsMap: { blueprintsMap },
+    currentResource,
+  } = useAppContext();
 
   const { relations } = useResourceRelations(currentResource?.id);
 
@@ -31,6 +31,7 @@ function ResourceRelations() {
       {relationsMap &&
         currentBlueprint?.relations?.map((relationDef) => (
           <ResourceRelationsForm
+            key={relationDef.key}
             resourceId={currentResource?.id}
             relation={relationsMap[relationDef.key]}
             relationDef={relationDef}

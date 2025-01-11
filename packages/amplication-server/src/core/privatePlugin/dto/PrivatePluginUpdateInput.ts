@@ -24,4 +24,10 @@ export class PrivatePluginUpdateInput extends BlockUpdateInput {
     nullable: true,
   })
   blueprints?: string[];
+
+  @Field(() => String, { nullable: true })
+  icon?: string;
+
+  @Field(() => String, { nullable: true })
+  color?: string;
 }

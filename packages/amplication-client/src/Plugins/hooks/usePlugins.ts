@@ -32,6 +32,7 @@ const PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES: PluginVersion = {
   id: "",
   pluginId: "",
   enabled: true,
+  deprecated: false,
 };
 
 const PRIVATE_PLUGIN_DEFAULT_VALUES: Plugin = {
@@ -103,8 +104,12 @@ const usePlugins = (
               ? privatePlugin.displayName
               : `${privatePlugin.displayName} (Disabled)`,
             description: privatePlugin.description,
+            icon: privatePlugin.icon,
+            color: privatePlugin.color,
+            isPrivate: true,
             versions: [
               {
+                //add the "latest" version
                 ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
                 id: privatePlugin.id,
                 pluginId: privatePlugin.pluginId,
@@ -120,6 +125,7 @@ const usePlugins = (
                 .map((version) => ({
                   ...PRIVATE_PLUGIN_VERSION_DEFAULT_VALUES,
                   ...version,
+                  isLatest: false,
                 })),
             ],
           };

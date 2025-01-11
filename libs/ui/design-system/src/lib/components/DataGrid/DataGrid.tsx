@@ -3,12 +3,14 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import "react-data-grid/lib/styles.css";
 
 import ReactDataGrid, {
   Column,
+  DataGridHandle,
   DataGridProps,
   RenderSortStatusProps,
   RowsChangeData,
@@ -34,7 +36,8 @@ export type DataGridRenderFilterProps = {
   label: string;
   onChange: (key: string, filter: any) => void;
   onRemove: (key: string) => void;
-  selectedValue: string | null;
+  selectedValue: string | string[] | null;
+  disabled: boolean;
 };
 
 export type DataGridColumn<T> = Column<T> & {
@@ -42,6 +45,7 @@ export type DataGridColumn<T> = Column<T> & {
   hidden?: boolean;
   filterable?: boolean;
   name: string;
+  sortKey?: string; //support keys with . notation like "project.id"
   renderFilter?: (props: DataGridRenderFilterProps) => ReactNode;
 };
 
@@ -52,14 +56,16 @@ export type ExpandableDataGridRow<T> = T & {
 
 export type Props<T> = Omit<
   DataGridProps<T>,
-  "columns" | "onSortColumnsChange" | "rows"
+  "columns" | "onSortColumnsChange" | "rows" | "rowHeight"
 > & {
   clientSideSort?: boolean;
+  rowHeight?: number;
   columns: DataGridColumn<T>[];
   onSortColumnsChange?: (sortColumns: DataGridSortColumn[]) => void;
   rows: T[];
   enableRowDetails?: boolean;
   onColumnsReorder?: (sourceColumnKey: string, targetColumnKey: string) => void;
+  onScrollToBottom?: () => void;
 };
 
 const SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER: Record<
@@ -81,10 +87,12 @@ export function DataGrid<T>({
   onSortColumnsChange,
   enableRowDetails,
   onColumnsReorder,
+  onScrollToBottom,
   ...rest
 }: Props<T>) {
   const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
   const [rows, setRows] = useState<T[]>(incomingRows);
+  const gridRef = useRef<DataGridHandle>(null);
 
   const visibleColumns = useMemo(
     () => columns.filter((c) => !c.hidden),
@@ -95,15 +103,22 @@ export function DataGrid<T>({
     (sortColumns: SortColumn[]) => {
       setSortColumns(sortColumns);
 
+      const sortColumnsWithSortKey = sortColumns.map((sortColumn) => ({
+        ...sortColumn,
+        columnKey:
+          columns.find((column) => column.key === sortColumn.columnKey)
+            ?.sortKey || sortColumn.columnKey,
+      }));
+
       onSortColumnsChange &&
         onSortColumnsChange(
-          sortColumns.map((sortColumn) => ({
+          sortColumnsWithSortKey.map((sortColumn) => ({
             [sortColumn.columnKey]:
               SORT_DIRECTION_TO_DATA_GRID_SORT_ORDER[sortColumn.direction],
           }))
         );
     },
-    [onSortColumnsChange]
+    [columns, onSortColumnsChange]
   );
 
   const columnValueGetters = useMemo(() => {
@@ -166,12 +181,36 @@ export function DataGrid<T>({
     }
   }
 
+  const checkIfNoScrollAndLoadMore = useCallback(() => {
+    if (gridRef.current) {
+      const containerHeight = gridRef.current.element?.clientHeight || 0;
+      const totalRowHeight = rows.length * rowHeight;
+
+      if (totalRowHeight <= containerHeight && onScrollToBottom) {
+        onScrollToBottom();
+      }
+    }
+  }, [onScrollToBottom, rowHeight, rows]);
+
+  useEffect(() => {
+    checkIfNoScrollAndLoadMore(); // Check on mount and whenever rows change
+  }, [checkIfNoScrollAndLoadMore, rows]);
+
+  async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+    //only trigger on scroll to bottom if the user is scrolling down
+    if (isAtBottom(event) && event.currentTarget.scrollTop > 0) {
+      onScrollToBottom && onScrollToBottom();
+    }
+  }
+
   return (
     <ReactDataGrid
+      ref={gridRef}
       key={visibleColumns.length}
       columns={visibleColumns}
       style={{ maxHeight: "100%", height: "auto" }}
       rowHeight={rowHeight}
+      onScroll={handleScroll}
       onRowsChange={onRowsChange}
       defaultColumnOptions={{
         sortable: true,
@@ -201,4 +240,11 @@ function renderSortStatus({ sortDirection, priority }: RenderSortStatusProps) {
       <span>{priority}</span>
     </>
   ) : null;
+}
+
+function isAtBottom({ currentTarget }: React.UIEvent<HTMLDivElement>): boolean {
+  return (
+    currentTarget.scrollTop + 10 >=
+    currentTarget.scrollHeight - currentTarget.clientHeight
+  );
 }

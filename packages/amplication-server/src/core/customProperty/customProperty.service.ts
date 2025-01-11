@@ -21,17 +21,31 @@ import { UpdateCustomPropertyArgs } from "./dto/UpdateCustomPropertyArgs";
 import { UpdateCustomPropertyOptionArgs } from "./dto/UpdateCustomPropertyOptionArgs";
 
 export const INVALID_CUSTOM_PROPERTY_ID = "Invalid customPropertyId";
+import type { JSONSchema7 as JSONSchema } from "json-schema";
+import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
+import { SchemaValidationResult } from "../../dto/schemaValidationResult";
 
 @Injectable()
 export class CustomPropertyService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService
   ) {}
 
   async customProperties(
     args: CustomPropertyFindManyArgs
   ): Promise<CustomProperty[]> {
+    args.where = args.where || {};
+
+    //when searching for properties, without specifying blueprintId or blueprint, we should return only global properties
+    if (
+      args.where.blueprintId === undefined &&
+      args.where.blueprint === undefined
+    ) {
+      args.where.blueprintId = null;
+    }
+
     const properties = await this.prisma.customProperty.findMany({
       ...args,
       where: {
@@ -277,5 +291,79 @@ export class CustomPropertyService {
     });
 
     return deleted;
+  }
+
+  async validateCustomProperties(
+    customProperties: CustomProperty[],
+    data: Record<string, unknown>
+  ): Promise<SchemaValidationResult> {
+    try {
+      const schema = this.getValidationSchema(customProperties);
+      return this.jsonSchemaValidationService.validateSchema(schema, data);
+    } catch (error) {
+      return new SchemaValidationResult(false, error);
+    }
+  }
+
+  getValidationSchema(customProperties: CustomProperty[]): JSONSchema & {
+    errorMessage: {
+      properties: Record<string, string>;
+    };
+  } {
+    const properties: Record<string, JSONSchema> = {};
+    const required: string[] = [];
+    const errorMessage = {
+      properties: {},
+    };
+
+    for (const customProperty of customProperties) {
+      const key = customProperty.key;
+      const schema: JSONSchema & {
+        isNotEmpty?: boolean;
+      } = {
+        title: customProperty.name,
+        type: "string",
+      };
+
+      if (customProperty.type === EnumCustomPropertyType.Select) {
+        schema.enum = customProperty.options.map((option) => option.value);
+      }
+
+      if (customProperty.type === EnumCustomPropertyType.MultiSelect) {
+        schema.type = "array";
+        schema.items = {
+          type: "string",
+          enum: customProperty.options.map((option) => option.value),
+        };
+      }
+
+      if (customProperty.required) {
+        required.push(key);
+        schema.isNotEmpty = true;
+        errorMessage.properties[key] = `${customProperty.name} is required`;
+
+        if (customProperty.type === EnumCustomPropertyType.MultiSelect) {
+          schema.minItems = 1;
+          errorMessage.properties[
+            key
+          ] = `At least one ${customProperty.name} is required`;
+        }
+      }
+
+      if (customProperty.validationRule) {
+        schema.pattern = customProperty.validationRule;
+        errorMessage.properties[key] = customProperty.validationMessage;
+      }
+
+      properties[key] = schema;
+    }
+
+    return {
+      additionalProperties: false, //do not allow additional properties
+      type: "object",
+      required,
+      errorMessage,
+      properties,
+    };
   }
 }

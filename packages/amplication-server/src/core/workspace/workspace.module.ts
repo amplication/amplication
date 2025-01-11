@@ -9,7 +9,6 @@ import { UserModule } from "../user/user.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
 import { ProjectModule } from "../project/project.module";
 import { BillingModule } from "../billing/billing.module";
-import { ResourceModule } from "../resource/resource.module";
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { ResourceModule } from "../resource/resource.module";
     MailModule,
     UserModule,
     ProjectModule,
-    ResourceModule,
     SubscriptionModule,
     BillingModule,
   ],

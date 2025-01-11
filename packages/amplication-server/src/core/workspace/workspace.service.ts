@@ -1,4 +1,3 @@
-import { EnumAuthProviderType } from "@amplication/code-gen-types";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConflictException, Inject, Injectable } from "@nestjs/common";
@@ -8,24 +7,17 @@ import cuid from "cuid";
 import { addDays } from "date-fns";
 import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
-import { Role } from "../../enums/Role";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { Account, Project, Resource, User, Workspace } from "../../models";
+import { Role, Team, User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { generateRandomString } from "../auth/auth-utils";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
-import { AuthUser, CreatePreviewServiceSettingsArgs } from "../auth/types";
 import { BillingService } from "../billing/billing.service";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
-import { CreateOneResourceArgs } from "../resource/dto";
-import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { ResourceService } from "../resource/resource.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { Subscription } from "../subscription/dto/Subscription";
 import { SubscriptionService } from "../subscription/subscription.service";
@@ -47,12 +39,68 @@ import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
-type PreviewAccountEnvironment = {
-  workspace: Workspace & {
-    users: AuthUser[];
-  };
-  project: Project;
-  resource?: Resource;
+type DefaultTeamWithRole = {
+  team: Omit<Team, "id" | "createdAt" | "updatedAt" | "workspaceId">;
+  role: Omit<Role, "id" | "createdAt" | "updatedAt" | "workspaceId">;
+};
+
+const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultTeamWithRole> = {
+  admins: {
+    team: {
+      name: "Admins",
+      description: "Admins team",
+      color: "#ACD371",
+    },
+    role: {
+      name: "Admins",
+      key: "ADMINS",
+      description: "Can access and manage all resources",
+      permissions: ["*"],
+    },
+  },
+  platform: {
+    team: {
+      name: "Platform Engineers",
+      description: "Platform Engineers team",
+      color: "#20A4F3",
+    },
+    role: {
+      name: "Platform Engineers",
+      key: "PLATFORM_ENGINEERS",
+      description: "Can create and manage Plugins and Templates",
+      permissions: [
+        "project.create",
+        "privatePlugin.create",
+        "privatePlugin.delete",
+        "privatePlugin.edit",
+        "privatePlugin.version.create",
+        "privatePlugin.version.edit",
+        "resource.createTemplate",
+      ],
+    },
+  },
+  developers: {
+    team: {
+      name: "Developers",
+      description: "Developers team",
+      color: "#F6AB50",
+    },
+    role: {
+      name: "Developer",
+      key: "DEVELOPER",
+      description: "Can create and build resources and services",
+      permissions: [
+        "project.create",
+        "resource.*.edit",
+        "resource.delete",
+        "resource.create",
+        "resource.createFromTemplate",
+        "resource.createMessageBroker",
+        "resource.createService",
+        "resource.createTemplate",
+      ],
+    },
+  },
 };
 
 @Injectable()
@@ -64,7 +112,6 @@ export class WorkspaceService {
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
-    private readonly resourceService: ResourceService,
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly configService: ConfigService,
@@ -83,66 +130,10 @@ export class WorkspaceService {
     return this.prisma.workspace.findMany(args);
   }
 
-  async deleteWorkspace(args: FindOneArgs): Promise<Workspace | null> {
-    return this.prisma.workspace.delete(args);
-  }
-
   async updateWorkspace(
     args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.prisma.workspace.update(args);
-  }
-
-  async createPreviewWorkspace(
-    args: Prisma.WorkspaceCreateArgs,
-    accountId: string
-  ): Promise<Workspace> {
-    const workspace = await this.prisma.workspace.create({
-      ...args,
-      data: {
-        ...args.data,
-        users: {
-          create: {
-            account: { connect: { id: accountId } },
-            isOwner: true,
-            userRoles: {
-              create: {
-                role: Role.OrganizationAdmin,
-              },
-            },
-          },
-        },
-      },
-      include: {
-        ...args.include,
-        // Include users by default, allow to bypass it for including additional user links
-        users: args?.include?.users || true,
-      },
-    });
-
-    const account = await this.prisma.account.findUnique({
-      where: {
-        id: accountId,
-      },
-    });
-
-    await this.billingService.provisionPreviewCustomer(
-      workspace.id,
-      EnumPreviewAccountType[account.previewAccountType]
-    );
-
-    await this.billingService.reportUsage(
-      workspace.id,
-      BillingFeature.TeamMembers
-    );
-
-    return workspace;
-  }
-
-  async convertPreviewSubscriptionToFreeWithTrial(workspaceId: string) {
-    await this.billingService.provisionNewSubscriptionForPreviewAccount(
-      workspaceId
-    );
   }
 
   private async shouldAllowWorkspaceCreation(
@@ -186,7 +177,7 @@ export class WorkspaceService {
     }
 
     // Create a new user and link it to the account
-    // Assign the user an "ORGANIZATION_ADMIN" role
+    // Assign the user as the owner of the workspace
     const workspace = await this.prisma.workspace.create({
       ...args,
       data: {
@@ -195,11 +186,6 @@ export class WorkspaceService {
           create: {
             account: { connect: { id: accountId } },
             isOwner: true,
-            userRoles: {
-              create: {
-                role: Role.OrganizationAdmin,
-              },
-            },
           },
         },
       },
@@ -213,6 +199,9 @@ export class WorkspaceService {
     await this.billingService.provisionCustomer(workspace.id);
 
     const [user] = workspace.users;
+
+    await this.createDefaultTeams(workspace, user);
+
     const newProject = await this.projectService.createProject(
       {
         data: {
@@ -233,6 +222,42 @@ export class WorkspaceService {
     );
 
     return workspace;
+  }
+
+  private async createDefaultTeams(workspace: Workspace, owner: User) {
+    for (const [, defaultValue] of Object.entries(DEFAULT_TEAMS_AND_ROLES)) {
+      const newRole = await this.prisma.role.create({
+        data: {
+          ...defaultValue.role,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      });
+
+      await this.prisma.team.create({
+        data: {
+          ...defaultValue.team,
+          members: {
+            connect: {
+              id: owner.id,
+            },
+          },
+          roles: {
+            connect: {
+              id: newRole.id,
+            },
+          },
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      });
+    }
   }
 
   private async canInvite(workspaceId: string): Promise<boolean> {
@@ -374,11 +399,6 @@ export class WorkspaceService {
           create: {
             account: { connect: { id: account.id } },
             isOwner: false,
-            userRoles: {
-              create: {
-                role: Role.OrganizationAdmin,
-              },
-            },
           },
         },
       },
@@ -681,129 +701,5 @@ export class WorkspaceService {
       this.logger.error(error);
       return false;
     }
-  }
-
-  /**
-   * workspace, project and service creation for preview account
-   */
-
-  async createPreviewEnvironment(
-    account: Account
-  ): Promise<PreviewAccountEnvironment> {
-    const workspaceName = `Amplication-${generateRandomString()}`;
-    const projectName = account.previewAccountType;
-
-    const workspace = (await this.createPreviewWorkspace(
-      {
-        data: {
-          name: workspaceName,
-        },
-        include: {
-          users: {
-            include: {
-              account: true,
-              userRoles: true,
-              workspace: true,
-            },
-          },
-        },
-      },
-      account.id
-    )) as unknown as Workspace & { users: AuthUser[] };
-    const [user] = workspace.users as AuthUser[];
-
-    const project = await this.projectService.createProject(
-      {
-        data: {
-          name: projectName,
-          workspace: {
-            connect: {
-              id: workspace.id,
-            },
-          },
-        },
-      },
-      user.id
-    );
-
-    let resource: Resource | undefined;
-
-    if (
-      account.previewAccountType === EnumPreviewAccountType.BreakingTheMonolith
-    ) {
-      resource = await this.createPreviewServiceWithPredefinedSettings(
-        project.id,
-        user
-      );
-    }
-
-    return {
-      workspace,
-      project,
-      resource,
-    };
-  }
-
-  private async createPreviewServiceWithPredefinedSettings(
-    projectId: string,
-    user: User
-  ): Promise<Resource> {
-    const serviceName = "Monolith";
-    const previewServiceSettings = this.createPreviewServiceSettings({
-      projectId: projectId,
-      name: serviceName,
-      description: "Monolith Service",
-      adminUIPath: "",
-      serverPath: `./apps/${serviceName}`,
-      generateAdminUI: false,
-      generateGraphQL: true,
-      generateRestApi: true,
-    });
-
-    const resource = await this.resourceService.createPreviewService(
-      previewServiceSettings,
-      user,
-      [],
-      false
-    );
-
-    return resource;
-  }
-
-  private createPreviewServiceSettings({
-    name,
-    description,
-    adminUIPath,
-    serverPath,
-    generateAdminUI,
-    generateGraphQL,
-    generateRestApi,
-    projectId,
-  }: CreatePreviewServiceSettingsArgs): CreateOneResourceArgs {
-    return {
-      data: {
-        name,
-        description,
-        resourceType: EnumResourceType.Service,
-        project: {
-          connect: {
-            id: projectId,
-          },
-        },
-        codeGenerator: EnumCodeGenerator.NodeJs,
-        serviceSettings: {
-          authProvider: EnumAuthProviderType.Jwt,
-          adminUISettings: {
-            adminUIPath,
-            generateAdminUI,
-          },
-          serverSettings: {
-            generateGraphQL,
-            generateRestApi,
-            serverPath,
-          },
-        },
-      },
-    };
   }
 }

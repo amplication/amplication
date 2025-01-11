@@ -55,6 +55,8 @@ export async function prepareContext(
     moduleActions,
     moduleContainers,
     moduleDtos,
+    resourceSettings,
+    relations,
   } = dSGResourceData;
 
   if (!entities || !roles || !appInfo) {
@@ -83,6 +85,8 @@ export async function prepareContext(
   context.moduleContainers = moduleContainers;
   context.moduleActions = moduleActions;
   context.moduleDtos = moduleDtos;
+  context.resourceSettings = resourceSettings;
+  context.relations = relations;
 
   context.moduleActionsAndDtoMap = prepareModuleActionsAndDtos(
     moduleContainers,

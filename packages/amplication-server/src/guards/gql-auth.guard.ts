@@ -3,15 +3,17 @@ import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { get } from "lodash";
-import { User } from "../models";
 import { PermissionsService } from "../core/permissions/permissions.service";
 import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { AuthUser } from "../core/auth/types";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 export const AUTHORIZE_CONTEXT = "authorizeContext";
 
 export type AuthorizeContextParameters = {
   parameterType: AuthorizableOriginParameter;
   parameterPath: string;
+  requiredPermissions?: RolesPermissions[];
 };
 
 @Injectable()
@@ -39,38 +41,13 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
 
     const requestArgs = ctx.getArgByIndex(1);
 
-    return (
-      this.canActivateRoles(handler, currentUser) &&
-      (await this.authorizeContext(handler, requestArgs, currentUser))
-    );
-  }
-
-  // Checks if any of the required roles exist in the user role list
-  private matchRoles(rolesToMatch: string[], userRoles: string[]): boolean {
-    return rolesToMatch.some((r) => userRoles.includes(r));
+    return await this.authorizeContext(handler, requestArgs, currentUser);
   }
 
   // This method is required for the interface - do not delete it.
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext().req;
-  }
-
-  /* eslint-disable-next-line @typescript-eslint/ban-types */
-  private getExpectedRoles(handler: Function): string[] {
-    return this.reflector.get<string[]>("roles", handler);
-  }
-
-  /* eslint-disable-next-line @typescript-eslint/ban-types */
-  canActivateRoles(handler: Function, currentUser: User): boolean {
-    const expectedRoles = this.getExpectedRoles(handler);
-
-    if (expectedRoles) {
-      const currentUserRoles = currentUser.userRoles.map((r) => r.role);
-      return this.matchRoles(expectedRoles, currentUserRoles);
-    }
-
-    return true;
   }
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
@@ -85,7 +62,7 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
     /* eslint-disable-next-line @typescript-eslint/ban-types */
     handler: Function,
     requestArgs: any,
-    user: User
+    user: AuthUser
   ): Promise<boolean> {
     const parameters = this.getAuthorizeContextParameters(handler);
 
@@ -93,18 +70,15 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
       return Promise.resolve(true);
     }
 
-    const { parameterType, parameterPath } = parameters;
+    const { parameterType, parameterPath, requiredPermissions } = parameters;
 
     const parameterValue = get(requestArgs, parameterPath);
-
-    if (!parameterValue) {
-      return Promise.resolve(false);
-    }
 
     return this.permissionsService.validateAccess(
       user,
       parameterType,
-      parameterValue
+      parameterValue,
+      requiredPermissions
     );
   }
 }

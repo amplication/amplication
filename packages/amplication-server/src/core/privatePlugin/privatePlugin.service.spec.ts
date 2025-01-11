@@ -7,12 +7,15 @@ import { ResourceService } from "../resource/resource.service";
 import { PrivatePluginService } from "./privatePlugin.service";
 import { BillingService } from "../billing/billing.service";
 import { Account, User } from "../../models";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { PrivatePlugin } from "./dto/PrivatePlugin";
 import { PrivatePluginVersion } from "./dto/PrivatePluginVersion";
 import { EnumBlockType } from "@amplication/code-gen-types";
 import { CreatePrivatePluginArgs } from "./dto/CreatePrivatePluginArgs";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { ProjectService } from "../project/project.service";
+import { GitProviderService } from "../git/git.provider.service";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { BooleanEntitlement } from "@stigg/node-server-sdk";
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
@@ -29,8 +32,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -68,6 +69,15 @@ const EXAMPLE_PRIVATE_PLUGIN: PrivatePlugin = {
   outputParameters: [],
   codeGenerator: "DotNet",
 };
+
+export const EXAMPLE_BOOLEAN_ENTITLEMENT: BooleanEntitlement = {
+  hasAccess: true,
+  isFallback: false,
+};
+
+export const billingServiceGetBooleanEntitlementMock = jest.fn(() => {
+  return EXAMPLE_BOOLEAN_ENTITLEMENT;
+});
 
 const blockServiceFindOneMock = jest.fn(() => {
   return EXAMPLE_PRIVATE_PLUGIN;
@@ -141,6 +151,22 @@ describe("PrivatePluginService", () => {
           provide: BillingService,
           useValue: {},
         },
+        {
+          provide: ProjectService,
+          useValue: {
+            findProjects: jest.fn(() => []),
+          },
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getBooleanEntitlement: billingServiceGetBooleanEntitlementMock,
+          })),
+        },
+        {
+          provide: GitProviderService,
+          useClass: jest.fn(() => ({})),
+        },
 
         MockedAmplicationLoggerProvider,
 
@@ -166,6 +192,90 @@ describe("PrivatePluginService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  it("should create private plugin", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([]);
+
+    const args: CreatePrivatePluginArgs = {
+      data: {
+        pluginId: EXAMPLE_PRIVATE_PLUGIN_PLUGIN_ID,
+        displayName: "Example Plugin",
+        description: "Example Description",
+        enabled: true,
+        codeGenerator: EnumCodeGenerator.Blueprint,
+        settings: null,
+        resource: {
+          connect: {
+            id: "exampleResourceId",
+          },
+        },
+      },
+    };
+
+    await service.create(args, EXAMPLE_USER);
+
+    expect(blockServiceCreateMock).toHaveBeenCalledTimes(1);
+    expect(blockServiceCreateMock).toHaveBeenCalledWith(
+      {
+        ...args,
+        data: {
+          ...args.data,
+          blockType: EnumBlockType.PrivatePlugin,
+        },
+      },
+      EXAMPLE_USER.id
+    );
+
+    expect(
+      blockServiceFindManyByBlockTypeAndSettingsMock
+    ).toHaveBeenCalledTimes(1);
+    expect(blockServiceFindManyByBlockTypeAndSettingsMock).toHaveBeenCalledWith(
+      {
+        where: {
+          resource: {
+            project: {
+              workspace: {
+                id: undefined,
+              },
+            },
+          },
+        },
+      },
+      EnumBlockType.PrivatePlugin,
+      {
+        equals: EXAMPLE_PRIVATE_PLUGIN_PLUGIN_ID,
+        path: ["pluginId"],
+      },
+      undefined,
+      undefined
+    );
+  });
+
+  it("should throw an error when pluginId is already taken", async () => {
+    blockServiceFindManyByBlockTypeAndSettingsMock.mockReturnValueOnce([
+      EXAMPLE_PRIVATE_PLUGIN,
+    ]);
+
+    const args: CreatePrivatePluginArgs = {
+      data: {
+        pluginId: EXAMPLE_PRIVATE_PLUGIN_PLUGIN_ID,
+        displayName: "Example Plugin",
+        description: "Example Description",
+        enabled: true,
+        codeGenerator: EnumCodeGenerator.Blueprint,
+        settings: null,
+        resource: {
+          connect: {
+            id: "exampleResourceId",
+          },
+        },
+      },
+    };
+
+    await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
+      "A plugin with the same ID already exists in the workspace. Plugin IDs must be unique across all projects in the workspace."
+    );
   });
 
   it("should create version", async () => {

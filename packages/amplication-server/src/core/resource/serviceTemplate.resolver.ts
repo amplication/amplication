@@ -1,7 +1,6 @@
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { Roles } from "../../decorators/roles.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
@@ -22,10 +21,10 @@ export class ServiceTemplateResolver {
   constructor(private readonly service: ServiceTemplateService) {}
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.resource.project.connect.id"
+    "data.resource.project.connect.id",
+    "resource.createTemplate"
   )
   async createServiceTemplate(
     @Args() args: CreateServiceTemplateArgs,
@@ -37,7 +36,6 @@ export class ServiceTemplateResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.project.id")
   async serviceTemplates(
     @Args() args: FindManyResourceArgs
@@ -48,7 +46,6 @@ export class ServiceTemplateResolver {
   @Query(() => [Resource], {
     nullable: false,
   })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, "where.id")
   async availableTemplatesForProject(
     @Args() args: FindAvailableTemplatesForProjectArgs,
@@ -58,10 +55,10 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
+    "data.project.connect.id",
+    "resource.createFromTemplate"
   )
   async createServiceFromTemplate(
     @Args() args: CreateServiceFromTemplateArgs,
@@ -71,14 +68,14 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.serviceTemplate.id"
+    "data.serviceTemplate.id",
+    "resource.createFromTemplate"
   )
   async scaffoldServiceFromTemplate(
     @Args() args: ScaffoldServiceFromTemplateArgs,
@@ -88,8 +85,11 @@ export class ServiceTemplateResolver {
   }
 
   @Mutation(() => Resource, { nullable: false })
-  @Roles("ORGANIZATION_ADMIN")
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    "where.id",
+    "resource.*.edit"
+  )
   async upgradeServiceToLatestTemplateVersion(
     @Args() args: FindOneArgs,
     @UserEntity() user: User

@@ -5,8 +5,8 @@ import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
-import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
+import { BillingModule } from "../billing/billing.module";
 @Module({
   imports: [
     UserModule,
@@ -14,8 +14,9 @@ import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentA
     PermissionsModule,
     PrismaModule,
     SegmentAnalyticsModule,
+    BillingModule,
   ],
-  providers: [ModuleDtoService, BillingService, ModuleDtoResolver],
+  providers: [ModuleDtoService, ModuleDtoResolver],
   exports: [ModuleDtoService, ModuleDtoResolver],
 })
 export class ModuleDtoModule {}

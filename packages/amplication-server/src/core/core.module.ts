@@ -39,6 +39,7 @@ import { TeamModule } from "./team/team.module";
 import { CustomPropertyModule } from "./customProperty/customProperty.module";
 import { BlueprintModule } from "./blueprint/blueprint.module";
 import { RelationModule } from "./relation/relation.module";
+import { RoleModule } from "./role/role.module";
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { RelationModule } from "./relation/relation.module";
     CustomPropertyModule,
     BlueprintModule,
     RelationModule,
+    RoleModule,
   ],
   exports: [
     AccountModule,
@@ -121,6 +123,7 @@ import { RelationModule } from "./relation/relation.module";
     CustomPropertyModule,
     BlueprintModule,
     RelationModule,
+    RoleModule,
   ],
 })
 export class CoreModule {}

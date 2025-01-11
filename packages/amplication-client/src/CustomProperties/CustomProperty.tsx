@@ -10,20 +10,19 @@ import {
 import { useCallback } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
-import { formatError } from "../util/error";
-import useCustomProperties from "./hooks/useCustomProperties";
-import CustomPropertyForm from "./CustomPropertyForm";
-import { DeleteCustomProperty } from "./DeleteCustomProperty";
 import { useAppContext } from "../context/appContext";
-import { EnumCustomPropertyType } from "../models";
-import CustomPropertyOptionList from "./CustomPropertyOptions/CustomPropertyOptionList";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import CustomPropertyFormAndOptions from "./CustomPropertyFormAndOptions";
+import { DeleteCustomProperty } from "./DeleteCustomProperty";
+import useCustomProperties from "./hooks/useCustomProperties";
 
 const CustomProperty = () => {
   const match = useRouteMatch<{
     customPropertyId: string;
   }>(["/:workspace/settings/properties/:customPropertyId"]);
 
-  const { currentWorkspace } = useAppContext();
+  const { currentWorkspace, permissions } = useAppContext();
   const baseUrl = `/${currentWorkspace?.id}/settings`;
   const history = useHistory();
 
@@ -39,7 +38,7 @@ const CustomProperty = () => {
   } = useCustomProperties(customPropertyId);
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data: Partial<models.CustomProperty>) => {
       updateCustomProperty({
         variables: {
           where: {
@@ -70,6 +69,9 @@ const CustomProperty = () => {
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
 
+  const canEdit = permissions.canPerformTask("property.edit");
+  const canDelete = permissions.canPerformTask("property.delete");
+
   return (
     <>
       <FlexItem>
@@ -84,37 +86,31 @@ const CustomProperty = () => {
           {data?.customProperty && (
             <>
               <Toggle
+                disabled={!canEdit}
                 name={"enabled"}
                 onValueChange={onEnableChanged}
                 checked={data?.customProperty?.enabled}
               ></Toggle>
-              <DeleteCustomProperty
-                customProperty={data?.customProperty}
-                onDelete={handleDeleteModule}
-              />
+              {canDelete && (
+                <DeleteCustomProperty
+                  customProperty={data?.customProperty}
+                  showLabel={true}
+                  onDelete={handleDeleteModule}
+                />
+              )}
             </>
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {!loading && (
-        <CustomPropertyForm
-          onSubmit={handleSubmit}
-          defaultValues={data?.customProperty}
-        />
+      {!loading && data?.customProperty && (
+        <CustomPropertyFormAndOptions
+          handleSubmit={handleSubmit}
+          customProperty={data?.customProperty}
+          onOptionListChanged={onOptionListChanged}
+          disabled={!canEdit}
+        ></CustomPropertyFormAndOptions>
       )}
-      {[
-        EnumCustomPropertyType.Select,
-        EnumCustomPropertyType.MultiSelect,
-      ].includes(data?.customProperty.type) && (
-        <>
-          <TabContentTitle title="Options" subTitle="Add or remove options" />
-          <CustomPropertyOptionList
-            customProperty={data?.customProperty}
-            onOptionDelete={onOptionListChanged}
-            onOptionAdd={onOptionListChanged}
-          />
-        </>
-      )}
+
       <FlexItem margin={EnumFlexItemMargin.Both} />
       <Snackbar open={hasError} message={errorMessage} />
     </>

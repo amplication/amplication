@@ -19,6 +19,7 @@ import {
 import { gql, useMutation } from "@apollo/client";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { UserInfo } from "../Components/UserInfo";
+import { useAppContext } from "../context/appContext";
 
 type DType = {
   deleteUser: models.User;
@@ -28,14 +29,16 @@ type Props = {
   member: models.WorkspaceMember;
   onDelete?: () => void;
   onError: (error: Error) => void;
+  canDelete?: boolean;
 };
 
 const DIRECTION = "n";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function MemberListItem({ member, onDelete, onError }: Props) {
+function MemberListItem({ member, onDelete, onError, canDelete }: Props) {
   const { trackEvent } = useTracking();
+  const { currentWorkspace } = useAppContext();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -62,6 +65,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
   const handleDelete = useCallback(
     (event) => {
       event.stopPropagation();
+      event.preventDefault();
       setConfirmDelete(true);
     },
     [setConfirmDelete]
@@ -136,6 +140,11 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       />
       <ListItem
         direction={EnumFlexDirection.Row}
+        to={
+          member.type === models.EnumWorkspaceMemberType.User
+            ? `/${currentWorkspace?.id}/settings/members/${member.member.id}`
+            : undefined
+        }
         end={
           <FlexItem direction={EnumFlexDirection.Row}>
             {data.isInvitation && (
@@ -151,7 +160,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
                 />
               </Tooltip>
             )}
-            {!data.isOwner && !deleteLoading && !revokeLoading && (
+            {!data.isOwner && !deleteLoading && !revokeLoading && canDelete && (
               <Tooltip
                 aria-label={
                   data.isInvitation ? "Revoke invitation" : "Delete user"

@@ -12,8 +12,8 @@ import { BuildStepsStatus } from "./BuildStepsStatus";
 import "./BuildSteps.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { AppContext } from "../context/appContext";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
-import { gitProviderName } from "../Resource/git/gitProviderDisplayName";
+import { GIT_PROVIDER_ICON_MAP } from "../Resource/git/constants";
+import { GIT_PROVIDER_NAME } from "../Resource/git/constants";
 
 const CLASS_NAME = "build-steps";
 
@@ -97,8 +97,8 @@ const BuildSteps = ({ build }: Props) => {
           className={`${CLASS_NAME}__step`}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <Icon icon={gitProviderIconMap[providerName]} />
-          <span>{`Push Changes to ${gitProviderName[providerName]}`}</span>
+          <Icon icon={GIT_PROVIDER_ICON_MAP[providerName]} />
+          <span>{`Push Changes to ${GIT_PROVIDER_NAME[providerName]}`}</span>
           <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />
           {gitUrl && (

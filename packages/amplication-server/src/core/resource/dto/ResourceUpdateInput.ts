@@ -16,9 +16,6 @@ export class ResourceUpdateInput {
   })
   description?: string | null;
 
-  @Field(() => Boolean, { nullable: true })
-  gitRepositoryOverride?: boolean | null;
-
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })

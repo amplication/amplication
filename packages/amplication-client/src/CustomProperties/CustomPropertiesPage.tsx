@@ -16,29 +16,10 @@ const CustomPropertiesPage: React.FC<Props> = ({
   match,
   innerRoutes,
 }: Props) => {
-  const pageTitle = "Properties";
-
-  const customPropertyMatch = useRouteMatch<{ customPropertyId: string }>([
-    "/:workspace/settings/properties/:customPropertyId",
-  ]);
-
-  let customPropertyId = null;
-  if (customPropertyMatch) {
-    customPropertyId = customPropertyMatch.params.customPropertyId;
-  }
-
   return (
-    <PageContent
-      pageTitle={pageTitle}
-      className="customProperties"
-      sideContent={
-        <CustomPropertyList selectFirst={null === customPropertyId} />
-      }
-    >
-      {match.isExact
-        ? !isEmpty(customPropertyId) && <CustomProperty />
-        : innerRoutes}
-    </PageContent>
+    <div className="customProperties">
+      {match.isExact ? <CustomPropertyList /> : innerRoutes}
+    </div>
   );
 };
 

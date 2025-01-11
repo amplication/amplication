@@ -19,6 +19,7 @@ import { Env } from "../../env";
 import { encryptString } from "../../util/encryptionUtil";
 import { ProjectService } from "../project/project.service";
 import { WorkspaceService } from "../workspace/workspace.service";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 @Injectable()
 export class OutdatedVersionAlertService {
@@ -188,12 +189,20 @@ export class OutdatedVersionAlertService {
       );
     }
 
+    const project = await this.projectService.findUnique({
+      where: {
+        id: template.projectId,
+      },
+    });
+
     //find all services using this template
     const services = await this.resourceService.resources({
       where: {
         serviceTemplateId: templateResourceId,
         project: {
-          id: template.projectId,
+          workspace: {
+            id: project.workspaceId,
+          },
         },
       },
     });
@@ -239,14 +248,22 @@ export class OutdatedVersionAlertService {
     pluginId: string,
     newVersion: string
   ) {
-    //get all plugin installations in the project with the pluginId
+    const project = await this.projectService.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    //get all plugin installations in the workspace with the pluginId
     const pluginInstallations =
       await this.pluginInstallationService.findPluginInstallationByPluginId(
         pluginId,
         {
           resource: {
             project: {
-              id: projectId,
+              workspace: {
+                id: project.workspaceId,
+              },
             },
           },
         }
@@ -254,6 +271,20 @@ export class OutdatedVersionAlertService {
 
     //create outdatedVersionAlert for each service
     for (const pluginInstallation of pluginInstallations) {
+      //get the outdatedVersion plugin version from the latest build that was synced to git
+      const latestBuildPlugin = await this.prisma.buildPlugin.findFirst({
+        where: {
+          packageName: pluginId,
+          build: {
+            resourceId: pluginInstallation.resourceId,
+            status: EnumBuildGitStatus.Completed,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
       await this.create(
         {
           data: {
@@ -268,7 +299,7 @@ export class OutdatedVersionAlertService {
               },
             },
             type: EnumOutdatedVersionAlertType.PluginVersion,
-            outdatedVersion: pluginInstallation.version,
+            outdatedVersion: latestBuildPlugin?.packageVersion || "",
             latestVersion: newVersion,
           },
         },

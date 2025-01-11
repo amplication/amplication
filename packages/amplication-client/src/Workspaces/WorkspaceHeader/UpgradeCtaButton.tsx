@@ -9,7 +9,6 @@ import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useHistory } from "react-router-dom";
 import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 import { AppContext } from "../../context/appContext";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
@@ -71,25 +70,6 @@ const UpgradeCtaButton = () => {
           >
             Upgrade
           </Button>
-        )}
-      {upgradeButtonData.isCompleted &&
-        upgradeButtonData.isPreviewPlan &&
-        !upgradeButtonData.showUpgradeDefaultButton && (
-          <>
-            <FeatureIndicator
-              featureName={BillingFeature.CodeGenerationBuilds}
-              textStart="Generate production-ready code for this architecture with just a few simple clicks"
-              showTooltipLink={false}
-              element={<CompletePreviewSignupButton />}
-            />
-            <Button
-              className={`${CLASS_NAME}__upgrade__btn`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={handleContactUsClick}
-            >
-              Contact us
-            </Button>
-          </>
         )}
     </>
   );

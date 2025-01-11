@@ -3,7 +3,7 @@ import {
   EnumTextColor,
   Icon,
 } from "@amplication/ui/design-system";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Resource } from "../../../models";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
@@ -11,6 +11,7 @@ import { useProjectBaseUrl } from "../../../util/useProjectBaseUrl";
 import { WizardFlowType } from "../types";
 import "./CreateServiceNextSteps.scss";
 import { WizardStepProps } from "./interfaces";
+import { useCatalogContext } from "../../../Catalog/CatalogContext";
 
 const className = "create-service-next-steps";
 
@@ -27,6 +28,7 @@ export const CreateServiceNextSteps: React.FC<
   createdResource,
 }) => {
   const history = useHistory();
+  const { reloadCatalog } = useCatalogContext();
 
   const { baseUrl } = useProjectBaseUrl();
 
@@ -55,6 +57,10 @@ export const CreateServiceNextSteps: React.FC<
     );
     history.push(`${baseUrl}`);
   }, [baseUrl, history, trackWizardPageEvent]);
+
+  useEffect(() => {
+    reloadCatalog();
+  }, []);
 
   return (
     <div className={className}>

@@ -14,7 +14,6 @@ export async function readPluginStaticFiles(
   const staticFiles = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,
-    ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
 
   const fileMap = new FileMap<string>(DsgContext.getInstance.logger);

@@ -3,6 +3,7 @@ import {
   EnumFlexDirection,
   EnumFlexItemMargin,
   FlexItem,
+  HorizontalRule,
   Snackbar,
   TabContentTitle,
   Toggle,
@@ -10,20 +11,21 @@ import {
 import { useCallback } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 
-import { formatError } from "../util/error";
-import useBlueprints from "./hooks/useBlueprints";
-import BlueprintForm from "./BlueprintForm";
-import { DeleteBlueprint } from "./DeleteBlueprint";
 import { useAppContext } from "../context/appContext";
+import { formatError } from "../util/error";
+import BlueprintForm from "./BlueprintForm";
+import BlueprintPropertyList from "./BlueprintPropertyList";
 import BlueprintRelationList from "./BlueprintRelationList";
+import { DeleteBlueprint } from "./DeleteBlueprint";
+import useBlueprints from "./hooks/useBlueprints";
 
 const Blueprint = () => {
   const match = useRouteMatch<{
     blueprintId: string;
-  }>(["/:workspace/settings/blueprints/:blueprintId"]);
+  }>(["/:workspace/blueprints/:blueprintId"]);
 
   const { currentWorkspace } = useAppContext();
-  const baseUrl = `/${currentWorkspace?.id}/settings`;
+  const baseUrl = `/${currentWorkspace?.id}`;
   const history = useHistory();
 
   const { blueprintId } = match?.params ?? {};
@@ -34,6 +36,7 @@ const Blueprint = () => {
     getBlueprintLoading: loading,
     updateBlueprint,
     updateBlueprintError: updateError,
+    getBlueprintRefetch: refetch,
   } = useBlueprints(blueprintId);
 
   const handleSubmit = useCallback(
@@ -60,6 +63,10 @@ const Blueprint = () => {
       enabled: !data.blueprint.enabled,
     });
   }, [data?.blueprint, handleSubmit]);
+
+  const handlePropertyAdded = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
@@ -96,6 +103,12 @@ const Blueprint = () => {
             onSubmit={handleSubmit}
             defaultValues={data?.blueprint}
           />
+          <HorizontalRule doubleSpacing />
+          <BlueprintPropertyList
+            blueprint={data?.blueprint}
+            onPropertyUpdated={handlePropertyAdded}
+          />
+          <HorizontalRule doubleSpacing />
           <BlueprintRelationList blueprint={data?.blueprint} />
         </>
       )}

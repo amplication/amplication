@@ -10,6 +10,7 @@ import usePlugins from "./hooks/usePlugins";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginLogoGroup.scss";
 import classNames from "classnames";
+import { useEffect } from "react";
 
 const CLASS_NAME = "plugin-logos";
 
@@ -25,11 +26,12 @@ function PluginLogoGroup({
   resource,
   installedPlugins,
 }: PluginLogosProps) {
-  const { pluginCatalog } = usePlugins(
-    resource?.id,
-    null,
-    resource?.codeGenerator
-  );
+  const { pluginCatalog, privatePluginCatalog, loadPrivatePluginsCatalog } =
+    usePlugins(resource?.id, null, resource?.codeGenerator);
+
+  useEffect(() => {
+    loadPrivatePluginsCatalog();
+  }, []);
 
   if (!installedPlugins || installedPlugins.length === 0) {
     return null;
@@ -42,7 +44,14 @@ function PluginLogoGroup({
     <div className={classNames(CLASS_NAME, `${CLASS_NAME}--${iconSize}`)}>
       {firstPlugins.map((plugin) => (
         <Tooltip aria-label={plugin.displayName} noDelay key={plugin.id}>
-          <PluginLogo plugin={pluginCatalog[plugin.pluginId]} />
+          <PluginLogo
+            iconSize={iconSize}
+            plugin={
+              plugin.isPrivate
+                ? privatePluginCatalog[plugin.pluginId]
+                : pluginCatalog[plugin.pluginId]
+            }
+          />
         </Tooltip>
       ))}
       {restPlugins.length > 0 && (

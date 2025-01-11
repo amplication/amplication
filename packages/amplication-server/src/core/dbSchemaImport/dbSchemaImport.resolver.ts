@@ -26,7 +26,8 @@ export class DBSchemaImportResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
+    "data.resource.connect.id",
+    "resource.*.edit"
   )
   async createEntitiesFromPrismaSchema(
     @UserEntity() user: User,
@@ -52,7 +53,8 @@ export class DBSchemaImportResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
+    "data.resource.connect.id",
+    "resource.*.edit"
   )
   async createEntitiesFromPredefinedSchema(
     @UserEntity() user: User,

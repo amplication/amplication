@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import * as models from "../../models";
 import { GET_OUTDATED_VERSION_ALERTS } from "./outdatedVersionAlertsQueries";
+import { useQueryPagination } from "../../util/useQueryPagination";
 
 type TGetOutdatedVersionAlerts = {
   outdatedVersionAlerts: models.OutdatedVersionAlert[];
@@ -10,17 +11,17 @@ type TGetOutdatedVersionAlerts = {
 
 const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(30);
+
   const [orderBy, setOrderBy] =
     useState<models.OutdatedVersionAlertOrderByInput>(undefined);
 
-  const [outdatedVersionAlerts, setOutdatedVersionAlerts] = useState<
-    models.OutdatedVersionAlert[]
-  >([]);
-
-  const [outdatedVersionAlertsCount, setOutdatedVersionAlertsCount] =
-    useState<number>(0);
+  const {
+    pagination,
+    queryPaginationParams,
+    currentPageData,
+    setCurrentPageData,
+    setMeta,
+  } = useQueryPagination<models.OutdatedVersionAlert>();
 
   const [status, setStatus] = useState<
     keyof typeof models.EnumOutdatedVersionAlertStatus | null
@@ -37,8 +38,7 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
   } = useQuery<TGetOutdatedVersionAlerts>(GET_OUTDATED_VERSION_ALERTS, {
     variables: {
       orderBy: orderBy || { createdAt: models.SortOrder.Desc },
-      take: pageSize,
-      skip: (pageNumber - 1) * pageSize,
+      ...queryPaginationParams,
       where: {
         resource: {
           id: resourceId ?? undefined,
@@ -55,21 +55,17 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
     skip: !projectId,
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
-      setOutdatedVersionAlerts(data.outdatedVersionAlerts);
-      setOutdatedVersionAlertsCount(data._outdatedVersionAlertsMeta.count);
+      setCurrentPageData(data.outdatedVersionAlerts);
+      setMeta(data._outdatedVersionAlertsMeta);
     },
   });
 
   return {
-    outdatedVersionAlerts,
-    outdatedVersionAlertsCount,
+    outdatedVersionAlerts: currentPageData,
     loadingOutdatedVersionAlerts,
     errorOutdatedVersionAlerts,
     reloadOutdatedVersionAlerts,
-    setPageNumber,
-    pageNumber,
-    setPageSize,
-    pageSize,
+    pagination,
     setOrderBy,
     setSearchPhrase,
     status,

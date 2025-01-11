@@ -11,6 +11,7 @@ import "./NewCustomPropertyOption.scss";
 type Props = {
   customProperty: models.CustomProperty;
   onOptionAdd?: (property: models.CustomProperty) => void;
+  disabled?: boolean;
 };
 
 const INITIAL_VALUES: Partial<models.CustomPropertyOption> = {
@@ -19,7 +20,11 @@ const INITIAL_VALUES: Partial<models.CustomPropertyOption> = {
 
 const CLASS_NAME = "new-dto-property";
 
-const NewCustomPropertyOption = ({ customProperty, onOptionAdd }: Props) => {
+const NewCustomPropertyOption = ({
+  customProperty,
+  onOptionAdd,
+  disabled,
+}: Props) => {
   const {
     createCustomPropertyOption,
     createCustomPropertyOptionError: error,
@@ -68,7 +73,7 @@ const NewCustomPropertyOption = ({ customProperty, onOptionAdd }: Props) => {
               required
               name="value"
               label="New Option "
-              disabled={loading}
+              disabled={loading || disabled}
               placeholder="Add option"
               autoComplete="off"
               autoFocus={autoFocus}
@@ -77,6 +82,7 @@ const NewCustomPropertyOption = ({ customProperty, onOptionAdd }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="plus"
+              disabled={loading || disabled}
               className={classNames(`${CLASS_NAME}__add-field__button`, {
                 [`${CLASS_NAME}__add-field__button--show`]:
                   formik.values.value.length > 0,
