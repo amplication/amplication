@@ -1,5 +1,74 @@
 import { gql } from "@apollo/client";
 
+export const COMMIT_FIELDS_WITHOUT_CHANGES_FRAGMENT = gql`
+  fragment CommitWithoutChangesFields on Commit {
+    id
+    message
+    createdAt
+    user {
+      id
+      account {
+        firstName
+        lastName
+      }
+    }
+    builds {
+      id
+      createdAt
+      resourceId
+      resource {
+        id
+        name
+        resourceType
+        codeGenerator
+      }
+      version
+      message
+      createdAt
+      commitId
+      commit {
+        createdAt
+        user {
+          account {
+            firstName
+            lastName
+          }
+        }
+      }
+      actionId
+      action {
+        id
+        createdAt
+        steps {
+          id
+          name
+          createdAt
+          message
+          status
+          completedAt
+          logs {
+            id
+            createdAt
+            message
+            meta
+            level
+          }
+        }
+      }
+      createdBy {
+        id
+        account {
+          firstName
+          lastName
+        }
+      }
+      status
+      gitStatus
+      archiveURI
+    }
+  }
+`;
+
 export const COMMIT_FIELDS_FRAGMENT = gql`
   fragment CommitFields on Commit {
     id
@@ -96,7 +165,7 @@ export const COMMIT_FIELDS_FRAGMENT = gql`
 `;
 
 export const GET_COMMITS = gql`
-  ${COMMIT_FIELDS_FRAGMENT}
+  ${COMMIT_FIELDS_WITHOUT_CHANGES_FRAGMENT}
   query commits(
     $projectId: String!
     $resourceTypeGroup: EnumResourceTypeGroup!
@@ -113,7 +182,7 @@ export const GET_COMMITS = gql`
       skip: $skip
       orderBy: $orderBy
     ) {
-      ...CommitFields
+      ...CommitWithoutChangesFields
     }
   }
 `;
