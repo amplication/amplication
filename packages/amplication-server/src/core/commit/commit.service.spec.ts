@@ -81,6 +81,32 @@ describe("CommitService", () => {
     expect(prismaCommitFindManyMock).toBeCalledTimes(1);
     expect(prismaCommitFindManyMock).toBeCalledWith({
       ...args,
+      include: {
+        builds: {
+          include: {
+            action: {
+              include: {
+                steps: {
+                  include: {
+                    logs: true,
+                  },
+                },
+              },
+            },
+            resource: true,
+            createdBy: {
+              include: {
+                account: true,
+              },
+            },
+          },
+        },
+        user: {
+          include: {
+            account: true,
+          },
+        },
+      },
       where: {
         ...args.where,
         builds: {
