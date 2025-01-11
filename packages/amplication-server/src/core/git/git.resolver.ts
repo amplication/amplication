@@ -35,8 +35,8 @@ export class GitResolver {
   constructor(private readonly gitService: GitProviderService) {}
   @Mutation(() => Resource)
   @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    "data.resourceId",
+    AuthorizableOriginParameter.GitOrganizationId,
+    "data.gitOrganizationId",
     "git.repo.create"
   )
   async connectResourceToNewRemoteGitRepository(

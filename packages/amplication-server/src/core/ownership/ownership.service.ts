@@ -90,8 +90,16 @@ export class OwnershipService {
         id: ownershipId,
       },
       include: {
-        team: true,
-        user: true,
+        team: {
+          where: {
+            deletedAt: null,
+          },
+        },
+        user: {
+          where: {
+            deletedAt: null,
+          },
+        },
       },
     });
 

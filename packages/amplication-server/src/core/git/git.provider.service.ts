@@ -280,6 +280,45 @@ export class GitProviderService {
 
     const { groupName, gitOrganizationId, resourceId } = args;
 
+    //validate that the resourceId belongs to the same workspace as the gitOrganizationId
+    if (resourceId) {
+      const resource = await this.prisma.resource.findUnique({
+        where: {
+          id: resourceId,
+        },
+        select: {
+          project: {
+            select: {
+              workspaceId: true,
+            },
+          },
+        },
+      });
+
+      if (!resource) {
+        throw new AmplicationError(INVALID_RESOURCE_ID);
+      }
+
+      const gitOrganization = await this.prisma.gitOrganization.findUnique({
+        where: {
+          id: gitOrganizationId,
+        },
+        select: {
+          workspace: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (resource.project.workspaceId !== gitOrganization.workspace.id) {
+        throw new AmplicationError(
+          "The resource does not belong to the same workspace as the git organization"
+        );
+      }
+    }
+
     return resourceId
       ? await this.connectResourceGitRepository({
           name: remoteRepository.name,

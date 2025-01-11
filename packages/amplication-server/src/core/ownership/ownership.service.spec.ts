@@ -221,8 +221,16 @@ describe("OwnershipService", () => {
           id: "1",
         },
         include: {
-          team: true,
-          user: true,
+          team: {
+            where: {
+              deletedAt: null,
+            },
+          },
+          user: {
+            where: {
+              deletedAt: null,
+            },
+          },
         },
       });
     });
@@ -240,8 +248,16 @@ describe("OwnershipService", () => {
           id: "2",
         },
         include: {
-          team: true,
-          user: true,
+          team: {
+            where: {
+              deletedAt: null,
+            },
+          },
+          user: {
+            where: {
+              deletedAt: null,
+            },
+          },
         },
       });
     });

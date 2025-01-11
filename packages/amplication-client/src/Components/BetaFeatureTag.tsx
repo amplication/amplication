@@ -1,15 +1,12 @@
 import {
-  EnumFlexDirection,
-  EnumGapSize,
   EnumTextColor,
   EnumTextStyle,
-  FlexItem,
   Icon,
   Popover,
   Text,
 } from "@amplication/ui/design-system";
-import "./BetaFeatureTag.scss";
 import React from "react";
+import "./BetaFeatureTag.scss";
 
 const TOOLTIP_DIRECTION = "bottom-end";
 
@@ -22,6 +19,7 @@ const CLASS_NAME = "beta-feature-tag";
 function BetaFeatureTag({ tagLabel, children }: Props) {
   return (
     <Popover
+      disableHoverListener={false}
       className="main-layout__menu__popover"
       content={
         <div className={`${CLASS_NAME}__tooltip-content`}>{children}</div>
