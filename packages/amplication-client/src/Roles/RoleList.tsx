@@ -23,6 +23,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useRoles from "./hooks/useRoles";
 import NewRole from "./NewRole";
+import BetaFeatureTag from "../Components/BetaFeatureTag";
 
 const CLASS_NAME = "role-list";
 
@@ -61,14 +62,23 @@ export const RoleList = React.memo(() => {
   return (
     <div className={CLASS_NAME}>
       <TabContentTitle title="Roles" />
+
       <FlexItem
         itemsAlign={EnumItemsAlign.End}
         end={
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchChange}
-          />
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <BetaFeatureTag
+              children="
+              Roles are still in beta. Some features may be missing or incomplete.
+              For complete functionality, please use the default Admin role ."
+            />
+
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          </FlexItem>
         }
       >
         <Text textStyle={EnumTextStyle.Tag}>
