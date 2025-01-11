@@ -4,6 +4,7 @@ import {
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Snackbar,
@@ -22,6 +23,9 @@ import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { AppContext } from "../context/appContext";
 import "./PendingChanges.scss";
 import PendingChangesList from "./PendingChangesList";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { EnumResourceTypeGroup } from "../models";
 
 const CLASS_NAME = "pending-changes";
 
@@ -32,13 +36,13 @@ type Props = {
 const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const history = useHistory();
-  const {
-    currentWorkspace,
-    currentProject,
-    pendingChanges,
-    currentResource,
-    isPreviewPlan,
-  } = useContext(AppContext);
+  const { currentProject, pendingChanges } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
+  const { baseUrl: projectBaseUrl, isPlatformConsole } = useProjectBaseUrl();
+
+  const resourceTypeGroup = isPlatformConsole
+    ? EnumResourceTypeGroup.Platform
+    : EnumResourceTypeGroup.Services;
 
   const entityMatch = useRouteMatch<{
     workspace: string;
@@ -46,11 +50,13 @@ const PendingChanges = ({ projectId }: Props) => {
     resource: string;
     entity: string;
   }>("/:workspace/:project/:resource/entities/:entity");
+
   const {
     pendingChangesDataError,
     pendingChangesIsError,
     pendingChangesDataLoading,
-  } = usePendingChanges(currentProject);
+  } = usePendingChanges(currentProject, resourceTypeGroup);
+
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -58,17 +64,9 @@ const PendingChanges = ({ projectId }: Props) => {
   const handleDiscardDialogCompleted = useCallback(() => {
     setDiscardDialogOpen(false);
     if (entityMatch) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities`
-      );
+      history.push(`${baseUrl}/entities`);
     }
-  }, [
-    entityMatch,
-    history,
-    currentWorkspace?.id,
-    currentProject?.id,
-    currentResource?.id,
-  ]);
+  }, [entityMatch, history, baseUrl]);
 
   const errorMessage = formatError(pendingChangesDataError);
 
@@ -76,24 +74,34 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      {resourceTypeGroup === EnumResourceTypeGroup.Platform ? (
+        <Text
+          textStyle={EnumTextStyle.H4}
+          textColor={EnumTextColor.ThemeOrange}
+        >
+          Platform Changes
+        </Text>
+      ) : (
+        <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      )}
+
       <FlexItem
         itemsAlign={EnumItemsAlign.Stretch}
         direction={EnumFlexDirection.Column}
         margin={EnumFlexItemMargin.Top}
         gap={EnumGapSize.Small}
       >
-        {!isPreviewPlan && (
-          <Commit
-            projectId={projectId}
-            noChanges={noChanges}
-            commitBtnType={CommitBtnType.Button}
-          />
-        )}
+        <Commit
+          projectId={projectId}
+          noChanges={noChanges}
+          commitBtnType={CommitBtnType.Button}
+          resourceTypeGroup={resourceTypeGroup}
+        />
 
         <DiscardChanges
           isOpen={discardDialogOpen}
           projectId={projectId}
+          resourceTypeGroup={resourceTypeGroup}
           onComplete={handleDiscardDialogCompleted}
           onDismiss={handleToggleDiscardDialog}
         />
@@ -102,7 +110,7 @@ const PendingChanges = ({ projectId }: Props) => {
           {pendingChangesDataLoading ? (
             <CircularProgress centerToParent />
           ) : (
-            <PendingChangesList />
+            <PendingChangesList resourceTypeGroup={resourceTypeGroup} />
           )}
           <hr className={`${CLASS_NAME}__divider`} />
           <div className={`${CLASS_NAME}__changes-header`}>
@@ -118,9 +126,7 @@ const PendingChanges = ({ projectId }: Props) => {
             </span>
             <div className="spacer" />
             <Tooltip aria-label={"Compare Changes"} direction="nw">
-              <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
-              >
+              <Link to={`${projectBaseUrl}/pending-changes`}>
                 <Button
                   buttonStyle={EnumButtonStyle.Text}
                   disabled={pendingChangesDataLoading || noChanges}

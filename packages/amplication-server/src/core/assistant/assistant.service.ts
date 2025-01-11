@@ -16,6 +16,8 @@ import { AssistantThread } from "./dto/AssistantThread";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
 import { GraphqlSubscriptionPubSubKafkaService } from "./graphqlSubscriptionPubSubKafka.service";
 import { EnumAssistantMessageType } from "./dto/EnumAssistantMessageType";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -28,6 +30,7 @@ const STREAM_ERROR_MESSAGE =
 const ASSISTANT_INSTRUCTIONS: { [key in EnumAssistantMessageType]: string } = {
   [EnumAssistantMessageType.Default]: ``,
   [EnumAssistantMessageType.Onboarding]: `
+  Use the current project, do not create a new project.
   The user is creating a new service and you need to generate everything needed for the service, including entities, fields, relations, apis, and install plugins. 
   You can suggest names and different configuration as needed. 
   After you create entities, also create fields and relations for all entities. Aim to create as many fields and relations as needed. 
@@ -62,6 +65,7 @@ export class AssistantService {
     private readonly graphqlSubscriptionKafkaService: GraphqlSubscriptionPubSubKafkaService,
     private readonly billingService: BillingService,
     private readonly assistantFunctionsService: AssistantFunctionsService,
+    private readonly analytics: SegmentAnalyticsService,
 
     configService: ConfigService
   ) {
@@ -335,6 +339,10 @@ export class AssistantService {
     if (!threadId) {
       const thread = await openai.beta.threads.create();
       threadId = thread.id;
+
+      await this.analytics.trackWithContext({
+        event: EnumEventType.StartJovuThread,
+      });
     }
 
     const shortContext = this.getShortMessageContext(context);

@@ -1,7 +1,6 @@
 @import "../style/index.scss";
 
 $description-height: 24px;
-$icon-overlap: 10px;
 
 .plugins-tile {
   display: grid;
@@ -19,28 +18,5 @@ $icon-overlap: 10px;
 .workspaces-layout__main_content--xl {
   .plugins-tile {
     grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.plugin-logos {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 0;
-
-  .plugin-logo,
-  &__more-plugins {
-    position: relative;
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-    border-radius: 50%;
-    margin-left: -$icon-overlap;
-    border: 1px solid var(--gray-70);
-  }
-
-  &__more-plugins {
-    background-color: var(--gray-full);
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }

@@ -6,6 +6,15 @@ export class Env {
   static readonly BITBUCKET_CLIENT_ID = "BITBUCKET_CLIENT_ID";
   static readonly BITBUCKET_CLIENT_SECRET = "BITBUCKET_CLIENT_SECRET";
 
+  static readonly GITLAB_CLIENT_ID = "GITLAB_CLIENT_ID";
+  static readonly GITLAB_CLIENT_SECRET = "GITLAB_CLIENT_SECRET";
+  static readonly GITLAB_REDIRECT_URI = "GITLAB_REDIRECT_URI";
+
+  static readonly AZURE_DEVOPS_CLIENT_ID = "AZURE_DEVOPS_CLIENT_ID";
+  static readonly AZURE_DEVOPS_CLIENT_SECRET = "AZURE_DEVOPS_CLIENT_SECRET";
+  static readonly AZURE_DEVOPS_REDIRECT_URI = "AZURE_DEVOPS_REDIRECT_URI";
+  static readonly AZURE_DEVOPS_TENANT_ID = "AZURE_DEVOPS_TENANT_ID";
+
   static readonly GITHUB_APP_CLIENT_ID = "GITHUB_APP_CLIENT_ID";
   static readonly GITHUB_APP_CLIENT_SECRET = "GITHUB_APP_CLIENT_SECRET";
   static readonly GITHUB_APP_APP_ID = "GITHUB_APP_APP_ID";
@@ -21,4 +30,5 @@ export class Env {
   static readonly SERVICE_NAME = "git-sync-manager";
 
   static readonly CLONES_FOLDER = "CLONES_FOLDER";
+  static readonly DSG_ASSETS_FOLDER = "DSG_ASSETS_FOLDER";
 }

@@ -8,6 +8,24 @@ $padding-top-toggle: 16px;
   .amp-button {
     margin: var(--large-spacing) 0;
     width: 100%;
+    flex: 1;
+  }
+
+  &__commit-strategy {
+    .select-menu__item {
+      color: var(--gray-base);
+    }
+
+    .select-menu__modal {
+      max-width: calc(var(--changes-menu-width) - var(--triple-spacing));
+      overflow: hidden;
+      box-sizing: border-box;
+
+      > div {
+        width: calc(var(--changes-menu-width) - var(--triple-spacing));
+        box-sizing: border-box;
+      }
+    }
   }
 
   .multi-state-toggle {

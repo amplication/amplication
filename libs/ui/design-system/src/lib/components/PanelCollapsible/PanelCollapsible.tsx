@@ -7,7 +7,7 @@ import { Panel, Props as PanelProps } from "../Panel/Panel";
 import "./PanelCollapsible.scss";
 
 export type Props = {
-  onCollapseChange?: (open: boolean) => Record<string, unknown>;
+  onCollapseChange?: (open: boolean) => void;
   /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;
   /**When true the user cannot collapse manually, and the collapse button is hidden  */
@@ -19,6 +19,7 @@ export type Props = {
   collapseEnabled?: boolean;
   /**The content of the panel header */
   headerContent: ReactNode;
+  noPadding?: boolean;
 } & Omit<PanelProps, "panelStyle">;
 
 const CLASS_NAME = "amp-panel-collapsible";
@@ -31,6 +32,8 @@ export const PanelCollapsible = (props: Props) => {
     children,
     className,
     manualCollapseDisabled = false,
+    noPadding = false,
+
     onCollapseChange,
     ...rest
   } = props;
@@ -53,6 +56,7 @@ export const PanelCollapsible = (props: Props) => {
       {...rest}
       className={classNames(CLASS_NAME, className, {
         "amp-panel-collapsible--open": isOpen && collapseEnabled,
+        "amp-panel-collapsible--no-padding": noPadding,
       })}
     >
       <PanelCollapsibleHeader

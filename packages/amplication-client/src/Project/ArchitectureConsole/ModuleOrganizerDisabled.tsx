@@ -8,12 +8,10 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import React, { useContext } from "react";
+import React from "react";
 import { IconType } from "../../Components/FeatureIndicatorContainer";
+import { useContactUs } from "../../Workspaces/hooks/useContactUs";
 import "./ModelOrganizerDisabled.scss";
-import { GET_CONTACT_US_LINK } from "../../Workspaces/queries/workspaceQueries";
-import { AppContext } from "../../context/appContext";
-import { useQuery } from "@apollo/client";
 
 type Props = {
   icon: IconType;
@@ -21,11 +19,7 @@ type Props = {
 export const CLASS_NAME = "model-organizer-disabled";
 
 export const ModuleOrganizerDisabled: React.FC<Props> = ({ icon }) => {
-  const { currentWorkspace } = useContext(AppContext);
-
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const { contactUsLink } = useContactUs({});
 
   return (
     <div className={CLASS_NAME}>
@@ -58,7 +52,7 @@ export const ModuleOrganizerDisabled: React.FC<Props> = ({ icon }) => {
           </span>
           <a
             className={`${CLASS_NAME}__addon-section__contact-us`}
-            href={data?.contactUsLink}
+            href={contactUsLink}
             target="blank"
           >
             <Text>{"Contact us"}</Text>{" "}

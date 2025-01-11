@@ -19,7 +19,6 @@ import { GitOrganization, GitRepository, Project, User } from "../../models";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 
 jest.mock("@stigg/node-server-sdk");
@@ -168,7 +167,7 @@ describe("BillingService", () => {
     });
   });
 
-  it("should provision customer with default plan: Essential with addons", async () => {
+  it("should provision customer with default plan: Enterprise with addons", async () => {
     const expectedWorkspaceId = "id";
     const spyOnStiggProvisionCustomer = jest.spyOn(
       Stigg.prototype,
@@ -182,13 +181,13 @@ describe("BillingService", () => {
       expect.objectContaining({
         customerId: expectedWorkspaceId,
         subscriptionParams: {
-          planId: BillingPlan.Essential,
+          planId: BillingPlan.Enterprise,
           addons: [
             {
-              addonId: BillingAddon.EssentialBreakingTheMonolith,
+              addonId: BillingAddon.BreakingTheMonolith,
             },
             {
-              addonId: BillingAddon.EssentialTrialLimitToNodeJs,
+              addonId: BillingAddon.CustomActions,
             },
             {
               addonId: BillingAddon.EssentialTrialJovuRequests,
@@ -228,8 +227,6 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
-          previewAccountType: EnumPreviewAccountType.None,
-          previewAccountEmail: null,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -357,8 +354,6 @@ describe("BillingService", () => {
           firstName: "first-name",
           lastName: "last-name",
           password: "password",
-          previewAccountType: EnumPreviewAccountType.None,
-          previewAccountEmail: null,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -440,6 +435,7 @@ describe("BillingService", () => {
       EnumGitProvider.AwsCodeCommit,
       EnumGitProvider.Bitbucket,
       EnumGitProvider.GitLab,
+      EnumGitProvider.AzureDevOps,
     ])(
       "should throw exception when using %s git provider if the workspace has no entitlement or bypass code generation limitation",
       async (currentGitProvider) => {
@@ -480,8 +476,6 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
-            previewAccountType: EnumPreviewAccountType.None,
-            previewAccountEmail: null,
           },
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -581,8 +575,6 @@ describe("BillingService", () => {
             firstName: "first-name",
             lastName: "last-name",
             password: "password",
-            previewAccountType: EnumPreviewAccountType.None,
-            previewAccountEmail: null,
           },
           createdAt: new Date(),
           updatedAt: new Date(),

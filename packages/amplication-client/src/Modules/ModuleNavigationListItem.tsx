@@ -6,6 +6,7 @@ import * as models from "../models";
 import { ModuleDtoLinkList } from "../ModuleDto/ModuleDtoLinkList";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import { ModulesFilter } from "./ModuleNavigationList";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   module: models.Module;
@@ -20,22 +21,22 @@ export const ModuleNavigationListItem = ({
   onError,
   filters,
 }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { currentResource } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
 
   return (
     currentResource && (
       <>
         <VerticalNavigationItem
           icon={"box"}
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}`}
+          to={`${baseUrl}/modules/${module.id}`}
           expandable
           childItems={
             <>
               {filters.showActions && (
                 <VerticalNavigationItem
                   expandable
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions`}
+                  to={`${baseUrl}/modules/${module.id}/actions`}
                   icon="api"
                   childItems={
                     <ModuleActionLinkList
@@ -52,7 +53,7 @@ export const ModuleNavigationListItem = ({
                 filters.showDTOs && (
                   <VerticalNavigationItem
                     expandable
-                    to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos`}
+                    to={`${baseUrl}/modules/${module.id}/dtos`}
                     icon="zap"
                     childItems={
                       <ModuleDtoLinkList

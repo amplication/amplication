@@ -1,10 +1,10 @@
-import { EnumModuleDtoType } from "@amplication/code-gen-types";
+import { EnumDataType, EnumModuleDtoType } from "@amplication/code-gen-types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { get, isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
-import { plural, singular } from "pluralize";
+import { isPlural, plural, singular } from "pluralize";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { Env } from "../../env";
 import { Block } from "../../models";
@@ -29,11 +29,11 @@ import {
 import { MessageLoggerContext } from "./assistant.service";
 import { AssistantContext } from "./dto/AssistantContext";
 import { EnumAssistantFunctions } from "./dto/EnumAssistantFunctions";
-
 import * as functionArgsSchemas from "./functions/";
 import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -258,7 +258,8 @@ export class AssistantFunctionsService {
     const hasAccess = await this.permissionsService.validateAccess(
       context.user,
       permissions.paramType,
-      parameterValue
+      parameterValue,
+      []
     );
 
     return hasAccess;
@@ -353,6 +354,7 @@ export class AssistantFunctionsService {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: serviceId } },
+            isPrivate: false,
           },
         },
         context.user
@@ -437,17 +439,20 @@ export class AssistantFunctionsService {
 
             return {
               entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
-              entityFields: fields.map((field) => ({
-                id: field.id,
-                name: field.name,
-                type: field.dataType,
-              })),
+
               apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
-              result: entity,
+              result: {
+                entity,
+                fields: fields.map((field) => ({
+                  id: field.id,
+                  name: field.name,
+                  type: field.dataType,
+                })),
+              },
             };
           } catch (error) {
             this.logger.error(
-              `Chat: Error creating entity ${entityName}`,
+              `Chat: Error creating entity ${entityName}: ${error.message}`,
               error,
               loggerContext
             );
@@ -480,8 +485,16 @@ export class AssistantFunctionsService {
 
       const newFields = await Promise.all(
         args.fields?.map(async (field) => {
+          //Jovu currently supports only one-many relations.
+          //@todo: This validation should be changed after adding support for one-one/ many-many relations.
+          if (field.type === EnumDataType.Lookup && isPlural(field.name)) {
+            return {
+              error: `a lookup field [${field.name}] that is the many side of the relation can not be created because it is already created on the one side of the relation`,
+            };
+          }
+
           try {
-            return this.entityService.createFieldByDisplayName(
+            return await this.entityService.createFieldByDisplayName(
               {
                 data: {
                   displayName: field.name,
@@ -502,6 +515,17 @@ export class AssistantFunctionsService {
               error,
               loggerContext
             );
+            if (error.code === "P2002") {
+              return {
+                fieldName: field.name,
+                error:
+                  "Field name already exists, let the user know and ask to choose a different name or do not create the field",
+              };
+            }
+            return {
+              fieldName: field.name,
+              error: error.message,
+            };
           }
         })
       );
@@ -618,6 +642,7 @@ export class AssistantFunctionsService {
       const commit = await this.projectService.commit(
         {
           data: {
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
             message: args.commitMessage,
             project: {
               connect: {
@@ -647,6 +672,8 @@ export class AssistantFunctionsService {
         {
           where: {
             project: { id: args.projectId },
+            //@todo: add support for platform changes via Jovu
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
           },
         },
         context.user
@@ -880,7 +907,8 @@ export class AssistantFunctionsService {
     },
     createModuleAction: async (
       args: functionsArgsTypes.CreateModuleAction,
-      context: AssistantContext
+      context: AssistantContext,
+      loggerContext: MessageLoggerContext
     ) => {
       const name = pascalCase(args.actionName);
 
@@ -914,29 +942,47 @@ export class AssistantFunctionsService {
         },
         context.user
       );
-
-      const updatedAction = await this.moduleActionService.update(
-        {
-          data: {
-            displayName: args.actionName,
-            name: name,
-            description: args.actionDescription,
-            gqlOperation: args.gqlOperation,
-            restVerb: args.restVerb,
-            path: args.path,
-            inputType: args.inputType,
-            outputType: args.outputType,
+      try {
+        const updatedAction = await this.moduleActionService.update(
+          {
+            data: {
+              displayName: args.actionName,
+              name: name,
+              description: args.actionDescription,
+              gqlOperation: args.gqlOperation,
+              restVerb: args.restVerb,
+              path: args.path,
+              inputType: args.inputType,
+              outputType: args.outputType,
+            },
+            where: {
+              id: action.id,
+            },
           },
-          where: {
-            id: action.id,
+          context.user
+        );
+        return {
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+          result: updatedAction,
+        };
+      } catch (error) {
+        this.logger.warn(
+          `Chat: failed to update newly created ModuleAction ${action.id}: ${error.message}. Deleting the action.`,
+          error,
+          loggerContext
+        );
+        await this.moduleActionService.delete(
+          {
+            where: {
+              id: action.id,
+            },
           },
-        },
-        context.user
-      );
-      return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
-        result: updatedAction,
-      };
+          context.user
+        );
+        throw new Error(
+          `Failed to create the moduleAction ${name} because of the following error. please fix the error and try again. ${error.message}`
+        );
+      }
     },
   };
 }

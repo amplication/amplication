@@ -31,6 +31,9 @@ import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 @Injectable()
 export class ProjectService {
@@ -44,7 +47,8 @@ export class ProjectService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly gitProviderService: GitProviderService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly resourceVersionService: ResourceVersionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -171,6 +175,8 @@ export class ProjectService {
   ): Promise<PendingChange[]> {
     const projectId = args.where.project.id;
 
+    const { resourceTypeGroup } = args.where;
+
     const resource = await this.prisma.resource.findMany({
       where: {
         projectId: projectId,
@@ -193,8 +199,18 @@ export class ProjectService {
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, user.id),
-      this.blockService.getChangedBlocks(projectId, user.id),
+      this.entityService.getChangedEntities(
+        projectId,
+        EnumResourceTypeGroup[resourceTypeGroup],
+        null,
+        user.id
+      ),
+      this.blockService.getChangedBlocks(
+        projectId,
+        EnumResourceTypeGroup[resourceTypeGroup],
+        null,
+        user.id
+      ),
     ]);
 
     return [...changedEntities, ...changedBlocks];
@@ -327,11 +343,22 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User,
-    skipBuild = false
+    currentUser: User
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    const resourceTypeGroup =
+      EnumResourceTypeGroup[args.data.resourceTypeGroup];
+
+    //when committing platform resources, we commit only the resources that were selected
+    //for services, all changes for all resources are committed
+    const commitChangesForResourceIds =
+      resourceTypeGroup === EnumResourceTypeGroup.Platform
+        ? args.data.resourceIds
+        : null;
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
 
     if (await this.shouldBlockBuild(userId)) {
       const message = "Your current plan does not allow code generation.";
@@ -343,6 +370,9 @@ export class ProjectService {
         projectId: projectId,
         deletedAt: null,
         archived: { not: true },
+        resourceType: {
+          in: resourceTypes,
+        },
         project: {
           workspace: {
             users: {
@@ -357,7 +387,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled && !skipBuild) {
+    if (this.billingService.isBillingEnabled) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -396,18 +426,20 @@ export class ProjectService {
 
     let changedEntities: EntityPendingChange[] = [];
     let changedBlocks: BlockPendingChange[] = [];
-    if (skipBuild) {
-      changedBlocks =
-        await this.blockService.getChangedBlocksForCustomActionsMigration(
-          projectId,
-          userId
-        );
-    } else {
-      [changedEntities, changedBlocks] = await Promise.all([
-        this.entityService.getChangedEntities(projectId, userId),
-        this.blockService.getChangedBlocks(projectId, userId),
-      ]);
-    }
+    [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(
+        projectId,
+        resourceTypeGroup,
+        commitChangesForResourceIds,
+        userId
+      ),
+      this.blockService.getChangedBlocks(
+        projectId,
+        resourceTypeGroup,
+        commitChangesForResourceIds,
+        userId
+      ),
+    ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -510,10 +542,13 @@ export class ProjectService {
       });
     }
 
-    if (!skipBuild) {
+    if (resourceTypeGroup === EnumResourceTypeGroup.Services) {
       const promises = resourcesToBuild
         .filter(
-          (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
+          //filter out resources that are not services
+          (resource) =>
+            resource.resourceType === EnumResourceType.Service ||
+            resource.resourceType === EnumResourceType.Component
         )
         .map((resource: Resource) => {
           this.logger.debug("Creating build for resource", {
@@ -549,6 +584,50 @@ export class ProjectService {
           projectId,
         },
       });
+    } else {
+      //platform
+      const resourceVersionPromises = resourcesToBuild.map(
+        (resource: Resource) => {
+          this.logger.debug("Creating version for resource", {
+            resourceId: resource.id,
+            commitStrategy: args.data.commitStrategy,
+            commitId: commit.id,
+          });
+          return this.resourceVersionService.create(
+            {
+              data: {
+                resource: {
+                  connect: { id: resource.id },
+                },
+                commit: {
+                  connect: {
+                    id: commit.id,
+                  },
+                },
+                createdBy: {
+                  connect: {
+                    id: userId,
+                  },
+                },
+                message: args.data.message,
+                version: args.data.resourceVersions.find(
+                  (x) => x.resourceId === resource.id
+                )?.version,
+              },
+            },
+            userId
+          );
+        }
+      );
+
+      await Promise.all(resourceVersionPromises);
+
+      await this.analytics.trackWithContext({
+        event: EnumEventType.ResourceVersionCreate,
+        properties: {
+          projectId,
+        },
+      });
     }
 
     return commit;
@@ -559,6 +638,7 @@ export class ProjectService {
   ): Promise<boolean | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+    const { resourceTypeGroup } = args.data;
 
     const resource = await this.prisma.resource.findMany({
       where: {
@@ -582,8 +662,18 @@ export class ProjectService {
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId),
+      this.entityService.getChangedEntities(
+        projectId,
+        EnumResourceTypeGroup[resourceTypeGroup],
+        null,
+        userId
+      ),
+      this.blockService.getChangedBlocks(
+        projectId,
+        EnumResourceTypeGroup[resourceTypeGroup],
+        null,
+        userId
+      ),
     ]);
 
     if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {

@@ -4,7 +4,7 @@ import {
   Logger,
   ILogger,
   LogLevel,
-} from "@amplication/util/logging";
+} from "@amplication/util-logging";
 import {
   AmplicationLoggerModulesOptions,
   AMPLICATION_LOGGER_MODULE_OPTIONS,

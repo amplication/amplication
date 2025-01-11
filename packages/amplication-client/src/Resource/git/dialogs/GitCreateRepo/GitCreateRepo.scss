@@ -14,21 +14,6 @@
     justify-content: center;
   }
 
-  .git-select-menu {
-    display: flex;
-    margin-bottom: var(--large-spacing);
-
-    .select-menu__summary {
-      flex: 1;
-      display: flex;
-
-      .item-content {
-        flex: 1;
-        display: flex;
-      }
-    }
-  }
-
   .text-input input {
     max-width: unset;
   }

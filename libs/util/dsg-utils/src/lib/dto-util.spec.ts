@@ -23,10 +23,8 @@ const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 const EXAMPLE_RELATED_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 
 const EXAMPLE_FIELD_NAME_TO_MANY = "ExampleFieldNames";
-const EXAMPLE_FIELD_NAME_TO_MANY_KEBAB = "example-field-names";
 const EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY = "Example Field Names";
 const EXAMPLE_FIELD_NAME_TO_ONE = "ExampleFieldName";
-const EXAMPLE_FIELD_NAME_TO_ONE_KEBAB = "example-field-name";
 const EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE = "Example Field Name";
 const EXAMPLE_ENUM_FIELD_NAME = "ExampleEnumFieldName";
 const EXAMPLE_ENUM_FIELD_DISPLAY_NAME = "Example Enum Field Name";

@@ -34,7 +34,7 @@ const WarningTooltip = styled(
 const CLASS_NAME = "amp-feature-indicator";
 
 export const DEFAULT_TEXT_START =
-  "Explore this feature, included in your 7-day Enterprise trial.";
+  "Explore this feature, included in your 14-day trial.";
 export const DEFAULT_TEXT_END =
   " to ensure continued access and discover additional hidden functionalities!";
 

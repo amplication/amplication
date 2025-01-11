@@ -10,13 +10,14 @@ import {
   JumboButton,
   Text,
 } from "@amplication/ui/design-system";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { AppContext } from "../../context/appContext";
+import { CommitBtnType } from "../../VersionControl/Commit";
+import CommitButton from "../../VersionControl/CommitButton";
+import { EnumCommitStrategy, EnumResourceTypeGroup } from "../../models";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import "./ApplyChangesNextSteps.scss";
-import Commit, { CommitBtnType } from "../../VersionControl/Commit";
-import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
 
 const className = "apply-changes-next-steps";
 
@@ -28,12 +29,12 @@ export const ApplyChangesNextSteps = ({
   onDisplayArchitectureClicked,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, isPreviewPlan } =
-    useContext(AppContext);
+
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
   const handleProjectOverviewClicked = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/${currentProject.id}`);
-  }, [currentWorkspace, currentProject, history]);
+    history.push(`${baseUrl}`);
+  }, [baseUrl, history]);
 
   return (
     <div className={className}>
@@ -53,21 +54,14 @@ export const ApplyChangesNextSteps = ({
         <Text textStyle={EnumTextStyle.H3}>What should we do next?</Text>
       </FlexItem>
       <div className={`${className}__box_container`}>
-        {isPreviewPlan ? (
-          <CompletePreviewSignupButton
-            buttonText="Generate the code for my new architecture"
-            buttonType={CommitBtnType.JumboButton}
-          />
-        ) : (
-          <Commit
-            projectId={currentProject.id}
-            noChanges
-            showCommitMessage={false}
-            commitMessage="Architecture redesign"
-            commitBtnType={CommitBtnType.JumboButton}
-          ></Commit>
-        )}
-
+        <CommitButton
+          commitBtnType={CommitBtnType.JumboButton}
+          commitMessage={""}
+          resourceTypeGroup={EnumResourceTypeGroup.Services} //this will always be services for BTM
+          hasPendingChanges={true}
+          hasMultipleServices={true}
+          commitStrategy={EnumCommitStrategy.AllWithPendingChanges} //commit all with pending changes
+        ></CommitButton>
         <JumboButton
           onClick={handleProjectOverviewClicked}
           text="Show my updated project overview"

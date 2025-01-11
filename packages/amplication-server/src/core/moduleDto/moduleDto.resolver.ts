@@ -54,7 +54,8 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
+    "data.resource.connect.id",
+    "resource.*.edit"
   )
   async createModuleDtoEnum(
     @UserEntity() user: User,
@@ -68,7 +69,8 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlockId,
-    "data.moduleDto.connect.id"
+    "data.moduleDto.connect.id",
+    "resource.*.edit"
   )
   async createModuleDtoProperty(
     @UserEntity() user: User,
@@ -80,7 +82,11 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   @Mutation(() => ModuleDtoProperty, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.moduleDto.id",
+    "resource.*.edit"
+  )
   async updateModuleDtoProperty(
     @UserEntity() user: User,
     @Args() args: UpdateModuleDtoPropertyArgs
@@ -91,7 +97,11 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   @Mutation(() => ModuleDtoProperty, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.moduleDto.id",
+    "resource.*.edit"
+  )
   async deleteModuleDtoProperty(
     @UserEntity() user: User,
     @Args() args: DeleteModuleDtoPropertyArgs
@@ -104,7 +114,8 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.BlockId,
-    "data.moduleDto.connect.id"
+    "data.moduleDto.connect.id",
+    "resource.*.edit"
   )
   async createModuleDtoEnumMember(
     @UserEntity() user: User,
@@ -116,7 +127,11 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   @Mutation(() => ModuleDtoEnumMember, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.moduleDto.id",
+    "resource.*.edit"
+  )
   async updateModuleDtoEnumMember(
     @UserEntity() user: User,
     @Args() args: UpdateModuleDtoEnumMemberArgs
@@ -127,7 +142,11 @@ export class ModuleDtoResolver extends BlockTypeResolver(
   @Mutation(() => ModuleDtoEnumMember, {
     nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.moduleDto.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlockId,
+    "where.moduleDto.id",
+    "resource.*.edit"
+  )
   async deleteModuleDtoEnumMember(
     @UserEntity() user: User,
     @Args() args: DeleteModuleDtoEnumMemberArgs

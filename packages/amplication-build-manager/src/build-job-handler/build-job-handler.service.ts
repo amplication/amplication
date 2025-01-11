@@ -1,4 +1,4 @@
-import { DSGResourceData } from "@amplication/code-gen-types";
+import { DSGResourceData, EnumResourceType } from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
 import {
@@ -13,6 +13,8 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { promises as fs } from "fs";
+import { join } from "path";
 
 type ResourceTuple = [JobBuildId<BuildId>, DSGResourceData];
 @Injectable()
@@ -36,29 +38,33 @@ export class BuildJobsHandlerService {
     codeGeneratorVersion: string
   ): Promise<ResourceTuple[]> {
     const shouldSplitBuild =
+      dsgResourceData.resourceType === EnumResourceType.Service &&
       codeGeneratorVersion !== "latest-local" &&
       this.codeGeneratorService.compareVersions(
         codeGeneratorVersion,
         this.minDsgVersionToSplitBuild
       ) >= 0;
 
-    const {
-      resourceInfo: {
-        settings: {
-          serverSettings: { generateServer },
-          adminUISettings: { generateAdminUI },
-        },
-      },
-    } = dsgResourceData;
-
     const jobs: ResourceTuple[] = [];
     if (shouldSplitBuild) {
+      const {
+        resourceInfo: {
+          settings: {
+            serverSettings: { generateServer },
+            adminUISettings: { generateAdminUI },
+          },
+        },
+      } = dsgResourceData;
+
       if (generateServer) {
         const serverDSGResourceData: DSGResourceData =
           cloneDeep(dsgResourceData);
         serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
           false;
-        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.Server}`;
+        const jobBuildId = this.generateJobBuildId(
+          buildId,
+          EnumDomainName.Server
+        );
         await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
         jobs.push([jobBuildId, serverDSGResourceData]);
       }
@@ -68,7 +74,11 @@ export class BuildJobsHandlerService {
           cloneDeep(dsgResourceData);
         adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
           false;
-        const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+        const jobBuildId = this.generateJobBuildId(
+          buildId,
+          EnumDomainName.AdminUI
+        );
+
         await this.setJobStatus(jobBuildId, EnumJobStatus.InProgress);
         jobs.push([jobBuildId, adminUiDSGResourceData]);
       }
@@ -78,6 +88,13 @@ export class BuildJobsHandlerService {
     }
 
     return jobs;
+  }
+
+  generateJobBuildId(
+    buildId: BuildId,
+    domain: EnumDomainName
+  ): JobBuildId<BuildId> {
+    return `${buildId}-${domain}`;
   }
 
   // accumulate the status of the jobs and return the status of the whole build
@@ -158,5 +175,17 @@ export class BuildJobsHandlerService {
     }
 
     return regex.exec(jobBuildId)[0].replace("-", "");
+  }
+
+  async extractDsgResourceData(jobBuildId: string): Promise<DSGResourceData> {
+    const data = await fs.readFile(
+      join(
+        this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
+        jobBuildId,
+        this.configService.get(Env.DSG_JOBS_RESOURCE_DATA_FILE)
+      )
+    );
+
+    return <DSGResourceData>JSON.parse(data.toString());
   }
 }

@@ -1,0 +1,29 @@
+{
+  "name": "roles-types",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "dist/libs/util/code-gen-utils/src/lib/ast/remove-eslint-comments",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/util/roles-types",
+        "main": "libs/util/roles-types/src/index.ts",
+        "tsConfig": "libs/util/roles-types/tsconfig.lib.json",
+        "assets": ["libs/util/roles-types/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/util/roles-types/**/*.ts",
+          "libs/util/roles-types/package.json"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

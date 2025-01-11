@@ -4,6 +4,7 @@ import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { BuildLogger } from "./build-logger";
 import { FileMap, IFile } from "./files";
+import { JsonValue } from "type-fest";
 
 export {
   EnumDataType,
@@ -38,6 +39,7 @@ export type AppInfo = {
   settings: ServiceSettings;
   codeGeneratorVersionOptions: models.CodeGeneratorVersionOptionsInput;
   codeGeneratorName?: string;
+  properties?: JsonValue;
 };
 
 export type Role = Omit<
@@ -225,6 +227,21 @@ export type PropertyTypeDef = Omit<models.PropertyTypeDef, "type"> & {
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
+export type Package = BlockOmittedFields<models.Package> & {
+  displayName: string;
+};
+
+// export type PackageFile = {
+//   package: Package;
+//   path: string;
+//   originalFileChecksum: string;
+//   fullContent: string;
+//   diff: string;
+// };
+
+export type ResourceSettings = BlockOmittedFields<models.ResourceSettings>;
+export type Relation = BlockOmittedFields<models.Relation>;
+
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 
 export type ModuleAction = Omit<
@@ -405,7 +422,6 @@ export {
   EnumGitProvider,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-  EnumPreviewAccountType,
   EnumResourceType,
   CodeGeneratorVersionStrategy,
   MessagePatternCreateInput,

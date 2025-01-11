@@ -12,6 +12,9 @@ import {
 import { useCallback, useState } from "react";
 import { useAppContext } from "../../context/appContext";
 import { GET_ENTITIES } from "../../Entity/EntityERD/EntitiesERD";
+import { commitPath } from "../../util/paths";
+import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type TAssistantThreadData = {
   sendAssistantMessageWithStream: models.AssistantThread;
@@ -130,10 +133,20 @@ const FUNCTIONS_CACHE_MAP: {
 };
 
 const useAssistant = () => {
-  const { currentProject, currentResource, addBlock, commitUtils } =
-    useAppContext();
+  const {
+    currentWorkspace,
+    currentProject,
+    currentResource,
+    resources,
+    addBlock,
+    commitUtils,
+  } = useAppContext();
+  const history = useHistory();
 
   const apolloClient = useApolloClient();
+
+  const { baseUrl } = useProjectBaseUrl();
+  const [redirectToErd, setRedirectToErd] = useState(true);
 
   const updateCache = useCallback(
     (fieldName: string) => {
@@ -193,6 +206,24 @@ const useAssistant = () => {
           ) {
             commitUtils.refetchCommitsData(true);
             commitUtils.refetchLastCommit();
+
+            const path = commitPath(baseUrl);
+            return history.push(path);
+          }
+
+          if (
+            functionExecuted === models.EnumAssistantFunctions.CreateEntities
+          ) {
+            if (redirectToErd) {
+              setRedirectToErd((currentValue) => {
+                //only once per session, move the user to the ERD view
+                const resourceId = currentResource?.id || resources[0]?.id;
+                const path = `${baseUrl}/${resourceId}/entities?view=erd`;
+                resourceId && history.push(path);
+
+                return false;
+              });
+            }
           }
 
           const queries = FUNCTIONS_CACHE_MAP[functionExecuted].queries;

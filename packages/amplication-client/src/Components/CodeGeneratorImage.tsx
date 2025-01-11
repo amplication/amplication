@@ -22,7 +22,12 @@ export const CodeGeneratorImage = ({ resource, size = "small" }: Props) => {
     return null;
   }
 
-  if (resourceType !== models.EnumResourceType.Service) {
+  if (
+    ![
+      models.EnumResourceType.Service,
+      models.EnumResourceType.ServiceTemplate,
+    ].includes(resourceType)
+  ) {
     return null;
   }
 

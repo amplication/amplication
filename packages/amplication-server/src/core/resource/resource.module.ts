@@ -23,6 +23,17 @@ import { ResourceBtmService } from "./resourceBtm.service";
 import { GptModule } from "../gpt/gpt.module";
 import { UserActionModule } from "../userAction/userAction.module";
 import { ActionModule } from "../action/action.module";
+import { GitProviderModule } from "../git/git.provider.module";
+import { ServiceTemplateService } from "./serviceTemplate.service";
+import { ServiceTemplateResolver } from "./serviceTemplate.resolver";
+import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
+import { OutdatedVersionAlertModule } from "../outdatedVersionAlert/outdatedVersionAlert.module";
+import { TemplateCodeEngineVersionModule } from "../templateCodeEngineVersion/templateCodeEngineVersion.module";
+import { OwnershipModule } from "../ownership/ownership.module";
+import { BlueprintModule } from "../blueprint/blueprint.module";
+import { RelationModule } from "../relation/relation.module";
+import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
+import { CustomPropertyModule } from "../customProperty/customProperty.module";
 
 @Module({
   imports: [
@@ -46,12 +57,23 @@ import { ActionModule } from "../action/action.module";
     forwardRef(() => GptModule),
     UserActionModule,
     ActionModule,
+    GitProviderModule,
+    ResourceVersionModule,
+    OutdatedVersionAlertModule,
+    TemplateCodeEngineVersionModule,
+    OwnershipModule,
+    BlueprintModule,
+    RelationModule,
+    ResourceSettingsModule,
+    CustomPropertyModule,
   ],
   providers: [
     ResourceService,
     ResourceResolver,
     ResourceBtmResolver,
     ResourceBtmService,
+    ServiceTemplateService,
+    ServiceTemplateResolver,
   ],
   exports: [ResourceBtmService, ResourceService, ResourceResolver],
 })

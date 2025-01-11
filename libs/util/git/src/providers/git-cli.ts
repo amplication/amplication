@@ -7,6 +7,7 @@ import {
 } from "simple-git";
 import { Commit, UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
+import fs from "fs-extra";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 import { ILogger } from "@amplication/util/logging";
@@ -75,6 +76,21 @@ export class GitCli {
     }
   }
 
+  /**
+   * Sparse checkout of specific paths to branch if exists, otherwise create new branch
+   * @param branchName name of the branch to checkout
+   * @param pathsToCheckout array of paths to checkout (relative to the repository root)
+   */
+  async sparseCheckout(
+    branchName: string,
+    pathsToCheckout: string[]
+  ): Promise<void> {
+    await this.git.fetch();
+    await this.git.raw(["sparse-checkout", "init", "--cone"]);
+    await this.git.raw(["sparse-checkout", "set", ...pathsToCheckout]);
+    await this.git.raw(["checkout", branchName]);
+  }
+
   async cherryPick(sha: string) {
     await this.git.raw([
       "cherry-pick",
@@ -105,7 +121,8 @@ export class GitCli {
         const fileParentDir = dirname(filePath);
 
         if (file.deleted) {
-          await rm(filePath);
+          //remove the file or silently ignore if it does not exist
+          await fs.remove(filePath);
           return filePath;
         }
 
@@ -250,17 +267,22 @@ export class GitCli {
   }
 
   async getShortStat(): Promise<string> {
-    const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
-    const prevRef = (
-      await this.git.raw(["rev-parse", `${currentRef}^`])
-    ).trim();
+    try {
+      const currentRef = (await this.git.raw(["rev-parse", "HEAD"])).trim();
+      const prevRef = (
+        await this.git.raw(["rev-parse", `${currentRef}^`])
+      ).trim();
 
-    const diffStat = (
-      await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
-    ).trim();
+      const diffStat = (
+        await this.git.diff(["--shortstat", `${prevRef}..${currentRef}`])
+      ).trim();
 
-    this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
+      this.logger.debug("get short stat", { currentRef, prevRef, diffStat });
 
-    return diffStat;
+      return diffStat;
+    } catch (error) {
+      this.logger.warn("Failed to git diff get short stat", error);
+      return "0 file changed, 0 insertions(+), 0 deletions(-)";
+    }
   }
 }

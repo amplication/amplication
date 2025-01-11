@@ -9,10 +9,10 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 import { EntityFieldProperty } from "./EntityFieldProperty";
@@ -36,7 +36,7 @@ export const EntityFieldListItem = ({
   onError,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const handleNavigateToRelatedEntity = useCallback(
     (event) => {
@@ -44,26 +44,17 @@ export const EntityFieldListItem = ({
       event.preventDefault();
 
       history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityField.properties.relatedEntityId}`
+        `${baseUrl}/entities/${entityField.properties.relatedEntityId}`
       );
     },
-    [history, resourceId, entityField, currentWorkspace, currentProject]
+    [history, entityField, baseUrl]
   );
 
   const handleRowClick = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`
-    );
-  }, [
-    history,
-    resourceId,
-    entityField,
-    entity,
-    currentWorkspace,
-    currentProject,
-  ]);
+    history.push(`${baseUrl}/entities/${entity.id}/fields/${entityField.id}`);
+  }, [baseUrl, history, entityField, entity]);
 
-  const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`;
+  const fieldUrl = `${baseUrl}/entities/${entity.id}/fields/${entityField.id}`;
 
   return (
     <ListItem onClick={handleRowClick}>
@@ -106,7 +97,7 @@ export const EntityFieldListItem = ({
         entityIdToName ? (
           <Link
             title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityField.properties.relatedEntityId}`}
+            to={`${baseUrl}/entities/${entityField.properties.relatedEntityId}`}
             onClick={handleNavigateToRelatedEntity}
           >
             {entityIdToName[entityField.properties.relatedEntityId]}{" "}

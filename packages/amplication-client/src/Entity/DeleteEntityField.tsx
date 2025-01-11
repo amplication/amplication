@@ -34,6 +34,7 @@ export const DeleteEntityField = ({
   const { relatedFieldId, relatedEntityId } = properties;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { addEntity } = useContext(AppContext);
+
   const { data: relatedFieldData } = useQuery(GET_ENTITY_WITH_SPECIFIC_FIELD, {
     variables: {
       entityId: relatedEntityId,

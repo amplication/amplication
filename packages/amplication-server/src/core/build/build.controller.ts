@@ -2,7 +2,6 @@ import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { ActionService } from "../action/action.service";
-import { EnumActionStepStatus } from "../action/dto";
 import { ReplyResultMessage } from "./dto/ReplyResultMessage";
 import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
 import { BuildService } from "./build.service";
@@ -15,11 +14,15 @@ import {
   CreatePrLog,
   CreatePrSuccess,
   KAFKA_TOPICS,
+  DownloadPrivatePluginsFailure,
+  DownloadPrivatePluginsLog,
+  DownloadPrivatePluginsSuccess,
+  CodeGenerationNotifyVersion,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { validate } from "class-validator";
 
 @Controller("generated-apps")
 export class BuildController {
@@ -46,17 +49,55 @@ export class BuildController {
     };
   }
 
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_NOTIFY_VERSION_TOPIC)
+  async onCodeGenerationNotifyVersion(
+    @Payload() message: CodeGenerationNotifyVersion.Value
+  ): Promise<void> {
+    const args = plainToInstance(CodeGenerationNotifyVersion.Value, message);
+    try {
+      await this.buildService.updateCodeGeneratorVersion(
+        args.buildId,
+        args.codeGeneratorVersion
+      );
+    } catch (error) {
+      this.logger.error("Failed to update code generator version ", error, {
+        buildId: args.buildId,
+        codeGeneratorVersion: args.codeGeneratorVersion,
+      });
+    }
+  }
+
+  @EventPattern(KAFKA_TOPICS.BUILD_PLUGIN_NOTIFY_VERSION_TOPIC)
+  async onPluginNotifyVersion(
+    @Payload() message: PluginNotifyVersion.Value
+  ): Promise<void> {
+    const args = plainToInstance(PluginNotifyVersion.Value, message);
+    try {
+      await this.buildService.notifyBuildPluginVersion(args);
+    } catch (error) {
+      this.logger.error("Failed to update plugin version ", error, {
+        buildId: args.buildId,
+        requestedFullPackageName: args.requestedFullPackageName,
+        packageName: args.packageName,
+        packageVersion: args.packageVersion,
+      });
+    }
+  }
+
   @EventPattern(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC)
   async onCodeGenerationSuccess(
     @Payload() message: CodeGenerationSuccess.Value
   ): Promise<void> {
     const args = plainToInstance(CodeGenerationSuccess.Value, message);
-    await this.buildService.completeCodeGenerationStep(
-      args.buildId,
-      EnumActionStepStatus.Success,
-      args.codeGeneratorVersion
-    );
-    await this.buildService.saveToGitProvider(args.buildId);
+    try {
+      await this.buildService.saveToGitProvider(args.buildId);
+
+      await this.buildService.onCodeGenerationSuccess(args.buildId);
+    } catch (error) {
+      this.logger.error("Failed to Complete Code Generation Step ", error, {
+        buildId: args.buildId,
+      });
+    }
   }
 
   @EventPattern(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC)
@@ -64,26 +105,13 @@ export class BuildController {
     @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
     const args = plainToInstance(CodeGenerationFailure.Value, message);
-
-    const validationErrors = await validate(args);
-
-    if (validationErrors.length > 0) {
-      // Shallow error to avoid blocking the kafka message consumption of topic
-      // TODO remove this validation code https://github.com/amplication/amplication/pull/7478/files#diff-d5c5677256d985fd177eb124cf83fff2f5a963d813363cfcbd21208d957233f7R67
-      this.logger.error("Failed to decode kafka message", null, {
-        validationErrors: validationErrors.map((error) =>
-          error.toString().replace(/\n/g, " ")
-        ),
-        message,
+    try {
+      await this.buildService.onCodeGenerationFailure(args);
+    } catch (error) {
+      this.logger.error("Failed to execute onCodeGenerationFailure ", error, {
+        buildId: args.buildId,
       });
-      return;
     }
-
-    await this.buildService.completeCodeGenerationStep(
-      args.buildId,
-      EnumActionStepStatus.Failed,
-      args.codeGeneratorVersion
-    );
   }
 
   @EventPattern(KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC)
@@ -124,6 +152,52 @@ export class BuildController {
       const logEntry = plainToInstance(CreatePrLog.Value, message);
 
       await this.buildService.onCreatePullRequestLog(logEntry);
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_SUCCESS_TOPIC)
+  async onDownloadPrivatePluginsSuccess(
+    @Payload() message: DownloadPrivatePluginsSuccess.Value
+  ): Promise<void> {
+    try {
+      const args = plainToInstance(
+        DownloadPrivatePluginsSuccess.Value,
+        message
+      );
+      await this.buildService.onDownloadPrivatePluginSuccess(args);
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_FAILURE_TOPIC)
+  async onDownloadPrivatePluginsFailure(
+    @Payload() message: DownloadPrivatePluginsFailure.Value
+  ): Promise<void> {
+    try {
+      const args = plainToInstance(
+        DownloadPrivatePluginsFailure.Value,
+        message
+      );
+      await this.buildService.onDownloadPrivatePluginFailure(args);
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
+  @EventPattern(KAFKA_TOPICS.DOWNLOAD_PRIVATE_PLUGINS_LOG_TOPIC)
+  async onDownloadPrivatePluginsLog(
+    @Payload() message: DownloadPrivatePluginsLog.Value
+  ): Promise<void> {
+    try {
+      const logEntry = plainToInstance(
+        DownloadPrivatePluginsLog.Value,
+        message
+      );
+
+      await this.buildService.onDownloadPrivatePluginLog(logEntry);
     } catch (error) {
       this.logger.error(error.message, error);
     }

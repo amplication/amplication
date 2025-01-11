@@ -1,4 +1,4 @@
-import { LogLevel } from "@amplication/util/logging";
+import { LogLevel } from "@amplication/util-logging";
 
 export interface LoggerMetadata {
   service: string;

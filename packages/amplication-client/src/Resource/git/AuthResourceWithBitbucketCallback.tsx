@@ -11,7 +11,11 @@ const AuthResourceWithBitbucketCallback = () => {
 
   const [completeAuthWithGit] = useCompleteGitOAuth2FlowMutation({
     onCompleted: (data) => {
-      window.opener.postMessage({ completed: true });
+      window.opener.postMessage({
+        completed: true,
+        id: data.completeGitOAuth2Flow.id,
+        name: data.completeGitOAuth2Flow.name,
+      });
       // close the popup
       window.close();
     },

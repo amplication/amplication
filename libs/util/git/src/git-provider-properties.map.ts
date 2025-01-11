@@ -11,4 +11,5 @@ export const isValidGitProviderProperties = {
   [EnumGitProvider.AwsCodeCommit]:
     isAwsCodeCommitProviderOrganizationProperties,
   [EnumGitProvider.GitLab]: isOAuthProviderOrganizationProperties,
+  [EnumGitProvider.AzureDevOps]: isOAuthProviderOrganizationProperties,
 };

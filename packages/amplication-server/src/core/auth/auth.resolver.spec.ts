@@ -1,36 +1,33 @@
-import { INestApplication } from "@nestjs/common";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   ApolloDriver,
   ApolloDriverConfig,
   getApolloServer,
 } from "@nestjs/apollo";
+import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
 import { gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Account, Auth, User, AuthPreviewAccount } from "../../models";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Account, Auth, User, Workspace } from "../../models";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { ApolloServerBase } from "apollo-server-core";
-import { EnumPreviewAccountType } from "./dto/EnumPreviewAccountType";
-import { PreviewUserService } from "./previewUser.service";
+import { PermissionsService } from "../permissions/permissions.service";
+import { AuthUser } from "./types";
+import { RolesPermissions } from "@amplication/util-roles-types";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
-const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
 const EXAMPLE_EMAIL = "exampleEmail";
-const EXAMPLE_PREVIEW_EMAIL = "exampleEmail@amplication.com";
 const EXAMPLE_FIRST_NAME = "exampleFirstName";
 const EXAMPLE_LAST_NAME = "exampleLastName";
 const EXAMPLE_PASSWORD = "examplePassword";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
-const EXAMPLE_PROJECT_ID = "exampleProjectId";
-const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -40,16 +37,25 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
-const EXAMPLE_USER: User = {
+const EXAMPLE_WORKSPACE: Workspace = {
+  id: EXAMPLE_WORKSPACE_ID,
+  name: "Example Workspace",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  allowLLMFeatures: true,
+};
+
+const EXAMPLE_USER: AuthUser = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   account: EXAMPLE_ACCOUNT,
   isOwner: true,
+  permissions: ["git.org.create", "git.org.delete"],
+
+  workspace: EXAMPLE_WORKSPACE,
 };
 
 const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
@@ -61,13 +67,6 @@ const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
 
 const EXAMPLE_AUTH: Auth = {
   token: EXAMPLE_TOKEN,
-};
-
-const EXAMPLE_AUTH_PREVIEW_ACCOUNT: AuthPreviewAccount = {
-  token: EXAMPLE_TOKEN,
-  workspaceId: EXAMPLE_WORKSPACE_ID,
-  projectId: EXAMPLE_PROJECT_ID,
-  resourceId: EXAMPLE_RESOURCE_ID,
 };
 
 const SIGNUP_MUTATION = gql`
@@ -92,25 +91,6 @@ const SIGNUP_MUTATION = gql`
   }
 `;
 
-const SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
-  mutation (
-    $previewAccountEmail: String!
-    $previewAccountType: EnumPreviewAccountType!
-  ) {
-    signupPreviewAccount(
-      data: {
-        previewAccountEmail: $previewAccountEmail
-        previewAccountType: $previewAccountType
-      }
-    ) {
-      token
-      workspaceId
-      projectId
-      resourceId
-    }
-  }
-`;
-
 const LOGIN_MUTATION = gql`
   mutation ($email: String!, $password: String!) {
     login(data: { email: $email, password: $password }) {
@@ -131,8 +111,6 @@ const CHANGE_PASSWORD_MUTATION = gql`
       firstName
       lastName
       password
-      previewAccountType
-      previewAccountEmail
     }
   }
 `;
@@ -155,9 +133,15 @@ const ME_QUERY = gql`
   }
 `;
 
-const COMPETE_SIGNUP_PREVIEW_ACCOUNT_MUTATION = gql`
-  mutation {
-    completeSignupWithBusinessEmail
+const GET_PERMISSIONS = gql`
+  query {
+    permissions
+  }
+`;
+
+const GET_RESOURCE_PERMISSIONS = gql`
+  query ($resourceId: String!) {
+    resourcePermissions(where: { id: $resourceId })
   }
 `;
 
@@ -165,10 +149,11 @@ const authServiceSignUpMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceLoginMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceChangePasswordMock = jest.fn(() => EXAMPLE_ACCOUNT);
 const setCurrentWorkspaceMock = jest.fn(() => EXAMPLE_TOKEN);
-const signupPreviewAccountMock = jest.fn(() => EXAMPLE_AUTH_PREVIEW_ACCOUNT);
-const completeSignupPreviewAccountMock = jest.fn(() => EXAMPLE_MESSAGE);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
+const mockGetUserResourceOrProjectPermissions = jest.fn(
+  (): RolesPermissions[] => ["resource.create", "resource.createTemplate"]
+);
 
 describe("AuthResolver", () => {
   let app: INestApplication;
@@ -189,12 +174,13 @@ describe("AuthResolver", () => {
           })),
         },
         {
-          provide: PreviewUserService,
+          provide: PermissionsService,
           useClass: jest.fn(() => ({
-            signupPreviewAccount: signupPreviewAccountMock,
-            completeSignupPreviewAccount: completeSignupPreviewAccountMock,
+            getUserResourceOrProjectPermissions:
+              mockGetUserResourceOrProjectPermissions,
           })),
         },
+
         {
           provide: AmplicationLogger,
           useClass: jest.fn(() => ({
@@ -256,51 +242,11 @@ describe("AuthResolver", () => {
         ...EXAMPLE_AUTH,
       },
     });
-    expect(authServiceSignUpMock).toBeCalledTimes(1);
-    expect(authServiceSignUpMock).toBeCalledWith({
+    expect(authServiceSignUpMock).toHaveBeenCalledTimes(1);
+    expect(authServiceSignUpMock).toHaveBeenCalledWith({
       ...variables,
       email: variables.email.toLowerCase(),
     });
-  });
-
-  it("should signup preview account", async () => {
-    const variables = {
-      previewAccountEmail: EXAMPLE_PREVIEW_EMAIL,
-      previewAccountType: EnumPreviewAccountType.BreakingTheMonolith,
-    };
-    const res = await apolloClient.executeOperation({
-      query: SIGNUP_PREVIEW_ACCOUNT_MUTATION,
-      variables: variables,
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      signupPreviewAccount: {
-        ...EXAMPLE_AUTH_PREVIEW_ACCOUNT,
-      },
-    });
-    expect(signupPreviewAccountMock).toBeCalledTimes(1);
-    expect(signupPreviewAccountMock).toBeCalledWith({
-      ...variables,
-      previewAccountEmail: variables.previewAccountEmail.toLowerCase(),
-    });
-  });
-
-  it("should complete signup for preview account", async () => {
-    const res = await apolloClient.executeOperation(
-      {
-        query: COMPETE_SIGNUP_PREVIEW_ACCOUNT_MUTATION,
-      },
-      {
-        req: {
-          user: EXAMPLE_USER,
-        },
-      }
-    );
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      completeSignupWithBusinessEmail: EXAMPLE_MESSAGE,
-    });
-    expect(completeSignupPreviewAccountMock).toBeCalledTimes(1);
   });
 
   it("should login", async () => {
@@ -318,8 +264,8 @@ describe("AuthResolver", () => {
         ...EXAMPLE_AUTH,
       },
     });
-    expect(authServiceLoginMock).toBeCalledTimes(1);
-    expect(authServiceLoginMock).toBeCalledWith(
+    expect(authServiceLoginMock).toHaveBeenCalledTimes(1);
+    expect(authServiceLoginMock).toHaveBeenCalledWith(
       EXAMPLE_EMAIL.toLowerCase(),
       EXAMPLE_PASSWORD
     );
@@ -341,8 +287,8 @@ describe("AuthResolver", () => {
         updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString(),
       },
     });
-    expect(authServiceChangePasswordMock).toBeCalledTimes(1);
-    expect(authServiceChangePasswordMock).toBeCalledWith(
+    expect(authServiceChangePasswordMock).toHaveBeenCalledTimes(1);
+    expect(authServiceChangePasswordMock).toHaveBeenCalledWith(
       EXAMPLE_USER.account,
       EXAMPLE_PASSWORD,
       EXAMPLE_PASSWORD
@@ -360,15 +306,15 @@ describe("AuthResolver", () => {
         ...EXAMPLE_AUTH,
       },
     });
-    expect(setCurrentWorkspaceMock).toBeCalledTimes(1);
-    expect(setCurrentWorkspaceMock).toBeCalledWith(
+    expect(setCurrentWorkspaceMock).toHaveBeenCalledTimes(1);
+    expect(setCurrentWorkspaceMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT_ID,
       EXAMPLE_WORKSPACE_ID
     );
   });
 
   it("should throw error if user has no account", async () => {
-    mockCanActivate.mockImplementation(
+    mockCanActivate.mockImplementationOnce(
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
     const { data, errors } = await apolloClient.executeOperation({
@@ -380,6 +326,34 @@ describe("AuthResolver", () => {
     expect(errors.length === 1); // make sure only one error is send
     const error = errors[0];
     expect(error.message === "User has no account"); // make sure the error message is valid
-    expect(setCurrentWorkspaceMock).toBeCalledTimes(0);
+    expect(setCurrentWorkspaceMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("get user permissions", async () => {
+    const res = await apolloClient.executeOperation({
+      query: GET_PERMISSIONS,
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      permissions: ["git.org.create", "git.org.delete"],
+    });
+  });
+
+  it("get resource permissions", async () => {
+    const resourceId = "resourceId";
+    const res = await apolloClient.executeOperation({
+      query: GET_RESOURCE_PERMISSIONS,
+      variables: { resourceId },
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      resourcePermissions: ["resource.create", "resource.createTemplate"],
+    });
+    expect(mockGetUserResourceOrProjectPermissions).toHaveBeenCalledTimes(1);
+    expect(mockGetUserResourceOrProjectPermissions).toHaveBeenCalledWith(
+      EXAMPLE_USER,
+      resourceId,
+      undefined
+    );
   });
 });

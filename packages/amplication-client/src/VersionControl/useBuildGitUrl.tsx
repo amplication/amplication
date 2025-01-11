@@ -20,7 +20,31 @@ const useBuildGitUrl = (build?: models.Build) => {
     return log?.meta?.githubUrl || null;
   }, [build?.action]);
 
-  return gitUrl;
+  const gitPrTitle = useMemo<string | null>(() => {
+    if (gitUrl) {
+      if (gitUrl.includes("github")) {
+        const url = new URL(gitUrl);
+        const prNumber = url.pathname.split("/").pop();
+        return `View code (PR #${prNumber})`;
+      } else if (gitUrl.includes("gitlab")) {
+        const url = new URL(gitUrl);
+        const prNumber = url.pathname.split("/").pop();
+        return `View code (MR #${prNumber})`;
+      } else if (gitUrl.includes("bitbucket")) {
+        const url = new URL(gitUrl);
+        const prNumber = url.pathname.split("/").pop();
+        return `View code (PR #${prNumber})`;
+      } else if (gitUrl.includes("azure")) {
+        const url = new URL(gitUrl);
+        const prNumber = url.pathname.split("/").pop();
+        return `View code (PR #${prNumber})`;
+      } else {
+        return "View code";
+      }
+    }
+  }, [gitUrl]);
+
+  return { gitUrl, gitPrTitle };
 };
 
 export default useBuildGitUrl;

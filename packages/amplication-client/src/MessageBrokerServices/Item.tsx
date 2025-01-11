@@ -7,7 +7,7 @@ import {
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { Resource } from "../models";
 import "./Item.scss";
 
@@ -20,10 +20,7 @@ const description = "See connected service details ";
 
 const Item = ({ link, service }: Props) => {
   return (
-    <ListItem
-      to={link}
-      start={<ResourceCircleBadge type={service.resourceType} />}
-    >
+    <ListItem to={link} start={<ResourceTypeBadge resource={service} />}>
       <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Small}>
         <Text
           textStyle={EnumTextStyle.Normal}

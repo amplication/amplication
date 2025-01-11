@@ -11,6 +11,7 @@ export type EntityLinkAndDisplayName = {
   icon: string;
   displayName: string;
   type?: string;
+  pluralTypeName: string;
 };
 
 type Props = {
@@ -32,7 +33,9 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         />
       );
 
-    const data = changeOriginMap[change.originType](change.origin);
+    const data = PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP[change.originType](
+      change.origin
+    );
 
     return (
       <PendingChangeContent
@@ -56,7 +59,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 
 export default PendingChange;
 
-export const changeOriginMap = {
+export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
   [models.EnumPendingChangeOriginType.Entity]: (
     change: models.PendingChangeOrigin
   ): EntityLinkAndDisplayName => ({
@@ -64,6 +67,7 @@ export const changeOriginMap = {
     icon: "entity_outline",
     displayName: change.displayName,
     type: "Entity",
+    pluralTypeName: "Entities",
   }),
   [models.EnumPendingChangeOriginType.Block]: (
     change: models.PendingChangeOrigin
@@ -76,6 +80,21 @@ export const changeOriginMap = {
         icon: "settings",
         displayName: "Service Settings",
         type: "Service Settings",
+        pluralTypeName: "Service Settings",
+      },
+      [models.EnumBlockType.ResourceSettings]: {
+        relativeUrl: `settings/resource-settings`,
+        icon: "settings",
+        displayName: "Settings",
+        type: "Settings",
+        pluralTypeName: "Settings",
+      },
+      [models.EnumBlockType.Package]: {
+        relativeUrl: `settings/packages`,
+        icon: "ai",
+        displayName: "Service packages",
+        type: "Service packages",
+        pluralTypeName: "Service Packages",
       },
       [models.EnumBlockType.ProjectConfigurationSettings]: {
         //Todo: link to project setting
@@ -83,30 +102,35 @@ export const changeOriginMap = {
         icon: "settings",
         displayName: "Project Settings",
         type: "Project Settings",
+        pluralTypeName: "Project Settings",
       },
       [models.EnumBlockType.Topic]: {
         relativeUrl: `topics/${change.id}`,
         icon: "topics_outline",
         displayName: change.displayName,
         type: "Topic",
+        pluralTypeName: "Topics",
       },
       [models.EnumBlockType.PluginInstallation]: {
         relativeUrl: "plugins/installed",
         icon: "plugins",
         displayName: change.displayName,
         type: "Plugin",
+        pluralTypeName: "Plugins",
       },
       [models.EnumBlockType.PluginOrder]: {
         relativeUrl: "plugins/installed",
         icon: "plugins",
         displayName: change.displayName,
         type: "Plugin Order",
+        pluralTypeName: "Plugin Order",
       },
       [models.EnumBlockType.Module]: {
         relativeUrl: `modules/${change.id}`,
         icon: "box",
         displayName: change.displayName,
         type: "Module",
+        pluralTypeName: "Modules",
       },
       //@todo: update the url, icon and display name
       [models.EnumBlockType.ModuleAction]: {
@@ -115,7 +139,8 @@ export const changeOriginMap = {
         }/actions/${change.id}`,
         icon: "api",
         displayName: change.displayName,
-        type: "Action",
+        type: "API",
+        pluralTypeName: "APIs",
       },
       [models.EnumBlockType.ModuleDto]: {
         relativeUrl: `modules/${
@@ -124,12 +149,35 @@ export const changeOriginMap = {
         icon: "zap",
         displayName: change.displayName,
         type: "DTO",
+        pluralTypeName: "DTOs",
       },
       [models.EnumBlockType.ServiceTopics]: {
         relativeUrl: "not supported",
         icon: "topics_outline",
         displayName: "not supported",
         type: "Service Topics",
+        pluralTypeName: "Service Topics",
+      },
+      [models.EnumBlockType.PrivatePlugin]: {
+        relativeUrl: `../private-plugins/${change.id}`,
+        icon: "plugin",
+        displayName: change.displayName,
+        type: "Private Plugin",
+        pluralTypeName: "Private Plugins",
+      },
+      [models.EnumBlockType.CodeEngineVersion]: {
+        relativeUrl: `settings/code-generator-version`,
+        icon: "code",
+        displayName: "Code Engine Version",
+        type: "Code Engine Version",
+        pluralTypeName: "Code Engine Version",
+      },
+      [models.EnumBlockType.Relation]: {
+        relativeUrl: ``,
+        icon: "relation",
+        displayName: "Relation",
+        type: "Relation",
+        pluralTypeName: "Relations",
       },
     };
     return blockTypeMap[(change as models.Block).blockType];

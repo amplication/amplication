@@ -13,6 +13,7 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       version
       settings
       configurations
+      isPrivate
     }
   }
 `;
@@ -27,6 +28,7 @@ export const GET_PLUGIN_INSTALLATION = gql`
       version
       settings
       configurations
+      isPrivate
     }
   }
 `;
@@ -43,6 +45,7 @@ export const UPDATE_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      isPrivate
     }
   }
 `;
@@ -56,6 +59,7 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      isPrivate
     }
   }
 `;

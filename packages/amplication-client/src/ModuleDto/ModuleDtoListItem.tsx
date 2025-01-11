@@ -7,9 +7,8 @@ import {
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext } from "react";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   module: models.Module;
@@ -17,12 +16,11 @@ type Props = {
 };
 
 export const ModuleDtoListItem = ({ module, moduleDto }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
 
   if (!module) return null;
 
-  const dtoUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/dtos/${moduleDto.id}`;
+  const dtoUrl = `${baseUrl}/modules/${module.id}/dtos/${moduleDto.id}`;
 
   return (
     <ListItem

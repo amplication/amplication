@@ -14,22 +14,22 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { EnumResourceType, EnumUserActionStatus } from "../../models";
-import "./BreakTheMonolith.scss";
-import { BtmLoader } from "./BtmLoader";
-import { useBtmService } from "./hooks/useBtmService";
 import classNames from "classnames";
-import { formatError } from "../../util/error";
-import * as models from "../../models";
-import { useHistory } from "react-router-dom";
 import { useCallback, useEffect } from "react";
-import { useAppContext } from "../../context/appContext";
+import { useHistory } from "react-router-dom";
+import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import * as models from "../../models";
+import { EnumResourceType, EnumUserActionStatus } from "../../models";
+import { generatedKey } from "../../Plugins/InstalledPluginSettings";
 import {
   ModelChanges,
   OverrideChanges,
 } from "../../Project/ArchitectureConsole/types";
-import { generatedKey } from "../../Plugins/InstalledPluginSettings";
+import { formatError } from "../../util/error";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import "./BreakTheMonolith.scss";
+import { BtmLoader } from "./BtmLoader";
+import { useBtmService } from "./hooks/useBtmService";
 
 const CLASS_NAME = "break-the-monolith";
 
@@ -51,7 +51,7 @@ const BreakTheMonolith: React.FC<Props> = ({
   onComplete,
 }) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useAppContext();
+  const { baseUrl } = useProjectBaseUrl();
   const { btmResult, loading, error } = useBtmService({
     resourceId: resource?.id,
   });
@@ -60,7 +60,7 @@ const BreakTheMonolith: React.FC<Props> = ({
   const errorMessage = formatError(error);
 
   const redirectToArchitectureAndComplete = useCallback(() => {
-    const url = `/${currentWorkspace?.id}/${currentProject?.id}/architecture`;
+    const url = `${baseUrl}/architecture`;
 
     //convert the result to the model organizer changes format
     const changes = convertBtmChangesToModelOrganizerChanges(btmResult);
@@ -70,13 +70,7 @@ const BreakTheMonolith: React.FC<Props> = ({
       state: { changes },
     });
     onComplete && onComplete();
-  }, [
-    btmResult,
-    currentProject?.id,
-    currentWorkspace?.id,
-    history,
-    onComplete,
-  ]);
+  }, [btmResult, baseUrl, history, onComplete]);
 
   useEffect(() => {
     if (btmResult && btmResult.status === EnumUserActionStatus.Completed) {

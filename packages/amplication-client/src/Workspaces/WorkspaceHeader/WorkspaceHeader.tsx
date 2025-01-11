@@ -1,15 +1,16 @@
 import {
   Breadcrumbs,
   Dialog,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  FlexItem,
   Icon,
-  SelectMenu,
-  SelectMenuItem,
-  SelectMenuList,
-  SelectMenuModal,
+  OptionItem,
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import {
   ButtonTypeEnum,
   IMessage,
@@ -19,10 +20,11 @@ import {
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
-import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
-import CommandPalette from "../../CommandPalette/CommandPalette";
+import AskJovuButton from "../../Assistant/AskJovuButton";
+import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 import { Button, EnumButtonStyle } from "../../Components/Button";
+import ProjectSelector from "../../Components/ProjectSelector";
 import UserBadge from "../../Components/UserBadge";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
@@ -35,61 +37,43 @@ import {
 } from "../../env";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import {
-  AMPLICATION_DISCORD_URL,
-  AMPLICATION_DOC_URL,
-} from "../../util/constants";
-import { version } from "../../util/version";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import useFetchGithubStars from "../hooks/useFetchGithubStars";
-import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
+import HelpMenu from "./HelpMenu";
 import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
 import styles from "./notificationStyle";
-import AskJovuButton from "../../Assistant/AskJovuButton";
+import ResourceSelector from "../../Components/ResourceSelector2";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
 
+const ALL_VALUE = "-1";
+
+const ALL_PROJECTS_ITEM: OptionItem = {
+  label: "All Projects",
+  value: ALL_VALUE,
+};
+const ALL_RESOURCES_ITEM: OptionItem = {
+  label: "All Resources",
+  value: ALL_VALUE,
+};
+
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
-enum ItemDataCommand {
-  COMMAND_CONTACT_US = "command_contact_us",
-}
-
-type HelpMenuItem = {
-  name: string;
-  url: string | null;
-  itemData: ItemDataCommand | null;
-};
-
-const HELP_MENU_LIST: HelpMenuItem[] = [
-  { name: "Docs", url: AMPLICATION_DOC_URL, itemData: null },
-  {
-    name: "Technical Support",
-    url: AMPLICATION_DISCORD_URL,
-    itemData: null,
-  },
-  {
-    name: "Contact Us",
-    url: null,
-    itemData: ItemDataCommand.COMMAND_CONTACT_US,
-  },
-];
-
 const WorkspaceHeader: React.FC = () => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, currentResource, resources } =
+    useContext(AppContext);
+  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
 
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
-  });
+  const history = useHistory();
 
   const apolloClient = useApolloClient();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const stars = useFetchGithubStars();
-  const history = useHistory();
 
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
@@ -129,24 +113,6 @@ const WorkspaceHeader: React.FC = () => {
     []
   );
 
-  const handleContactUsClick = useCallback(() => {
-    window.open(data?.contactUsLink, "_blank");
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Contact Us",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [data?.contactUsLink, trackEvent]);
-
-  const handleItemDataClicked = useCallback(
-    (itemData: ItemDataCommand) => {
-      if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
-        handleContactUsClick();
-      }
-      return;
-    },
-    [handleContactUsClick]
-  );
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
@@ -169,6 +135,34 @@ const WorkspaceHeader: React.FC = () => {
         <span>All caught up! </span>
       </div>
     </div>
+  );
+
+  const handleProjectSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${value}`;
+
+      history.push(url);
+    },
+    [currentWorkspace?.id, history, isPlatformConsole]
+  );
+
+  const handleResourceSelected = useCallback(
+    (value: string) => {
+      const platformPath = isPlatformConsole ? "/platform" : "";
+
+      const url =
+        value === ALL_VALUE
+          ? `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}`
+          : `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${value}`;
+
+      history.push(url);
+    },
+    [currentProject?.id, currentWorkspace?.id, history, isPlatformConsole]
   );
 
   return (
@@ -201,93 +195,52 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <span>
-            <a
-              href="https://github.com/amplication/amplication/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${CLASS_NAME}__version`}
+          <ConsoleNavigationButton />
+
+          {currentProject && (
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              gap={EnumGapSize.Large}
+              itemsAlign={EnumItemsAlign.Center}
             >
-              v{version}
-            </a>
-          </span>
-          <Breadcrumbs>
-            {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-              <Breadcrumbs.Item key={item.url} to={item.url}>
-                {item.name}
-              </Breadcrumbs.Item>
-            ))}
-          </Breadcrumbs>
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              <ProjectSelector
+                onChange={handleProjectSelected}
+                selectedValue={currentProject?.id}
+                allProjectsItem={ALL_PROJECTS_ITEM}
+              />
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              {/* {currentResource && ( */}
+              <>
+                <ResourceSelector
+                  onChange={handleResourceSelected}
+                  selectedValue={currentResource?.id || ALL_VALUE}
+                  allResourcesItem={ALL_RESOURCES_ITEM}
+                  isPlatformConsole={isPlatformConsole}
+                />
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+              </>
+              {/* )} */}
+              <Breadcrumbs>
+                {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+                  <Breadcrumbs.Item key={item.url} to={item.url}>
+                    {item.name}
+                  </Breadcrumbs.Item>
+                ))}
+              </Breadcrumbs>
+            </FlexItem>
+          )}
         </div>
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
+            <hr className={`${CLASS_NAME}__vertical_border`} />
             <AskJovuButton />
             <UpgradeCtaButton />
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="search"
-                  iconSize="small"
-                />
-              </Tooltip>
-            }
-          />
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div className={`${CLASS_NAME}__help_popover`}>
-            <SelectMenu
-              title="Help"
-              buttonStyle={EnumButtonStyle.Text}
-              icon="chevron_down"
-              openIcon="chevron_up"
-              className={`${CLASS_NAME}__help_popover__menu`}
-            >
-              <SelectMenuModal align="right">
-                <SelectMenuList>
-                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      onSelectionChange={() => {
-                        !route.url && handleItemDataClicked(route.itemData);
-                      }}
-                      key={index}
-                      {...(route.url
-                        ? {
-                            rel: "noopener noreferrer",
-                            href: route.url,
-                            target: "_blank",
-                          }
-                        : {})}
-                    >
-                      <div className={`${CLASS_NAME}__help_popover__name`}>
-                        {route.name}
-                      </div>
-                    </SelectMenuItem>
-                  ))}
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    onSelectionChange={() => {
-                      history.push(`/${currentWorkspace?.id}/purchase`);
-                    }}
-                  >
-                    <div className={`${CLASS_NAME}__help_popover__name`}>
-                      Pricing Plans
-                    </div>
-                  </SelectMenuItem>
-                </SelectMenuList>
-              </SelectMenuModal>
-            </SelectMenu>
-          </div>
+          <HelpMenu />
           {canShowNotification && (
             <>
               <hr className={`${CLASS_NAME}__vertical_border`} />
@@ -326,22 +279,18 @@ const WorkspaceHeader: React.FC = () => {
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <CommandPalette
-            trigger={
-              <Tooltip
-                className="amp-menu-item__tooltip"
-                aria-label={`Logout`}
-                direction="sw"
-                noDelay
-              >
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  icon="log_out"
-                  onClick={handleSignOut}
-                />
-              </Tooltip>
-            }
-          />
+          <Tooltip
+            className="amp-menu-item__tooltip"
+            aria-label={`Logout`}
+            direction="sw"
+            noDelay
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="log_out"
+              onClick={handleSignOut}
+            />
+          </Tooltip>
         </div>
       </div>
 
@@ -349,10 +298,7 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__highlight`}>
           Notice: You're currently using a preview repository for your generated
           code. For a full personalized experience, please&nbsp;
-          <Link
-            title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
-          >
+          <Link title={"Go to project settings"} to={`${baseUrl}/git-sync`}>
             connect to your own repository
           </Link>
         </div>

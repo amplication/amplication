@@ -88,7 +88,7 @@ export class ModuleDtoService extends BlockTypeService<
   ): Promise<ModuleDto[]> {
     //todo: extend query to return shared dtos from other resources in the project
 
-    return super.findMany(args);
+    return this.findMany(args);
   }
 
   async findMany(
@@ -232,6 +232,16 @@ export class ModuleDtoService extends BlockTypeService<
       };
     });
 
+    if (properties) {
+      for (const property of properties) {
+        await this.validateTypes(
+          args.data.resource.connect.id,
+          property.propertyTypes,
+          UNSUPPORTED_TYPES
+        );
+      }
+    }
+
     return super.create(
       {
         ...args,
@@ -304,7 +314,10 @@ export class ModuleDtoService extends BlockTypeService<
 
     const moduleDto = await super.findOne(args);
 
-    if (moduleDto?.dtoType !== EnumModuleDtoType.Custom) {
+    if (
+      moduleDto?.dtoType !== EnumModuleDtoType.Custom &&
+      moduleDto?.dtoType !== EnumModuleDtoType.CustomEnum
+    ) {
       throw new AmplicationError(
         "Cannot delete a default DTO. To delete it, you must delete the entity"
       );

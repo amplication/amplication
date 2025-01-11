@@ -67,6 +67,11 @@ export enum AnalyticsEventNames {
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
+  PluginRepositoryErrorCreate = "pluginRepositoryErrorCreate",
+  CreatePluginRepository = "createPluginRepository",
+  CreateComponent = "createComponent",
+
+  // plugin repository
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
   MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
   MessageBrokerErrorCreate = "messageBrokerErrorCreate",
@@ -77,6 +82,10 @@ export enum AnalyticsEventNames {
   // topic
   TopicCreate = "createTopic",
   TopicUpdate = "updateTopic",
+
+  // private plugin
+  PrivatePluginCreate = "createPrivatePlugin",
+  PrivatePluginUpdate = "updatePrivatePlugin",
 
   // commit & build & pending changes
   CommitClicked = "commitClicked",
@@ -161,9 +170,6 @@ export enum AnalyticsEventNames {
   StartBreakTheMonolithClick = "StartBreakTheMonolithClick",
   ModelOrganizer_AddServiceClick = "ModelOrganizer_AddServiceClick",
   ModelOrganizer_MoveEntity = "ModelOrganizer_MoveEntity",
-
-  // break the monolith preview user
-  PreviewUser_GenerateCode = "PreviewUser_GenerateCode",
 
   ChangedToDotNet = "ChangedToDotNet",
   ChoseDotNetUsage = "ChoseDotNetUsage",

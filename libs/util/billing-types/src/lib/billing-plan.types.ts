@@ -5,4 +5,5 @@ export enum BillingPlan {
   PreviewBreakTheMonolith = "plan-amplication-preview-break-monolith",
   Pro = "plan-amplication-pro",
   ProWithTrial = "plan-amplication-pro-with-trial",
+  Team = "plan-amplication-team",
 }

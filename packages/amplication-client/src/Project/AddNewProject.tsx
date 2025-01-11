@@ -7,12 +7,21 @@ import {
   FeatureIndicatorContainer,
 } from "../Components/FeatureIndicatorContainer";
 import { Button } from "../Components/Button";
+import { useAppContext } from "../context/appContext";
 
 const CLASS_NAME = "add-new-project";
 
-const AddNewProject = () => {
+type Props = {
+  projectsLength: number;
+};
+
+const AddNewProject = ({ projectsLength }: Props) => {
   const [projectDialogStatus, setProjectDialogStatus] =
     useState<boolean>(false);
+
+  const { permissions } = useAppContext();
+
+  const canCreateProject = permissions.canPerformTask("project.create");
 
   const handleNewProjectClick = useCallback(() => {
     setProjectDialogStatus(!projectDialogStatus);
@@ -32,20 +41,25 @@ const AddNewProject = () => {
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
-      <FeatureIndicatorContainer
-        featureId={BillingFeature.Projects}
-        entitlementType={EntitlementType.Metered}
-        limitationText="You have reached the maximum number of projects allowed. "
-      >
-        <Button
-          onClick={handleNewProjectClick}
-          type="button"
-          iconSize="small"
-          buttonStyle={EnumButtonStyle.Primary}
+      {canCreateProject && (
+        <FeatureIndicatorContainer
+          featureId={BillingFeature.Projects}
+          entitlementType={EntitlementType.Metered}
+          limitationText="You have reached the maximum number of projects allowed. "
+          actualUsage={projectsLength}
+          paidPlansExclusive={false}
+          canPerformTask={canCreateProject}
         >
-          <span className={`${CLASS_NAME}__label`}>Add New Project</span>
-        </Button>
-      </FeatureIndicatorContainer>
+          <Button
+            onClick={handleNewProjectClick}
+            type="button"
+            iconSize="small"
+            buttonStyle={EnumButtonStyle.Primary}
+          >
+            <span className={`${CLASS_NAME}__label`}>Add New Project</span>
+          </Button>
+        </FeatureIndicatorContainer>
+      )}
     </>
   );
 };

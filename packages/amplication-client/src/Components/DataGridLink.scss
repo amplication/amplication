@@ -1,0 +1,13 @@
+@import "../style/index.scss";
+
+.data-grid-link {
+  display: inline-block;
+  width: 100%;
+
+  &:hover {
+    .amp-text {
+      color: var(--theme-turquoise);
+      text-decoration: underline;
+    }
+  }
+}

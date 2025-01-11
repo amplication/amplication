@@ -49,6 +49,10 @@ $action-sep-height: $action-sep-gap * 2;
   flex: 1;
 }
 
+.amp-list-item--clickable {
+  cursor: pointer;
+}
+
 .amp-list-item--clickable:hover {
   background-color: $hover-background-color;
 }

@@ -1,5 +1,3 @@
-import "@amplication/ui/design-system/icons";
-import "@amplication/ui/design-system/style/variables";
 import {
   ApolloClient,
   ApolloLink,

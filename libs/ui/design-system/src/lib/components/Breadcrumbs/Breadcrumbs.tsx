@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Children } from "react";
 import "./Breadcrumbs.scss";
 import MuiBreadcrumbs, {
   BreadcrumbsProps as MuiBreadcrumbsProps,

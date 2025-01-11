@@ -88,7 +88,7 @@ async function createResolverModule({
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${
     serverDirectories.srcDirectory
-  }/${customModuleName}/${customModuleName.toLowerCase()}.resolver.ts`;
+  }/${customModuleName.toLowerCase()}/${customModuleName.toLowerCase()}.resolver.ts`;
 
   interpolate(template, templateMapping);
 

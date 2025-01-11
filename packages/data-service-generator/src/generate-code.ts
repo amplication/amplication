@@ -2,9 +2,9 @@ import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
-import { BuildManagerNotifier } from "./notify-build-manager";
-import { logger as internalLogger } from "./logging";
-import { getFileEncoding } from "./utils/get-file-encoding";
+import { BuildManagerNotifier } from "@amplication/dsg-utils";
+import { logger as internalLogger } from "@amplication/dsg-utils";
+import { getFileEncoding } from "@amplication/dsg-utils";
 import DsgContext from "./dsg-context";
 
 export const AMPLICATION_MODULES = "amplication_modules";
@@ -87,7 +87,7 @@ export const generateCode = async (): Promise<void> => {
 
     await buildManagerNotifier.success();
   } catch (error) {
-    await context.logger.info(`Failed to generate code: ${error.message}`);
+    await context.logger.error(`Failed to generate code: ${error.message}`);
     await buildManagerNotifier.failure();
     throw error;
   }

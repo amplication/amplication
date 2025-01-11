@@ -12,16 +12,17 @@ import {
 } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
 import { useContext, useMemo } from "react";
-import { Link, match, useLocation } from "react-router-dom";
+import { Link, match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
 import { TruncatedId } from "../Components/TruncatedId";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import { resourceThemeMap } from "../Resource/constants";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import ActionLog from "./ActionLog";
 import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
@@ -45,10 +46,9 @@ const BuildPage = ({ match, buildId }: Props) => {
     return truncateId(build);
   }, [build]);
 
-  const { currentProject, currentWorkspace, resources } =
-    useContext(AppContext);
+  const { resources } = useContext(AppContext);
 
-  const location = useLocation();
+  const { baseUrl } = useProjectBaseUrl();
 
   const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
@@ -60,8 +60,6 @@ const BuildPage = ({ match, buildId }: Props) => {
 
   const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
 
-  useBreadcrumbs(buildData?.build?.version, location.pathname);
-
   const currentResource = useMemo(
     () =>
       resources.find(
@@ -69,6 +67,10 @@ const BuildPage = ({ match, buildId }: Props) => {
       ),
     [resources, updatedBuild]
   );
+
+  const { baseUrl: resourceBaseUrl } = useResourceBaseUrl({
+    overrideResourceId: updatedBuild.build?.resourceId,
+  });
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!updatedBuild?.build) return null;
@@ -109,7 +111,7 @@ const BuildPage = ({ match, buildId }: Props) => {
               >
                 <Text textStyle={EnumTextStyle.Tag}>
                   <BackNavigation
-                    to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${updatedBuild.build.commitId}`}
+                    to={`${baseUrl}/commits/${updatedBuild.build.commitId}`}
                     label={
                       <>
                         &nbsp;Return to Commit&nbsp;
@@ -132,9 +134,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                   }
                   start={
                     <>
-                      <Link
-                        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`}
-                      >
+                      <Link to={`${resourceBaseUrl}`}>
                         <FlexItem
                           itemsAlign={EnumItemsAlign.Center}
                           gap={EnumGapSize.Small}

@@ -7,11 +7,11 @@ import {
   VerticalNavigation,
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { formatError } from "../util/error";
 import { ModuleNavigationListItem } from "./ModuleNavigationListItem";
 
-import { AppContext } from "../context/appContext";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModule from "./hooks/useModule";
 
 type Props = {
@@ -38,8 +38,8 @@ const ModuleNavigationList: React.FC<Props> = ({ resourceId }) => {
     showPendingChangeOnly: false,
   });
 
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
+
   const {
     findModulesData: data,
     findModulesError: errorLoading,
@@ -118,10 +118,7 @@ const ModuleNavigationList: React.FC<Props> = ({ resourceId }) => {
         </NavigationFilter>
 
         <VerticalNavigation>
-          <VerticalNavigationItem
-            icon={"box"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`}
-          >
+          <VerticalNavigationItem icon={"box"} to={`${baseUrl}/modules`}>
             All Modules
           </VerticalNavigationItem>
           <HorizontalRule />

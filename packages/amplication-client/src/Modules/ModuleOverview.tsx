@@ -3,8 +3,8 @@ import React from "react";
 import { NavLink, match } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import ModuleActionsAndTypes from "../ModuleActions/ModuleActionsAndTypes";
-import { useAppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import ModulesHeader from "./ModulesHeader";
 import useModule from "./hooks/useModule";
 import { useModulesContext } from "./modulesContext";
@@ -16,7 +16,7 @@ type Props = AppRouteProps & {
   }>;
 };
 const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } = useAppContext();
+  const { baseUrl } = useResourceBaseUrl();
 
   const { module: moduleId } = match.params;
   const { getModuleData: moduleData } = useModule(moduleId);
@@ -24,7 +24,7 @@ const ModuleOverview = React.memo(({ match, innerRoutes }: Props) => {
   const { searchPhrase, displayMode, customActionsLicenseEnabled } =
     useModulesContext();
 
-  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${moduleId}/edit`;
+  const moduleUrl = `${baseUrl}/modules/${moduleId}/edit`;
 
   return (
     <>

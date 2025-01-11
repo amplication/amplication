@@ -1,20 +1,18 @@
-import { useCallback, useContext, useMemo } from "react";
-import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 import {
   Button,
   ButtonProgress,
   EnumButtonStyle,
 } from "@amplication/ui/design-system";
+import { useCallback, useContext, useMemo } from "react";
+import { useUpgradeButtonData } from "../hooks/useUpgradeButtonData";
 
-import { GET_CONTACT_US_LINK } from "../queries/workspaceQueries";
-import { useQuery } from "@apollo/client";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useHistory } from "react-router-dom";
+import { FeatureIndicator } from "../../Components/FeatureIndicator";
+import { AppContext } from "../../context/appContext";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { AppContext } from "../../context/appContext";
-import { FeatureIndicator } from "../../Components/FeatureIndicator";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { CompletePreviewSignupButton } from "../../User/CompletePreviewSignupButton";
-import { useHistory } from "react-router-dom";
+import { useContactUs } from "../hooks/useContactUs";
 
 const CLASS_NAME = "workspace-header";
 
@@ -26,8 +24,9 @@ const UpgradeCtaButton = () => {
   const { trackEvent } = useTracking();
   const upgradeButtonData = useUpgradeButtonData(currentWorkspace);
 
-  const { data } = useQuery(GET_CONTACT_US_LINK, {
-    variables: { id: currentWorkspace.id },
+  const { handleContactUsClick } = useContactUs({
+    actionName: "Contact Us",
+    eventOriginLocation: "workspace-header-help-menu",
   });
 
   const daysLeftText = useMemo(() => {
@@ -46,15 +45,6 @@ const UpgradeCtaButton = () => {
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace.id, history, trackEvent]);
-
-  const handleContactUsClick = useCallback(() => {
-    window.open(data?.contactUsLink, "_blank");
-    trackEvent({
-      eventName: AnalyticsEventNames.HelpMenuItemClick,
-      action: "Contact Us",
-      eventOriginLocation: "workspace-header-help-menu",
-    });
-  }, [data?.contactUsLink, trackEvent]);
 
   return (
     <>
@@ -80,25 +70,6 @@ const UpgradeCtaButton = () => {
           >
             Upgrade
           </Button>
-        )}
-      {upgradeButtonData.isCompleted &&
-        upgradeButtonData.isPreviewPlan &&
-        !upgradeButtonData.showUpgradeDefaultButton && (
-          <>
-            <FeatureIndicator
-              featureName={BillingFeature.CodeGenerationBuilds}
-              textStart="Generate production-ready code for this architecture with just a few simple clicks"
-              showTooltipLink={false}
-              element={<CompletePreviewSignupButton />}
-            />
-            <Button
-              className={`${CLASS_NAME}__upgrade__btn`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={handleContactUsClick}
-            >
-              Contact us
-            </Button>
-          </>
         )}
     </>
   );

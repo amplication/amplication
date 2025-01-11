@@ -1,22 +1,45 @@
-import { GET_COMMITS } from "./commitQueries";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { COMMIT_CHANGES, GET_COMMITS, GET_LAST_COMMIT } from "./commitQueries";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   Commit,
   PendingChange,
   SortOrder,
   Build,
   EnumBuildStatus,
+  EnumSubscriptionPlan,
+  CommitCreateInput,
+  EnumResourceTypeGroup,
 } from "../../models";
-import { ApolloError, useLazyQuery } from "@apollo/client";
+import {
+  ApolloError,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import { cloneDeep, groupBy } from "lodash";
+import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
+import { AppContext } from "../../context/appContext";
+import { commitPath } from "../../util/paths";
+import { useHistory } from "react-router-dom";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { GET_OUTDATED_VERSION_ALERTS } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
 
 const MAX_ITEMS_PER_LOADING = 20;
-const POLL_INTERVAL = 3000;
+const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
 
 export type CommitChangesByResource = (commitId: string) => {
   resourceId: string;
   changes: PendingChange[];
 }[];
+
+type TData = {
+  commit: Commit;
+};
+
+type BillingError = {
+  message: string;
+  billingFeature: string;
+};
 
 export interface CommitUtils {
   commits: Commit[];
@@ -38,6 +61,19 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   const [lastCommit, setLastCommit] = useState<Commit>();
   const [commitsCount, setCommitsCount] = useState(1);
   const [disableLoadMore, setDisableLoadMore] = useState(false);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+  const history = useHistory();
+
+  const {
+    setCommitRunning,
+    resetPendingChanges,
+    setPendingChangesError,
+    currentWorkspace,
+    commitUtils,
+    reloadResources,
+  } = useContext(AppContext);
+
+  const { baseUrl: projectBaseUrl } = useProjectBaseUrl();
 
   const updateBuildStatus = useCallback(
     (build: Build) => {
@@ -68,24 +104,32 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     [commits, lastCommit]
   );
 
-  const [
-    getLastCommit,
-    {
-      data: getLastCommitData,
-      startPolling: getLastCommitStartPolling,
-      stopPolling: getLastCommitStopPolling,
-    },
-  ] = useLazyQuery<{ commits: Commit[] }>(GET_COMMITS, {
+  const {
+    startPolling: getLastCommitStartPolling,
+    stopPolling: getLastCommitStopPolling,
+  } = useQuery<{ commits: Commit[] }>(GET_LAST_COMMIT, {
+    skip: !currentProjectId,
     variables: {
       projectId: currentProjectId,
-      skip: 0,
-      take: 1,
-      orderBy: {
-        createdAt: SortOrder.Desc,
-      },
+    },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      const updatedLastCommit = data.commits[0];
+      //only update in case the current last commit is still the last commit
+      if (updatedLastCommit && updatedLastCommit.id === lastCommit?.id) {
+        setLastCommit(updatedLastCommit);
+
+        const clonedCommits = cloneDeep(commits);
+        //find the commit that contains the build
+        const commitIdx = getCommitIdx(clonedCommits, updatedLastCommit.id);
+        if (commitIdx === -1) return;
+        clonedCommits[commitIdx] = updatedLastCommit;
+        setCommits(clonedCommits);
+      }
     },
   });
 
+  //poll for the last commit status as long as there are running builds
   useEffect(() => {
     let shouldPoll = false;
 
@@ -98,18 +142,16 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       }
     }
 
-    if (shouldPoll) {
+    if (shouldPoll && currentProjectId) {
       getLastCommitStartPolling(POLL_INTERVAL);
     } else {
       getLastCommitStopPolling();
     }
-    getLastCommitData && setLastCommit(getLastCommitData.commits[0]);
   }, [
-    getLastCommitData,
     getLastCommitStopPolling,
     getLastCommitStartPolling,
-    updateBuildStatus,
     lastCommit,
+    currentProjectId,
   ]);
 
   //cleanup polling
@@ -119,18 +161,103 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     };
   }, [getLastCommitStopPolling]);
 
-  const [
-    getInitialCommits,
-    {
-      data: commitsData,
-      error: commitsError,
-      loading: commitsLoading,
-      refetch: refetchCommits,
+  const formatLimitationError = (errorMessage: string) => {
+    const LIMITATION_ERROR_PREFIX = "LimitationError: ";
+
+    const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
+    return limitationError;
+  };
+
+  //commits mutation
+  const [commit, { error: commitChangesError, loading: commitChangesLoading }] =
+    useMutation<TData>(COMMIT_CHANGES, {
+      refetchQueries: [GET_OUTDATED_VERSION_ALERTS],
+      update: (cache, { data }) => {
+        //evict the cache of all alert after commit
+        cache.evict({ fieldName: "resourceVersions" });
+      },
+      onError: (error: ApolloError) => {
+        setCommitRunning(false);
+        setPendingChangesError(true);
+
+        setOpenLimitationDialog(
+          error?.graphQLErrors?.some(
+            (gqlError) =>
+              gqlError.extensions.code ===
+              GraphQLErrorCode.BILLING_LIMITATION_ERROR
+          ) ?? false
+        );
+      },
+    });
+
+  const commitChanges = useCallback(
+    (data: CommitCreateInput) => {
+      if (!data) return;
+      setCommitRunning(true);
+      commit({
+        variables: {
+          data: data,
+        },
+      })
+        .then((response) => {
+          setCommitRunning(false);
+          setPendingChangesError(false);
+          resetPendingChanges();
+          reloadResources();
+          commitUtils.refetchCommitsData(true);
+          if (data.resourceTypeGroup === EnumResourceTypeGroup.Services) {
+            const path = commitPath(projectBaseUrl, response.data.commit.id);
+            history.push(path);
+          }
+        })
+        .catch(console.error);
     },
-  ] = useLazyQuery(GET_COMMITS, {
+    [
+      commit,
+      commitUtils,
+      history,
+      projectBaseUrl,
+      reloadResources,
+      resetPendingChanges,
+      setCommitRunning,
+      setPendingChangesError,
+    ]
+  );
+
+  const bypassLimitations = useMemo(() => {
+    return (
+      currentWorkspace?.subscription?.subscriptionPlan !==
+      EnumSubscriptionPlan.Pro
+    );
+  }, [currentWorkspace]);
+
+  const commitChangesLimitationError = useMemo((): BillingError => {
+    if (!commitChangesError) return;
+    const limitation = commitChangesError?.graphQLErrors?.find(
+      (gqlError) =>
+        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
+    );
+    if (!limitation) return;
+
+    const results = {
+      message: formatLimitationError(limitation.message),
+      billingFeature: limitation.extensions.billingFeature as string,
+    };
+
+    return results;
+  }, [commitChangesError]);
+
+  const {
+    data: commitsData,
+    error: commitsError,
+    loading: commitsLoading,
+    refetch: refetchCommits,
+  } = useQuery(GET_COMMITS, {
     notifyOnNetworkStatusChange: true,
+    skip: !currentProjectId,
     variables: {
       projectId: currentProjectId,
+      resourceTypeGroup: EnumResourceTypeGroup.Services,
       take: maxCommits || MAX_ITEMS_PER_LOADING,
       skip: 0,
       orderBy: {
@@ -143,14 +270,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     },
   });
 
-  // get initial commits for a specific project
-  useEffect(() => {
-    if (!currentProjectId) return;
-
-    getInitialCommits();
-    commitsCount !== 1 && setCommitsCount(1);
-  }, [currentProjectId]);
-
   // fetch the initial commit data and assign it
   useEffect(() => {
     if (!commitsData && !commitsData?.commits.length) return;
@@ -160,8 +279,9 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     if (commitsLoading) return;
 
     setCommits(commitsData?.commits);
+
     setLastCommit(commitsData?.commits[0]);
-  }, [commitsData?.commits, commits]);
+  }, [commitsData?.commits, commits, commitsData, commitsLoading]);
 
   //refetch next page of commits, or refetch from start
   const refetchCommitsData = useCallback(
@@ -184,7 +304,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       skip: 0,
       take: 1,
     });
-  }, [currentProjectId]);
+  }, [currentProjectId, refetchCommits]);
 
   // pagination refetch - we received an updated list from the server, and we need to append it to the current list
   useEffect(() => {
@@ -193,15 +313,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
 
     setCommits([...commits, ...commitsData.commits]);
   }, [commitsData?.commits, commitsCount]);
-
-  // last commit refetch
-  useEffect(() => {
-    //check if the data from the server contains a single commit
-    if (!commitsData?.commits?.length || commitsData?.commits?.length > 1)
-      return;
-
-    setLastCommit(commitsData?.commits[0]);
-  }, [commitsData?.commits]);
 
   const getCommitIdx = (commits: Commit[], commitId: string): number =>
     commits.findIndex((commit) => commit.id === commitId);
@@ -236,6 +347,12 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     refetchLastCommit,
     disableLoadMore,
     updateBuildStatus,
+    isOpenLimitationDialog,
+    commitChanges,
+    commitChangesError,
+    commitChangesLoading,
+    commitChangesLimitationError,
+    bypassLimitations,
   };
 };
 

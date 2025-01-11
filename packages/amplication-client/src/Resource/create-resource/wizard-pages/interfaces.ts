@@ -1,6 +1,7 @@
 import { FormikProps } from "formik";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumCodeGenerator, EnumGitProvider } from "../../../models";
+import { WizardFlowSettings } from "../types";
 
 export interface ResourceSettings {
   serviceName: string;
@@ -39,4 +40,5 @@ export interface WizardStepProps {
   ) => void;
   formik?: FormikProps<{ [key: string]: any }>;
   goNextPage?: () => void;
+  flowSettings: WizardFlowSettings;
 }

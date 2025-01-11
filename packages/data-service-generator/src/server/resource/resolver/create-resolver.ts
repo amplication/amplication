@@ -45,7 +45,7 @@ import {
 import {
   isOneToOneRelationField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,

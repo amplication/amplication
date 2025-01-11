@@ -14,6 +14,7 @@ $starter-height: 90px;
   &__body {
     height: 100%;
     max-width: $body-max-width;
+    width: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -53,7 +54,7 @@ $starter-height: 90px;
     justify-content: center;
     align-items: center;
 
-    .assistant__chat_input {
+    .assistant-chat-input {
       border: 1px solid var(--gray-70);
       width: 100%;
     }

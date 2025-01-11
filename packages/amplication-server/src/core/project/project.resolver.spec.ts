@@ -25,6 +25,9 @@ import { ResourceService } from "../resource/resource.service";
 import { ProjectResolver } from "./project.resolver";
 import { ProjectService } from "./project.service";
 import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -78,6 +81,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -116,15 +121,28 @@ const EXAMPLE_PENDING_CHANGE: PendingChange = {
 
 /** graphql query mocks */
 const DISCARD_CHANGES_MUTATION = gql`
-  mutation ($projectId: String!) {
-    discardPendingChanges(data: { project: { connect: { id: $projectId } } })
+  mutation ($projectId: String!, $resourceTypeGroup: EnumResourceTypeGroup!) {
+    discardPendingChanges(
+      data: {
+        project: { connect: { id: $projectId } }
+        resourceTypeGroup: $resourceTypeGroup
+      }
+    )
   }
 `;
 
 const COMMIT_MUTATION = gql`
-  mutation ($message: String!, $projectId: String!) {
+  mutation (
+    $message: String!
+    $projectId: String!
+    $resourceTypeGroup: EnumResourceTypeGroup!
+  ) {
     commit(
-      data: { message: $message, project: { connect: { id: $projectId } } }
+      data: {
+        message: $message
+        project: { connect: { id: $projectId } }
+        resourceTypeGroup: $resourceTypeGroup
+      }
     ) {
       id
       createdAt
@@ -135,8 +153,13 @@ const COMMIT_MUTATION = gql`
 `;
 
 const PENDING_CHANGE_QUERY = gql`
-  query ($projectId: String!) {
-    pendingChanges(where: { project: { id: $projectId } }) {
+  query ($projectId: String!, $resourceTypeGroup: EnumResourceTypeGroup!) {
+    pendingChanges(
+      where: {
+        project: { id: $projectId }
+        resourceTypeGroup: $resourceTypeGroup
+      }
+    ) {
       action
       originType
       originId
@@ -185,6 +208,8 @@ const PENDING_CHANGE_QUERY = gql`
           actionId
           createdAt
           commitId
+          status
+          gitStatus
         }
         environments {
           id
@@ -269,7 +294,11 @@ describe("ProjectResolver", () => {
   it("should commit", async () => {
     const res = await apolloClient.executeOperation({
       query: COMMIT_MUTATION,
-      variables: { message: EXAMPLE_MESSAGE, projectId: EXAMPLE_PROJECT_ID },
+      variables: {
+        message: EXAMPLE_MESSAGE,
+        projectId: EXAMPLE_PROJECT_ID,
+        resourceTypeGroup: EnumResourceTypeGroup.Services,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -286,6 +315,7 @@ describe("ProjectResolver", () => {
           commitStrategy: EnumCommitStrategy.All,
           message: EXAMPLE_MESSAGE,
           project: { connect: { id: EXAMPLE_PROJECT_ID } },
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
         },
       },
       EXAMPLE_USER
@@ -295,7 +325,10 @@ describe("ProjectResolver", () => {
   it("should discard pending changes", async () => {
     const res = await apolloClient.executeOperation({
       query: DISCARD_CHANGES_MUTATION,
-      variables: { projectId: EXAMPLE_PROJECT_ID },
+      variables: {
+        projectId: EXAMPLE_PROJECT_ID,
+        resourceTypeGroup: EnumResourceTypeGroup.Services,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -303,14 +336,20 @@ describe("ProjectResolver", () => {
     });
     expect(discardPendingChangesMock).toBeCalledTimes(1);
     expect(discardPendingChangesMock).toBeCalledWith({
-      data: { project: { connect: { id: EXAMPLE_PROJECT_ID } } },
+      data: {
+        project: { connect: { id: EXAMPLE_PROJECT_ID } },
+        resourceTypeGroup: EnumResourceTypeGroup.Services,
+      },
     });
   });
 
   it("should get a pending change", async () => {
     const res = await apolloClient.executeOperation({
       query: PENDING_CHANGE_QUERY,
-      variables: { projectId: EXAMPLE_PROJECT_ID },
+      variables: {
+        projectId: EXAMPLE_PROJECT_ID,
+        resourceTypeGroup: EnumResourceTypeGroup.Services,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -353,7 +392,10 @@ describe("ProjectResolver", () => {
     expect(getPendingChangesMock).toBeCalledTimes(1);
     expect(getPendingChangesMock).toBeCalledWith(
       {
-        where: { project: { id: EXAMPLE_PROJECT_ID } },
+        where: {
+          project: { id: EXAMPLE_PROJECT_ID },
+          resourceTypeGroup: EnumResourceTypeGroup.Services,
+        },
       },
       EXAMPLE_USER
     );

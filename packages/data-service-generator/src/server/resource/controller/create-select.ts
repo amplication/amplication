@@ -2,7 +2,7 @@ import { builders, namedTypes } from "ast-types";
 import {
   isOneToOneRelationField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 
 export const SELECT_ID = builders.identifier("select");

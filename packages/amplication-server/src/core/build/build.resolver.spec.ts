@@ -16,12 +16,13 @@ import { UserService } from "../user/user.service";
 import { Build } from "./dto/Build";
 import { Commit, Resource, User } from "../../models";
 import { Action } from "../action/dto";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { CommitService } from "../commit/commit.service";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ApolloServerBase } from "apollo-server-core";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "./dto/EnumBuildGitStatus";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -58,6 +59,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -82,6 +85,8 @@ const FIND_MANY_BUILDS_QUERY = gql`
       actionId
       createdAt
       commitId
+      status
+      gitStatus
     }
   }
 `;
@@ -96,6 +101,8 @@ const FIND_ONE_BUILD_QUERY = gql`
       actionId
       createdAt
       commitId
+      status
+      gitStatus
     }
   }
 `;
@@ -140,26 +147,6 @@ const BUILD_STATUS_QUERY = gql`
   }
 `;
 
-const CREATE_BUILD_MUTATION = gql`
-  mutation ($resourceId: String!, $commitId: String!, $message: String!) {
-    createBuild(
-      data: {
-        resource: { connect: { id: $resourceId } }
-        commit: { connect: { id: $commitId } }
-        message: $message
-      }
-    ) {
-      id
-      resourceId
-      userId
-      version
-      actionId
-      createdAt
-      commitId
-    }
-  }
-`;
-
 const buildServiceFindManyMock = jest.fn(() => [EXAMPLE_BUILD]);
 const buildServiceFindOneMock = jest.fn(() => EXAMPLE_BUILD);
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -167,11 +154,9 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
-
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
 });
-
 const mockCanActivate = jest.fn(() => true);
 
 describe("BuildResolver", () => {
@@ -190,6 +175,9 @@ describe("BuildResolver", () => {
             findOne: buildServiceFindOneMock,
             calcBuildStatus: buildServiceCalcBuildStatusMock,
             create: buildServiceCreateMock,
+            isBuildStale: jest.fn(() => {
+              return false;
+            }),
           })),
         },
         {
@@ -218,9 +206,9 @@ describe("BuildResolver", () => {
         },
         {
           provide: AmplicationLogger,
-          useClass: jest.fn(() => ({
-            error: jest.fn(),
-          })),
+          useValue: {
+            child: jest.fn().mockReturnThis(),
+          },
         },
         {
           provide: ConfigService,
@@ -339,7 +327,26 @@ describe("BuildResolver", () => {
     });
   });
 
-  it("should get a build status", async () => {
+  it("should return the build status without recalculating it when status is not Unknown", async () => {
+    const res = await apolloClient.executeOperation({
+      query: BUILD_STATUS_QUERY,
+      variables: { id: EXAMPLE_BUILD_ID },
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      build: {
+        status: EnumBuildStatus.Completed,
+      },
+    });
+    expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(0);
+  });
+
+  it("should recalculate the build status when it is Unknown", async () => {
+    buildServiceFindOneMock.mockReturnValueOnce({
+      ...EXAMPLE_BUILD,
+      status: EnumBuildStatus.Unknown,
+    });
+
     const res = await apolloClient.executeOperation({
       query: BUILD_STATUS_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -352,32 +359,5 @@ describe("BuildResolver", () => {
     });
     expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
-  });
-
-  it("should create a build", async () => {
-    const args = {
-      data: {
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        commit: { connect: { id: EXAMPLE_COMMIT_ID } },
-        message: EXAMPLE_MESSAGE,
-      },
-    };
-    const res = await apolloClient.executeOperation({
-      query: CREATE_BUILD_MUTATION,
-      variables: {
-        resourceId: EXAMPLE_RESOURCE_ID,
-        commitId: EXAMPLE_COMMIT_ID,
-        message: EXAMPLE_MESSAGE,
-      },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      createBuild: {
-        ...EXAMPLE_BUILD,
-        createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
-      },
-    });
-    expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(args);
   });
 });

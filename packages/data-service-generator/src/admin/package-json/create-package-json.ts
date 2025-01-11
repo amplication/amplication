@@ -24,9 +24,6 @@ export async function createAdminUIPackageJson(): Promise<ModuleMap> {
     {
       name: `@${paramCase(appInfo.name)}/admin`,
       version: appInfo.version,
-      eslintConfig: {
-        extends: ["react-app", "react-app/jest"],
-      },
     },
   ];
 

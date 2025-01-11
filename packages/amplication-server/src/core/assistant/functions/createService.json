@@ -23,7 +23,7 @@
       },
       "pluginIds": {
         "type": "array",
-        "description": "a list of IDs of the plugins to install.",
+        "description": "a list of IDs of the plugins to install",
         "items": {
           "type": "string"
         }

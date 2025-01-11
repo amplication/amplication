@@ -24,7 +24,7 @@ import {
   getDefaultActionsForEntity,
   getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
-import { ILogger } from "@amplication/util/logging";
+import { ILogger } from "@amplication/util-logging";
 import { camelCase } from "camel-case";
 import { get, isEmpty, trim } from "lodash";
 import { join } from "path";
@@ -34,7 +34,7 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { resolveTopicNames } from "./utils/message-broker";
+import { resolveMessageBrokerTopicNames } from "@amplication/dsg-utils";
 import { EnumModuleDtoDecoratorType } from "@amplication/code-gen-types";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
@@ -174,7 +174,7 @@ export function shouldGenerateGrpc(
 }
 
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {
-  return resolveTopicNames(
+  return resolveMessageBrokerTopicNames(
     dSGResourceData.serviceTopics || [],
     dSGResourceData.otherResources?.filter(
       (resource) => resource.resourceType === EnumResourceType.MessageBroker

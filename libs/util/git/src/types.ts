@@ -15,11 +15,25 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
   AwsCodeCommit = "AwsCodeCommit",
   GitLab = "GitLab",
+  AzureDevOps = "AzureDevOps",
 }
 
 export interface BitBucketConfiguration {
   clientId: string;
   clientSecret: string;
+}
+
+export interface GitLabConfiguration {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}
+
+export interface AzureDevopsConfiguration {
+  clientId: string;
+  clientSecret: string;
+  tenantId: string;
+  redirectUri: string;
 }
 
 export interface GitHubConfiguration {
@@ -33,6 +47,8 @@ export interface GitHubConfiguration {
 export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
   bitBucketConfiguration: BitBucketConfiguration;
+  gitLabConfiguration: GitLabConfiguration;
+  azureDevopsConfiguration: AzureDevopsConfiguration;
 }
 export type GitProviderProperties =
   | GitHubProviderOrganizationProperties
@@ -145,7 +161,6 @@ export interface RemoteGitRepository {
   url: string | null;
   private: boolean | null;
   fullName: string | null;
-  admin: boolean | null;
   defaultBranch: string;
   groupName?: string | null;
 }
@@ -176,6 +191,16 @@ export interface GitFile {
   content: string;
 }
 
+export interface GitFolderContent {
+  content: GitFolderContentItem[];
+}
+
+export interface GitFolderContentItem {
+  name: string;
+  path: string;
+  type: "Dir" | "File" | "Other";
+}
+
 export interface GitResourceMeta {
   serverPath: string;
   adminUIPath: string;
@@ -200,6 +225,14 @@ export interface GetRepositoriesArgs {
   groupName?: string;
 }
 
+export interface getFolderContentArgs {
+  owner: string;
+  repositoryName: string;
+  repositoryGroupName?: string;
+  path: string;
+  ref?: string;
+}
+
 export interface GetFileArgs {
   owner: string;
   repositoryName: string;
@@ -212,7 +245,21 @@ export interface GetFileArgs {
    */
   ref?: string;
 }
+export interface PluginDownloadItem {
+  pluginId: string;
+  pluginVersion?: string;
+}
 
+export interface DownloadPrivatePluginsArgs {
+  owner: string;
+  repositoryName: string;
+  repositoryGroupName?: string;
+  cloneDirPath: string;
+  resourceId: string;
+  buildId: string;
+  baseBranchName: string;
+  pluginsToDownload: PluginDownloadItem[];
+}
 export interface CreatePullRequestArgs {
   owner: string;
   repositoryName: string;
@@ -228,6 +275,7 @@ export interface CreatePullRequestArgs {
   resourceId: string;
   buildId: string;
   baseBranchName: string;
+  overrideCustomizableFilesInGit: boolean;
 }
 
 export interface CreatePullRequestFromFilesArgs {

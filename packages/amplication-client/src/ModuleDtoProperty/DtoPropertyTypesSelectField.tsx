@@ -20,7 +20,6 @@ import { AppContext } from "../context/appContext";
 import {
   EnumModuleDtoPropertyType,
   EnumModuleDtoType,
-  EnumResourceType,
   ModuleDto,
   PropertyTypeDef,
   Resource,
@@ -28,7 +27,7 @@ import {
 
 import { Link, useRouteMatch } from "react-router-dom";
 import ProgressBar from "../Components/ProgressBar";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import NewModuleDtoButton from "../ModuleDto/NewModuleDtoButton";
 import NewModuleDtoEnumButton from "../ModuleDto/NewModuleDtoEnumButton";
 import "./DtoPropertyTypesSelectField.scss";
@@ -167,9 +166,9 @@ const DtoPropertyTypesSelectField = ({ name, label }: Props) => {
   const selectedValue = useMemo(() => {
     if (meta.value?.type === EnumModuleDtoPropertyType.Dto) {
       const dto = data?.moduleDtos.find((dto) => dto.id === meta.value?.dtoId);
-      return field.value.isArray ? `${dto?.name}[]` : dto?.name;
+      return field.value?.isArray ? `${dto?.name}[]` : dto?.name;
     } else {
-      return field.value.isArray ? `${meta.value?.type}[]` : meta.value?.type;
+      return field.value?.isArray ? `${meta.value?.type}[]` : meta.value?.type;
     }
   }, [meta.value, data?.moduleDtos, field.value?.isArray]);
 
@@ -460,7 +459,7 @@ const TypeGroup = ({
       {Object.values(group).map((resourceGroup) => (
         <div className={`${CLASS_NAME}__group`} key={resourceGroup.resource.id}>
           <div className={`${CLASS_NAME}__group-name`}>
-            <ResourceCircleBadge type={EnumResourceType.Service} size="small" />
+            <ResourceTypeBadge resource={resourceGroup.resource} size="small" />
 
             {resourceGroup.resource.name}
           </div>

@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+.amp-inner-page-layout {
+  display: flex;
+  flex: 1;
+  box-sizing: border-box;
+  flex-direction: column;
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; //the scroll is handled on PageContent
+  }
+}

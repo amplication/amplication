@@ -45,7 +45,9 @@ import { ModuleDtoService } from "../moduleDto/moduleDto.service";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { MeteredEntitlement } from "@stigg/node-server-sdk";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
+import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -82,6 +84,8 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID,
+  status: EnumBuildStatus.Completed,
+  gitStatus: EnumBuildGitStatus.Completed,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -294,8 +298,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -1580,7 +1582,12 @@ describe("EntityService", () => {
       },
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_PROJECT_ID, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_PROJECT_ID,
+        EnumResourceTypeGroup.Services,
+        null,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
   });
   it.skip('pending changed entities "update"', async () => {
@@ -1595,7 +1602,12 @@ describe("EntityService", () => {
       },
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_PROJECT_ID, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_PROJECT_ID,
+        EnumResourceTypeGroup.Services,
+        null,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
   });
   it.skip('pending changed entities "delete"', async () => {
@@ -1603,7 +1615,12 @@ describe("EntityService", () => {
       { ...EXAMPLE_DELETED_ENTITY, resource: EXAMPLE_RESOURCE },
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_PROJECT_ID, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_PROJECT_ID,
+        EnumResourceTypeGroup.Services,
+        null,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
   });
   it("should have no pending changes when the current and last entity versions are the same", async () => {

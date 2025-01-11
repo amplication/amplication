@@ -3,7 +3,7 @@
 exports[`createDataService when using a numeric user id creates resource as expected 1`] = `
 {
   "admin-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL=http://localhost:3000",
+VITE_REACT_APP_SERVER_URL=http://localhost:3000",
   "admin-ui/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 # dependencies
@@ -34,59 +34,40 @@ yarn-error.log*
   "private": true,
   "dependencies": {
     "@apollo/client": "3.6.9",
-    "@material-ui/core": "4.12.4",
     "graphql": "15.6.1",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "0.0.14",
-    "react": "16.14.0",
-    "react-admin": "3.19.12",
-    "react-dom": "16.14.0",
-    "react-scripts": "5.0.0",
-    "sass": "^1.39.0",
-    "web-vitals": "1.1.2"
-  },
-  "overrides": {
-    "react-scripts": {
-      "@svgr/webpack": "6.5.1"
-    }
+    "ra-data-graphql-amplication": "1.0.2",
+    "react": "^18.3.0",
+    "react-admin": "^5.1.0",
+    "react-dom": "^18.3.0",
+    "sass": "^1.39.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
+    "format": "prettier --write ./src",
     "package:container": "docker build ."
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
-    "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "11.2.7",
-    "@testing-library/user-event": "13.2.0",
-    "@types/jest": "26.0.16",
     "@types/lodash": "4.14.178",
-    "@types/node": "12.20.16",
-    "@types/react": "16.14.11",
-    "@types/react-dom": "17.0.0",
+    "@types/node": "^20.10.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "@vitejs/plugin-react": "^4.0.1",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^2.8.8",
     "type-fest": "0.13.1",
-    "typescript": "4.3.5"
+    "typescript": "^5.1.6",
+    "vite": "^4.5.5"
   }
 }",
   "admin-ui/public/manifest.json": "{
@@ -116,7 +97,7 @@ yarn-error.log*
 }",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from "react";
 import { Admin, DataProvider, Resource } from "react-admin";
-import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
+import dataProvider from "./data-provider/graphqlDataProvider";
 import { theme } from "./theme/theme";
 import Login from "./Login";
 import "./App.scss";
@@ -148,19 +129,6 @@ import { EmptyShow } from "./empty/EmptyShow";
 import { httpAuthProvider } from "./auth-provider/ra-auth-http";
 
 const App = (): React.ReactElement => {
-  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
-  useEffect(() => {
-    buildGraphQLProvider
-      .then((provider: any) => {
-        setDataProvider(() => provider);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-  }, []);
-  if (!dataProvider) {
-    return <div>Loading</div>;
-  }
   return (
     <div className="App">
       <Admin
@@ -234,25 +202,14 @@ export default Pagination;
   "admin-ui/src/Login.tsx": "import * as React from "react";
 import { useState } from "react";
 import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button, createTheme, ThemeProvider } from "@mui/material";
 import "./login.scss";
+import LoginForm from "./LoginForm";
 
 const CLASS_NAME = "login-page";
 
 const Login = ({ theme }: any) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const login = useLogin();
-  const notify = useNotify();
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
-  const submit = (e: any) => {
-    e.preventDefault();
-    login({ username, password }).catch(() =>
-      notify("Invalid username or password")
-    );
-  };
 
   return (
     <ThemeProvider theme={createTheme(defaultTheme)}>
@@ -287,31 +244,7 @@ const Login = ({ theme }: any) => {
               Sign in to a React-Admin client with ready-made forms for creating
               and editing all the data models of your application
             </div>
-            <form onSubmit={submit}>
-              <label>
-                <span>Username</span>
-
-                <input
-                  name="username"
-                  type="textbox"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Password</span>
-
-                <input
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </label>
-              <Button type="submit" variant="contained" color="primary">
-                Log in
-              </Button>
-            </form>
+            <LoginForm />
           </div>
           <div className={\`\${CLASS_NAME}__box\`}>
             <img
@@ -348,6 +281,55 @@ const Login = ({ theme }: any) => {
 };
 
 export default Login;
+",
+  "admin-ui/src/LoginForm.tsx": "import { useState } from "react";
+import { useLogin, useNotify } from "react-admin";
+import { Button } from "@mui/material";
+import "./login.scss";
+
+const LoginForm = ({ theme }: any) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const login = useLogin();
+  const notify = useNotify();
+  const BASE_URI = process.env.REACT_APP_SERVER_URL;
+  const submit = (e: any) => {
+    e.preventDefault();
+    login({ username, password }).catch(() =>
+      notify("Invalid username or password")
+    );
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <label>
+        <span>Username</span>
+
+        <input
+          name="username"
+          type="textbox"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </label>
+      <label>
+        <span>Password</span>
+
+        <input
+          name="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
+      <Button type="submit" variant="contained" color="primary">
+        Log in
+      </Button>
+    </form>
+  );
+};
+
+export default LoginForm;
 ",
   "admin-ui/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from "./CustomerCreateInput";
 
@@ -1471,13 +1453,12 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
-        <ReferenceArrayInput
-          source="orders"
-          reference="Order"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrderTitle} />
+        <ReferenceArrayInput source="orders" reference="Order">
+          <SelectArrayInput
+            optionText={OrderTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
       </SimpleForm>
     </Create>
@@ -1566,13 +1547,12 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
-        <ReferenceArrayInput
-          source="orders"
-          reference="Order"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrderTitle} />
+        <ReferenceArrayInput source="orders" reference="Order">
+          <SelectArrayInput
+            optionText={OrderTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
       </SimpleForm>
     </Edit>
@@ -1598,12 +1578,11 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
   return (
     <List
       {...props}
-      bulkActionButtons={false}
       title={"The Customers"}
       perPage={50}
       pagination={<Pagination />}
     >
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <DateField source="createdAt" label="Created At" />
         <DateField source="updatedAt" label="Updated At" />
@@ -1637,7 +1616,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
           reference="Organization"
         >
           <TextField source={ORGANIZATION_TITLE_FIELD} />
-        </ReferenceField>
+        </ReferenceField>{" "}
       </Datagrid>
     </List>
   );
@@ -1703,7 +1682,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
           target="customerId"
           label="Orders"
         >
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <TextField label="Id" source="id" />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
@@ -1737,7 +1716,7 @@ import { setContext } from "@apollo/client/link/context";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
 
 const httpLink = createHttpLink({
-  uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
+  uri: \`\${import.meta.env.VITE_REACT_APP_SERVER_URL}/graphql\`,
 });
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -1792,17 +1771,11 @@ import Pagination from "../Components/Pagination";
 
 export const EmptyList = (props: ListProps): React.ReactElement => {
   return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Empties"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
+    <List {...props} title={"Empties"} perPage={50} pagination={<Pagination />}>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
+        <DateField source="updatedAt" label="Updated At" />{" "}
       </Datagrid>
     </List>
   );
@@ -1838,23 +1811,15 @@ export const EmptyTitle = (record: TEmpty): string => {
 };
 ",
   "admin-ui/src/index.tsx": "import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import "./index.css";
-
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
 ",
   "admin-ui/src/order/OrderCreate.tsx": "import * as React from "react";
 import {
@@ -1960,14 +1925,8 @@ import { CUSTOMER_TITLE_FIELD } from "../customer/CustomerTitle";
 
 export const OrderList = (props: ListProps): React.ReactElement => {
   return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Orders"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
+    <List {...props} title={"Orders"} perPage={50} pagination={<Pagination />}>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <DateField source="createdAt" label="Created At" />
         <DateField source="updatedAt" label="Updated At" />
@@ -1979,7 +1938,7 @@ export const OrderList = (props: ListProps): React.ReactElement => {
           <TextField source={CUSTOMER_TITLE_FIELD} />
         </ReferenceField>
         <TextField label="Status" source="status" />
-        <TextField label="Label" source="label" />
+        <TextField label="Label" source="label" />{" "}
       </Datagrid>
     </List>
   );
@@ -2044,29 +2003,26 @@ export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
     <Create {...props}>
       <SimpleForm>
         <TextInput label="Name" source="name" />
-        <ReferenceArrayInput
-          source="users"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
+        <ReferenceArrayInput source="users" reference="User">
+          <SelectArrayInput
+            optionText={UserTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="customers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
+        <ReferenceArrayInput source="customers" reference="Customer">
+          <SelectArrayInput
+            optionText={CustomerTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="vipCustomers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
+        <ReferenceArrayInput source="vipCustomers" reference="Customer">
+          <SelectArrayInput
+            optionText={CustomerTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
       </SimpleForm>
     </Create>
@@ -2092,29 +2048,26 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
     <Edit {...props}>
       <SimpleForm>
         <TextInput label="Name" source="name" />
-        <ReferenceArrayInput
-          source="users"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
+        <ReferenceArrayInput source="users" reference="User">
+          <SelectArrayInput
+            optionText={UserTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="customers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
+        <ReferenceArrayInput source="customers" reference="Customer">
+          <SelectArrayInput
+            optionText={CustomerTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="vipCustomers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
+        <ReferenceArrayInput source="vipCustomers" reference="Customer">
+          <SelectArrayInput
+            optionText={CustomerTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
       </SimpleForm>
     </Edit>
@@ -2129,16 +2082,15 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
   return (
     <List
       {...props}
-      bulkActionButtons={false}
       title={"Organizations"}
       perPage={50}
       pagination={<Pagination />}
     >
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <DateField source="createdAt" label="Created At" />
         <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Name" source="name" />
+        <TextField label="Name" source="name" />{" "}
       </Datagrid>
     </List>
   );
@@ -2173,7 +2125,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
           target="organizationId"
           label="The Customers"
         >
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <TextField label="Id" source="id" />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
@@ -2221,7 +2173,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
           target="vipOrganizationId"
           label="The Customers"
         >
-          <Datagrid rowClick="show">
+          <Datagrid rowClick="show" bulkActionButtons={false}>
             <TextField label="Id" source="id" />
             <DateField source="createdAt" label="Created At" />
             <DateField source="updatedAt" label="Updated At" />
@@ -2278,8 +2230,8 @@ export const OrganizationTitle = (record: TOrganization): string => {
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from "react";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import { Title } from "react-admin";
 const Dashboard = () => (
   <Card>
@@ -2364,12 +2316,11 @@ export const ProfileList = (props: ListProps): React.ReactElement => {
   return (
     <List
       {...props}
-      bulkActionButtons={false}
       title={"Profiles"}
       perPage={50}
       pagination={<Pagination />}
     >
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <DateField source="createdIn" label="Created In" />
         <TextField label="Created At" source="createdAt" />
@@ -2378,7 +2329,7 @@ export const ProfileList = (props: ListProps): React.ReactElement => {
         <TextField label="Email" source="email" />
         <ReferenceField label="User" source="user.id" reference="User">
           <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
+        </ReferenceField>{" "}
       </Datagrid>
     </List>
   );
@@ -2446,9 +2397,9 @@ export default reportWebVitals;
 import "@testing-library/jest-dom";
 ",
   "admin-ui/src/theme/theme.ts": "import { defaultTheme } from "react-admin";
-import { createTheme, ThemeOptions } from "@material-ui/core/styles";
+import { createTheme, ThemeOptions } from "@mui/material/styles";
 import { merge } from "lodash";
-import createPalette from "@material-ui/core/styles/createPalette";
+import createPalette from "@mui/material/styles/createPalette";
 
 const palette = createPalette(
   merge({}, defaultTheme.palette, {
@@ -2554,21 +2505,19 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <ReferenceInput source="manager.id" reference="User" label="Manager">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
-        <ReferenceArrayInput
-          source="employees"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
+        <ReferenceArrayInput source="employees" reference="User">
+          <SelectArrayInput
+            optionText={UserTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="organizations"
-          reference="Organization"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrganizationTitle} />
+        <ReferenceArrayInput source="organizations" reference="Organization">
+          <SelectArrayInput
+            optionText={OrganizationTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
         <SelectArrayInput
           label="Interests"
@@ -2645,21 +2594,19 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <ReferenceInput source="manager.id" reference="User" label="Manager">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
-        <ReferenceArrayInput
-          source="employees"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
+        <ReferenceArrayInput source="employees" reference="User">
+          <SelectArrayInput
+            optionText={UserTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="organizations"
-          reference="Organization"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrganizationTitle} />
+        <ReferenceArrayInput source="organizations" reference="Organization">
+          <SelectArrayInput
+            optionText={OrganizationTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
         </ReferenceArrayInput>
         <SelectArrayInput
           label="Interests"
@@ -2708,14 +2655,8 @@ import { PROFILE_TITLE_FIELD } from "../profile/ProfileTitle";
 
 export const UserList = (props: ListProps): React.ReactElement => {
   return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Users"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
+    <List {...props} title={"Users"} perPage={50} pagination={<Pagination />}>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Id" source="id" />
         <TextField label="Username" source="username" />
         <TextField label="Roles" source="roles" />
@@ -2735,7 +2676,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <TextField label="Extended Properties" source="extendedProperties" />
         <ReferenceField label="Profile" source="profile.id" reference="Profile">
           <TextField source={PROFILE_TITLE_FIELD} />
-        </ReferenceField>
+        </ReferenceField>{" "}
       </Datagrid>
     </List>
   );
@@ -2984,6 +2925,8 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "admin-ui/src/vite-env.d.ts": "/// <reference types="vite/client" />
+",
   "admin-ui/tsconfig.json": "{
   "compilerOptions": {
     "target": "es5",
@@ -3005,6 +2948,21 @@ export class StringNullableFilter {
   "include": ["src"],
   "exclude": ["./node_modules"]
 }
+",
+  "admin-ui/vite.config.ts": "import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  define: {
+    "process.env": process.env,
+  },
+  server: {
+    host: true,
+  },
+  base: "./",
+});
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}

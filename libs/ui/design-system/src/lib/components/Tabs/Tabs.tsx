@@ -4,15 +4,30 @@ import {
   Tabs as MuiTabs,
   TabsProps as MuiTabsProps,
 } from "@mui/material";
+import classNames from "classnames";
 import { NavLink } from "react-router-dom";
-import "./Tabs.scss";
 import { EnumTextColor } from "../Text/Text";
+import "./Tabs.scss";
 
-export type Props = MuiTabsProps;
+export enum EnumTabsStyle {
+  Default = "default",
+  Header = "header",
+  Inner = "inner",
+}
 
-export const Tabs = ({ children }: Props) => {
+export type Props = MuiTabsProps & {
+  tabsStyle?: EnumTabsStyle;
+};
+
+export const Tabs = ({
+  children,
+  tabsStyle = EnumTabsStyle.Default,
+}: Props) => {
   return (
-    <MuiTabs value={false} className="amp-tabs">
+    <MuiTabs
+      value={false}
+      className={classNames("amp-tabs", `amp-tabs--${tabsStyle}`)}
+    >
       {children}
     </MuiTabs>
   );
@@ -66,7 +81,6 @@ function Tab(props: TabProps) {
       className="amp-tab"
       component={NavLink}
       classes={{ selected: "amp-tab--selected" }}
-      // icon={iconName && <Icon size={"small"} icon={iconName} />}
       to={to}
       label={label}
       disableRipple

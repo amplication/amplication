@@ -17,16 +17,13 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string }>(
     "/:workspace([A-Za-z0-9-]{20,})"
   );
-  const workspaceUtil = useRouteMatch([
-    "/:workspace([A-Za-z0-9-]{20,})/settings",
-    "/:workspace([A-Za-z0-9-]{20,})/members",
-    "/:workspace([A-Za-z0-9-]{20,})/purchase",
-  ]);
+
   const projectMatch: {
     params: { workspace: string; project: string };
-  } | null = useRouteMatch<{ workspace: string; project: string }>(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
-  );
+  } | null = useRouteMatch<{ workspace: string; project: string }>([
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
+    "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
+  ]);
 
   const project = projectMatch?.params?.project;
 
@@ -39,7 +36,8 @@ const useProjectSelector = (
     useState<models.Resource>();
   const {
     data: projectListData,
-    loading: loadingList,
+    loading: projectListLoading,
+    error: projectListError,
     refetch,
   } = useQuery<{
     projects: models.Project[];
@@ -92,26 +90,20 @@ const useProjectSelector = (
   }, []);
 
   useEffect(() => {
-    if (loadingList || !projectListData) return;
+    if (projectListLoading || !projectListData) return;
 
     const sortedProjects = [...projectListData.projects].sort((a, b) => {
       return Date.parse(b.createdAt) - Date.parse(a.createdAt);
     });
 
     setProjectList(sortedProjects);
-  }, [projectListData, loadingList]);
+  }, [projectListData, projectListLoading]);
 
   useEffect(() => {
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
-    const isFromPreviewPlan = location.search.includes("preview-user-login=1");
-
     const isSignupCookieExist = getCookie("signup");
-    const isFromPreviewPlanCookieExist = getCookie("isFromPreviewPlan");
-
-    !isFromPreviewPlanCookieExist &&
-      setCookie("isFromPreviewPlan", isFromPreviewPlan ? "1" : "0");
 
     !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);
@@ -124,15 +116,14 @@ const useProjectSelector = (
       });
     }
 
-    !!(!workspaceUtil && currentWorkspace?.id) &&
-      history.push(
-        `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup || isSignupCookieExist ? "/welcome" : ""
-        }`
-      );
+    !!currentWorkspace?.id &&
+      (isFromSignup || isSignupCookieExist) &&
+      history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
+    currentProject,
     currentWorkspace?.id,
     history,
+    location.search,
     project,
     projectRedirect,
     projectsList,
@@ -164,11 +155,13 @@ const useProjectSelector = (
           resource.resourceType === models.EnumResourceType.ProjectConfiguration
       )
     );
-  }, [project, projectRedirect, projectsList]);
+  }, [project, projectRedirect, projectsList, refetch, projectListData]);
 
   return {
     currentProject,
     projectsList,
+    projectListLoading,
+    projectListError,
     createProject,
     onNewProjectCompleted,
     currentProjectConfiguration,

@@ -34,6 +34,8 @@ import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
+import { over } from "lodash";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -83,6 +85,8 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const history = useHistory();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const { findModuleRefetch } = useModule();
@@ -197,7 +201,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         },
       }).catch(console.error);
     },
-    [createEntity, setConfirmInstall, resourceId]
+    [createEntity, resourceId]
   );
 
   const handleDismissConfirmationInstall = useCallback(() => {
@@ -216,28 +220,18 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   useEffect(() => {
     if (data) {
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${data.createOneEntity.id}`
-      );
+      history.push(`${baseUrl}/entities/${data.createOneEntity.id}`);
     }
-  }, [history, data, resourceId, currentWorkspace, currentProject]);
+  }, [history, data, baseUrl]);
 
   useEffect(() => {
     if (defaultEntityData) {
       const userEntity = defaultEntityData.createDefaultEntities.find(
         (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${userEntity.id}`
-      );
+      history.push(`${baseUrl}/entities/${userEntity.id}`);
     }
-  }, [
-    history,
-    defaultEntityData,
-    resourceId,
-    currentWorkspace,
-    currentProject,
-  ]);
+  }, [history, defaultEntityData, baseUrl]);
 
   const errorMessage = formatError(error);
 

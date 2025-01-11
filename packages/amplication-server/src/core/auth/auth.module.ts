@@ -30,8 +30,8 @@ import { GitHubAuthGuard } from "./github.guard";
 import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 import { IdpModule } from "../idp/idp.module";
-import { PreviewUserService } from "./previewUser.service";
 import { AwsMarketplaceModule } from "../aws-marketplace/aws-marketplace.module";
+
 
 @Module({
   imports: [
@@ -54,7 +54,6 @@ import { AwsMarketplaceModule } from "../aws-marketplace/aws-marketplace.module"
   ],
   providers: [
     AuthService,
-    PreviewUserService,
     JwtStrategy,
     GitHubAuthGuard,
     {
@@ -83,7 +82,7 @@ import { AwsMarketplaceModule } from "../aws-marketplace/aws-marketplace.module"
     SegmentAnalyticsModule,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthResolver, PreviewUserService, AuthService],
+  exports: [GqlAuthGuard, AuthResolver, AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

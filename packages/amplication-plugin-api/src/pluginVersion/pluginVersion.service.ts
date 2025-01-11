@@ -106,123 +106,93 @@ export class PluginVersionService extends PluginVersionServiceBase {
   async processPluginsVersions(plugins: Plugin[]) {
     try {
       const pluginsVersions =
-        await this.npmPluginVersionService.updatePluginsVersion(plugins);
-      if (!pluginsVersions.length)
+        await this.npmPluginVersionService.getAllPluginsVersions(plugins);
+
+      if (!pluginsVersions)
         throw new Error("Failed to fetch versions for plugin");
 
-      const pluginVersionArr: Omit<PluginVersion, "id">[] = [];
+      Object.keys(pluginsVersions).forEach(async (pluginId) => {
+        const pluginVersions = pluginsVersions[pluginId];
 
-      for await (const versionData of pluginsVersions) {
-        const {
-          createdAt,
-          deprecated,
-          pluginId,
-          updatedAt,
-          version,
-          pluginIdVersion,
-          tarballUrl,
-          isLatest,
-        } = versionData;
+        const existingVersions = await super.findMany({
+          where: {
+            pluginId: {
+              equals: pluginId,
+            },
+          },
+        });
 
-        const pluginSettings = await this.getPluginSettings(
-          tarballUrl,
-          SETTINGS_FILE
+        const existingVersionsMap = existingVersions.reduce(
+          (acc, curr: PluginVersion) => {
+            acc[curr.version] = curr;
+            return acc;
+          },
+          {} as Record<string, PluginVersion>
         );
 
-        const pluginSettingsObject: PluginSettingsObject =
-          this.parseSettingsString(pluginSettings);
+        pluginVersions.map(async (versionData) => {
+          const existingVersion = existingVersionsMap[versionData.version];
+          if (existingVersion) {
+            //if exist, only update if deprecated or isLatest changed, otherwise skip
+            if (
+              existingVersion.deprecated !== versionData.deprecated ||
+              existingVersion.isLatest !== versionData.isLatest
+            ) {
+              this.logger.debug("Updating existing version", existingVersion);
 
-        pluginVersionArr.push({
-          pluginId,
-          pluginIdVersion,
-          settings: pluginSettingsObject?.settings || {},
-          configurations: pluginSettingsObject?.systemSettings || {},
-          isLatest,
-          deprecated,
-          version,
-          createdAt,
-          updatedAt,
+              await super.update({
+                where: {
+                  id: existingVersion.id,
+                },
+                data: {
+                  deprecated: versionData.deprecated,
+                  isLatest: versionData.isLatest,
+                },
+              });
+            } else {
+              this.logger.debug(
+                "Skipping existing version",
+                existingVersion.pluginIdVersion
+              );
+            }
+          } else {
+            const {
+              createdAt,
+              deprecated,
+              pluginId,
+              updatedAt,
+              version,
+              pluginIdVersion,
+              tarballUrl,
+              isLatest,
+            } = versionData;
+
+            const pluginSettings = await this.getPluginSettings(
+              tarballUrl,
+              SETTINGS_FILE
+            );
+
+            const pluginSettingsObject: PluginSettingsObject =
+              this.parseSettingsString(pluginSettings);
+
+            this.logger.debug("Creating new version", versionData);
+
+            await super.create({
+              data: {
+                pluginId,
+                pluginIdVersion,
+                settings: pluginSettingsObject?.settings || {},
+                configurations: pluginSettingsObject?.systemSettings || {},
+                isLatest,
+                deprecated,
+                version,
+                createdAt,
+                updatedAt,
+              },
+            });
+          }
         });
-      }
-
-      const newVersions = await this.prisma.pluginVersion.createMany({
-        data: pluginVersionArr,
-        skipDuplicates: true,
       });
-
-      this.logger.debug("New PluginVersions", newVersions);
-
-      const deprecatedVersionIds = pluginVersionArr
-        .filter((version) => version.deprecated)
-        .map((version) => version.pluginIdVersion);
-
-      const updateNewDeprecatedVersions = await this.prisma.$transaction([
-        this.prisma.pluginVersion.updateMany({
-          data: {
-            deprecated: "deprecated",
-            updatedAt: new Date(),
-          },
-          where: {
-            pluginIdVersion: {
-              in: deprecatedVersionIds,
-            },
-            deprecated: {
-              not: "deprecated",
-            },
-          },
-        }),
-        this.prisma.pluginVersion.updateMany({
-          data: {
-            deprecated: null,
-            updatedAt: new Date(),
-          },
-          where: {
-            pluginIdVersion: {
-              notIn: deprecatedVersionIds,
-            },
-            deprecated: {
-              equals: "deprecated",
-            },
-          },
-        }),
-      ]);
-
-      const latestVersionIds = pluginVersionArr
-        .filter((version) => version.isLatest)
-        .map((version) => version.pluginIdVersion);
-
-      const updateNewLatestVersions = await this.prisma.$transaction([
-        this.prisma.pluginVersion.updateMany({
-          data: {
-            isLatest: true,
-            updatedAt: new Date(),
-          },
-          where: {
-            pluginIdVersion: {
-              in: latestVersionIds,
-            },
-          },
-        }),
-
-        this.prisma.pluginVersion.updateMany({
-          data: {
-            isLatest: false,
-            updatedAt: new Date(),
-          },
-          where: {
-            pluginIdVersion: {
-              notIn: latestVersionIds,
-            },
-          },
-        }),
-      ]);
-
-      this.logger.debug(
-        "Updated versions",
-        [updateNewDeprecatedVersions, updateNewLatestVersions]
-          .flat()
-          .reduce((acc, curr) => acc + curr.count, 0)
-      );
 
       return pluginsVersions;
     } catch (error) {

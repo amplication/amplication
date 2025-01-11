@@ -1,15 +1,17 @@
 {
   "name": "generator-nodejs-nest",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "scripts": {
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
+    "@amplication/util-logging": "0.0.2",
     "@amplication/code-gen-types": "*",
     "@amplication/code-gen-utils": "*",
+    "@amplication/dsg-utils": "*",
     "@apollo/client": "^3.7.1",
-    "@babel/parser": "7.23.6",
-    "@babel/types": "7.23.6",
+    "@babel/parser": "7.25.7",
+    "@babel/types": "7.25.7",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
@@ -43,7 +45,6 @@
     "logform": "2.5.1",
     "nest-access-control": "^2.2.0",
     "normalize-path": "^3.0.0",
-    "pacote": "^15.0.8",
     "param-case": "3.0.4",
     "pascal-case": "^3.1.2",
     "pluralize": "^8.0.0",
@@ -63,9 +64,13 @@
     "tslib": "^2.6.2",
     "type-fest": "^3.13.0",
     "util": "0.12.5",
-    "validator": "13.11.0",
     "winston": "3.8.2",
     "yaml": "2.2.2",
-    "@amplication/csharp-ast": "*"
+    "validator": "13.12.0",
+    "@amplication/csharp-ast": "*",
+    "@mui/material": "^6.1.0",
+    "vite": "~4.5.5",
+    "@vitejs/plugin-react": "3.1.0",
+    "pacote": "^19.0.0"
   }
 }

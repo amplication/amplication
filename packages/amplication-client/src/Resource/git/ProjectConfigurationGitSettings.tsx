@@ -13,7 +13,8 @@ import { isEmpty } from "lodash";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
-import GithubSyncDetails from "./GitActions/RepositoryActions/GithubSyncDetails";
+import ResourceGitSyncDetails from "./GitActions/RepositoryActions/ResourceGitSyncDetails";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = {
   isOverride: boolean;
@@ -24,8 +25,10 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
   isOverride,
   showProjectSettingsLink = true,
 }) => {
-  const { currentWorkspace, currentProject, projectConfigurationResource } =
+  const { currentWorkspace, projectConfigurationResource } =
     useContext(AppContext);
+
+  const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
@@ -39,10 +42,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
         <FlexItem
           end={
             showProjectSettingsLink && (
-              <Link
-                title={"Go to project settings"}
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
-              >
+              <Link title={"Go to project settings"} to={`${baseUrl}/git-sync`}>
                 <Text
                   textStyle={EnumTextStyle.Normal}
                   textColor={EnumTextColor.ThemeTurquoise}
@@ -56,7 +56,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
         >
           {projectConfigurationResource?.gitRepository && (
             <>
-              <GithubSyncDetails
+              <ResourceGitSyncDetails
                 showGitRepositoryBtn={false}
                 resourceWithRepository={projectConfigurationResource}
               />

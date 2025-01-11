@@ -11,7 +11,7 @@ import {
 import { applyAutoLayout } from "../layout";
 import {
   REDESIGN_PROJECT,
-  GET_RESOURCES,
+  GET_RESOURCES_FOR_MODE_ORGANIZER,
   START_REDESIGN,
 } from "../queries/modelsQueries";
 import {
@@ -74,7 +74,7 @@ const useModelOrganizer = ({
     OverrideChanges | undefined
   >(undefined);
 
-  const { resourceSettings } = useResource(currentEditableResourceNode?.id);
+  const { serviceSettings } = useResource(currentEditableResourceNode?.id);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showRelationDetails, setShowRelationDetails] = useState(
@@ -126,7 +126,7 @@ const useModelOrganizer = ({
   const [
     loadProjectResourcesInternal,
     { loading: loadingResources, error: resourcesError, data: resourcesData },
-  ] = useLazyQuery<TData>(GET_RESOURCES, {
+  ] = useLazyQuery<TData>(GET_RESOURCES_FOR_MODE_ORGANIZER, {
     variables: {
       projectId: projectId,
     },
@@ -614,7 +614,7 @@ const useModelOrganizer = ({
 
         const currentEntityName = currentNode.data.payload.name;
         const authEntity =
-          resourceSettings?.serviceSettings?.authEntityName ===
+          serviceSettings?.serviceSettings?.authEntityName ===
           currentEntityName;
 
         if (
@@ -673,7 +673,7 @@ const useModelOrganizer = ({
       showRelationDetails,
       saveToPersistentData,
       trackEvent,
-      resourceSettings,
+      serviceSettings,
     ]
   );
 

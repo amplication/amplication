@@ -1,13 +1,13 @@
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
 import PageContent from "../Layout/PageContent";
-import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { truncateId } from "../util/truncatedId";
+import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import ActionLog from "./ActionLog";
 import "./BuildPage.scss";
 import BuildSteps from "./BuildSteps";
@@ -30,8 +30,7 @@ const OnBoardingBuildPage = ({ match }: Props) => {
   const truncatedId = useMemo(() => {
     return truncateId(build);
   }, [build]);
-
-  const { currentProject, currentWorkspace } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const { data, error: errorLoading } = useQuery<{
     build: models.Build;
@@ -63,7 +62,7 @@ const OnBoardingBuildPage = ({ match }: Props) => {
         ) : (
           <>
             <BackNavigation
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+              to={`${baseUrl}/commits/${data.build.commitId}`}
               label="Back to Commits"
             />
 

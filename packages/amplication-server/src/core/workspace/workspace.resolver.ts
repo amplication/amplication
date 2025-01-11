@@ -88,11 +88,6 @@ export class WorkspaceResolver {
       currentUser
     );
 
-    await this.workspaceService.migrateWorkspace(
-      currentUser.workspace,
-      currentUser
-    );
-
     return { ...currentUser.workspace, externalId };
   }
 
@@ -106,15 +101,11 @@ export class WorkspaceResolver {
   @Mutation(() => Workspace, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
-  async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
-    return this.workspaceService.deleteWorkspace(args);
-  }
-
-  @Mutation(() => Workspace, {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.WorkspaceId,
+    "where.id",
+    "workspace.settings.edit"
+  )
   async updateWorkspace(
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
@@ -131,6 +122,7 @@ export class WorkspaceResolver {
     return this.workspaceService.createWorkspace(
       currentUser.account.id,
       args,
+      false,
       currentUser.workspace.id
     );
   }
@@ -138,6 +130,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.None,
+    "",
+    "workspace.member.invite"
+  )
   async inviteUser(
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
@@ -148,7 +145,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.InvitationId,
+    "where.id",
+    "workspace.member.remove"
+  )
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
@@ -158,7 +159,11 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
+  @AuthorizeContext(
+    AuthorizableOriginParameter.InvitationId,
+    "where.id",
+    "workspace.member.invite"
+  )
   async resendInvitation(
     @Args() args: ResendInvitationArgs
   ): Promise<Invitation> {
@@ -168,6 +173,11 @@ export class WorkspaceResolver {
   @Mutation(() => User, {
     nullable: true,
   })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.UserId,
+    "where.id",
+    "workspace.member.remove"
+  )
   async deleteUser(
     @UserEntity() currentUser: User,
     @Args() args: DeleteUserArgs
@@ -182,6 +192,15 @@ export class WorkspaceResolver {
     @UserEntity() currentUser: User
   ): Promise<WorkspaceMember[]> {
     return this.workspaceService.findMembers({
+      where: { id: currentUser.workspace.id },
+    });
+  }
+
+  @Query(() => [User], {
+    nullable: true,
+  })
+  async workspaceUsers(@UserEntity() currentUser: User): Promise<User[]> {
+    return this.workspaceService.findWorkspaceUsers({
       where: { id: currentUser.workspace.id },
     });
   }

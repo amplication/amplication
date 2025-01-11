@@ -35,13 +35,13 @@ import {
 import {
   isOneToOneRelationField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
 import { createCustomActionMethods } from "./create-custom-action";
-import { logger as applicationLogger } from "../../../logging";
+import { logger as applicationLogger } from "@amplication/dsg-utils";
 import { getImportableDTOs } from "../dto/create-dto-module";
 
 const MIXIN_ID = builders.identifier("Mixin");

@@ -5,15 +5,16 @@ import { useCallback, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { CLASS_NAME } from "./Assistant";
 
-import "./Assistant.scss";
+import "./AssistantChatInput.scss";
 
 type SendMessageType = models.SendAssistantMessageInput;
 
 const INITIAL_VALUES: SendMessageType = {
   message: "",
 };
+
+const CLASS_NAME = "assistant-chat-input";
 
 const KEY_MAP = [
   "mod+enter",
@@ -62,7 +63,7 @@ const AssistantChatInput = ({ disabled, sendMessage, placeholder }: Props) => {
   );
 
   return (
-    <div className={`${CLASS_NAME}__chat_input`}>
+    <div className={CLASS_NAME}>
       <Formik
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}

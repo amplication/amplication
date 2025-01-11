@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { PrismaSchemaParserService } from "./prismaSchemaParser.service";
-import { ExistingEntitySelect } from "./types";
+import { ExistingEntitiesWithFieldsMap } from "./types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -40,7 +40,7 @@ describe("prismaSchemaParser", () => {
       });
       it("should return a validation error if the schema is empty", async () => {
         const prismaSchema = "";
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
 
         await expect(
           service.convertPrismaSchemaForImportObjects(
@@ -68,7 +68,7 @@ describe("prismaSchemaParser", () => {
           roles      Json?
         }`;
 
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
 
         await expect(
           service.convertPrismaSchemaForImportObjects(
@@ -103,7 +103,7 @@ describe("prismaSchemaParser", () => {
           username   String   @unique @db.VarChar(256)
           roles      Json?
         }`;
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -196,7 +196,7 @@ describe("prismaSchemaParser", () => {
           tag        String   @default(cuid())
           roles      Json?
         }`;
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -302,7 +302,7 @@ describe("prismaSchemaParser", () => {
           username   String   @unique @db.VarChar(256)
           roles      Json?
         }`;
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -434,7 +434,7 @@ describe("prismaSchemaParser", () => {
           createdAt  DateTime @default(now())
           super_power   String   @map("super_power_123")
         }`;
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -552,7 +552,7 @@ describe("prismaSchemaParser", () => {
 
           @@map("my_admin_123")
         }`;
-        const existingEntities: ExistingEntitySelect[] = [];
+        const existingEntities: ExistingEntitiesWithFieldsMap = {};
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -680,7 +680,7 @@ describe("prismaSchemaParser", () => {
             username   String   @db.VarChar(256)
             roles      Json?
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -771,7 +771,7 @@ describe("prismaSchemaParser", () => {
             createdAt  DateTime @default(now())
             roles      Json?
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -848,7 +848,7 @@ describe("prismaSchemaParser", () => {
             createdAt  DateTime @default(now())
             roles      Json?
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -925,7 +925,7 @@ describe("prismaSchemaParser", () => {
             id Int @unique
             username String
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -992,7 +992,7 @@ describe("prismaSchemaParser", () => {
             id Int @unique
             username String
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1077,7 +1077,7 @@ describe("prismaSchemaParser", () => {
             user      User?
           }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
 
           await expect(
             service.convertPrismaSchemaForImportObjects(
@@ -1105,7 +1105,7 @@ describe("prismaSchemaParser", () => {
             something String @id @default(cuid())
             username String
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1172,7 +1172,7 @@ describe("prismaSchemaParser", () => {
             something Int @id @default(autoincrement()) 
             username String
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1258,7 +1258,7 @@ describe("prismaSchemaParser", () => {
             username String
           }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1367,7 +1367,7 @@ describe("prismaSchemaParser", () => {
             price  Decimal         
           
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1451,7 +1451,7 @@ describe("prismaSchemaParser", () => {
             price  Float         
           
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1535,7 +1535,7 @@ describe("prismaSchemaParser", () => {
             amount  Int         
           
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1618,7 +1618,7 @@ describe("prismaSchemaParser", () => {
             amount BigInt         
           
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1701,7 +1701,7 @@ describe("prismaSchemaParser", () => {
           model Product {
           id String @id @default(cuid())        
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1752,7 +1752,7 @@ describe("prismaSchemaParser", () => {
           model Product {
           id String @id @default(uuid())        
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1803,7 +1803,7 @@ describe("prismaSchemaParser", () => {
           model Product {
           id Int @id @default(autoincrement())        
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1854,7 +1854,7 @@ describe("prismaSchemaParser", () => {
           model Product {
           id BigInt @id @default(autoincrement())        
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -1910,7 +1910,7 @@ describe("prismaSchemaParser", () => {
             
               @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
             }`;
-            const existingEntities: ExistingEntitySelect[] = [];
+            const existingEntities: ExistingEntitiesWithFieldsMap = {};
 
             await expect(
               service.convertPrismaSchemaForImportObjects(
@@ -1944,7 +1944,7 @@ describe("prismaSchemaParser", () => {
               @@id([tagId])
             }`;
 
-            const existingEntities: ExistingEntitySelect[] = [];
+            const existingEntities: ExistingEntitiesWithFieldsMap = {};
             // act
             const result = await service.convertPrismaSchemaForImportObjects(
               prismaSchema,
@@ -2028,7 +2028,7 @@ describe("prismaSchemaParser", () => {
               @@id([tagId])
             }`;
 
-            const existingEntities: ExistingEntitySelect[] = [];
+            const existingEntities: ExistingEntitiesWithFieldsMap = {};
             // act
             const result = await service.convertPrismaSchemaForImportObjects(
               prismaSchema,
@@ -2113,7 +2113,7 @@ describe("prismaSchemaParser", () => {
           
             @@index([first_name, license_id], map: "doctor_first_name_license_id_unique")
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2199,7 +2199,7 @@ describe("prismaSchemaParser", () => {
           
             @@index([doctor_id, license_id], map: "doctor_id_license_id_unique")
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2308,7 +2308,7 @@ describe("prismaSchemaParser", () => {
           }
           `;
           const customerFieldPermanentId = expect.any(String);
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2527,7 +2527,7 @@ describe("prismaSchemaParser", () => {
           }
           `;
           const customerFieldPermanentId = expect.any(String);
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2676,7 +2676,7 @@ describe("prismaSchemaParser", () => {
           
             @@index([example_value(ops: Int4BloomOps)], type: Brin)
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           // act
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2752,7 +2752,7 @@ describe("prismaSchemaParser", () => {
             id          String     @id @default(cuid())
             orders      Order[]
           }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           const customerFieldPermanentId = expect.any(String);
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -2885,7 +2885,7 @@ describe("prismaSchemaParser", () => {
             orders      Order[]
           }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           const customerFieldPermanentId = expect.any(String);
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -3019,7 +3019,7 @@ describe("prismaSchemaParser", () => {
             otherFeature        Feature[]               @relation("featureToFeature")          
           }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           const customerFieldPermanentId = expect.any(String);
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -3100,7 +3100,7 @@ describe("prismaSchemaParser", () => {
             createdByUser    User?  @relation(name: "created_by_user_relation", fields: [createdBy], references: [id])
         }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           const customerFieldPermanentId = expect.any(String);
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -3230,7 +3230,7 @@ describe("prismaSchemaParser", () => {
             event1Id    String? @unique
           }`;
 
-          const existingEntities: ExistingEntitySelect[] = [];
+          const existingEntities: ExistingEntitiesWithFieldsMap = {};
           const customerFieldPermanentId = expect.any(String);
           const result = await service.convertPrismaSchemaForImportObjects(
             prismaSchema,
@@ -3392,7 +3392,7 @@ describe("prismaSchemaParser", () => {
             id             String          @id @default(cuid())
             the_doctors        Doctor[]       
           }`;
-            const existingEntities: ExistingEntitySelect[] = [];
+            const existingEntities: ExistingEntitiesWithFieldsMap = {};
             // act
             const result = await service.convertPrismaSchemaForImportObjects(
               prismaSchema,
@@ -3493,7 +3493,7 @@ describe("prismaSchemaParser", () => {
             id             String          @id @default(cuid())
             doctors        Doctor[]       
           }`;
-            const existingEntities: ExistingEntitySelect[] = [];
+            const existingEntities: ExistingEntitiesWithFieldsMap = {};
             // act
             const result = await service.convertPrismaSchemaForImportObjects(
               prismaSchema,

@@ -4,6 +4,9 @@ import { Commit } from "../../models";
 import { CommitService } from "./commit.service";
 import { EntityService } from "../entity/entity.service";
 import { BlockService } from "../block/block.service";
+import { FindManyCommitArgs } from "./dto/FindManyCommitArgs";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -64,9 +67,32 @@ describe("CommitService", () => {
   });
 
   it("should find many Commits", async () => {
-    const args = {};
+    const resourceTypeGroup = EnumResourceTypeGroup.Services;
+
+    const args: FindManyCommitArgs = {
+      where: {
+        resourceTypeGroup: EnumResourceTypeGroup.Services,
+      },
+    };
+    const resourceTypes =
+      RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE[resourceTypeGroup];
+
     expect(await service.findMany(args)).toEqual([EXAMPLE_COMMIT]);
     expect(prismaCommitFindManyMock).toBeCalledTimes(1);
-    expect(prismaCommitFindManyMock).toBeCalledWith(args);
+    expect(prismaCommitFindManyMock).toBeCalledWith({
+      ...args,
+      where: {
+        ...args.where,
+        builds: {
+          some: {
+            resource: {
+              resourceType: {
+                in: resourceTypes,
+              },
+            },
+          },
+        },
+      },
+    });
   });
 });

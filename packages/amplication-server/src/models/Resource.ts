@@ -6,6 +6,9 @@ import { GitRepository } from "./GitRepository";
 import { EnumResourceType } from "../core/resource/dto/EnumResourceType";
 import { Project } from "./Project";
 import { CodeGeneratorVersionStrategy } from "../core/resource/dto";
+import type { JsonValue } from "type-fest";
+import { GraphQLJSONObject } from "graphql-type-json";
+import { Blueprint } from "./Blueprint";
 
 @ObjectType({
   isAbstract: true,
@@ -101,4 +104,18 @@ export class Resource {
 
   // no need to expose to GraphQL
   deletedAt?: Date;
+
+  // we do not expose this field to the client. instead, we use resolveField on the resourceResolver for Owner
+  ownershipId?: string;
+
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  properties?: JsonValue;
+
+  @Field(() => Blueprint, { nullable: true })
+  blueprint?: Blueprint;
+
+  @Field(() => String, { nullable: true })
+  blueprintId?: string;
 }

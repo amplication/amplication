@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   ConfirmationDialog,
@@ -16,34 +15,34 @@ import {
   SelectMenuModal,
   Text,
 } from "@amplication/ui/design-system";
-import BreakTheMonolith from "./BreakTheMonolith";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { useStiggContext } from "@stigg/react-sdk";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  DEFAULT_TEXT_END,
+  DEFAULT_TEXT_START,
+  DISABLED_DEFAULT_TEXT_END,
+  FeatureIndicator,
+} from "../../Components/FeatureIndicator";
+import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
 import { useAppContext } from "../../context/appContext";
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
   Resource,
 } from "../../models";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import useModelOrganizerPersistentData from "../../Project/ArchitectureConsole/hooks/useModelOrganizerPersistentData";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import {
-  FeatureIndicator,
-  DEFAULT_TEXT_END,
-  DEFAULT_TEXT_START,
-  DISABLED_DEFAULT_TEXT_END,
-} from "../../Components/FeatureIndicator";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { getCookie, setCookie } from "../../util/cookie";
 import useAbTesting from "../../VersionControl/hooks/useABTesting";
+import BreakTheMonolith from "./BreakTheMonolith";
 
 export enum EnumButtonLocation {
   Project = "Project",
   Resource = "Resource",
   EntityList = "EntityList",
   SchemaUpload = "SchemaUpload",
-  PreviewBtm = "PreviewBtm",
   Architecture = "Architecture",
 }
 
@@ -78,7 +77,6 @@ export const BtmButton: React.FC<Props> = ({
     resources,
     subscriptionPlan,
     subscriptionStatus,
-    isPreviewPlan,
   } = useAppContext();
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -107,7 +105,8 @@ export const BtmButton: React.FC<Props> = ({
   useEffect(() => {
     if (
       hasRedesignArchitectureFeature &&
-      subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
       subscriptionStatus === EnumSubscriptionStatus.Trailing
     ) {
       setTooltipTextStart(DEFAULT_TEXT_START);
@@ -130,9 +129,9 @@ export const BtmButton: React.FC<Props> = ({
 
     if (
       hasRedesignArchitectureFeature &&
-      ((subscriptionPlan === EnumSubscriptionPlan.Enterprise &&
-        subscriptionStatus !== EnumSubscriptionStatus.Trailing) ||
-        isPreviewPlan)
+      (subscriptionPlan === EnumSubscriptionPlan.Enterprise ||
+        subscriptionPlan === EnumSubscriptionPlan.Team) &&
+      subscriptionStatus !== EnumSubscriptionStatus.Trailing
     ) {
       setTooltipTextStart(FULL_ACCESS_TEXT);
       setShowTooltipLink(false);
@@ -140,7 +139,6 @@ export const BtmButton: React.FC<Props> = ({
   }, [
     allowLLMFeature,
     hasRedesignArchitectureFeature,
-    isPreviewPlan,
     subscriptionPlan,
     subscriptionStatus,
     upgradeCtaVariationData?.linkMessage,
@@ -196,9 +194,6 @@ export const BtmButton: React.FC<Props> = ({
   const onSelectMenuSelectResource = useCallback(
     (itemData: Resource) => {
       selectResourceToBreak(itemData);
-      const previewPlanCookie = getCookie("preview-user-break-monolith");
-      !previewPlanCookie &&
-        setCookie("changesConfirmationMessageType", "aiProcess");
     },
     [selectResourceToBreak]
   );
@@ -255,10 +250,7 @@ export const BtmButton: React.FC<Props> = ({
                         itemsAlign={EnumItemsAlign.Center}
                         end={<Icon icon={"app-settings"} size="xsmall"></Icon>}
                       >
-                        <ResourceCircleBadge
-                          type={resource.resourceType}
-                          size="small"
-                        />
+                        <ResourceTypeBadge resource={resource} size="small" />
                         <span>{resource.name}</span>
                       </FlexItem>
                     </SelectMenuItem>
@@ -302,7 +294,7 @@ export const BtmButton: React.FC<Props> = ({
           open
           onCloseEvent={toggleIsOpen}
           fullScreen={true}
-          showCloseButton={!isPreviewPlan}
+          showCloseButton={true}
         >
           <BreakTheMonolith
             resource={selectedResource}

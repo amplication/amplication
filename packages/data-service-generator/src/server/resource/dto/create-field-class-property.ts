@@ -14,7 +14,7 @@ import {
   isOneToOneRelationField,
   isTextField,
   isToManyRelationField,
-} from "../../../utils/field";
+} from "@amplication/dsg-utils";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";

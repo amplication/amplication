@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+.outdated-version-alert-status {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--default-spacing);
+  padding: 0 var(--icon-spacing);
+  border-radius: var(--default-border-radius);
+  font-size: var(--tag-font-size);
+  background-color: var(--gray-70);
+  white-space: nowrap;
+
+  &--new {
+    color: var(--theme-red);
+  }
+
+  &--resolved {
+    color: var(--theme-green);
+  }
+
+  &--ignored {
+    color: var(--gray-20);
+  }
+
+  &--canceled {
+    color: var(--gray-20);
+  }
+}

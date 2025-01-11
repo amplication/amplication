@@ -7,19 +7,19 @@ import {
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
+import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 import useModule from "./hooks/useModule";
 import { useModulesContext } from "./modulesContext";
-import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
 import "./NewModule.scss";
 
 type Props = {
@@ -51,8 +51,8 @@ const CLASS_NAME = "new-module";
 
 const NewModule = ({ resourceId, onModuleCreated }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject } = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const { customActionsLicenseEnabled } = useModulesContext();
 
@@ -87,14 +87,12 @@ const NewModule = ({ resourceId, onModuleCreated }: Props) => {
             if (onModuleCreated) {
               onModuleCreated(result.data.createModule);
             }
-            history.push(
-              `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${result.data.createModule.id}`
-            );
+            history.push(`${baseUrl}/modules/${result.data.createModule.id}`);
           }
         });
       setDialogOpen(false);
     },
-    [createModule, resourceId, onModuleCreated, setDialogOpen]
+    [createModule, resourceId, onModuleCreated, setDialogOpen, baseUrl, history]
   );
 
   const errorMessage = formatError(error);

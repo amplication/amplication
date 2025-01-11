@@ -1,0 +1,10 @@
+@import "../../style/index.scss";
+.amp-header-items-stripe {
+  &__item {
+    padding: 0 var(--double-spacing);
+
+    > div {
+      height: 100%;
+    }
+  }
+}

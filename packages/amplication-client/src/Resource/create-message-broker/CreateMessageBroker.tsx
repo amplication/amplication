@@ -17,6 +17,7 @@ import { formatError } from "../../util/error";
 import { prepareMessageBrokerObject } from "../constants";
 import "./CreateMessageBroker.scss";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,10 +30,10 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
     createMessageBroker,
-    currentWorkspace,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
   } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -46,7 +47,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
     }
 
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
-  }, [errorCreateMessageBroker]);
+  }, [errorCreateMessageBroker, trackEvent]);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateInput, eventName: string) => {
@@ -58,7 +59,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleBackToProjectClick = () => {
     trackEvent({ eventName: AnalyticsEventNames.BackToProjectsClick });
-    history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+    history.push(`${baseUrl}/`);
   };
 
   const handleCreateServiceClick = () => {

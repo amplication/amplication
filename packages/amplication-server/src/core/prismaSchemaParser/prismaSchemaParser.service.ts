@@ -56,7 +56,7 @@ import {
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
-  ExistingEntitySelect,
+  ExistingEntitiesWithFieldsMap,
   Mapper,
   PrepareOperation,
   PrepareOperationIO,
@@ -129,7 +129,7 @@ export class PrismaSchemaParserService {
    */
   async convertPrismaSchemaForImportObjects(
     schema: string,
-    existingEntities: ExistingEntitySelect[],
+    existingEntities: ExistingEntitiesWithFieldsMap,
     actionContext: ActionContext
   ): Promise<CreateBulkEntitiesInput[]> {
     const { onEmitUserActionLog } = actionContext;
@@ -180,7 +180,8 @@ export class PrismaSchemaParserService {
       const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
       const importObjects = this.convertPreparedSchemaForImportObjects(
         preparedSchemaObject,
-        actionContext
+        actionContext,
+        existingEntities
       );
 
       void onEmitUserActionLog(
@@ -245,14 +246,15 @@ export class PrismaSchemaParserService {
    */
   private convertPreparedSchemaForImportObjects(
     schema: Schema,
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput[] {
     const modelList = schema.list.filter(
       (item: Model) => item.type === MODEL_TYPE_NAME
     ) as Model[];
 
     const preparedEntities = modelList.map((model: Model) =>
-      this.convertModelToEntity(model)
+      this.convertModelToEntity(model, existingEntities)
     );
 
     for (const model of modelList) {
@@ -281,7 +283,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isBooleanField(schema, field)) {
           this.convertPrismaBooleanToEntityField(
@@ -289,7 +292,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isCreatedAtField(schema, field)) {
           this.convertPrismaCreatedAtToEntityField(
@@ -297,7 +301,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isUpdatedAtField(schema, field)) {
           this.convertPrismaUpdatedAtToEntityField(
@@ -305,7 +310,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isDateTimeField(schema, field)) {
           this.convertPrismaDateTimeToEntityField(
@@ -313,7 +319,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isDecimalNumberField(schema, field)) {
           this.convertPrismaDecimalNumberToEntityField(
@@ -321,7 +328,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isWholeNumberField(schema, field)) {
           this.convertPrismaWholeNumberToEntityField(
@@ -329,7 +337,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isSingleLineTextField(schema, field)) {
           this.convertPrismaSingleLineTextToEntityField(
@@ -337,7 +346,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isJsonField(schema, field)) {
           this.convertPrismaJsonToEntityField(
@@ -345,7 +355,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isOptionSetField(schema, field)) {
           this.convertPrismaOptionSetToEntityField(
@@ -353,7 +364,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isMultiSelectOptionSetField(schema, field)) {
           this.convertPrismaMultiSelectOptionSetToEntityField(
@@ -361,7 +373,8 @@ export class PrismaSchemaParserService {
             model,
             field,
             preparedEntities,
-            actionContext
+            actionContext,
+            existingEntities
           );
         } else if (this.isLookupField(schema, field)) {
           if (isManyToMany) {
@@ -382,7 +395,8 @@ export class PrismaSchemaParserService {
                 model,
                 field,
                 preparedEntities,
-                actionContext
+                actionContext,
+                existingEntities
               );
             }
           } else {
@@ -391,7 +405,8 @@ export class PrismaSchemaParserService {
               model,
               field,
               preparedEntities,
-              actionContext
+              actionContext,
+              existingEntities
             );
           }
         }
@@ -427,12 +442,17 @@ export class PrismaSchemaParserService {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
-        const newModelName = handleModelNamesCollision(
-          modelList,
-          existingEntities,
-          mapper,
-          formattedModelName
-        );
+        let newModelName = formattedModelName;
+
+        //if there is already entity with this name, use it as the new name
+        if (!existingEntities.hasOwnProperty(formattedModelName)) {
+          newModelName = handleModelNamesCollision(
+            modelList,
+            existingEntities,
+            mapper,
+            formattedModelName
+          );
+        }
 
         mapper.modelNames[model.name] = {
           originalName: model.name,
@@ -1252,7 +1272,10 @@ export class PrismaSchemaParserService {
    * @param model the model to prepare
    * @returns entity in a structure of CreateBulkEntitiesInput
    */
-  private convertModelToEntity(model: Model): CreateBulkEntitiesInput {
+  private convertModelToEntity(
+    model: Model,
+    existingEntities: ExistingEntitiesWithFieldsMap
+  ): CreateBulkEntitiesInput {
     const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
       (prop) =>
@@ -1261,8 +1284,15 @@ export class PrismaSchemaParserService {
     const entityPluralDisplayName = pluralize(model.name);
     const entityAttributes = prepareModelAttributes(modelAttributes).join(" ");
 
+    let id = cuid(); // creating here the entity id because we need it for the relation
+
+    if (existingEntities[model.name]) {
+      //use the ID of the existing entity
+      id = existingEntities[model.name].id;
+    }
+
     return {
-      id: cuid(), // creating here the entity id because we need it for the relation
+      id,
       name: model.name,
       displayName: modelDisplayName,
       pluralDisplayName:
@@ -1280,7 +1310,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1297,7 +1328,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.Boolean
+      EnumDataType.Boolean,
+      model,
+      existingEntities
     );
 
     entity.fields.push(entityField);
@@ -1310,7 +1343,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1327,7 +1361,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.CreatedAt
+      EnumDataType.CreatedAt,
+      model,
+      existingEntities
     );
 
     entity.fields.push(entityField);
@@ -1340,7 +1376,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1357,7 +1394,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.UpdatedAt
+      EnumDataType.UpdatedAt,
+      model,
+      existingEntities
     );
 
     entity.fields.push(entityField);
@@ -1370,7 +1409,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1387,7 +1427,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.DateTime
+      EnumDataType.DateTime,
+      model,
+      existingEntities
     );
 
     const properties = <types.DateTime>{
@@ -1409,7 +1451,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1426,7 +1469,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.DecimalNumber
+      EnumDataType.DecimalNumber,
+      model,
+      existingEntities
     );
 
     const properties = <types.DecimalNumber>{
@@ -1450,7 +1495,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1467,7 +1513,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.WholeNumber
+      EnumDataType.WholeNumber,
+      model,
+      existingEntities
     );
 
     const properties = <types.WholeNumber>{
@@ -1490,7 +1538,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1507,7 +1556,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.SingleLineText
+      EnumDataType.SingleLineText,
+      model,
+      existingEntities
     );
 
     const properties: types.SingleLineText = <types.SingleLineText>{
@@ -1528,7 +1579,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1545,7 +1597,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.Json
+      EnumDataType.Json,
+      model,
+      existingEntities
     );
 
     entity.fields.push(entityField);
@@ -1558,7 +1612,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1576,6 +1631,8 @@ export class PrismaSchemaParserService {
     const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Id,
+      model,
+      existingEntities,
       this.datasourceProvider
     );
 
@@ -1652,7 +1709,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1669,7 +1727,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.OptionSet
+      EnumDataType.OptionSet,
+      model,
+      existingEntities
     );
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
@@ -1702,7 +1762,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1719,7 +1780,9 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.MultiSelectOptionSet
+      EnumDataType.MultiSelectOptionSet,
+      model,
+      existingEntities
     );
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
@@ -1752,7 +1815,8 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntitiesInput[],
-    actionContext: ActionContext
+    actionContext: ActionContext,
+    existingEntities: ExistingEntitiesWithFieldsMap
   ): CreateBulkEntitiesInput {
     try {
       const entity = preparedEntities.find(
@@ -1770,7 +1834,9 @@ export class PrismaSchemaParserService {
       // create the relation filed on the main side of the relation
       const entityField = createOneEntityFieldCommonProperties(
         field,
-        EnumDataType.Lookup
+        EnumDataType.Lookup,
+        model,
+        existingEntities
       );
 
       const remoteModelAndField = findRemoteRelatedModelAndField(
@@ -1792,7 +1858,9 @@ export class PrismaSchemaParserService {
 
       const relatedField = createOneEntityFieldCommonProperties(
         remoteField,
-        EnumDataType.Lookup
+        EnumDataType.Lookup,
+        model,
+        existingEntities
       );
 
       entityField.relatedFieldName = relatedField.name;

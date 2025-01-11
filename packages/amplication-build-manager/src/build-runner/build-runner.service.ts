@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { DSGResourceData } from "@amplication/code-gen-types";
 import axios from "axios";
 import { promises as fs } from "fs";
-import { copy } from "fs-extra";
+import { copy, exists } from "fs-extra";
 import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
@@ -11,25 +11,100 @@ import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
+  CodeGenerationNotifyVersion,
   CodeGenerationSuccess,
   KAFKA_TOPICS,
+  PackageManagerCreateFailure,
+  PackageManagerCreateRequest,
+  PackageManagerCreateSuccess,
+  PluginNotifyVersion,
 } from "@amplication/schema-registry";
 import { CodeGenerationRequest, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
+import { BuildLoggerService } from "../build-logger/build-logger.service";
+import { LogLevel } from "@amplication/util/logging";
+import { NotifyPluginVersionDto } from "./dto/NotifyPluginVersion";
 
 const OLD_DSG_IMAGE_NAME = "data-service-generator";
 
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
+  private enablePackageManager: boolean;
+
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly buildJobsHandlerService: BuildJobsHandlerService,
+    private readonly buildLoggerService: BuildLoggerService,
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.enablePackageManager = Boolean(
+      this.configService.get<string>(Env.ENABLE_PACKAGE_MANAGER) === "true"
+    );
+    this.logger.info(
+      `Package manager is ${this.enablePackageManager ? "enabled" : "disabled"}`
+    );
+  }
+
+  async onPackageManagerCreateSuccess(
+    response: PackageManagerCreateSuccess.Value
+  ) {
+    await this.codeGenerationAndPackagesCompleted(response.buildId);
+  }
+
+  async onPackageManagerCreateFailure(
+    response: PackageManagerCreateFailure.Value
+  ) {
+    return this.emitCodeGenerationFailure(
+      response.buildId,
+      response.errorMessage
+    );
+  }
+
+  async generatePackages(
+    buildId: string,
+    resourceId: string,
+    dsgResourceData: DSGResourceData
+  ) {
+    this.buildLoggerService.addCodeGenerationLog({
+      buildId,
+      message: `Sending ${dsgResourceData.packages?.length} package(s) for generation`,
+      level: LogLevel.Info,
+    });
+
+    const requestPackagesEvent: PackageManagerCreateRequest.KafkaEvent = {
+      key: null,
+      value: { resourceId: resourceId, buildId: buildId, dsgResourceData },
+    };
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.PACKAGE_MANAGER_CREATE_REQUEST,
+      requestPackagesEvent
+    );
+  }
+
+  /// this function accepts either the buildId or the jobBuildId
+  /// This method is called when the code generation and the packages generation are completed
+  /// It emits a kafka event with the buildId and the code generator version
+  async codeGenerationAndPackagesCompleted(buildIdOrJobBuildId: string) {
+    const buildId =
+      this.buildJobsHandlerService.extractBuildId(buildIdOrJobBuildId);
+
+    const successEvent: CodeGenerationSuccess.KafkaEvent = {
+      key: null,
+      value: { buildId },
+    };
+
+    this.logger.info("emit code generation success event", successEvent);
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+      successEvent
+    );
+  }
 
   async runBuild(
     resourceId: string,
@@ -39,7 +114,6 @@ export class BuildRunnerService {
     let codeGeneratorVersion: string;
     const codeGeneratorFullName =
       await this.codeGeneratorNameToContainerImageName(
-        codeGeneratorVersion,
         dsgResourceData.resourceInfo.codeGeneratorName
       );
     try {
@@ -53,6 +127,8 @@ export class BuildRunnerService {
             dsgResourceData.resourceInfo.codeGeneratorVersionOptions
               .codeGeneratorStrategy,
         });
+
+      await this.emitCodeGenerationNotifyVersion(buildId, codeGeneratorVersion);
 
       this.logger.debug("Code Generator settings: ", {
         codeGeneratorVersion,
@@ -72,20 +148,13 @@ export class BuildRunnerService {
           jobBuildId,
           data,
           codeGeneratorVersion,
-          codeGeneratorFullName
+          codeGeneratorFullName,
+          buildId
         );
       }
     } catch (error) {
       this.logger.error(error.message, error);
-      const failureEvent: CodeGenerationFailure.KafkaEvent = {
-        key: null,
-        value: { buildId, codeGeneratorVersion, error },
-      };
-
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        failureEvent
-      );
+      await this.emitCodeGenerationFailure(buildId, error.message);
     }
   }
 
@@ -94,12 +163,15 @@ export class BuildRunnerService {
     jobBuildId: string,
     data: DSGResourceData,
     codeGeneratorVersion: string,
-    codeGeneratorFullName: string
+    codeGeneratorFullName: string,
+    plainBuildId: string
   ) {
-    await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
-
-    const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
+      await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+      await this.saveRelevantDsgAssets(resourceId, jobBuildId, plainBuildId);
+
+      const url = this.configService.get(Env.DSG_RUNNER_URL);
+
       const postBody: CodeGenerationRequest = {
         resourceId,
         buildId: jobBuildId,
@@ -119,25 +191,12 @@ export class BuildRunnerService {
     }
   }
 
-  async processBuildResult(
-    resourceId: string,
-    jobBuildId: string,
-    jobStatus: EnumJobStatus,
-    error?: Error
-  ) {
-    switch (jobStatus) {
-      case EnumJobStatus.Failure:
-        return this.emitCodeGenerationFailureWhenJobStatusFailed(
-          jobBuildId,
-          error
-        );
-      case EnumJobStatus.Success:
-        return this.emitKafkaEventBasedOnJobStatus(resourceId, jobBuildId);
-      default:
-        throw new Error("Unexpected EnumJobStatus", {
-          cause: { jobBuildId, jobStatus, error },
-        });
-    }
+  onCodeGenerationFailure(response: CodeGenerationFailureDto) {
+    return this.emitCodeGenerationFailureWhenJobStatusFailed(response.buildId);
+  }
+
+  onCodeGenerationSuccess(response: CodeGenerationSuccessDto) {
+    return this.handleDsgJobCompleted(response.resourceId, response.buildId);
   }
 
   /**
@@ -146,25 +205,25 @@ export class BuildRunnerService {
    * @param buildId the original buildId without the suffix (domain name)
    * @param codeGeneratorVersion the code generator version
    */
-  async emitKafkaEventBasedOnJobStatus(resourceId: string, jobBuildId: string) {
-    let codeGeneratorVersion: string;
+  async handleDsgJobCompleted(resourceId: string, jobBuildId: string) {
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
     let otherJobsHaveNotFailed = true;
 
     try {
-      codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-
+      //get the aggregated status of all the jobs
       const currentBuildStatus =
         await this.buildJobsHandlerService.getBuildStatus(buildId);
       otherJobsHaveNotFailed = currentBuildStatus !== EnumJobStatus.Failure;
 
       await this.copyFromJobToArtifact(resourceId, jobBuildId);
 
+      //update the status of the current job
       await this.buildJobsHandlerService.setJobStatus(
         jobBuildId,
         EnumJobStatus.Success
       );
 
+      //get the aggregated status of all the jobs, after the current job status was updated
       const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
         buildId
       );
@@ -175,46 +234,31 @@ export class BuildRunnerService {
       }
 
       if (buildStatus === EnumJobStatus.Success) {
-        const successEvent: CodeGenerationSuccess.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion },
-        };
+        const dsgResourceData =
+          await this.buildJobsHandlerService.extractDsgResourceData(jobBuildId);
 
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-          successEvent
-        );
+        //package manager is called only after all the jobs are completed
+        if (dsgResourceData.packages?.length > 0 && this.enablePackageManager) {
+          await this.generatePackages(buildId, resourceId, dsgResourceData);
+        } else {
+          this.logger.info("No packages to generate - complete build");
+          await this.codeGenerationAndPackagesCompleted(jobBuildId);
+        }
       }
     } catch (error) {
-      if (otherJobsHaveNotFailed) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: {
-            buildId,
-            codeGeneratorVersion,
-            error,
-          },
-        };
+      this.logger.error(error.message, error);
 
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
-        );
+      if (otherJobsHaveNotFailed) {
+        await this.emitCodeGenerationFailure(buildId, error.message);
       }
     }
   }
 
-  async emitCodeGenerationFailureWhenJobStatusFailed(
-    jobBuildId: string,
-    jobError: Error
-  ) {
-    let codeGeneratorVersion: string;
+  async emitCodeGenerationFailureWhenJobStatusFailed(jobBuildId: string) {
     let otherJobsHaveNotFailed = true;
 
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
     try {
-      codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-
       const currentBuildStatus =
         await this.buildJobsHandlerService.getBuildStatus(buildId);
       otherJobsHaveNotFailed = currentBuildStatus !== EnumJobStatus.Failure;
@@ -224,20 +268,62 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
     } catch (error) {
-      this.logger.error(error.message, error, { causeError: jobError });
+      this.logger.error(error.message, error);
     } finally {
       if (otherJobsHaveNotFailed) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion, error: jobError },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
-        );
+        await this.emitCodeGenerationFailure(buildId);
       }
     }
+  }
+
+  async emitCodeGenerationNotifyVersion(
+    buildId: string,
+    codeGeneratorVersion: string
+  ) {
+    const eventData: CodeGenerationNotifyVersion.KafkaEvent = {
+      key: null,
+      value: { buildId, codeGeneratorVersion },
+    };
+
+    this.logger.debug(
+      "Emitting code generation notify version event",
+      eventData
+    );
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.CODE_GENERATION_NOTIFY_VERSION_TOPIC,
+      eventData
+    );
+  }
+
+  async emitCodeGenerationFailure(buildId: string, errorMessage?: string) {
+    const failureEvent: CodeGenerationFailure.KafkaEvent = {
+      key: null,
+      value: { buildId, errorMessage },
+    };
+
+    this.logger.debug("Emitting code generation failure event", failureEvent);
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+      failureEvent
+    );
+  }
+
+  async emitBuildPluginNotifyVersion(args: NotifyPluginVersionDto) {
+    const buildId = this.buildJobsHandlerService.extractBuildId(args.buildId);
+
+    const event: PluginNotifyVersion.KafkaEvent = {
+      key: null,
+      value: { ...args, buildId },
+    };
+
+    this.logger.debug("Emitting notify plugin version event", event);
+
+    await this.producerService.emitMessage(
+      KAFKA_TOPICS.BUILD_PLUGIN_NOTIFY_VERSION_TOPIC,
+      event
+    );
   }
 
   async saveDsgResourceData(
@@ -260,20 +346,27 @@ export class BuildRunnerService {
     );
   }
 
-  async getCodeGeneratorVersion(buildId: string) {
-    const data = await fs.readFile(
-      join(
-        this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-        buildId,
-        this.configService.get(Env.DSG_JOBS_RESOURCE_DATA_FILE)
-      )
+  async saveRelevantDsgAssets(
+    resourceId: string,
+    buildId: string,
+    plainBuildId: string
+  ) {
+    const dsgAssetsPathForBuild = join(
+      this.configService.get(Env.DSG_ASSETS_FOLDER),
+      `${resourceId}-${plainBuildId}`
     );
 
-    const config = <DSGResourceData & { codeGeneratorVersion: string }>(
-      JSON.parse(data.toString())
+    if (!(await exists(dsgAssetsPathForBuild))) {
+      return;
+    }
+
+    const jobPathForDsgAssets = join(
+      this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
+      buildId,
+      "dsg-assets"
     );
 
-    return config.codeGeneratorVersion;
+    await copy(dsgAssetsPathForBuild, jobPathForDsgAssets);
   }
 
   async copyFromJobToArtifact(
@@ -310,13 +403,11 @@ export class BuildRunnerService {
    * @returns (string) the container image name
    */
   private async codeGeneratorNameToContainerImageName(
-    codeGeneratorVersion: string,
     codeGeneratorName: string
   ): Promise<string> {
     if (!codeGeneratorName) {
       this.logger.debug("Using default image name", {
         name: OLD_DSG_IMAGE_NAME,
-        codeGeneratorVersion,
       });
 
       return OLD_DSG_IMAGE_NAME;
@@ -324,7 +415,6 @@ export class BuildRunnerService {
 
     this.logger.debug("Using image name from the DSG catalog", {
       name: codeGeneratorName,
-      codeGeneratorVersion,
     });
 
     return this.codeGeneratorService.getCodeGenerators(codeGeneratorName);

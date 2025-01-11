@@ -14,11 +14,11 @@ $tab-height: 26px;
   .amp-tab {
     text-transform: none;
     color: var(--gray-20);
-    margin: var(--default-spacing-small) var(--double-spacing);
+    margin: var(--default-spacing-small) var(--default-spacing);
     font-size: var(--tag-font-size);
     position: relative;
     min-height: $tab-height;
-    padding: 0;
+    padding: 0 var(--default-spacing);
     overflow: visible; //allow for the separator to overflow
     display: flex;
     flex-direction: row;
@@ -26,6 +26,7 @@ $tab-height: 26px;
 
     .amp-icon {
       margin-right: var(--icon-spacing);
+      margin-bottom: 0;
     }
 
     &__indicator {
@@ -38,6 +39,8 @@ $tab-height: 26px;
       margin-left: var(--icon-spacing);
       font-weight: 500;
       color: var(--gray-full);
+      border-radius: var(--default-border-radius);
+      background-color: var(--gray-base);
     }
 
     &:not(:last-child):before {
@@ -46,7 +49,7 @@ $tab-height: 26px;
       height: 100%;
       width: 1px;
       bottom: 0;
-      right: calc(-1 * var(--double-spacing));
+      right: calc(-1 * var(--default-spacing));
       background-color: var(--gray-70);
     }
 
@@ -65,6 +68,47 @@ $tab-height: 26px;
         bottom: calc(var(--default-spacing-small) * -1);
         height: 3px;
         background-color: var(--primary);
+      }
+    }
+  }
+
+  &--header {
+    padding-left: 0;
+    padding-right: 0;
+    min-height: calc($tab-height + var(--default-spacing) * 2) !important;
+
+    .amp-tab {
+      margin: var(--default-spacing) var(--icon-spacing);
+
+      &:before {
+        display: none;
+      }
+
+      &.active {
+        color: var(--theme-turquoise);
+
+        &:after {
+          bottom: calc(var(--default-spacing) * -1);
+          background-color: var(--gray-base);
+          height: 2px;
+          display: none;
+        }
+      }
+    }
+  }
+
+  &--inner {
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--default-spacing);
+
+    .amp-tab {
+      &.active {
+        &:after {
+          background-color: var(--theme-turquoise);
+        }
       }
     }
   }

@@ -6,7 +6,7 @@ import React, { useCallback, useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
+import { AppContext, useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -48,6 +48,10 @@ type Props = {
 };
 
 const NewProject = ({ onProjectCreated }: Props) => {
+  const { permissions } = useAppContext();
+
+  const canCreateProject = permissions.canPerformTask("project.create");
+
   const { onNewProjectCompleted } = useContext(AppContext);
   const { trackEvent } = useTracking();
   const [createProject, { loading }] = useMutation<DType>(CREATE_PROJECT, {
@@ -103,7 +107,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
               <TextField
                 name="name"
                 label="New Project Name"
-                disabled={loading}
+                disabled={loading || !canCreateProject}
                 autoFocus
                 hideLabel
                 placeholder="Type New Project Name"
@@ -112,7 +116,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+                disabled={!formik.isValid || loading || !canCreateProject}
               >
                 Create new project
               </Button>

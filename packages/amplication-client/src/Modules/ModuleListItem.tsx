@@ -8,23 +8,21 @@ import {
   Icon,
   Text,
 } from "@amplication/ui/design-system";
-import { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import { AppContext } from "../context/appContext";
-import * as models from "../models";
 import { REACT_APP_FEATURE_CUSTOM_ACTIONS_ENABLED } from "../env";
+import * as models from "../models";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   module: models.Module;
 };
 
 export const ModuleListItem = ({ module }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
 
   if (!module) return null;
 
-  const moduleUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}`;
+  const moduleUrl = `${baseUrl}/modules/${module.id}`;
   const editUrl = `${moduleUrl}/edit`;
   const actionsUrl = `${moduleUrl}/actions`;
   const dtosUrl = `${moduleUrl}/dtos`;

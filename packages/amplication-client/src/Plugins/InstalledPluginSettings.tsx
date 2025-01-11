@@ -7,6 +7,10 @@ import {
   SelectMenuModal,
   SelectMenuList,
   SelectMenuItem,
+  FlexItem,
+  EnumItemsAlign,
+  EnumFlexDirection,
+  EnumGapSize,
 } from "@amplication/ui/design-system";
 import { JsonFormatting, isValidJSON } from "@amplication/util/json";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
@@ -28,6 +32,7 @@ import usePlugins from "./hooks/usePlugins";
 import { PluginVersion } from "./hooks/usePluginCatalog";
 import "./InstalledPluginSettings.scss";
 import { PluginLogo } from "./PluginLogo";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -43,18 +48,20 @@ const InstalledPluginSettings: React.FC<Props> = ({
   moduleClass,
 }: Props) => {
   const { plugin: pluginInstallationId } = match.params;
-  const { currentProject, currentWorkspace, currentResource } =
-    useContext(AppContext);
+  const { currentResource } = useContext(AppContext);
+  const { baseUrl } = useResourceBaseUrl();
+
   const editorRef: React.MutableRefObject<string | null> = useRef();
   const [isValid, setIsValid] = useState<boolean>(true);
-  const [configurations, setConfiguration] = useState<string>();
-
-  const [resetKey, setResetKey] = useState<string>();
+  const [configurations, setConfiguration] =
+    useState<Record<string, unknown>>();
 
   const {
     pluginInstallation,
     loadingPluginInstallation,
     pluginCatalog,
+    loadPrivatePluginsCatalog,
+    privatePluginCatalog,
     updatePluginInstallation,
     updateError,
   } = usePlugins(
@@ -66,14 +73,33 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation?.pluginInstallation.version
   );
 
+  useEffect(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      loadPrivatePluginsCatalog();
+    }
+  }, [pluginInstallation, loadPrivatePluginsCatalog]);
+
   const plugin = useMemo(() => {
+    if (pluginInstallation?.pluginInstallation.isPrivate) {
+      return privatePluginCatalog[
+        pluginInstallation?.pluginInstallation.pluginId
+      ];
+    }
+
     return (
       pluginInstallation &&
       pluginCatalog[pluginInstallation?.pluginInstallation.pluginId]
     );
-  }, [pluginInstallation, pluginCatalog]);
+  }, [pluginInstallation, pluginCatalog, privatePluginCatalog]);
 
-  const [value, setEditorValue] = useState<string>(
+  const enabledPluginVersions = useMemo(() => {
+    if (!plugin) return;
+    return pluginInstallation.pluginInstallation.isPrivate
+      ? plugin.versions.filter((version) => version.enabled)
+      : plugin.versions;
+  }, [plugin, pluginInstallation]);
+
+  const [editorValue, setEditorValue] = useState<string>(
     JsonFormatting(pluginInstallation?.pluginInstallation.settings)
   );
 
@@ -90,8 +116,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     });
     if (JSON.stringify(pluginInstalledVersion.settings))
       editorRef.current = mergedSettings;
-    setEditorValue(mergedSettings);
-  }, [pluginInstallation?.pluginInstallation.settings, plugin]);
+    setEditorValue(JsonFormatting(mergedSettings));
+  }, [plugin, pluginInstallation]);
 
   useEffect(() => {
     setConfiguration(pluginInstallation?.pluginInstallation.configurations);
@@ -101,7 +127,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
     if (pluginInstallation && !selectedVersion) {
       setSelectedVersion(pluginInstallation.pluginInstallation.version);
     }
-  }, [pluginInstallation?.pluginInstallation.version]);
+  }, [pluginInstallation, selectedVersion]);
 
   const onEditorChange = (
     value: string | undefined,
@@ -116,8 +142,10 @@ const InstalledPluginSettings: React.FC<Props> = ({
   };
 
   const handleResetClick = useCallback(() => {
-    setResetKey(generatedKey());
-  }, []);
+    setEditorValue(
+      JsonFormatting(pluginInstallation?.pluginInstallation.settings)
+    );
+  }, [pluginInstallation?.pluginInstallation.settings]);
 
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
@@ -127,16 +155,13 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
       const mergedSettings = JSON.stringify({
         ...(pluginVersion.settings as unknown as { [key: string]: any }),
-        ...(pluginInstallation?.pluginInstallation.version ===
-        pluginVersion.version
-          ? pluginInstallation.pluginInstallation.settings
-          : {}),
+        ...(pluginInstallation?.pluginInstallation.settings ?? {}),
       });
       editorRef.current = mergedSettings;
-      setEditorValue(mergedSettings);
+      setEditorValue(JsonFormatting(mergedSettings));
       setConfiguration(pluginVersion.configurations);
     },
-    [setSelectedVersion, setIsValid, setConfiguration]
+    [pluginInstallation]
   );
 
   const handlePluginInstalledSave = useCallback(() => {
@@ -156,7 +181,12 @@ const InstalledPluginSettings: React.FC<Props> = ({
         },
       },
     }).catch(console.error);
-  }, [updatePluginInstallation, pluginInstallation, selectedVersion]);
+  }, [
+    pluginInstallation,
+    updatePluginInstallation,
+    selectedVersion,
+    configurations,
+  ]);
 
   const errorMessage = formatError(updateError);
 
@@ -164,7 +194,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
     <div className={moduleClass}>
       <div className={`${moduleClass}__row`}>
         <BackNavigation
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource.id}/plugins/installed`}
+          to={`${baseUrl}/plugins/installed`}
           label="Back to Plugins"
         />
       </div>
@@ -196,19 +226,30 @@ const InstalledPluginSettings: React.FC<Props> = ({
                 <SelectMenuModal>
                   <SelectMenuList>
                     <>
-                      {plugin.versions.map((pluginVersion: PluginVersion) => (
-                        <SelectMenuItem
-                          closeAfterSelectionChange
-                          itemData={pluginVersion}
-                          selected={pluginVersion.version === selectedVersion}
-                          key={pluginVersion.id}
-                          onSelectionChange={(pluginVersion) => {
-                            handleSelectVersion(pluginVersion);
-                          }}
-                        >
-                          {pluginVersion.version}
-                        </SelectMenuItem>
-                      ))}
+                      {enabledPluginVersions.map(
+                        (pluginVersion: PluginVersion) => (
+                          <SelectMenuItem
+                            closeAfterSelectionChange
+                            itemData={pluginVersion}
+                            selected={pluginVersion.version === selectedVersion}
+                            key={pluginVersion.version}
+                            onSelectionChange={(pluginVersion) => {
+                              handleSelectVersion(pluginVersion);
+                            }}
+                          >
+                            <FlexItem
+                              direction={EnumFlexDirection.Row}
+                              itemsAlign={EnumItemsAlign.Center}
+                              gap={EnumGapSize.Small}
+                            >
+                              <span>{pluginVersion.version} </span>
+                              <span>
+                                {pluginVersion.deprecated ? "(deprecated)" : ""}
+                              </span>
+                            </FlexItem>
+                          </SelectMenuItem>
+                        )
+                      )}
                     </>
                   </SelectMenuList>
                 </SelectMenuModal>
@@ -217,9 +258,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
           </div>
           <HorizontalRule />
           <CodeEditor
-            defaultValue={pluginInstallation?.pluginInstallation.settings}
-            value={value}
-            resetKey={resetKey}
+            defaultValue={editorValue}
+            value={editorValue}
             onChange={onEditorChange}
             defaultLanguage={"json"}
           />
@@ -229,7 +269,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
               buttonStyle={EnumButtonStyle.Outline}
               onClick={handleResetClick}
             >
-              Reset to default
+              Undo Changes
             </Button>
             <Button
               className={`${moduleClass}__save`}

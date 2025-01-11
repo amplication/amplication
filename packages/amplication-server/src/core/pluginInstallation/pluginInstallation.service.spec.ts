@@ -7,7 +7,6 @@ import { Env } from "../../env";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Account, User } from "../../models";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 import { BlockService } from "../block/block.service";
 import { ResourceService } from "../resource/resource.service";
 import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
@@ -34,8 +33,6 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  previewAccountType: EnumPreviewAccountType.None,
-  previewAccountEmail: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -68,6 +65,7 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   pluginId: EXAMPLE_PLUGIN_ID,
   npm: "ExampleNpm",
   version: "1.0.0",
+  isPrivate: false,
 };
 
 const resourceServiceGetAuthEntityNameMock = jest.fn(() => "User");
@@ -200,6 +198,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
       },
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(
@@ -236,6 +235,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
       },
     };
     await expect(service.create(args, EXAMPLE_USER)).rejects.toThrow(
@@ -294,6 +294,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
         configurations: {
           [REQUIRES_AUTHENTICATION_ENTITY]: "true",
         },
@@ -324,6 +325,7 @@ describe("PluginInstallationService", () => {
         npm: "ExampleNpm",
         version: "1.0.0",
         enabled: true,
+        isPrivate: false,
         configurations: {
           [REQUIRES_AUTHENTICATION_ENTITY]: "true",
         },

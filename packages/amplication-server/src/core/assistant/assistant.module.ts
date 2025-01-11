@@ -14,6 +14,7 @@ import { ModuleDtoModule } from "../moduleDto/moduleDto.module";
 import { BillingModule } from "../billing/billing.module";
 import { AssistantFunctionsService } from "./assistantFunctions.service";
 import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
+import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.
     ModuleDtoModule,
     BillingModule,
     JsonSchemaValidationModule,
+    SegmentAnalyticsModule,
   ],
   providers: [
     AssistantService,

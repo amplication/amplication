@@ -5,7 +5,7 @@ import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
 import { FeatureIndicator } from "./FeatureIndicator";
 import "./FeatureIndicatorContainer.scss";
-import { IconType, isPreviewPlan } from "./FeatureIndicatorContainer";
+import { IconType } from "./FeatureIndicatorContainer";
 
 const CLASS_NAME = "license-indicator-container";
 const DEFAULT_BLOCKED_TOOLTIP_TEXT = "Your plan doesn't include this feature.";
@@ -87,14 +87,6 @@ export const LicenseIndicatorContainer: FC<Props> = ({
     subscriptionPlan,
   ]);
 
-  const showTooltipLink = useMemo(() => {
-    if (isPreviewPlan(subscriptionPlan)) {
-      return false; // don't show the upgrade link when the plan is preview
-    }
-
-    return true;
-  }, [subscriptionPlan]);
-
   const renderProps = {
     disabled: disabled,
     icon: IconType.Lock,
@@ -107,7 +99,6 @@ export const LicenseIndicatorContainer: FC<Props> = ({
           featureName={blockByFeatureId}
           icon={IconType.Lock}
           textStart={tooltipText}
-          showTooltipLink={showTooltipLink}
           element={React.cloneElement(child, renderProps)}
         />
       ))}

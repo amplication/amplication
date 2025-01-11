@@ -5,29 +5,24 @@ $modal-top-position: 10vh;
 $modal-max-height: 80vh;
 
 .amp-dialog {
-  box-shadow: none;
-  border-radius: var(--default-border-radius);
-  border: $border-dark;
-  width: max-content !important;
-  max-width: $modal-max-width;
-  min-width: var(--modal-min-width);
-  max-height: $modal-max-height !important;
-  overflow: auto;
-  margin-top: $modal-top-position !important;
-  margin-bottom: 0 !important;
-  background-color: var(--gray-90) !important;
-  padding: var(--double-spacing);
-  box-sizing: border-box;
-
-  //mobile
-  @media only screen and (max-width: $breakpoint-tablet) {
-    min-width: auto;
-    max-width: 100%;
+  .MuiDialog-paper {
+    box-shadow: none;
+    border-radius: var(--default-border-radius);
+    border: $border-dark;
+    width: max-content !important;
+    max-width: $modal-max-width;
+    min-width: var(--modal-min-width);
+    max-height: $modal-max-height !important;
+    overflow: auto;
+    margin-top: $modal-top-position !important;
+    margin-bottom: 0 !important;
+    background-color: var(--gray-90) !important;
+    padding: var(--double-spacing);
+    box-sizing: border-box;
   }
 
-  // hide the button added by primer
-  button:not(.amp-button) {
-    display: none;
+  .MuiDialog-container {
+    align-items: flex-start;
   }
 
   &__title {
@@ -51,17 +46,34 @@ $modal-max-height: 80vh;
   & &__body {
     background-color: transparent;
     box-sizing: border-box;
+    color: var(--gray-base);
+
+    .amp-form {
+      .select-field {
+        max-width: none;
+      }
+
+      .text-input input {
+        max-width: none;
+      }
+    }
   }
 
   &--warning {
-    border-top: 3px solid var(--theme-orange);
+    .MuiDialog-paper {
+      border-top: 3px solid var(--theme-orange);
+    }
   }
 
   &--success {
-    border-top: 3px solid var(positive-default);
+    .MuiDialog-paper {
+      border-top: 3px solid var(--theme-green);
+    }
   }
 
   &--error {
-    border-top: 3px solid var(--theme-red);
+    .MuiDialog-paper {
+      border-top: 3px solid var(--theme-red);
+    }
   }
 }

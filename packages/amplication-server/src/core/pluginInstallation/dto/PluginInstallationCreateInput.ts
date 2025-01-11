@@ -36,4 +36,9 @@ export class PluginInstallationCreateInput extends BlockCreateInput {
     nullable: false,
   })
   version!: string;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  isPrivate!: boolean;
 }

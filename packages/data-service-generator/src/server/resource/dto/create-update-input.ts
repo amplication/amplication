@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { NamedClassDeclaration } from "@amplication/code-gen-types";
-import { isEditableField } from "../../../utils/field";
+import { isEditableField } from "@amplication/dsg-utils";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 import { classDeclaration } from "../../../utils/ast";

@@ -1,7 +1,13 @@
 import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { match } from "react-router-dom";
 import { AppContext, useAppContext } from "../context/appContext";
 import { USER_ENTITY } from "../Entity/constants";
@@ -17,6 +23,10 @@ import { Plugin, PluginVersion } from "./hooks/usePluginCatalog";
 
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import PluginsCatalogItem from "./PluginsCatalogItem";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { PRIVATE_PLUGINS_CATEGORY } from "./PluginTree";
+import PrivatePluginFeature from "./PrivatePluginsFeature";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -47,13 +57,19 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
 
+  const { stigg } = useStiggContext();
+
+  const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.PrivatePlugins,
+  });
+
   const [pluginInstallationData, setPluginInstallationData] =
     useState<PluginInstallationData>(null);
 
   const [pluginInstallationUpdateData, setPluginInstallationUpdateData] =
     useState<models.PluginInstallation>(null);
 
-  const { resourceSettings } = useResource(resource);
+  const { serviceSettings } = useResource(resource);
 
   const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
@@ -70,11 +86,26 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     createError,
     updatePluginInstallation,
     updateError,
+    privatePluginCatalog,
+    loadPrivatePluginsCatalog,
     // onPluginDropped,
   } = usePlugins(resource, null, currentResource?.codeGenerator);
 
+  useEffect(() => {
+    if (canUsePrivatePlugins) {
+      loadPrivatePluginsCatalog();
+    }
+  }, [canUsePrivatePlugins, loadPrivatePluginsCatalog]);
+
   const filteredCatalog = useMemo(() => {
-    if (category === "undefined") return Object.values(pluginCatalog);
+    if (category === "undefined")
+      return [
+        ...Object.values(pluginCatalog),
+        ...Object.values(privatePluginCatalog),
+      ];
+
+    if (category === PRIVATE_PLUGINS_CATEGORY)
+      return Object.values(privatePluginCatalog);
 
     return Object.values(pluginCatalog).reduce(
       (pluginsCatalogArr: Plugin[], plugin: Plugin) => {
@@ -85,18 +116,18 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       },
       []
     );
-  }, [category, pluginCatalog]);
+  }, [category, pluginCatalog, privatePluginCatalog]);
 
   const { addEntity } = useContext(AppContext);
 
   const userEntity = useMemo(() => {
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
     if (!authEntity) {
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities?.entities, resourceSettings?.serviceSettings]);
+  }, [entities?.entities, serviceSettings?.serviceSettings]);
 
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
@@ -128,18 +159,12 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             settings: settings,
             configurations: configurations,
             resource: { connect: { id: resource } },
+            isPrivate: privatePluginCatalog[pluginId] ? true : false,
           },
         },
       }).catch(console.error);
     },
-    [
-      createPluginInstallation,
-      setConfirmInstall,
-      resource,
-      userEntity,
-      pluginInstallationData,
-      setPluginInstallationData,
-    ]
+    [userEntity, createPluginInstallation, resource, privatePluginCatalog]
   );
 
   const handleDismissInstall = useCallback(() => {
@@ -213,6 +238,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
                 settings: pluginVersion.settings,
                 configurations: pluginVersion.configurations,
                 resource: { connect: { id: resource } },
+                isPrivate: category === PRIVATE_PLUGINS_CATEGORY,
               },
             },
           }).catch(console.error);
@@ -245,12 +271,11 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
         },
       },
     }).catch(console.error);
-  }, [
-    createDefaultEntities,
-    resource,
-    pluginInstallationData,
-    setPluginInstallationData,
-  ]);
+  }, [createDefaultEntities, resource]);
+
+  if (category === PRIVATE_PLUGINS_CATEGORY && !canUsePrivatePlugins) {
+    return <PrivatePluginFeature />;
+  }
 
   return (
     <div>

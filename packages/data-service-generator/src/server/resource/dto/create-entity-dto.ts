@@ -1,7 +1,7 @@
 import { builders } from "ast-types";
 import { NamedClassDeclaration } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../utils/ast";
-import { isPasswordField } from "../../../utils/field";
+import { isPasswordField } from "@amplication/dsg-utils";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { OBJECT_TYPE_ID } from "./nestjs-graphql.util";

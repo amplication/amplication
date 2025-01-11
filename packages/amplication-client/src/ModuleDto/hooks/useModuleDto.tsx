@@ -15,6 +15,7 @@ import {
   UPDATE_MODULE_DTO,
   UPDATE_MODULE_DTO_PROPERTY,
 } from "../queries/moduleDtosQueries";
+import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 type TDeleteData = {
   deleteModuleDto: models.ModuleDto;
 };
@@ -51,21 +52,54 @@ type TUpdatePropertyData = {
   updateModuleDtoProperty: models.ModuleDtoProperty;
 };
 
+const NEST_ONLY_DTO_TYPES = [
+  models.EnumModuleDtoType.OrderByInput,
+  models.EnumModuleDtoType.ListRelationFilter,
+  models.EnumModuleDtoType.CreateNestedManyInput,
+  models.EnumModuleDtoType.UpdateNestedManyInput,
+  models.EnumModuleDtoType.DeleteArgs,
+  models.EnumModuleDtoType.CountArgs,
+  models.EnumModuleDtoType.FindOneArgs,
+  models.EnumModuleDtoType.CreateArgs,
+  models.EnumModuleDtoType.UpdateArgs,
+];
+
 const useModuleDto = () => {
-  const {
-    addBlock,
-    addEntity,
-    currentResource,
-    currentWorkspace,
-    currentProject,
-  } = useContext(AppContext);
+  const { addBlock, addEntity, currentResource } = useContext(AppContext);
+
+  const { baseUrl } = useResourceBaseUrl();
+
+  const filterDtosByGeneratorName = useCallback(
+    (allDTOs: models.ModuleDto[]) => {
+      if (
+        !currentResource ||
+        (currentResource &&
+          currentResource.codeGenerator !== models.EnumCodeGenerator.DotNet)
+      )
+        return allDTOs;
+
+      return allDTOs.filter((dto) => {
+        return (
+          NEST_ONLY_DTO_TYPES.find((type) => type === dto.dtoType) === undefined
+        );
+      });
+    },
+    [currentResource]
+  );
 
   const [availableDtosDictionary, setAvailableDtosDictionary] = useState<
     Record<string, models.ModuleDto>
   >({});
 
+  const [availableDtosForCurrentResource, setAvailableDtosForCurrentResource] =
+    useState<{ moduleDtos: models.ModuleDto[] }>({ moduleDtos: [] });
+
+  const [findModuleDtosData, setModuleDtosData] = useState<{
+    moduleDtos: models.ModuleDto[];
+  }>({ moduleDtos: [] });
+
   const getModuleDtoUrl = (dto: models.ModuleDto) => {
-    return `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${dto.parentBlockId}/dtos/${dto.id}`;
+    return `${baseUrl}/modules/${dto.parentBlockId}/dtos/${dto.id}`;
   };
 
   const [
@@ -204,17 +238,22 @@ const useModuleDto = () => {
   const [
     findModuleDtos,
     {
-      data: findModuleDtosData,
       loading: findModuleDtosLoading,
       error: findModuleDtosError,
       refetch: findModuleDtoRefetch,
     },
-  ] = useLazyQuery<TFindData>(FIND_MODULE_DTOS, {});
+  ] = useLazyQuery<TFindData>(FIND_MODULE_DTOS, {
+    onCompleted: (data) => {
+      if (data && data.moduleDtos) {
+        const usableDTOs = filterDtosByGeneratorName(data.moduleDtos);
+        setModuleDtosData({ moduleDtos: usableDTOs });
+      }
+    },
+  });
 
   const [
     getAvailableDtosForResourceInternal,
     {
-      data: availableDtosForCurrentResource,
       loading: availableDtosForCurrentResourceLoading,
       error: availableDtosForCurrentResourceError,
       refetch: getAvailableDtosForResourceRefetch,
@@ -232,7 +271,9 @@ const useModuleDto = () => {
       },
     }).then((result) => {
       if (result.data) {
-        const dictionary = result.data.moduleDtos.reduce((acc, dto) => {
+        const usableDTOs = filterDtosByGeneratorName(result.data.moduleDtos);
+        setAvailableDtosForCurrentResource({ moduleDtos: usableDTOs });
+        const dictionary = usableDTOs.reduce((acc, dto) => {
           acc[dto.id] = dto;
           return acc;
         }, {} as Record<string, models.ModuleDto>);
@@ -243,6 +284,7 @@ const useModuleDto = () => {
     getAvailableDtosForResourceInternal,
     currentResource,
     setAvailableDtosDictionary,
+    filterDtosByGeneratorName,
   ]);
 
   const [

@@ -19,8 +19,8 @@ import { CreateGitRepositoryInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
-import { GitSelectMenu } from "../../select/GitSelectMenu";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GitSelectGroup } from "../../select/GitSelectGroup";
+import { GitOrganizationFromGitRepository } from "../../ResourceGitSettingsPage";
 import { GET_GROUPS } from "../../queries/gitProvider";
 import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 
@@ -45,7 +45,7 @@ export default function GitCreateRepo({
     isPublic: true,
   };
 
-  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData, loading: loadingGroups } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganization.id,
     },
@@ -81,7 +81,7 @@ export default function GitCreateRepo({
         : { ...data, name: processGitRepositoryName(data.name) };
       onCreateGitRepository(inputData);
     },
-    [repositoryGroup]
+    [onCreateGitRepository, processGitRepositoryName, repositoryGroup]
   );
 
   return (
@@ -101,16 +101,17 @@ export default function GitCreateRepo({
 
           {gitOrganization.useGroupingForRepositories && (
             <>
-              <div className={`${CLASS_NAME}__label`}>Change workspace</div>
-              <GitSelectMenu
+              <GitSelectGroup
                 gitProvider={gitOrganization.provider}
                 selectedItem={repositoryGroup}
                 items={gitGroups}
                 onSelect={setRepositoryGroup}
+                loadingGroups={loadingGroups}
               />
             </>
           )}
 
+          <HorizontalRule />
           <div>
             <Toggle
               name="isPublic"

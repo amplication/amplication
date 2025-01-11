@@ -1,5 +1,5 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
   BillingPeriod,
@@ -28,7 +28,6 @@ import {
 } from "@amplication/util-billing-types";
 import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { EnumPreviewAccountType } from "../auth/dto/EnumPreviewAccountType";
 
 const SUBSCRIPTION_PLAN_MAP: Record<BillingPlan, EnumSubscriptionPlan> = {
   [BillingPlan.Enterprise]: EnumSubscriptionPlan.Enterprise,
@@ -38,6 +37,7 @@ const SUBSCRIPTION_PLAN_MAP: Record<BillingPlan, EnumSubscriptionPlan> = {
     EnumSubscriptionPlan.PreviewBreakTheMonolith,
   [BillingPlan.Pro]: EnumSubscriptionPlan.Pro,
   [BillingPlan.ProWithTrial]: EnumSubscriptionPlan.Pro,
+  [BillingPlan.Team]: EnumSubscriptionPlan.Team,
 };
 
 @Injectable()
@@ -52,13 +52,13 @@ export class BillingService {
 
   private get defaultSubscriptionPlan() {
     return {
-      planId: BillingPlan.Essential,
+      planId: BillingPlan.Enterprise,
       addons: [
         {
-          addonId: BillingAddon.EssentialBreakingTheMonolith,
+          addonId: BillingAddon.BreakingTheMonolith,
         },
         {
-          addonId: BillingAddon.EssentialTrialLimitToNodeJs,
+          addonId: BillingAddon.CustomActions,
         },
         {
           addonId: BillingAddon.EssentialTrialJovuRequests,
@@ -70,6 +70,7 @@ export class BillingService {
   constructor(
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
+    @Inject(forwardRef(() => SegmentAnalyticsService))
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
   ) {
@@ -245,6 +246,7 @@ export class BillingService {
       billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       unitQuantity: planId === BillingPlan.Essential ? 1 : undefined,
+      skipTrial: true,
       checkoutOptions: {
         allowPromoCodes: true,
         cancelUrl: new URL(cancelUrl, this.clientHost).href,
@@ -305,26 +307,6 @@ export class BillingService {
       });
     }
     return;
-  }
-
-  async provisionPreviewCustomer(
-    workspaceId: string,
-    previewAccountType: EnumPreviewAccountType
-  ): Promise<null> {
-    if (!this.isBillingEnabled) {
-      return;
-    }
-
-    await this.stiggClient.provisionCustomer({
-      customerId: workspaceId,
-      subscriptionParams: null,
-    });
-
-    await this.stiggClient.provisionSubscription({
-      customerId: workspaceId,
-      planId: this.mapPreviewAccountTypeToSubscriptionPlan(previewAccountType),
-      skipTrial: true,
-    });
   }
 
   async provisionNewSubscriptionForPreviewAccount(
@@ -510,20 +492,5 @@ export class BillingService {
       return mappedPlan;
     }
     throw new Error(`Unknown plan id: ${planId}`);
-  }
-
-  mapPreviewAccountTypeToSubscriptionPlan(
-    previewAccountType: EnumPreviewAccountType
-  ): BillingPlan {
-    switch (previewAccountType) {
-      case EnumPreviewAccountType.BreakingTheMonolith:
-        return BillingPlan.PreviewBreakTheMonolith;
-      case EnumPreviewAccountType.PreviewOnboarding:
-        return BillingPlan.Free;
-      case EnumPreviewAccountType.None:
-        throw new Error(`${previewAccountType} is not a preview account type`);
-      default:
-        throw new Error(`Unknown preview account type: ${previewAccountType}`);
-    }
   }
 }

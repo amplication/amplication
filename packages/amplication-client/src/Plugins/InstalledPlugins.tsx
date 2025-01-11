@@ -1,5 +1,11 @@
 import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { match } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -20,6 +26,8 @@ import { TEntities } from "../Entity/NewEntity";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
 import { AppContext, useAppContext } from "../context/appContext";
 import useResource from "../Resource/hooks/useResource";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "@amplication/util-billing-types";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -40,10 +48,14 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
 
   const { currentResource } = useAppContext();
 
+  const { stigg } = useStiggContext();
+
+  const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.PrivatePlugins,
+  });
+
   const {
     pluginInstallations,
-    // loadingPluginInstallations: loading,
-    // errorPluginInstallations: error,
     pluginCatalog,
     createPluginInstallation,
     createError,
@@ -52,14 +64,21 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     pluginOrderObj,
     updatePluginOrder,
     UpdatePluginOrderError,
-    // onPluginDropped,
+    privatePluginCatalog,
+    loadPrivatePluginsCatalog,
   } = usePlugins(resource, null, currentResource?.codeGenerator);
+
+  useEffect(() => {
+    if (canUsePrivatePlugins) {
+      loadPrivatePluginsCatalog();
+    }
+  }, [canUsePrivatePlugins, loadPrivatePluginsCatalog]);
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
 
-  const { resourceSettings } = useResource(resource);
+  const { serviceSettings } = useResource(resource);
 
   const [pluginInstallationData, setPluginInstallationData] =
     useState<Plugin>(null);
@@ -76,14 +95,14 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   });
 
   const userEntity = useMemo(() => {
-    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+    const authEntity = serviceSettings?.serviceSettings?.authEntityName;
 
     if (!authEntity) {
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities?.entities, resourceSettings?.serviceSettings?.authEntityName]);
+  }, [entities?.entities, serviceSettings?.serviceSettings?.authEntityName]);
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {
@@ -240,7 +259,11 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             pluginInstallations.map((installation) => (
               <PluginsCatalogItem
                 key={installation.id}
-                plugin={pluginCatalog[installation.pluginId]}
+                plugin={
+                  pluginCatalog[installation.pluginId] ||
+                  (privatePluginCatalog &&
+                    privatePluginCatalog[installation.pluginId])
+                }
                 pluginInstallation={installation as models.PluginInstallation}
                 onOrderChange={onOrderChange}
                 onInstall={handleInstall}

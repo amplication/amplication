@@ -1,6 +1,6 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
 import resourceRoutes from "./resourceRoutes";
-import resourceTabRoutes from "./resourceTabRoutes";
+import { resourceTabRoutes } from "./resourceTabRoutes";
 
 export interface RouteDef {
   path: string;
@@ -15,6 +15,7 @@ export interface RouteDef {
   routeTrackType?: string;
   permission?: boolean;
   isAnalytics?: boolean;
+  iconName?: string;
 }
 
 export const Routes: RouteDef[] = [
@@ -34,25 +35,288 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         tabRoutes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/members",
-            Component: lazy(() => import("../Workspaces/MemberList")),
+            path: "/:workspace([A-Za-z0-9-]{20,})/graph",
+            Component: lazy(() => import("../Workspaces/WorkspaceGraph")),
             moduleName: "",
-            displayName: "Members",
-            exactPath: true,
-            routes: [],
+            displayName: "Architecture",
+            exactPath: false,
+            isAnalytics: true,
+          },
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/projects",
+            Component: lazy(() => import("../Workspaces/WorkspaceOverview")),
+            moduleName: "",
+            displayName: "Projects",
+            exactPath: false,
+            isAnalytics: true,
+          },
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
+            Component: lazy(() => import("../Blueprints/BlueprintsPage")),
+            moduleName: "",
+            displayName: "Blueprints",
+            exactPath: false,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/blueprints/:blueprint([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Blueprints/Blueprint")),
+                moduleName: "",
+                displayName: "Blueprint",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
             isAnalytics: true,
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/settings",
-            Component: lazy(() => import("../Workspaces/WorkspaceForm")),
-            moduleName: "",
+            Component: lazy(
+              () => import("../Workspaces/WorkspaceSettingsPage")
+            ),
+            moduleName: "app-settings",
             displayName: "Settings",
-            exactPath: true,
-            routes: [],
+            exactPath: false,
+            tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/members",
+                Component: lazy(() => import("../Workspaces/MemberList")),
+                iconName: "user",
+                displayName: "Users",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/members/:user([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../User/User")),
+                    iconName: "user",
+                    displayName: "Users",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams",
+                Component: lazy(() => import("../Teams/TeamsPage")),
+                iconName: "users",
+                displayName: "Teams",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/teams/:team([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../Teams/Team")),
+                    displayName: "Team",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles",
+                Component: lazy(() => import("../Roles/RolesPage")),
+                iconName: "roles_outline",
+                displayName: "Roles",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/roles/:role([A-Za-z0-9-]{20,})",
+                    Component: lazy(() => import("../Roles/Role")),
+                    moduleName: "",
+                    displayName: "Role",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties",
+                Component: lazy(
+                  () => import("../CustomProperties/CustomPropertiesPage")
+                ),
+                iconName: "multi_select_option_set",
+                displayName: "Catalog Properties",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/settings/properties/:property([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../CustomProperties/CustomProperty")
+                    ),
+                    moduleName: "",
+                    displayName: "Property",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+                isAnalytics: true,
+              },
+            ],
             isAnalytics: true,
           },
         ],
         routes: [
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
+            Component: lazy(
+              () =>
+                import("../Resource/create-resource-page/CreateResourcePage")
+            ),
+            moduleName: "CreateResourcePage",
+            moduleClass: "create-resource-page",
+            exactPath: true,
+            routes: [],
+          },
+
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
+            Component: lazy(() => import("../Platform/ProjectPlatformPage")),
+            moduleName: "ProjectPlatformPage",
+            moduleClass: "project-platform-page",
+            exactPath: false,
+            tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins",
+                Component: lazy(
+                  () => import("../PrivatePlugins/PrivatePluginsPage")
+                ),
+                moduleName: "",
+                displayName: "Plugin Repository",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePluginGitSettings")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePlugin")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    routes: [],
+                    isAnalytics: true,
+                  },
+                ],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",
+                Component: lazy(
+                  () =>
+                    import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+                ),
+                moduleName: "",
+                displayName: "Tech Debt",
+                routeTrackType: "",
+                exactPath: false,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                displayName: "Pending Changes",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",
+                Component: lazy(
+                  () => import("../VersionControl/PublishChangesPage")
+                ),
+                moduleName: "",
+                displayName: "Publish",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings",
+                Component: lazy(
+                  () => import("../Project/ProjectPlatformSettingsPage")
+                ),
+                moduleName: "PlatformSettings",
+                displayName: "Settings",
+                moduleClass: "platform-settings",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings/access",
+                    Component: lazy(
+                      () => import("../Project/ProjectAccessForm")
+                    ),
+                    moduleName: "ProjectPlatformAccess",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                ],
+              },
+            ],
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-service-template",
+                Component: lazy(
+                  () =>
+                    import("../Resource/create-resource/CreateServiceWizard")
+                ),
+                moduleName: "CreateServiceWizard",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-plugin-repository/CreatePluginRepository"
+                    )
+                ),
+                moduleName: "CreatePluginRepository",
+                moduleClass: "create-plugin-repository",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Resource/ResourceHome")),
+                moduleName: "",
+                routeTrackType: "",
+                exactPath: false,
+                routes: resourceRoutes,
+                tabRoutes: resourceTabRoutes(
+                  "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})"
+                ),
+              },
+            ],
+          },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Project/ProjectPage")),
@@ -60,26 +324,26 @@ export const Routes: RouteDef[] = [
             moduleClass: "project-page",
             exactPath: false,
             tabRoutes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
-                Component: lazy(
-                  () =>
-                    import("../Project/ArchitectureConsole/ArchitectureConsole")
-                ),
-                moduleName: "ProjectArchitecture",
-                displayName: "Architecture",
-                moduleClass: "",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-              },
+              // {
+              //   path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
+              //   Component: lazy(
+              //     () =>
+              //       import("../Project/ArchitectureConsole/ArchitectureConsole")
+              //   ),
+              //   moduleName: "ProjectArchitecture",
+              //   displayName: "Architecture",
+              //   moduleClass: "",
+              //   routeTrackType: "",
+              //   exactPath: false,
+              //   isAnalytics: true,
+              // },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
-                  () => import("../Resource/git/SyncWithGithubPage")
+                  () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
-                displayName: "Sync with Git",
+                displayName: "Git Settings",
                 moduleClass: "",
                 routeTrackType: "",
                 exactPath: false,
@@ -130,6 +394,18 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                displayName: "Pending Changes",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(() => import("../Project/ProjectSettingsPage")),
                 moduleName: "ProjectSettings",
@@ -163,17 +439,28 @@ export const Routes: RouteDef[] = [
                     exactPath: false,
                     isAnalytics: true,
                   },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/permissions",
+                    Component: lazy(
+                      () => import("../Teams/ResourceTeamAssignmentsPage")
+                    ),
+                    moduleName: "ProjectTeamAssignmentsPage",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
                 ],
               },
             ],
             routes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/dotnet-upgrade",
                 Component: lazy(
-                  () => import("../VersionControl/PendingChangesPage")
+                  () => import("../VersionControl/DotNetPromotePage")
                 ),
-                moduleName: "PendingChangesPage",
-                moduleClass: "pending-changes-page",
+                moduleName: "DotnetPromote",
+                moduleClass: "",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
@@ -215,17 +502,7 @@ export const Routes: RouteDef[] = [
                 exactPath: true,
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/complete-preview-signup",
-                Component: lazy(
-                  () => import("../User/CompletePreviewSignupPage")
-                ),
-                moduleName: "CompletePreviewSignupPage",
-                moduleClass: "complete-preview-signup-page",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
                 Component: lazy(() => import("../Resource/ResourceHome")),
@@ -233,7 +510,9 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 routes: resourceRoutes,
-                tabRoutes: resourceTabRoutes,
+                tabRoutes: resourceTabRoutes(
+                  "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
+                ),
               },
             ],
           },
@@ -302,6 +581,17 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
   },
   {
+    path: "/azure-devops-auth/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithAzureDevopsCallback")
+    ),
+    moduleName: "AuthResourceWithAzureDevopsCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
     path: "/signup",
     Component: lazy(() => import("../User/Signup")),
     moduleName: "Signup",
@@ -309,36 +599,5 @@ export const Routes: RouteDef[] = [
     routeTrackType: "signup",
     exactPath: true,
     isAnalytics: true,
-  },
-  {
-    path: "/signup/preview-account",
-    Component: lazy(() => import("../User/SignupPreviewAccount")),
-    moduleName: "SignupPreviewAccount",
-    moduleClass: "signupPreviewAccount-page",
-    routeTrackType: "signupPreviewAccount",
-    exactPath: true,
-    isAnalytics: true,
-  },
-  {
-    path: "/select-preview-env",
-    Component: lazy(
-      () => import("../Resource/break-the-monolith/SelectPreviewEnvPage")
-    ),
-    moduleName: "SelectPreviewEnvPage",
-    moduleClass: "select-preview-env-page",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-    permission: true,
-  },
-  {
-    path: "/onboarding-preview",
-    Component: lazy(() => import("../OnboardingPreview/OnboardingPreviewPage")),
-    moduleName: "OnboardingPreview",
-    moduleClass: "onboarding-preview",
-    routeTrackType: "",
-    exactPath: true,
-    isAnalytics: true,
-    permission: true,
   },
 ];

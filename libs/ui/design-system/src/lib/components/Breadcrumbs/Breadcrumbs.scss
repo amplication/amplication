@@ -5,6 +5,8 @@
     color: var(--gray-20);
     text-decoration: none !important;
     font-size: var(--default-font-size);
+    display: flex;
+    align-items: center;
 
     &:hover {
       text-decoration: none;

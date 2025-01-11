@@ -24,7 +24,10 @@ import {
   ModuleAction,
   ModuleMap,
 } from "@amplication/code-gen-types";
-import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
+import {
+  isOneToOneRelationField,
+  isRelationField,
+} from "@amplication/dsg-utils";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
 import pluginWrapper from "../../../plugin-wrapper";

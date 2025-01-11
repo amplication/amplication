@@ -91,7 +91,8 @@ export function BlockTypeResolver<
     })
     @AuthorizeContext(
       AuthorizableOriginParameter.ResourceId,
-      "data.resource.connect.id"
+      "data.resource.connect.id",
+      "resource.*.edit"
     )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
@@ -104,7 +105,11 @@ export function BlockTypeResolver<
       name: updateName,
       nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+    @AuthorizeContext(
+      AuthorizableOriginParameter.BlockId,
+      "where.id",
+      "resource.*.edit"
+    )
     async [updateName](
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
@@ -129,7 +134,11 @@ export function BlockTypeResolver<
       name: deleteName,
       nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+    @AuthorizeContext(
+      AuthorizableOriginParameter.BlockId,
+      "where.id",
+      "resource.*.edit"
+    )
     async [deleteName](
       @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
       @UserEntity() user: User

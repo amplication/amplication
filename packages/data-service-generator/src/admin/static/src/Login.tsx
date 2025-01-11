@@ -1,25 +1,14 @@
 import * as React from "react";
 import { useState } from "react";
 import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button, createTheme, ThemeProvider } from "@mui/material";
 import "./login.scss";
+import LoginForm from "./LoginForm";
 
 const CLASS_NAME = "login-page";
 
 const Login = ({ theme }: any) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const login = useLogin();
-  const notify = useNotify();
   const BASE_URI = process.env.REACT_APP_SERVER_URL;
-  const submit = (e: any) => {
-    e.preventDefault();
-    login({ username, password }).catch(() =>
-      notify("Invalid username or password")
-    );
-  };
 
   return (
     <ThemeProvider theme={createTheme(defaultTheme)}>
@@ -54,31 +43,7 @@ const Login = ({ theme }: any) => {
               Sign in to a React-Admin client with ready-made forms for creating
               and editing all the data models of your application
             </div>
-            <form onSubmit={submit}>
-              <label>
-                <span>Username</span>
-
-                <input
-                  name="username"
-                  type="textbox"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Password</span>
-
-                <input
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </label>
-              <Button type="submit" variant="contained" color="primary">
-                Log in
-              </Button>
-            </form>
+            <LoginForm />
           </div>
           <div className={`${CLASS_NAME}__box`}>
             <img
