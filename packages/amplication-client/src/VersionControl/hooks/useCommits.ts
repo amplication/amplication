@@ -1,36 +1,25 @@
-import { COMMIT_CHANGES, GET_COMMITS, GET_LAST_COMMIT } from "./commitQueries";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import {
-  Commit,
-  PendingChange,
-  SortOrder,
-  Build,
-  EnumBuildStatus,
-  EnumSubscriptionPlan,
-  CommitCreateInput,
-  EnumResourceTypeGroup,
-} from "../../models";
-import {
-  ApolloError,
-  useLazyQuery,
-  useMutation,
-  useQuery,
-} from "@apollo/client";
-import { cloneDeep, groupBy } from "lodash";
 import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
-import { AppContext } from "../../context/appContext";
-import { commitPath } from "../../util/paths";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
+import { cloneDeep } from "lodash";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { AppContext } from "../../context/appContext";
+import {
+  Build,
+  Commit,
+  CommitCreateInput,
+  EnumBuildStatus,
+  EnumResourceTypeGroup,
+  EnumSubscriptionPlan,
+  SortOrder,
+} from "../../models";
 import { GET_OUTDATED_VERSION_ALERTS } from "../../OutdatedVersionAlerts/hooks/outdatedVersionAlertsQueries";
+import { commitPath } from "../../util/paths";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { COMMIT_CHANGES, GET_COMMITS, GET_LAST_COMMIT } from "./commitQueries";
 
 const MAX_ITEMS_PER_LOADING = 20;
 const POLL_INTERVAL = 1000; //update the last commit status frequently to get the latest log message
-
-export type CommitChangesByResource = (commitId: string) => {
-  resourceId: string;
-  changes: PendingChange[];
-}[];
 
 type TData = {
   commit: Commit;
@@ -46,10 +35,6 @@ export interface CommitUtils {
   lastCommit: Commit;
   commitsError: ApolloError;
   commitsLoading: boolean;
-  commitChangesByResource: (commitId: string) => {
-    resourceId: string;
-    changes: PendingChange[];
-  }[];
   refetchCommitsData: (refetchFromStart?: boolean) => void;
   refetchLastCommit: () => void;
   updateBuildStatus: (build: Build) => void;
@@ -317,32 +302,32 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   const getCommitIdx = (commits: Commit[], commitId: string): number =>
     commits.findIndex((commit) => commit.id === commitId);
 
-  const commitChangesByResource = useMemo(
-    () => (commitId: string) => {
-      const commitIdx = getCommitIdx(commits, commitId);
-      const changesByResource = groupBy(
-        commits[commitIdx]?.changes,
-        (originChange) => {
-          if (!originChange.resource) return;
-          return originChange.resource.id;
-        }
-      );
-      return Object.entries(changesByResource).map(([resourceId, changes]) => {
-        return {
-          resourceId,
-          changes,
-        };
-      });
-    },
-    [commits]
-  );
+  // const commitChangesByResource = useMemo(
+  //   () => (commitId: string) => {
+  //     const commitIdx = getCommitIdx(commits, commitId);
+  //     const changesByResource = groupBy(
+  //       commits[commitIdx]?.changes,
+  //       (originChange) => {
+  //         if (!originChange.resource) return;
+  //         return originChange.resource.id;
+  //       }
+  //     );
+  //     return Object.entries(changesByResource).map(([resourceId, changes]) => {
+  //       return {
+  //         resourceId,
+  //         changes,
+  //       };
+  //     });
+  //   },
+  //   [commits]
+  // );
 
   return {
     commits,
     lastCommit,
     commitsError,
     commitsLoading,
-    commitChangesByResource,
+    //commitChangesByResource,
     refetchCommitsData,
     refetchLastCommit,
     disableLoadMore,

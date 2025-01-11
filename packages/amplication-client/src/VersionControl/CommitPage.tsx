@@ -6,6 +6,7 @@ import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitResourceList from "./CommitResourceList";
+import useCommitChanges from "./hooks/useCommitChanges";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -20,6 +21,8 @@ const CommitPage: React.FC<Props> = ({ match, moduleClass }) => {
   const commitId = match.params.commit;
   const { commitUtils } = useContext(AppContext);
 
+  const { commitChangesByResource } = useCommitChanges(commitId);
+
   const currentCommit = useMemo(() => {
     return commitUtils.commits?.find((commit) => commit.id === commitId);
   }, [commitId, commitUtils.commits]);
@@ -30,7 +33,7 @@ const CommitPage: React.FC<Props> = ({ match, moduleClass }) => {
         {currentCommit ? (
           <CommitResourceList
             commit={currentCommit}
-            commitChangesByResource={commitUtils.commitChangesByResource}
+            commitChangesByResource={commitChangesByResource}
           />
         ) : commitUtils.commitsLoading ? (
           <CircularProgress centerToParent />

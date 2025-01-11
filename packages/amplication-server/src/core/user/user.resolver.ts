@@ -16,7 +16,10 @@ export class UserResolver {
 
   @ResolveField(() => Account)
   async account(@Parent() user: User) {
-    return await this.userService.getAccount(user.id);
+    if (user.account === null) {
+      return await this.userService.getAccount(user.id);
+    }
+    return user.account;
   }
 
   @ResolveField(() => [Team])

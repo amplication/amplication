@@ -134,12 +134,6 @@ const initialContext: AppContextInterface = {
     lastCommit: null,
     commitsError: null,
     commitsLoading: false,
-    commitChangesByResource: (commitId: string) => [
-      {
-        resourceId: "",
-        changes: [],
-      },
-    ],
     refetchCommitsData: () => {},
     refetchLastCommit: () => {},
     updateBuildStatus: (build: models.Build) => {},

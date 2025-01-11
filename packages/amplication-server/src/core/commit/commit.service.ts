@@ -30,6 +30,32 @@ export class CommitService {
 
     return this.prisma.commit.findMany({
       ...args,
+      include: {
+        builds: {
+          include: {
+            action: {
+              include: {
+                steps: {
+                  include: {
+                    logs: true,
+                  },
+                },
+              },
+            },
+            resource: true,
+            createdBy: {
+              include: {
+                account: true,
+              },
+            },
+          },
+        },
+        user: {
+          include: {
+            account: true,
+          },
+        },
+      },
       where: {
         ...where,
         builds: {
