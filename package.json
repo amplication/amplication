@@ -49,7 +49,7 @@
     "@mui/material": "^6.1.0",
     "@mui/system": "^6.1.0",
     "@mui/x-charts": "^7.16.0",
-    "@mui/x-tree-view": "^7.16.0",
+    "@mui/x-tree-view": "^7.23.6",
     "@nestjs/apollo": "^10.2.0",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
