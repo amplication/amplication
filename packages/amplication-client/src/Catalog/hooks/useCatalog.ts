@@ -5,6 +5,8 @@ import * as models from "../../models";
 import { useAppContext } from "../../context/appContext";
 import { SEARCH_CATALOG } from "../queries/catalogQueries";
 import { useQueryPagination } from "../../util/useQueryPagination";
+import { equal } from "node:assert";
+import { equals } from "class-validator";
 
 type CatalogResults = {
   catalog: models.PaginatedResourceQueryResult;
@@ -128,7 +130,13 @@ const useCatalog = (props?: Props) => {
 
       const otherFilterObject = Object.entries(otherFilters).reduce(
         (acc, [key, value]) => {
-          if (key === "resourceTypeOrBlueprint" && value) {
+          if (key === "resourceType" && value) {
+            acc = {
+              resourceType: {
+                equals: value as models.EnumResourceType,
+              },
+            };
+          } else if (key === "resourceTypeOrBlueprint" && value) {
             acc = updateResourceTypeFilter(acc, value as unknown as string[]);
           } else if (key === "ownership" && value) {
             const values = (value as string).split(":"); //ownership filter value is in the format of key:value
