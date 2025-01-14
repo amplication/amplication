@@ -19,8 +19,8 @@
     "type-fest": "^3.13.0",
     "download": "^8.0.0",
     "pacote": "^19.0.0",
-    "axios": "^0.28.0",
-    "yaml": "2.2.2",
+    "axios": "^1.7.9",
+    "yaml": "2.7.0",
     "tslib": "^2.6.2"
   },
   "type": "commonjs"
