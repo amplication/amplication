@@ -40,6 +40,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "name",
     name: "Name",
+    width: 200,
     resizable: true,
     sortable: true,
     renderCell: (props) => {
@@ -49,6 +50,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "projectIdFilter",
     name: "Project",
+    width: 200,
     resizable: true,
     sortable: true,
     filterable: true,
@@ -61,6 +63,7 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "ownership",
     name: "Owner",
+    width: 100,
     resizable: true,
     sortable: true,
     filterable: true,
