@@ -102,7 +102,7 @@
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
     "cron": "^2.3.0",
-    "cronstrue": "^1.125.0",
+    "cronstrue": "^2.52.0",
     "crypto-js": "^4.2.0",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
