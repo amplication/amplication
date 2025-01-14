@@ -5,8 +5,6 @@ import * as models from "../../models";
 import { useAppContext } from "../../context/appContext";
 import { SEARCH_CATALOG } from "../queries/catalogQueries";
 import { useQueryPagination } from "../../util/useQueryPagination";
-import { equal } from "node:assert";
-import { equals } from "class-validator";
 
 type CatalogResults = {
   catalog: models.PaginatedResourceQueryResult;
