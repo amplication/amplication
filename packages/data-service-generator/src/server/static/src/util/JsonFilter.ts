@@ -12,6 +12,7 @@ export class JsonFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
+    enumName: "JsonFilterEquals",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
@@ -22,6 +23,7 @@ export class JsonFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
+    enumName: "JsonFilterNot",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
