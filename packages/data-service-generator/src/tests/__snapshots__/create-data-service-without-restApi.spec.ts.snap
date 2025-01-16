@@ -3083,7 +3083,7 @@ volumes:
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "10.4.15",
     "@nestjs/serve-static": "4.0.2",
-    "@nestjs/swagger": "8.1.1",
+    "@nestjs/swagger": "7.1.13",
     "@prisma/client": "^6.2.1",
     "@types/bcrypt": "5.0.2",
     "bcrypt": "5.1.1",
@@ -12445,7 +12445,6 @@ export class JsonFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonFilterEquals",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
@@ -12456,7 +12455,6 @@ export class JsonFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonFilterNot",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
@@ -12479,7 +12477,6 @@ export class JsonNullableFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonNullableFilter",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
@@ -12490,7 +12487,6 @@ export class JsonNullableFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonNullableFilter",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
