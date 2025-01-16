@@ -64,7 +64,7 @@ export class BuildResolver {
 
   @ResolveField()
   async resource(@Parent() build: Build): Promise<Resource> {
-    if (build.resource === null) {
+    if (!build.resource) {
       return this.resourceService.resource({ where: { id: build.resourceId } });
     }
     return build.resource;

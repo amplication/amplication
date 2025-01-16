@@ -1,10 +1,10 @@
 # multi-stage: base (build)
-FROM node:18.13.0 AS base
+FROM node:22.13.0 AS base
 
 # create directory where the application will be built
 WORKDIR /app
 
-# copy over the dependency manifests, both the package.json 
+# copy over the dependency manifests, both the package.json
 # and the package-lock.json are copied over
 COPY package*.json ./
 
@@ -24,7 +24,7 @@ COPY . .
 RUN npm run build
 
 # multi-stage: production (runtime)
-FROM node:18.13.0-slim AS production
+FROM node:22.13.0-slim AS production
 
 # create arguments of builds time variables
 ARG user=amplication
