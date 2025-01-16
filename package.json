@@ -225,7 +225,7 @@
     "@nx/vite": "16.9.1",
     "@nx/web": "16.9.1",
     "@nx/webpack": "16.9.1",
-    "@nx/workspace": "16.9.1",
+    "@nx/workspace": "20.3.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@storybook/addon-controls": "7.4.6",
     "@storybook/addon-essentials": "7.4.6",
