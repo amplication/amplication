@@ -12,7 +12,6 @@ export class JsonNullableFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonNullableFilter",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
@@ -23,7 +22,6 @@ export class JsonNullableFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
-    enumName: "JsonNullableFilter",
   })
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
