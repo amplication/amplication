@@ -49,7 +49,7 @@ export default function WizardGitCreateRepo({
     useState<createRepositoryInput>({
       name: "",
       groupName: "",
-      isPublic: true,
+      isPublic: false,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
@@ -120,7 +120,7 @@ export default function WizardGitCreateRepo({
   ]);
 
   return (
-    <div>
+    <div className={`${CLASS_NAME}`}>
       <div className={`${CLASS_NAME}__header`}>
         <h4>
           Create a new {gitOrganization?.provider} repository to sync your
