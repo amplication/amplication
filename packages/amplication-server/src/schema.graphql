@@ -871,6 +871,7 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Relation
   ResourceSettings
+  ResourceTemplateVersion
   ServiceSettings
   ServiceTopics
   Topic
@@ -2579,7 +2580,6 @@ type ResourceSettings implements IBlock {
   parentBlockId: String
   properties: JSONObject
   resourceId: String
-  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -2745,7 +2745,6 @@ type ServiceSettings implements IBlock {
   parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
-  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -2762,11 +2761,6 @@ input ServiceSettingsUpdateInput {
 input ServiceTemplateCreateInput {
   plugins: PluginInstallationsCreateInput
   resource: ResourceCreateInput!
-}
-
-type ServiceTemplateVersion {
-  serviceTemplateId: String!
-  version: String!
 }
 
 type ServiceTopics implements IBlock {

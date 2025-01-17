@@ -12,20 +12,10 @@ import {
   ResourceTemplateVersion,
   UpdateResourceTemplateVersionArgs,
 } from "./dto";
-import { ResourceService } from "../resource/resource.service";
-import { BlueprintService } from "../blueprint/blueprint.service";
-import { CustomPropertyService } from "../customProperty/customProperty.service";
 
 @Injectable()
 export class ResourceTemplateVersionService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly blockService: BlockService,
-    @Inject(forwardRef(() => ResourceService))
-    private readonly resourceService: ResourceService,
-    private readonly blueprintService: BlueprintService,
-    private readonly customPropertyService: CustomPropertyService
-  ) {}
+  constructor(private readonly blockService: BlockService) {}
 
   async getResourceTemplateVersionValues(
     args: FindOneArgs,

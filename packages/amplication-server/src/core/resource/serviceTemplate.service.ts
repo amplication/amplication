@@ -25,7 +25,6 @@ import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginI
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
 import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
-import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
 import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersionsDiffBlock";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
