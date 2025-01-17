@@ -21,7 +21,10 @@ const ResourceTypeBadge: React.FC<Props> = ({
     icon: string;
     name: string;
   } => {
-    if (resource?.blueprint) {
+    if (
+      resource?.blueprint &&
+      resource.resourceType !== models.EnumResourceType.ServiceTemplate
+    ) {
       return {
         color: resource.blueprint.color || DEFAULT_BADGE_COLOR,
         icon: "hexagon",

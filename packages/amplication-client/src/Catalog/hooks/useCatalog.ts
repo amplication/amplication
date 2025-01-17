@@ -14,6 +14,7 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
   notIn: [
     models.EnumResourceType.ProjectConfiguration,
     models.EnumResourceType.PluginRepository,
+    models.EnumResourceType.ServiceTemplate,
   ],
 };
 

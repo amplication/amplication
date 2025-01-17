@@ -1,9 +1,10 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { IBlock } from "../../../models";
 
 @ObjectType({
   isAbstract: true,
 })
-export class ServiceTemplateVersion {
+export class ResourceTemplateVersion extends IBlock {
   @Field(() => String, {
     nullable: false,
   })

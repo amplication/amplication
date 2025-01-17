@@ -26,7 +26,7 @@ type TCreateService = {
 };
 
 type TCreateServiceFromTemplate = {
-  createServiceFromTemplate: models.Resource;
+  createResourceFromTemplate: models.Resource;
 };
 
 export type TUpdateCodeGeneratorVersion = {
@@ -384,17 +384,17 @@ const useResources = (
   ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
 
   const createServiceFromTemplate = (
-    data: models.ServiceFromTemplateCreateInput
+    data: models.ResourceFromTemplateCreateInput
   ) => {
     createServiceFromTemplateInternal({ variables: { data: data } })
       .then((result) => {
-        result.data?.createServiceFromTemplate.id &&
+        result.data?.createResourceFromTemplate.id &&
           reloadResources().then(() => {
             resourceRedirect(
-              result.data?.createServiceFromTemplate.id as string
+              result.data?.createResourceFromTemplate.id as string
             );
-            result.data?.createServiceFromTemplate.id &&
-              addBlock(result.data.createServiceFromTemplate.id);
+            result.data?.createResourceFromTemplate.id &&
+              addBlock(result.data.createResourceFromTemplate.id);
           });
       })
       .catch(console.error);

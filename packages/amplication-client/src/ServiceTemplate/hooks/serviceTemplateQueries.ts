@@ -92,3 +92,16 @@ export const GET_AVAILABLE_TEMPLATES_FOR_PROJECT = gql`
     }
   }
 `;
+
+export const CREATE_TEMPLATE_FROM_RESOURCE = gql`
+  mutation createTemplateFromExistingResource($resourceId: String!) {
+    createTemplateFromExistingResource(
+      data: { resource: { id: $resourceId } }
+    ) {
+      id
+      name
+      description
+      resourceType
+    }
+  }
+`;

@@ -70,7 +70,7 @@ export interface AppContextInterface {
   loadingUpdateCodeGeneratorVersion: boolean;
   errorUpdateCodeGeneratorVersion: ApolloError | undefined;
   createServiceFromTemplate: (
-    data: models.ServiceFromTemplateCreateInput
+    data: models.ResourceFromTemplateCreateInput
   ) => void;
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;

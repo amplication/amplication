@@ -6,7 +6,6 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
 import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { EnumOutdatedVersionAlertType } from "./dto/EnumOutdatedVersionAlertType";
 import { EnumOutdatedVersionAlertStatus } from "./dto/EnumOutdatedVersionAlertStatus";
 import { ProjectService } from "../project/project.service";
@@ -15,6 +14,8 @@ import { ConfigService } from "@nestjs/config";
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { TechDebt } from "@amplication/schema-registry";
 import { WorkspaceService } from "../workspace/workspace.service";
+import { ResourceTemplateVersion } from "../resourceTemplateVersion/dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -86,6 +87,22 @@ const EXAMPLE_WORKSPACE: Workspace = {
   allowLLMFeatures: false,
 };
 
+const EXAMPLE_RESOURCE_TEMPLATE_VERSION: ResourceTemplateVersion = {
+  id: "ExampleResourceTemplateVersion",
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  blockType: EnumBlockType.ResourceTemplateVersion,
+  description: null,
+  inputParameters: undefined,
+  outputParameters: undefined,
+  displayName: "ExampleName",
+  parentBlock: null,
+  versionNumber: 0,
+  serviceTemplateId: "ExampleServiceTemplateId",
+  version: "1.0.0",
+  resourceId: EXAMPLE_RESOURCE_ID,
+};
+
 const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
 
 const resourceServiceResourceMock = jest.fn(() => {
@@ -100,15 +117,6 @@ const workspaceServiceUsersMock = jest.fn(() => {
   return EXAMPLE_USERS;
 });
 
-const resourceServiceGetServiceTemplateSettingsMock = jest.fn(
-  (): ServiceTemplateVersion => {
-    return {
-      serviceTemplateId: EXAMPLE_TEMPLATE_RESOURCE_ID,
-      version: "1.0.0",
-    };
-  }
-);
-
 const prismaServiceOutdatedVersionAlertUpdateManyMock = jest.fn();
 const prismaServiceOutdatedVersionAlertCreateMock = jest.fn(() => {
   return EXAMPLE_ALERT;
@@ -119,6 +127,10 @@ const mockServiceEmitMessage = jest
   .mockImplementation((topic: string, message: TechDebt.KafkaEvent) =>
     Promise.resolve()
   );
+
+const resourceServiceGetServiceTemplateSettingsMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_TEMPLATE_VERSION;
+});
 
 describe("OutdatedVersionAlertService", () => {
   let service: OutdatedVersionAlertService;
@@ -146,6 +158,7 @@ describe("OutdatedVersionAlertService", () => {
             resources: resourceServiceResourcesMock,
             getServiceTemplateSettings:
               resourceServiceGetServiceTemplateSettingsMock,
+
             getResourceWorkspace: jest.fn(() => {
               return EXAMPLE_WORKSPACE;
             }),
@@ -270,14 +283,6 @@ describe("OutdatedVersionAlertService", () => {
         },
       },
     });
-
-    expect(resourceServiceGetServiceTemplateSettingsMock).toHaveBeenCalledTimes(
-      1
-    );
-    expect(resourceServiceGetServiceTemplateSettingsMock).toHaveBeenCalledWith(
-      EXAMPLE_RESOURCE_ID,
-      null
-    );
 
     expect(
       prismaServiceOutdatedVersionAlertUpdateManyMock

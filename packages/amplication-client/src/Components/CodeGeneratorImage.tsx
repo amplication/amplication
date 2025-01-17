@@ -22,6 +22,10 @@ export const CodeGeneratorImage = ({ resource, size = "small" }: Props) => {
     return null;
   }
 
+  if (codeGenerator === models.EnumCodeGenerator.Blueprint) {
+    return null;
+  }
+
   if (
     ![
       models.EnumResourceType.Service,

@@ -8,9 +8,9 @@ import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Resource, User } from "../../models";
 import { FindManyResourceArgs } from "./dto";
-import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
-import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
+import { CreateResourceFromTemplateArgs } from "./dto/CreateResourceFromTemplateArgs";
 import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
+import { CreateTemplateFromResourceArgs } from "./dto/CreateTemplateFromResourceArgs";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
 import { ServiceTemplateService } from "./serviceTemplate.service";
 
@@ -60,28 +60,24 @@ export class ServiceTemplateResolver {
     "data.project.connect.id",
     "resource.createFromTemplate"
   )
-  async createServiceFromTemplate(
-    @Args() args: CreateServiceFromTemplateArgs,
+  async createResourceFromTemplate(
+    @Args() args: CreateResourceFromTemplateArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.service.createServiceFromTemplate(args, user);
+    return this.service.createResourceFromTemplate(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(
-    AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id"
-  )
-  @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.serviceTemplate.id",
-    "resource.createFromTemplate"
+    "data.resource.id",
+    "resource.createTemplate"
   )
-  async scaffoldServiceFromTemplate(
-    @Args() args: ScaffoldServiceFromTemplateArgs,
+  async createTemplateFromExistingResource(
+    @Args() args: CreateTemplateFromResourceArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.service.scaffoldServiceFromTemplate(args, user);
+    return this.service.createTemplateFromExistingResource(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

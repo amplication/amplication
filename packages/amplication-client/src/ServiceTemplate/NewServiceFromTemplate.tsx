@@ -22,7 +22,7 @@ import "./NewServiceFromTemplate.scss";
 import useAvailableServiceTemplates from "./hooks/useAvailableServiceTemplates";
 
 type CreateType = Omit<
-  models.ServiceFromTemplateCreateInput,
+  models.ResourceFromTemplateCreateInput,
   "project" | "serviceTemplate"
 > & {
   serviceTemplateId: string;

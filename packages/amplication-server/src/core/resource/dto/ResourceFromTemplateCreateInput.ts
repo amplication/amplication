@@ -4,7 +4,7 @@ import { WhereParentIdInput, WhereUniqueInput } from "../../../dto";
 @InputType({
   isAbstract: true,
 })
-export class ServiceFromTemplateCreateInput {
+export class ResourceFromTemplateCreateInput {
   @Field(() => String, {
     nullable: false,
   })

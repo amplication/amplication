@@ -25,13 +25,8 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const {
-      serviceTemplateVersion,
-      authProvider,
-      serverSettings,
-      adminUISettings,
-      authEntityName,
-    } = await this.getServiceSettingsBlock(args, user);
+    const { authProvider, serverSettings, adminUISettings, authEntityName } =
+      await this.getServiceSettingsBlock(args, user);
 
     return {
       resourceId: args.where.id,
@@ -39,7 +34,6 @@ export class ServiceSettingsService {
       serverSettings,
       adminUISettings,
       authEntityName,
-      serviceTemplateVersion,
     };
   }
 
@@ -176,43 +170,6 @@ export class ServiceSettingsService {
     );
   }
 
-  async updateServiceTemplateVersion(
-    resourceId: string,
-    newServiceTemplateVersion: string,
-    user: User
-  ) {
-    const [serviceSettings] =
-      await this.blockService.findManyByBlockType<ServiceSettings>(
-        {
-          where: {
-            resource: {
-              id: resourceId,
-            },
-          },
-        },
-        EnumBlockType.ServiceSettings
-      );
-
-    const templateSettings = serviceSettings.serviceTemplateVersion;
-
-    templateSettings.version = newServiceTemplateVersion;
-
-    return await this.blockService.update<ServiceSettings>(
-      {
-        where: {
-          id: serviceSettings.id,
-        },
-        data: {
-          displayName: serviceSettings.displayName,
-          ...{
-            serviceTemplateVersion: templateSettings,
-          },
-        },
-      },
-      user
-    );
-  }
-
   async createDefaultServiceSettings(
     resourceId: string,
     user: User,
@@ -236,34 +193,5 @@ export class ServiceSettingsService {
       },
       user.id
     );
-  }
-
-  async getServiceIdsByTemplateId(
-    workspaceId: string,
-    templateId: string
-  ): Promise<string[]> {
-    const blocks = await this.blockService.findManyByBlockTypeAndSettings(
-      {
-        where: {
-          resource: {
-            deletedAt: null,
-            archived: { not: true },
-
-            project: {
-              workspace: {
-                id: workspaceId,
-              },
-            },
-          },
-        },
-      },
-      EnumBlockType.ServiceSettings,
-      {
-        path: ["serviceTemplateVersion", "serviceTemplateId"],
-        equals: templateId,
-      }
-    );
-
-    return blocks.map((block) => block.resourceId);
   }
 }

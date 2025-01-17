@@ -179,6 +179,13 @@ export const PENDING_CHANGE_TO_DISPLAY_DETAILS_MAP = {
         type: "Relation",
         pluralTypeName: "Relations",
       },
+      [models.EnumBlockType.ResourceTemplateVersion]: {
+        relativeUrl: ``,
+        icon: "settings",
+        displayName: "Template Version",
+        type: "Template Version",
+        pluralTypeName: "Template Version",
+      },
     };
     return blockTypeMap[(change as models.Block).blockType];
   },

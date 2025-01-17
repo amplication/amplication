@@ -31,7 +31,7 @@ export enum EnumEventType {
   MessageBrokerCreate = "createMessageBroker",
   PluginRepositoryCreate = "createPluginRepository",
   ServiceTemplateCreate = "createServiceTemplate",
-  CreateServiceFromTemplate = "createServiceFromTemplate",
+  CreateResourceFromTemplate = "createResourceFromTemplate",
   ResourceVersionCreate = "createResourceVersion",
   ComponentCreate = "createComponent",
 
