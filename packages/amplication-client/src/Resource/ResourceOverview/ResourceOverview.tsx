@@ -184,16 +184,17 @@ const ResourceOverview = () => {
 
       <ResourceRelations />
 
-      {currentResource?.resourceType === EnumResourceType.ServiceTemplate && (
-        <>
-          {!pluginsDataLoading && (
-            <PluginsTile
-              usedCategories={usedCategories}
-              availableCategories={availableCategories}
-            />
-          )}
-        </>
-      )}
+      {currentResource?.resourceType === EnumResourceType.ServiceTemplate &&
+        !currentResource.blueprintId && (
+          <>
+            {!pluginsDataLoading && (
+              <PluginsTile
+                usedCategories={usedCategories}
+                availableCategories={availableCategories}
+              />
+            )}
+          </>
+        )}
 
       {currentResource?.resourceType === EnumResourceType.Service && (
         <>

@@ -32,22 +32,23 @@ export type CreateResourceButtonItemType = {
 
 const ITEMS: CreateResourceButtonItemType[] = [
   {
+    type: models.EnumResourceType.ServiceTemplate,
+    label: "From Template",
+    route: `?${CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL}`,
+    info: "Create a service from a pre-configured template",
+  },
+  {
     type: models.EnumResourceType.Component,
-    label: "Resource from Blueprint",
+    label: "From Blueprint",
     route: "new-resource",
     info: "Create a resource from a blueprint",
   },
+
   {
     type: models.EnumResourceType.Service,
     label: "Service",
     route: "create-resource",
     info: "Create a service with your choice of APIs, database, and authentication",
-  },
-  {
-    type: models.EnumResourceType.ServiceTemplate,
-    label: "Service From Template",
-    route: `?${CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL}`,
-    info: "Create a service from a pre-configured template",
   },
   {
     type: models.EnumResourceType.MessageBroker,

@@ -19,6 +19,7 @@ import PageContent from "../../Layout/PageContent";
 import ResourceRelations from "../../Relation/ResourceRelations";
 import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 import ResourceOwner from "../../Workspaces/ResourceOwner";
+import { CreateTemplateFromResourceButton } from "../CreateTemplateFromResourceButton";
 
 const PAGE_TITLE = "Overview";
 
@@ -31,6 +32,7 @@ const ComponentOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
+          <CreateTemplateFromResourceButton resource={currentResource} />
           <Link to={`${baseUrl}/plugins/catalog`}>
             <Button buttonStyle={EnumButtonStyle.Primary}>
               Add functionality
