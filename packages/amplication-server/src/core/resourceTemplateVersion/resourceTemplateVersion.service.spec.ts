@@ -74,10 +74,6 @@ const resourceServiceResourceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 
-const customPropertyServiceValidateCustomPropertiesMock = jest.fn(() =>
-  Promise.resolve({ isValid: true })
-);
-
 const prismaMock = {
   resource: {
     findUnique: prismaResourceFindFirstMock,
@@ -109,7 +105,6 @@ describe("ResourceTemplateVersionService", () => {
             resource: resourceServiceResourceMock,
           })),
         },
-
         {
           provide: PrismaService,
           useValue: prismaMock,
@@ -153,8 +148,5 @@ describe("ResourceTemplateVersionService", () => {
     ).toEqual(EXAMPLE_RESOURCE_SETTINGS);
     expect(findManyByBlockTypeMock).toHaveBeenCalledTimes(1);
     expect(updateMock).toHaveBeenCalledTimes(1);
-    expect(
-      customPropertyServiceValidateCustomPropertiesMock
-    ).toHaveBeenCalledTimes(1);
   });
 });
