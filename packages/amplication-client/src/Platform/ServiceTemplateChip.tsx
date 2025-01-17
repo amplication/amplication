@@ -1,11 +1,13 @@
-import { Chip, EnumChipStyle } from "@amplication/ui/design-system";
+import { Tag } from "@amplication/ui/design-system";
+import { Link } from "react-router-dom";
 import { Resource } from "../models";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
-import { Link } from "react-router-dom";
 
 type Props = {
   serviceTemplate: Resource;
 };
+
+const COLOR = "#F5B82E";
 
 function ServiceTemplateChip({ serviceTemplate }: Props) {
   const { baseUrl } = useResourceBaseUrl({
@@ -20,7 +22,7 @@ function ServiceTemplateChip({ serviceTemplate }: Props) {
 
   return (
     <Link to={`${baseUrl}`}>
-      <Chip chipStyle={EnumChipStyle.ThemeOrange}>{serviceTemplate.name}</Chip>
+      <Tag color={COLOR} value={serviceTemplate.name} />
     </Link>
   );
 }
