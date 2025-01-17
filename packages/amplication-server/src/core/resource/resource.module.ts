@@ -34,6 +34,7 @@ import { BlueprintModule } from "../blueprint/blueprint.module";
 import { RelationModule } from "../relation/relation.module";
 import { ResourceSettingsModule } from "../resourceSettings/resourceSettings.module";
 import { CustomPropertyModule } from "../customProperty/customProperty.module";
+import { ResourceTemplateVersionModule } from "../resourceTemplateVersion/resourceTemplateVersion.module";
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { CustomPropertyModule } from "../customProperty/customProperty.module";
     RelationModule,
     ResourceSettingsModule,
     CustomPropertyModule,
+    ResourceTemplateVersionModule,
   ],
   providers: [
     ResourceService,

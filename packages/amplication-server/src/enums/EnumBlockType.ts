@@ -15,6 +15,7 @@ export enum EnumBlockType {
   CodeEngineVersion = "CodeEngineVersion",
   Relation = "Relation",
   ResourceSettings = "ResourceSettings",
+  ResourceTemplateVersion = "ResourceTemplateVersion",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

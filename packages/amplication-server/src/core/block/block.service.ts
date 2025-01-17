@@ -98,6 +98,7 @@ export class BlockService {
     [EnumBlockType.CodeEngineVersion]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Relation]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ResourceSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ResourceTemplateVersion]: ALLOW_NO_PARENT_ONLY,
   };
 
   private async resolveParentBlock(

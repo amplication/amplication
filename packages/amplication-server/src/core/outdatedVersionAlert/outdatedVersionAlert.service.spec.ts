@@ -6,7 +6,6 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { ResourceService } from "../resource/resource.service";
 import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
-import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { EnumOutdatedVersionAlertType } from "./dto/EnumOutdatedVersionAlertType";
 import { EnumOutdatedVersionAlertStatus } from "./dto/EnumOutdatedVersionAlertStatus";
 import { ProjectService } from "../project/project.service";
@@ -100,15 +99,6 @@ const workspaceServiceUsersMock = jest.fn(() => {
   return EXAMPLE_USERS;
 });
 
-const resourceServiceGetServiceTemplateSettingsMock = jest.fn(
-  (): ServiceTemplateVersion => {
-    return {
-      serviceTemplateId: EXAMPLE_TEMPLATE_RESOURCE_ID,
-      version: "1.0.0",
-    };
-  }
-);
-
 const prismaServiceOutdatedVersionAlertUpdateManyMock = jest.fn();
 const prismaServiceOutdatedVersionAlertCreateMock = jest.fn(() => {
   return EXAMPLE_ALERT;
@@ -144,8 +134,7 @@ describe("OutdatedVersionAlertService", () => {
           useValue: {
             resource: resourceServiceResourceMock,
             resources: resourceServiceResourcesMock,
-            getServiceTemplateSettings:
-              resourceServiceGetServiceTemplateSettingsMock,
+
             getResourceWorkspace: jest.fn(() => {
               return EXAMPLE_WORKSPACE;
             }),
@@ -270,14 +259,6 @@ describe("OutdatedVersionAlertService", () => {
         },
       },
     });
-
-    expect(resourceServiceGetServiceTemplateSettingsMock).toHaveBeenCalledTimes(
-      1
-    );
-    expect(resourceServiceGetServiceTemplateSettingsMock).toHaveBeenCalledWith(
-      EXAMPLE_RESOURCE_ID,
-      null
-    );
 
     expect(
       prismaServiceOutdatedVersionAlertUpdateManyMock

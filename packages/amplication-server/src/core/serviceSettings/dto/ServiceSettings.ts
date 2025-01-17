@@ -4,7 +4,6 @@ import { IBlock } from "../../../models";
 import { AdminUISettings } from "./AdminUISettings";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettings } from "./ServerSettings";
-import { ServiceTemplateVersion } from "./ServiceTemplateVersion";
 
 @ObjectType({
   implements: IBlock,
@@ -30,9 +29,4 @@ export class ServiceSettings extends IBlock {
     nullable: true,
   })
   authEntityName?: string & JsonValue;
-
-  @Field(() => ServiceTemplateVersion, {
-    nullable: true,
-  })
-  serviceTemplateVersion?: ServiceTemplateVersion & JsonValue;
 }

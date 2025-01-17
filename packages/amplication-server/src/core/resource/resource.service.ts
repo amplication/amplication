@@ -73,7 +73,6 @@ import { GitProviderService } from "../git/git.provider.service";
 import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 import { OwnershipService } from "../ownership/ownership.service";
 import { RelationService } from "../relation/relation.service";
-import { ServiceTemplateVersion } from "../serviceSettings/dto/ServiceTemplateVersion";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
@@ -81,6 +80,8 @@ import { ResourceInclude } from "./dto/ResourceInclude";
 import { Relation } from "../relation/dto/Relation";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
 import { TeamAssignment } from "../../models/TeamAssignment";
+import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
+import { ResourceTemplateVersion } from "../resourceTemplateVersion/dto";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -180,7 +181,8 @@ export class ResourceService {
     private readonly templateCodeEngineVersionService: TemplateCodeEngineVersionService,
     private readonly ownershipService: OwnershipService,
     private readonly relationService: RelationService,
-    private readonly customPropertyService: CustomPropertyService
+    private readonly customPropertyService: CustomPropertyService,
+    private readonly resourceTemplateVersionService: ResourceTemplateVersionService
   ) {}
 
   async createProjectConfiguration(
@@ -1968,29 +1970,10 @@ export class ResourceService {
   async getServiceTemplateSettings(
     resourceId: string,
     user: User
-  ): Promise<ServiceTemplateVersion> {
-    const resource = await this.resource({
-      where: {
-        id: resourceId,
-      },
+  ): Promise<ResourceTemplateVersion> {
+    return this.resourceTemplateVersionService.getResourceTemplateVersionBlock({
+      where: { id: resourceId },
     });
-
-    if (!resource || resource.resourceType !== EnumResourceType.Service) {
-      return null;
-    }
-
-    const settings = await this.serviceSettingsService.getServiceSettingsBlock(
-      {
-        where: { id: resource.id },
-      },
-      user
-    );
-
-    if (!settings?.serviceTemplateVersion) {
-      return null;
-    }
-
-    return settings.serviceTemplateVersion;
   }
 
   async setOwner(

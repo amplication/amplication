@@ -32,6 +32,7 @@ import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/Temp
 import { CreateTemplateFromResourceArgs } from "./dto/CreateTemplateFromResourceArgs";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
+import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -45,7 +46,8 @@ export class ServiceTemplateService {
     private readonly resourceService: ResourceService,
     private readonly resourceVersionService: ResourceVersionService,
     private readonly outdatedVersionAlertService: OutdatedVersionAlertService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly resourceTemplateVersionService: ResourceTemplateVersionService
   ) {}
 
   /**
@@ -136,7 +138,7 @@ export class ServiceTemplateService {
     //copy the plugins from the resource to the template
     await this.copyPluginInstallations(resourceId, template.id, user);
 
-    return resource;
+    return template;
   }
 
   //return the list of templates in the project
@@ -216,16 +218,15 @@ export class ServiceTemplateService {
     if (!serviceTemplates || serviceTemplates.length === 0) {
       throw new AmplicationError(`Service template not found`);
     }
+
+    const template = serviceTemplates.find(
+      (template) => template.id === args.data.serviceTemplate.id
+    );
+
     //check that the selected template belongs to the project and available for the user
-    if (
-      serviceTemplates.find(
-        (template) => template.id === args.data.serviceTemplate.id
-      ) === undefined
-    ) {
+    if (template === undefined) {
       throw new AmplicationError(`Service template not found`);
     }
-
-    const template = serviceTemplates[0];
 
     const templateVersion = await this.resourceVersionService.getLatest(
       template.id
@@ -240,17 +241,28 @@ export class ServiceTemplateService {
       newResource = await this.internalCreateComponentFromTemplate(
         args,
         template,
-        templateVersion,
         user
       );
     } else {
       newResource = await this.internalCreateServiceFromTemplate(
         args,
         template,
-        templateVersion,
         user
       );
     }
+
+    await this.resourceTemplateVersionService.updateResourceTemplateVersion(
+      {
+        where: {
+          id: newResource.id,
+        },
+        data: {
+          serviceTemplateId: template.id,
+          version: templateVersion.version,
+        },
+      },
+      user
+    );
 
     await this.copyPluginInstallations(
       args.data.serviceTemplate.id,
@@ -272,7 +284,6 @@ export class ServiceTemplateService {
   private async internalCreateServiceFromTemplate(
     args: CreateResourceFromTemplateArgs,
     template: Resource,
-    templateVersion: ResourceVersion,
     user: User
   ): Promise<Resource> {
     const serviceSettings =
@@ -286,11 +297,6 @@ export class ServiceTemplateService {
       );
 
     delete serviceSettings.resourceId;
-    serviceSettings.serviceTemplateVersion = {
-      serviceTemplateId: template.id,
-      version: templateVersion.version,
-    };
-
     const kebabCaseServiceName = kebabCase(args.data.name);
 
     serviceSettings.adminUISettings.adminUIPath =
@@ -327,25 +333,8 @@ export class ServiceTemplateService {
   private async internalCreateComponentFromTemplate(
     args: CreateResourceFromTemplateArgs,
     template: Resource,
-    templateVersion: ResourceVersion,
     user: User
   ): Promise<Resource> {
-    const resourceSettings =
-      await this.resourceSettingsService.getResourceSettingsValues(
-        {
-          where: {
-            id: template.id,
-          },
-        },
-        user
-      );
-
-    delete resourceSettings.resourceId;
-    resourceSettings.serviceTemplateVersion = {
-      serviceTemplateId: template.id,
-      version: templateVersion.version,
-    };
-
     const newResource = await this.resourceService.createComponent(
       {
         data: {
@@ -504,9 +493,16 @@ export class ServiceTemplateService {
 
     await Promise.all([createdPromises, deletedPromises, updatedPromises]);
 
-    await this.serviceSettingsService.updateServiceTemplateVersion(
-      resourceId,
-      latestVersion.version,
+    await this.resourceTemplateVersionService.updateResourceTemplateVersion(
+      {
+        where: {
+          id: resourceId,
+        },
+        data: {
+          version: latestVersion.version,
+          serviceTemplateId: serviceTemplateVersion.serviceTemplateId,
+        },
+      },
       user
     );
 
