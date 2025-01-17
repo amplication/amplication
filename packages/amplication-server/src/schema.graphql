@@ -461,6 +461,10 @@ input CreateTeamAssignmentsWhereInput {
   resourceId: String!
 }
 
+input CreateTemplateFromResourceInput {
+  resource: WhereUniqueInput!
+}
+
 type CustomProperty {
   blueprint: String
   blueprintId: String
@@ -1681,15 +1685,16 @@ type Mutation {
   createPrivatePluginVersion(data: PrivatePluginVersionCreateInput!): PrivatePluginVersion!
   createProject(data: ProjectCreateInput!): Project!
   createRelation(data: RelationCreateInput!): Relation!
+  createResourceFromTemplate(data: ResourceFromTemplateCreateInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createRole(data: RoleCreateInput!): Role!
   createService(data: ResourceCreateInput!): Resource!
-  createServiceFromTemplate(data: ServiceFromTemplateCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTeam(data: TeamCreateInput!): Team!
   createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
+  createTemplateFromExistingResource(data: CreateTemplateFromResourceInput!): Resource!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
@@ -1735,7 +1740,6 @@ type Mutation {
   removeRolesFromTeamAssignment(data: TeamUpdateRolesInput!, where: WhereTeamAssignmentInput!): TeamAssignment!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
-  scaffoldServiceFromTemplate(data: ScaffoldServiceFromTemplateInput!): Resource!
   sendAssistantMessageWithStream(context: AssistantContext!, data: SendAssistantMessageInput!): AssistantThread!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
@@ -2490,6 +2494,13 @@ type ResourceCreateWithEntitiesResult {
   resource: Resource!
 }
 
+input ResourceFromTemplateCreateInput {
+  description: String!
+  name: String!
+  project: WhereParentIdInput!
+  serviceTemplate: WhereUniqueInput!
+}
+
 input ResourceOrderByInput {
   createdAt: SortOrder
   description: SortOrder
@@ -2568,6 +2579,7 @@ type ResourceSettings implements IBlock {
   parentBlockId: String
   properties: JSONObject
   resourceId: String
+  serviceTemplateVersion: ServiceTemplateVersion
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -2695,12 +2707,6 @@ input RoleWhereInput {
   name: StringFilter
 }
 
-input ScaffoldServiceFromTemplateInput {
-  name: String!
-  project: WhereParentIdInput!
-  serviceTemplateName: String!
-}
-
 input SendAssistantMessageInput {
   message: String!
   messageType: EnumAssistantMessageType
@@ -2719,13 +2725,6 @@ input ServerSettingsUpdateInput {
   generateRestApi: Boolean
   generateServer: Boolean = true
   serverPath: String
-}
-
-input ServiceFromTemplateCreateInput {
-  description: String!
-  name: String!
-  project: WhereParentIdInput!
-  serviceTemplate: WhereUniqueInput!
 }
 
 type ServiceSettings implements IBlock {

@@ -481,6 +481,10 @@ export type CreateTeamAssignmentsWhereInput = {
   resourceId: Scalars['String']['input'];
 };
 
+export type CreateTemplateFromResourceInput = {
+  resource: WhereUniqueInput;
+};
+
 export type CustomProperty = {
   blueprint?: Maybe<Scalars['String']['output']>;
   blueprintId?: Maybe<Scalars['String']['output']>;
@@ -1707,15 +1711,16 @@ export type Mutation = {
   createPrivatePluginVersion: PrivatePluginVersion;
   createProject: Project;
   createRelation: Relation;
+  createResourceFromTemplate: Resource;
   createResourceRole: ResourceRole;
   createRole: Role;
   createService: Resource;
-  createServiceFromTemplate: Resource;
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTeam: Team;
   createTeamAssignments: Array<TeamAssignment>;
+  createTemplateFromExistingResource: Resource;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1761,7 +1766,6 @@ export type Mutation = {
   removeRolesFromTeamAssignment: TeamAssignment;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
-  scaffoldServiceFromTemplate: Resource;
   sendAssistantMessageWithStream: AssistantThread;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
@@ -2023,6 +2027,11 @@ export type MutationCreateRelationArgs = {
 };
 
 
+export type MutationCreateResourceFromTemplateArgs = {
+  data: ResourceFromTemplateCreateInput;
+};
+
+
 export type MutationCreateResourceRoleArgs = {
   data: ResourceRoleCreateInput;
 };
@@ -2035,11 +2044,6 @@ export type MutationCreateRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
-};
-
-
-export type MutationCreateServiceFromTemplateArgs = {
-  data: ServiceFromTemplateCreateInput;
 };
 
 
@@ -2066,6 +2070,11 @@ export type MutationCreateTeamArgs = {
 export type MutationCreateTeamAssignmentsArgs = {
   data: CreateTeamAssignmentsInput;
   where: CreateTeamAssignmentsWhereInput;
+};
+
+
+export type MutationCreateTemplateFromExistingResourceArgs = {
+  data: CreateTemplateFromResourceInput;
 };
 
 
@@ -2297,11 +2306,6 @@ export type MutationResendInvitationArgs = {
 
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
-};
-
-
-export type MutationScaffoldServiceFromTemplateArgs = {
-  data: ScaffoldServiceFromTemplateInput;
 };
 
 
@@ -3730,6 +3734,13 @@ export type ResourceCreateWithEntitiesResult = {
   resource: Resource;
 };
 
+export type ResourceFromTemplateCreateInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  project: WhereParentIdInput;
+  serviceTemplate: WhereUniqueInput;
+};
+
 export type ResourceOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
@@ -3808,6 +3819,7 @@ export type ResourceSettings = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   properties?: Maybe<Scalars['JSONObject']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
+  serviceTemplateVersion?: Maybe<ServiceTemplateVersion>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -3935,12 +3947,6 @@ export type RoleWhereInput = {
   name?: InputMaybe<StringFilter>;
 };
 
-export type ScaffoldServiceFromTemplateInput = {
-  name: Scalars['String']['input'];
-  project: WhereParentIdInput;
-  serviceTemplateName: Scalars['String']['input'];
-};
-
 export type SendAssistantMessageInput = {
   message: Scalars['String']['input'];
   messageType?: InputMaybe<EnumAssistantMessageType>;
@@ -3959,13 +3965,6 @@ export type ServerSettingsUpdateInput = {
   generateRestApi?: InputMaybe<Scalars['Boolean']['input']>;
   generateServer?: InputMaybe<Scalars['Boolean']['input']>;
   serverPath?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ServiceFromTemplateCreateInput = {
-  description: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  project: WhereParentIdInput;
-  serviceTemplate: WhereUniqueInput;
 };
 
 export type ServiceSettings = IBlock & {

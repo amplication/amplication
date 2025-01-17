@@ -5,7 +5,7 @@ import { BlockVersion, IBlock, Resource, User } from "../../models";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { FindManyResourceArgs } from "./dto";
-import { CreateServiceFromTemplateArgs } from "./dto/CreateServiceFromTemplateArgs";
+import { CreateResourceFromTemplateArgs } from "./dto/CreateResourceFromTemplateArgs";
 import { CreateServiceTemplateArgs } from "./dto/CreateServiceTemplateArgs";
 import { EnumResourceType } from "./dto/EnumResourceType";
 import {
@@ -24,14 +24,14 @@ import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVer
 import { PluginInstallationCreateInput } from "../pluginInstallation/dto/PluginInstallationCreateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { ProjectService } from "../project/project.service";
+import { ResourceSettingsService } from "../resourceSettings/resourceSettings.service";
+import { ResourceVersion } from "../resourceVersion/dto/ResourceVersion";
 import { ResourceVersionsDiffBlock } from "../resourceVersion/dto/ResourceVersionsDiffBlock";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { TemplateCodeEngineVersion } from "../templateCodeEngineVersion/dto/TemplateCodeEngineVersion";
+import { CreateTemplateFromResourceArgs } from "./dto/CreateTemplateFromResourceArgs";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
-import { ScaffoldServiceFromTemplateArgs } from "./dto/ScaffoldServiceFromTemplateArgs";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
-import { EnumCommitStrategy } from "./dto/EnumCommitStrategy";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -40,6 +40,7 @@ export class ServiceTemplateService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly analyticsService: SegmentAnalyticsService,
     private readonly serviceSettingsService: ServiceSettingsService,
+    private readonly resourceSettingsService: ResourceSettingsService,
     private readonly logger: AmplicationLogger,
     private readonly resourceService: ResourceService,
     private readonly resourceVersionService: ResourceVersionService,
@@ -84,6 +85,60 @@ export class ServiceTemplateService {
     return resource;
   }
 
+  /**
+   * Create a template from an existing resource
+   * The function create the template, and then copies the plugins from the resource to the template
+   * This function does not support resources without a blueprint (tbc: copy service settings and add placeholders)
+   */
+  async createTemplateFromExistingResource(
+    args: CreateTemplateFromResourceArgs,
+    user: User
+  ): Promise<Resource> {
+    const { id: resourceId } = args.data.resource;
+
+    const resource = await this.resourceService.resource({
+      where: {
+        id: resourceId,
+      },
+    });
+
+    if (!resource) {
+      throw new AmplicationError(`Resource with id ${resourceId} not found`);
+    }
+
+    if (!resource.blueprintId) {
+      throw new AmplicationError(
+        `This method only support resources with a blueprint`
+      );
+    }
+
+    const template = await this.resourceService.createResource(
+      {
+        data: {
+          name: `${resource.name}-template`,
+          description: "Template created from an existing resource",
+          project: { connect: { id: resource.projectId } },
+          resourceType: EnumResourceType.ServiceTemplate,
+          codeGenerator:
+            CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName],
+          blueprint: resource.blueprintId
+            ? {
+                connect: {
+                  id: resource.blueprintId,
+                },
+              }
+            : undefined,
+        },
+      },
+      user
+    );
+
+    //copy the plugins from the resource to the template
+    await this.copyPluginInstallations(resourceId, template.id, user);
+
+    return resource;
+  }
+
   //return the list of templates in the project
   async serviceTemplates(args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources({
@@ -97,73 +152,6 @@ export class ServiceTemplateService {
         },
       },
     });
-  }
-
-  async scaffoldServiceFromTemplate(
-    args: ScaffoldServiceFromTemplateArgs,
-    user: User
-  ): Promise<Resource> {
-    const { name, serviceTemplateName, project } = args.data;
-
-    const serviceTemplates = await this.availableServiceTemplatesForProject(
-      {
-        where: {
-          id: args.data.project.connect.id,
-        },
-      },
-      user
-    );
-
-    if (!serviceTemplates || serviceTemplates.length === 0) {
-      throw new AmplicationError(`Service template not found`);
-    }
-
-    const template = serviceTemplates.find(
-      (template) => template.name === serviceTemplateName
-    );
-
-    //check that the selected template belongs to the project and available for the user
-    if (template === undefined) {
-      throw new AmplicationError(`Service template not found`);
-    }
-
-    const newResource = await this.createServiceFromTemplate(
-      {
-        data: {
-          serviceTemplate: { id: template.id },
-          project: { connect: { id: project.connect.id } },
-          name,
-          description: "",
-        },
-      },
-      user
-    );
-
-    //commit new service
-
-    await this.projectService.commit(
-      {
-        data: {
-          resourceTypeGroup: EnumResourceTypeGroup.Services,
-          message: `commit new scaffold service: ${name}`,
-          project: {
-            connect: {
-              id: project.connect.id,
-            },
-          },
-          commitStrategy: EnumCommitStrategy.Specific,
-          resourceIds: [newResource.id],
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      },
-      user
-    );
-
-    return newResource;
   }
 
   /**
@@ -211,11 +199,9 @@ export class ServiceTemplateService {
     });
   }
 
-  /**
-   * Create a resource of type "Service" from a Service Template
-   */
-  async createServiceFromTemplate(
-    args: CreateServiceFromTemplateArgs,
+  //this function accepts the request from the client, and then calls the relevant internal function to create either a service or a component with blueprint
+  async createResourceFromTemplate(
+    args: CreateResourceFromTemplateArgs,
     user: User
   ): Promise<Resource> {
     const serviceTemplates = await this.availableServiceTemplatesForProject(
@@ -249,11 +235,51 @@ export class ServiceTemplateService {
       throw new AmplicationError(`Template version not found`);
     }
 
+    let newResource: Resource;
+    if (template.blueprintId) {
+      newResource = await this.internalCreateComponentFromTemplate(
+        args,
+        template,
+        templateVersion,
+        user
+      );
+    } else {
+      newResource = await this.internalCreateServiceFromTemplate(
+        args,
+        template,
+        templateVersion,
+        user
+      );
+    }
+
+    await this.copyPluginInstallations(
+      args.data.serviceTemplate.id,
+      newResource.id,
+      user
+    );
+
+    await this.analyticsService.trackWithContext({
+      event: EnumEventType.CreateResourceFromTemplate,
+      properties: {
+        templateName: template.name,
+        resourceName: newResource.name,
+      },
+    });
+
+    return newResource;
+  }
+
+  private async internalCreateServiceFromTemplate(
+    args: CreateResourceFromTemplateArgs,
+    template: Resource,
+    templateVersion: ResourceVersion,
+    user: User
+  ): Promise<Resource> {
     const serviceSettings =
       await this.serviceSettingsService.getServiceSettingsValues(
         {
           where: {
-            id: args.data.serviceTemplate.id,
+            id: template.id,
           },
         },
         user
@@ -261,7 +287,7 @@ export class ServiceTemplateService {
 
     delete serviceSettings.resourceId;
     serviceSettings.serviceTemplateVersion = {
-      serviceTemplateId: args.data.serviceTemplate.id,
+      serviceTemplateId: template.id,
       version: templateVersion.version,
     };
 
@@ -295,32 +321,60 @@ export class ServiceTemplateService {
       user
     );
 
-    await this.copyTemplatePluginInstallations(
-      args.data.serviceTemplate.id,
-      newService.id,
-      user
-    );
-
-    await this.analyticsService.trackWithContext({
-      event: EnumEventType.CreateServiceFromTemplate,
-      properties: {
-        templateName: template.name,
-        serviceName: newService.name,
-      },
-    });
-
     return newService;
   }
 
-  async copyTemplatePluginInstallations(
-    sourceTemplateId: string,
-    targetServiceId: string,
+  private async internalCreateComponentFromTemplate(
+    args: CreateResourceFromTemplateArgs,
+    template: Resource,
+    templateVersion: ResourceVersion,
+    user: User
+  ): Promise<Resource> {
+    const resourceSettings =
+      await this.resourceSettingsService.getResourceSettingsValues(
+        {
+          where: {
+            id: template.id,
+          },
+        },
+        user
+      );
+
+    delete resourceSettings.resourceId;
+    resourceSettings.serviceTemplateVersion = {
+      serviceTemplateId: template.id,
+      version: templateVersion.version,
+    };
+
+    const newResource = await this.resourceService.createComponent(
+      {
+        data: {
+          name: args.data.name,
+          description: args.data.description,
+          resourceType: EnumResourceType.Component,
+          blueprint: {
+            connect: {
+              id: template.blueprintId,
+            },
+          },
+          project: args.data.project,
+        },
+      },
+      user
+    );
+
+    return newResource;
+  }
+
+  async copyPluginInstallations(
+    sourceResourceId: string,
+    targetResourceId: string,
     user: User
   ) {
     const plugins = await this.pluginInstallationService.findMany({
       where: {
         resource: {
-          id: sourceTemplateId,
+          id: sourceResourceId,
         },
       },
     });
@@ -339,7 +393,7 @@ export class ServiceTemplateService {
         configurations: plugin.configurations,
         resource: {
           connect: {
-            id: targetServiceId,
+            id: targetResourceId,
           },
         },
       };
