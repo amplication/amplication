@@ -907,6 +907,7 @@ export enum EnumBlockType {
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   Relation = 'Relation',
   ResourceSettings = 'ResourceSettings',
+  ResourceTemplateVersion = 'ResourceTemplateVersion',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
   Topic = 'Topic'
@@ -3819,7 +3820,6 @@ export type ResourceSettings = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   properties?: Maybe<Scalars['JSONObject']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
-  serviceTemplateVersion?: Maybe<ServiceTemplateVersion>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -3985,7 +3985,6 @@ export type ServiceSettings = IBlock & {
   parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   serverSettings: ServerSettings;
-  serviceTemplateVersion?: Maybe<ServiceTemplateVersion>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -4002,11 +4001,6 @@ export type ServiceSettingsUpdateInput = {
 export type ServiceTemplateCreateInput = {
   plugins?: InputMaybe<PluginInstallationsCreateInput>;
   resource: ResourceCreateInput;
-};
-
-export type ServiceTemplateVersion = {
-  serviceTemplateId: Scalars['String']['output'];
-  version: Scalars['String']['output'];
 };
 
 export type ServiceTopics = IBlock & {
