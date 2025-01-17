@@ -419,12 +419,6 @@ export class ServiceTemplateService {
       throw new AmplicationError(`Resource with id ${resourceId} not found `);
     }
 
-    if (resource.resourceType !== EnumResourceType.Service) {
-      throw new AmplicationError(
-        `Resource with id ${resourceId} is not a service `
-      );
-    }
-
     const serviceTemplateVersion =
       await this.resourceService.getServiceTemplateSettings(resourceId, user);
 

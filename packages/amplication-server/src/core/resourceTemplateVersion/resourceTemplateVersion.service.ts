@@ -1,12 +1,11 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
-import { PrismaService } from "../../prisma";
 import { BlockService } from "../block/block.service";
 import {
-  ResourceTemplateVersionValues,
   DEFAULT_RESOURCE_TEMPLATE_VERSION,
+  ResourceTemplateVersionValues,
 } from "./constants";
 import {
   ResourceTemplateVersion,
@@ -86,5 +85,34 @@ export class ResourceTemplateVersionService {
       },
       user
     );
+  }
+
+  async getServiceIdsByTemplateId(
+    workspaceId: string,
+    templateId: string
+  ): Promise<string[]> {
+    const blocks = await this.blockService.findManyByBlockTypeAndSettings(
+      {
+        where: {
+          resource: {
+            deletedAt: null,
+            archived: { not: true },
+
+            project: {
+              workspace: {
+                id: workspaceId,
+              },
+            },
+          },
+        },
+      },
+      EnumBlockType.ResourceTemplateVersion,
+      {
+        path: ["serviceTemplateId"],
+        equals: templateId,
+      }
+    );
+
+    return blocks.map((block) => block.resourceId);
   }
 }

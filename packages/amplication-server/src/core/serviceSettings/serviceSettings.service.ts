@@ -194,33 +194,4 @@ export class ServiceSettingsService {
       user.id
     );
   }
-
-  async getServiceIdsByTemplateId(
-    workspaceId: string,
-    templateId: string
-  ): Promise<string[]> {
-    const blocks = await this.blockService.findManyByBlockTypeAndSettings(
-      {
-        where: {
-          resource: {
-            deletedAt: null,
-            archived: { not: true },
-
-            project: {
-              workspace: {
-                id: workspaceId,
-              },
-            },
-          },
-        },
-      },
-      EnumBlockType.ServiceSettings,
-      {
-        path: ["serviceTemplateVersion", "serviceTemplateId"],
-        equals: templateId,
-      }
-    );
-
-    return blocks.map((block) => block.resourceId);
-  }
 }

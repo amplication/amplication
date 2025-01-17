@@ -1547,10 +1547,11 @@ export class ResourceService {
         );
       }
 
-      resourceIds = await this.serviceSettingsService.getServiceIdsByTemplateId(
-        workspaceId,
-        serviceTemplateId
-      );
+      resourceIds =
+        await this.resourceTemplateVersionService.getServiceIdsByTemplateId(
+          workspaceId,
+          serviceTemplateId
+        );
     }
 
     //since we can't expose the StringFilter as union type, we use a separate field for the projectId filter and then merge it back to the where object
