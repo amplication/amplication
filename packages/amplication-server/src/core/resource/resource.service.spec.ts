@@ -71,6 +71,7 @@ import {
   INVALID_RESOURCE_ID,
   ResourceService,
 } from "./resource.service";
+import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -557,6 +558,10 @@ describe("ResourceService", () => {
               return {};
             }),
           },
+        },
+        {
+          provide: ResourceTemplateVersionService,
+          useValue: {},
         },
         {
           provide: GitProviderService,

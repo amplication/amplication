@@ -14,6 +14,8 @@ import { ConfigService } from "@nestjs/config";
 import { OutdatedVersionAlert } from "./dto/OutdatedVersionAlert";
 import { TechDebt } from "@amplication/schema-registry";
 import { WorkspaceService } from "../workspace/workspace.service";
+import { ResourceTemplateVersion } from "../resourceTemplateVersion/dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -85,6 +87,22 @@ const EXAMPLE_WORKSPACE: Workspace = {
   allowLLMFeatures: false,
 };
 
+const EXAMPLE_RESOURCE_TEMPLATE_VERSION: ResourceTemplateVersion = {
+  id: "ExampleResourceTemplateVersion",
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  blockType: EnumBlockType.ResourceTemplateVersion,
+  description: null,
+  inputParameters: undefined,
+  outputParameters: undefined,
+  displayName: "ExampleName",
+  parentBlock: null,
+  versionNumber: 0,
+  serviceTemplateId: "ExampleServiceTemplateId",
+  version: "1.0.0",
+  resourceId: EXAMPLE_RESOURCE_ID,
+};
+
 const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
 
 const resourceServiceResourceMock = jest.fn(() => {
@@ -110,6 +128,10 @@ const mockServiceEmitMessage = jest
     Promise.resolve()
   );
 
+const resourceServiceGetServiceTemplateSettingsMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_TEMPLATE_VERSION;
+});
+
 describe("OutdatedVersionAlertService", () => {
   let service: OutdatedVersionAlertService;
 
@@ -134,6 +156,8 @@ describe("OutdatedVersionAlertService", () => {
           useValue: {
             resource: resourceServiceResourceMock,
             resources: resourceServiceResourcesMock,
+            getServiceTemplateSettings:
+              resourceServiceGetServiceTemplateSettingsMock,
 
             getResourceWorkspace: jest.fn(() => {
               return EXAMPLE_WORKSPACE;

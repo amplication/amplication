@@ -16,6 +16,7 @@ import { CreateTemplateFromResourceArgs } from "./dto/CreateTemplateFromResource
 import { EnumResourceType } from "./dto/EnumResourceType";
 import { ResourceService } from "./resource.service";
 import { ServiceTemplateService } from "./serviceTemplate.service";
+import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
@@ -164,6 +165,10 @@ describe("ServiceTemplateService", () => {
           useValue: outdatedVersionAlertServiceMock,
         },
         {
+          provide: ResourceTemplateVersionService,
+          useValue: {},
+        },
+        {
           provide: ProjectService,
           useValue: projectServiceMock,
         },
@@ -235,6 +240,13 @@ describe("ServiceTemplateService", () => {
   describe("createTemplateFromExistingResource", () => {
     it("should create a template from an existing resource", async () => {
       resourceServiceMock.resource.mockResolvedValueOnce({
+        ...EXAMPLE_RESOURCE,
+        blueprintId: "blueprintId",
+        codeGeneratorName: "Blueprint",
+        projectId: "projectId",
+      });
+
+      resourceServiceMock.createResource.mockResolvedValueOnce({
         ...EXAMPLE_RESOURCE,
         blueprintId: "blueprintId",
         codeGeneratorName: "Blueprint",
