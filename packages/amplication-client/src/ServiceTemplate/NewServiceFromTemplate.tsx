@@ -20,6 +20,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewServiceFromTemplate.scss";
 import useAvailableServiceTemplates from "./hooks/useAvailableServiceTemplates";
+import { useCatalogContext } from "../Catalog/CatalogContext";
 
 type CreateType = Omit<
   models.ResourceFromTemplateCreateInput,
@@ -58,10 +59,13 @@ const CLASS_NAME = "new-service-from-template";
 const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
   const {
     createServiceFromTemplate,
+
     errorCreateServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     currentProject,
   } = useContext(AppContext);
+
+  const { reloadCatalog } = useCatalogContext();
 
   const { availableTemplates } = useAvailableServiceTemplates(currentProject);
 
@@ -79,9 +83,11 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
         description: data.description,
         project: { connect: { id: projectId } },
         serviceTemplate: { id: data.serviceTemplateId },
+      }).then((resource) => {
+        reloadCatalog();
       });
     },
-    [createServiceFromTemplate, projectId]
+    [createServiceFromTemplate, projectId, reloadCatalog]
   );
 
   const errorMessage = formatError(errorCreateServiceFromTemplate);

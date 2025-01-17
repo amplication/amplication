@@ -386,18 +386,26 @@ const useResources = (
   const createServiceFromTemplate = (
     data: models.ResourceFromTemplateCreateInput
   ) => {
-    createServiceFromTemplateInternal({ variables: { data: data } })
-      .then((result) => {
-        result.data?.createResourceFromTemplate.id &&
-          reloadResources().then(() => {
-            resourceRedirect(
-              result.data?.createResourceFromTemplate.id as string
-            );
-            result.data?.createResourceFromTemplate.id &&
+    return new Promise<models.Resource>((resolve, reject) => {
+      createServiceFromTemplateInternal({ variables: { data: data } })
+        .then((result) => {
+          if (result.data?.createResourceFromTemplate.id) {
+            reloadResources().then(() => {
+              resourceRedirect(
+                result.data.createResourceFromTemplate.id as string
+              );
               addBlock(result.data.createResourceFromTemplate.id);
-          });
-      })
-      .catch(console.error);
+              resolve(result.data?.createResourceFromTemplate);
+            });
+          } else {
+            resolve(null);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          reject(error);
+        });
+    });
   };
   // ***** end section Create Service From Template *****
 
