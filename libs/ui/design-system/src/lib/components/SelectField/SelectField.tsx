@@ -113,7 +113,7 @@ export const SelectField = ({
   return (
     <div
       className={classNames("select-field", {
-        "select-field--has-error": meta.error,
+        "select-field--has-error": meta.error && meta.touched,
       })}
     >
       <label className={LABEL_CLASS}>
