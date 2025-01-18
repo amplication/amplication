@@ -15,7 +15,7 @@ export type MenuItemLinks =
   | "privatePlugins"
   | "pendingChanges"
   | "versions"
-  | "templateServices"
+  | "templateResources"
   | "techDebt";
 
 export const resourceMenuLayout: {
@@ -35,7 +35,7 @@ export const resourceMenuLayout: {
   [EnumResourceType.ServiceTemplate]: [
     "plugins",
     "versions",
-    "templateServices",
+    "templateResources",
     "settings",
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
@@ -117,10 +117,10 @@ export const linksMap: {
     icon: "publish",
     to: "/versions",
   },
-  templateServices: {
-    title: "Services",
+  templateResources: {
+    title: "Resources",
     icon: "services",
-    to: "/template-services",
+    to: "/template-resources",
   },
   techDebt: {
     title: "Tech Debt",

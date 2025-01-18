@@ -237,7 +237,7 @@ export const resourceTabRoutes = (projectBasePath) => [
     ],
   },
   {
-    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/template-services`,
+    path: `${projectBasePath}/:resource([A-Za-z0-9-]{20,})/template-resources`,
     Component: lazy(
       () =>
         import(

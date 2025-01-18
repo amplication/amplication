@@ -26,13 +26,15 @@ import ResourceGitSettingsWithOverrideWizard from "../git/ResourceGitSettingsWit
 import { CreateResourceFormResourceSettings } from "./CreateResourceFormResourceSettings";
 import * as models from "../../models";
 import { EnumResourceType } from "@amplication/code-gen-types";
-import useCreateComponent from "./hooks/useCreateComponent";
+import useCreateResource from "./hooks/useCreateResource";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import { useHistory } from "react-router-dom";
 import { useCatalogContext } from "../../Catalog/CatalogContext";
 import { useAppContext } from "../../context/appContext";
 import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
 import { formatError } from "../../util/error";
+import TemplateSelectField from "../../Components/TemplateSelectField";
+import useAvailableServiceTemplates from "../../ServiceTemplate/hooks/useAvailableServiceTemplates";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -65,7 +67,10 @@ export type CreateResourceType = Omit<
   properties: Record<string, any>;
 };
 
-export type CreateResourceFormType = CreateResourceType & GitSettingsType;
+export type CreateResourceFormType = CreateResourceType &
+  GitSettingsType & {
+    templateId: string;
+  };
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -135,6 +140,7 @@ const DEFAULT_VALUES: Partial<CreateResourceFormType> = {
       id: "",
     },
   },
+  templateId: "",
 };
 
 type Props = {
@@ -149,9 +155,14 @@ const CreateResourceForm = ({ projectId }: Props) => {
     customPropertiesMap,
     blueprintsMap: { blueprintsMapById },
     currentWorkspace,
+    currentProject,
   } = useAppContext();
 
-  const handleComponentCreated = useCallback(
+  const { availableTemplates } = useAvailableServiceTemplates(
+    currentProject?.id
+  );
+
+  const handleResourceCreated = useCallback(
     (component: models.Resource) => {
       reloadCatalog();
       history.push(`${baseUrl}/${component.id}`);
@@ -194,16 +205,16 @@ const CreateResourceForm = ({ projectId }: Props) => {
     [blueprintsMapById, propertiesSchema.schema]
   );
 
-  const { createComponent, loadingCreateComponent, errorCreateComponent } =
-    useCreateComponent({
-      onComponentCreated: handleComponentCreated,
+  const { createResource, loadingCreateResource, errorCreateResource } =
+    useCreateResource({
+      onResourceCreated: handleResourceCreated,
     });
 
-  const errorMessage = formatError(errorCreateComponent);
+  const errorMessage = formatError(errorCreateResource);
 
   const handleSubmit = useCallback(
     (values: CreateResourceFormType) => {
-      const sanitizedValues = omitDeep(
+      const sanitizedValues: CreateResourceFormType = omitDeep(
         {
           ...values,
         },
@@ -214,7 +225,9 @@ const CreateResourceForm = ({ projectId }: Props) => {
       const gitSettings = {} as models.ConnectGitRepositoryInput;
       const createResourceProps = {} as CreateResourceType;
 
-      Object.entries(sanitizedValues).forEach(([key, value]) => {
+      const { templateId, ...rest } = sanitizedValues;
+
+      Object.entries(rest).forEach(([key, value]) => {
         if (GIT_SETTINGS_KEYS.includes(key)) {
           if (key === "gitRepositoryName") {
             //replace the key with the correct one
@@ -238,9 +251,9 @@ const CreateResourceForm = ({ projectId }: Props) => {
         resourceType: EnumResourceType.Component,
       };
 
-      createComponent(preparedValues, properties, settings);
+      createResource(preparedValues, templateId, properties, settings);
     },
-    [createComponent]
+    [createResource]
   );
 
   const initialValue: Partial<CreateResourceFormType> = useMemo(
@@ -279,29 +292,49 @@ const CreateResourceForm = ({ projectId }: Props) => {
 
   //reset the initial value of the form to include the new blueprint properties
   const handleBlueprintChange = useCallback(
-    (blueprintId: string) => {
+    (blueprintId: string, templateId?: string) => {
+      let settingsInitialValue = {
+        properties: {},
+      };
       if (blueprintId) {
         const blueprint = blueprintsMapById[blueprintId];
         if (blueprint) {
-          const settingsInitialValue = {
+          settingsInitialValue = {
             properties: blueprint.properties.reduce((acc, property) => {
               acc[property.key] = "";
               return acc;
             }, {}),
           };
-          setInitialValueWithSettings({
-            ...initialValue,
-            settings: settingsInitialValue,
-            blueprint: {
-              connect: {
-                id: blueprintId,
-              },
-            },
-          });
+        }
+      }
+      setInitialValueWithSettings({
+        ...initialValue,
+        settings: settingsInitialValue,
+        blueprint: {
+          connect: {
+            id: blueprintId || "",
+          },
+        },
+        templateId: templateId || "",
+      });
+    },
+    [blueprintsMapById, initialValue]
+  );
+
+  //set the blueprint value from the selected template
+  const handleTemplateChange = useCallback(
+    (templateId: string) => {
+      if (templateId) {
+        const template = availableTemplates.find(
+          (template) => template.id === templateId
+        );
+
+        if (template) {
+          handleBlueprintChange(template.blueprintId, templateId);
         }
       }
     },
-    [blueprintsMapById, initialValue]
+    [availableTemplates, handleBlueprintChange]
   );
 
   return (
@@ -338,12 +371,22 @@ const CreateResourceForm = ({ projectId }: Props) => {
                   label="Project"
                   onChange={handleProjectChange}
                 />
-                <BlueprintSelectField
-                  name="blueprint.connect.id"
-                  label="Blueprint"
-                  isMulti={false}
-                  onChange={(value) => handleBlueprintChange(value)}
+                <TemplateSelectField
+                  name="template.connect.id"
+                  label="Template"
+                  projectId={formik.values.project.connect.id}
+                  onChange={handleTemplateChange}
                 />
+                {(!formik.values.templateId ||
+                  formik.values.blueprint.connect.id) && (
+                  <BlueprintSelectField
+                    disabled={!!formik.values.templateId}
+                    name="blueprint.connect.id"
+                    label="Blueprint"
+                    isMulti={false}
+                    onChange={(value) => handleBlueprintChange(value)}
+                  />
+                )}
                 <Text textStyle={EnumTextStyle.Description}>
                   {
                     blueprintsMapById[formik.values.blueprint.connect.id]
@@ -393,7 +436,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
                   <Button
                     type="submit"
                     buttonStyle={EnumButtonStyle.Primary}
-                    disabled={!formik.dirty || loadingCreateComponent}
+                    disabled={!formik.dirty || loadingCreateResource}
                   >
                     Create Resource
                   </Button>
@@ -405,7 +448,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
       </Formik>
       <Snackbar
         messageType={EnumMessageType.Error}
-        open={Boolean(errorCreateComponent)}
+        open={Boolean(errorCreateResource)}
         message={errorMessage}
       />
     </>
