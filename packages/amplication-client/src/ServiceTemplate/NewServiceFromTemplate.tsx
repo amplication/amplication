@@ -3,24 +3,23 @@ import {
   EnumFlexItemMargin,
   EnumTextAlign,
   FlexItem,
-  SelectField,
   Snackbar,
   Text,
   TextField,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
+import { useCatalogContext } from "../Catalog/CatalogContext";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import TemplateSelectField from "../Components/TemplateSelectField";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewServiceFromTemplate.scss";
-import useAvailableServiceTemplates from "./hooks/useAvailableServiceTemplates";
-import { useCatalogContext } from "../Catalog/CatalogContext";
 
 type CreateType = Omit<
   models.ResourceFromTemplateCreateInput,
@@ -59,22 +58,12 @@ const CLASS_NAME = "new-service-from-template";
 const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
   const {
     createServiceFromTemplate,
-
     errorCreateServiceFromTemplate,
     loadingCreateServiceFromTemplate,
     currentProject,
   } = useContext(AppContext);
 
   const { reloadCatalog } = useCatalogContext();
-
-  const { availableTemplates } = useAvailableServiceTemplates(currentProject);
-
-  const options = useMemo(() => {
-    return availableTemplates.map((serviceTemplate) => ({
-      value: serviceTemplate.id,
-      label: serviceTemplate.name,
-    }));
-  }, [availableTemplates]);
 
   const handleSubmit = useCallback(
     (data: CreateType) => {
@@ -94,7 +83,7 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
 
   const initialValues = {
     ...INITIAL_VALUES,
-    serviceTemplateId: serviceTemplateId || options[0]?.value,
+    serviceTemplateId: serviceTemplateId,
   };
 
   return (
@@ -121,10 +110,10 @@ const NewServiceFromTemplate = ({ serviceTemplateId, projectId }: Props) => {
             <Form>
               <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <div>
-                <SelectField
-                  options={options}
-                  label="Service Template"
+                <TemplateSelectField
+                  projectId={currentProject?.id}
                   name="serviceTemplateId"
+                  label="Service Template"
                 />
               </div>
               <TextField

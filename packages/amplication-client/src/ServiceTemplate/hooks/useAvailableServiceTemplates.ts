@@ -6,9 +6,7 @@ type TFindData = {
   availableTemplatesForProject: models.Resource[];
 };
 
-const useAvailableServiceTemplates = (
-  currentProject: models.Project | undefined
-) => {
+const useAvailableServiceTemplates = (projectId: string | undefined) => {
   const {
     data: availableTemplatesData,
     loading: availableTemplatesLoading,
@@ -16,9 +14,9 @@ const useAvailableServiceTemplates = (
     refetch: availableTemplatesRefetch,
   } = useQuery<TFindData>(GET_AVAILABLE_TEMPLATES_FOR_PROJECT, {
     variables: {
-      projectId: currentProject?.id,
+      projectId: projectId,
     },
-    skip: !currentProject?.id,
+    skip: !projectId,
   });
 
   return {
