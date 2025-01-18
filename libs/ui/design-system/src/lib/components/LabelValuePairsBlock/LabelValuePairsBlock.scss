@@ -1,0 +1,13 @@
+@import "../../style/index.scss";
+
+$label-width: 150px;
+
+.amp-label-value-pairs-block {
+  &__item {
+    &__label {
+      width: $label-width;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
