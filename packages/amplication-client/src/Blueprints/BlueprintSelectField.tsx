@@ -6,6 +6,7 @@ import { resourceThemeMap } from "../Resource/constants";
 
 type Props = Omit<SelectFieldProps, "options"> & {
   useKeyAsValue?: boolean;
+  onChange?: (value: string) => void;
 };
 
 const BlueprintSelectField = (props: Props) => {
