@@ -82,26 +82,13 @@ function ResourceRelationsForm({ resourceId, relationDef, relation }: Props) {
             <>
               <Form>
                 <FormikAutoSave debounceMS={100} />
-                <Panel panelStyle={EnumPanelStyle.Bordered}>
-                  <FlexItem
-                    itemsAlign={EnumItemsAlign.Start}
-                    start={
-                      <BlueprintCircleBadge blueprint={relatedBlueprint} />
-                    }
-                  >
-                    <TabContentTitle
-                      title={relationDef.name}
-                      subTitle={relation?.description}
-                    />
-                  </FlexItem>
 
-                  <ResourceSelectField
-                    label={relationDef.name}
-                    isMulti={relationDef.allowMultiple}
-                    name={"relatedResources"}
-                    blueprintId={relatedBlueprint?.id}
-                  />
-                </Panel>
+                <ResourceSelectField
+                  label={relationDef.name}
+                  isMulti={relationDef.allowMultiple}
+                  name={"relatedResources"}
+                  blueprintId={relatedBlueprint?.id}
+                />
               </Form>
               <Snackbar
                 open={Boolean(updateRelationError)}

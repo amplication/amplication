@@ -1,6 +1,6 @@
 import { JsonValue } from "type-fest";
 import { useAppContext } from "../context/appContext";
-import { EnumCustomPropertyType } from "../models";
+import { CustomProperty, EnumCustomPropertyType } from "../models";
 import CustomPropertyValueLink from "./CustomPropertyValueLink";
 import CustomPropertyValueMultiSelect from "./CustomPropertyValueMultiSelect";
 import CustomPropertyValueSelect from "./CustomPropertyValueSelect";
@@ -9,12 +9,19 @@ import CustomPropertyValueText from "./CustomPropertyValueText";
 type Props = {
   propertyKey: string;
   allValues: JsonValue;
+  propertiesMap?: Record<string, CustomProperty>; //when used for blueprint properties, the map can be passed to avoid fetching it per value
 };
 
-function CustomPropertyValue({ propertyKey, allValues }: Props) {
+function CustomPropertyValue({ propertyKey, allValues, propertiesMap }: Props) {
   const { customPropertiesMap } = useAppContext();
 
-  const property = customPropertiesMap[propertyKey];
+  const property = propertiesMap
+    ? propertiesMap[propertyKey]
+    : customPropertiesMap[propertyKey];
+
+  if (!property) {
+    return null;
+  }
 
   const value = allValues ? allValues[propertyKey] : undefined;
 

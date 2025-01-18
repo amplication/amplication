@@ -320,3 +320,13 @@ export { Tag, Props as TagProps } from "./components/Tag/Tag";
 export { IconPicker } from "./components/IconPicker/IconPicker";
 export { IconPickerField } from "./components/IconPicker/IconPickerField";
 export { EnumIconFamily } from "./components/Icon/Icon";
+
+export {
+  LabelValuePairsBlock,
+  Props as LabelValuePairsBlockProps,
+} from "./components/LabelValuePairsBlock/LabelValuePairsBlock";
+
+export {
+  LabelValuePairsBlockItem,
+  Props as LabelValuePairsBlockItemProps,
+} from "./components/LabelValuePairsBlock/LabelValuePairsBlockItem";
