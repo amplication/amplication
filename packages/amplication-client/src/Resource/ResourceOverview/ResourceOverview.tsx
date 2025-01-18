@@ -19,20 +19,20 @@ import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { CodeGeneratorImage } from "../../Components/CodeGeneratorImage";
 import ResourceTypeBadge from "../../Components/ResourceTypeBadge";
+import ResourcePropertiesBlock from "../../CustomProperties/ResourcePropertiesBlock";
 import PageContent from "../../Layout/PageContent";
 import ResourceRelations from "../../Relation/ResourceRelations";
-import ResourceOwner from "../../Workspaces/ResourceOwner";
 import { useAppContext } from "../../context/appContext";
 import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
 import APIsTile from "../APIsTile";
 import AddResourceFunctionalityButton from "../AddResourceFunctionalityButton";
 import EntitiesTile from "../EntitiesTile";
 import { PluginsTile } from "../PluginsTile";
-import "./ResourceOverview.scss";
 import { ServicesTile } from "../ServicesTile";
 import { TopicsTile } from "../TopicsTile";
 import ResourceGitStatusPanel from "../git/ResourceGitStatusPanel";
 import { useResourceSummary } from "../hooks/useResourceSummary";
+import "./ResourceOverview.scss";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -124,18 +124,7 @@ const ResourceOverview = () => {
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              itemsAlign={EnumItemsAlign.Center}
-              gap={EnumGapSize.Default}
-            >
-              {currentResource && (
-                <>
-                  <Text textStyle={EnumTextStyle.Description}>Owner</Text>
-                  <ResourceOwner resource={currentResource} />
-                </>
-              )}
-            </FlexItem>
+
             {currentResource?.resourceType === EnumResourceType.Service && (
               <ResourceGitStatusPanel resource={currentResource} />
             )}
@@ -182,7 +171,12 @@ const ResourceOverview = () => {
         </FlexItem>
       </Panel>
 
-      <ResourceRelations />
+      <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <ResourcePropertiesBlock resource={currentResource} />
+      </Panel>
+      {currentResource?.resourceType !== EnumResourceType.ServiceTemplate && (
+        <ResourceRelations />
+      )}
 
       {currentResource?.resourceType === EnumResourceType.ServiceTemplate &&
         !currentResource.blueprintId && (
