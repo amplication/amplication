@@ -43,8 +43,8 @@ export const PluginTree = React.memo(
       const urlArr = location.pathname.split("/");
       if (urlArr[urlArr.length - 1] !== "plugins") return;
 
-      history.push(`${location.pathname}/catalog`);
-    }, [location]);
+      history.push(`${location.pathname}/installed`);
+    }, [history, location]);
 
     const handleCategoriesClick = useCallback(() => {
       setChevronIcon(chevronIcon === "close" ? "open" : "close");
@@ -68,6 +68,9 @@ export const PluginTree = React.memo(
     return (
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__list`}>
+          <InnerTabLink icon="plugins" to={`${baseUrl}/plugins/installed`}>
+            <span>Installed Plugins</span>
+          </InnerTabLink>
           <InnerTabLink
             key={"catalog"}
             icon="plugins"
@@ -83,9 +86,7 @@ export const PluginTree = React.memo(
               <span>Private Plugins</span>
             </InnerTabLink>
           )}
-          <InnerTabLink icon="plugins" to={`${baseUrl}/plugins/installed`}>
-            <span>Installed Plugins</span>
-          </InnerTabLink>
+
           {showPublicPlugins && (
             <>
               <ListItem
