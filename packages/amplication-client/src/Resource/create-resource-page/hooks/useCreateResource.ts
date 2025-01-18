@@ -52,6 +52,7 @@ const useCreateResource = (props?: Props) => {
           data: {
             name: data.name,
             description: data.description,
+            gitRepository: data.gitRepository,
             project: data.project,
             serviceTemplate: { id: templateId },
           },

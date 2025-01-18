@@ -315,6 +315,7 @@ export class ServiceTemplateService {
         data: {
           name: args.data.name,
           description: args.data.description,
+          gitRepository: args.data.gitRepository,
           resourceType: EnumResourceType.Service,
           project: args.data.project,
           serviceSettings: serviceSettings,
@@ -339,6 +340,7 @@ export class ServiceTemplateService {
         data: {
           name: args.data.name,
           description: args.data.description,
+          gitRepository: args.data.gitRepository,
           resourceType: EnumResourceType.Component,
           blueprint: {
             connect: {

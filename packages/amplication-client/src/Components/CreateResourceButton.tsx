@@ -2,16 +2,15 @@ import {
   EnumButtonStyle,
   EnumItemsAlign,
   FlexItem,
+  HorizontalRule,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
-import { useStiggContext } from "@stigg/react-sdk";
-import React, { useMemo } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL } from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import * as models from "../models";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import {
@@ -27,21 +26,16 @@ export type CreateResourceButtonItemType = {
   label: string;
   route?: string;
   info: string;
-  licenseRequired?: BillingFeature;
+  showDivider?: boolean;
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
   {
     type: models.EnumResourceType.ServiceTemplate,
-    label: "From Template",
-    route: `?${CREATE_SERVICE_FROM_TEMPLATE_TRIGGER_URL}`,
-    info: "Create a service from a pre-configured template",
-  },
-  {
-    type: models.EnumResourceType.Component,
-    label: "From Blueprint",
+    label: "From Blueprint / Template",
     route: "new-resource",
     info: "Create a resource from a blueprint",
+    showDivider: true,
   },
 
   {
@@ -59,12 +53,7 @@ const ITEMS: CreateResourceButtonItemType[] = [
 ];
 
 const CreateResourceButton: React.FC = () => {
-  const { stigg } = useStiggContext();
   const history = useHistory();
-
-  const { hasAccess: canUsePrivatePlugins } = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.PrivatePlugins,
-  });
 
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
@@ -74,15 +63,6 @@ const CreateResourceButton: React.FC = () => {
       history.push(to);
     }
   };
-
-  const licensedItems = useMemo(() => {
-    const licenses = {
-      [BillingFeature.PrivatePlugins]: canUsePrivatePlugins,
-    };
-    return ITEMS.filter(
-      (item) => !item.licenseRequired || licenses[item.licenseRequired]
-    );
-  }, [canUsePrivatePlugins]);
 
   return (
     <div className={CLASS_NAME}>
@@ -98,22 +78,24 @@ const CreateResourceButton: React.FC = () => {
         >
           <SelectMenuModal align="right" withCaret>
             <SelectMenuList>
-              {licensedItems.map((item) => (
-                <SelectMenuItem
-                  closeAfterSelectionChange
-                  itemData={item}
-                  onSelectionChange={handleResourceClick}
-                  key={item.type}
-                >
-                  <FlexItem
-                    itemsAlign={EnumItemsAlign.Center}
-                    start={
-                      <ResourceCircleBadge type={item.type} size="small" />
-                    }
+              {ITEMS.map((item) => (
+                <div key={item.type}>
+                  <SelectMenuItem
+                    closeAfterSelectionChange
+                    itemData={item}
+                    onSelectionChange={handleResourceClick}
                   >
-                    <span>{item.label}</span>
-                  </FlexItem>
-                </SelectMenuItem>
+                    <FlexItem
+                      itemsAlign={EnumItemsAlign.Center}
+                      start={
+                        <ResourceCircleBadge type={item.type} size="small" />
+                      }
+                    >
+                      <span>{item.label}</span>
+                    </FlexItem>
+                  </SelectMenuItem>
+                  {item.showDivider && <HorizontalRule smallSpacing />}
+                </div>
               ))}
             </SelectMenuList>
           </SelectMenuModal>
