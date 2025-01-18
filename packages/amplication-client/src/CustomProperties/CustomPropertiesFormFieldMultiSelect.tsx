@@ -20,6 +20,13 @@ function CustomPropertiesFormFieldMultiSelect({
 
   return (
     <SelectField
+      inputToolTip={
+        property.description
+          ? {
+              content: property.description,
+            }
+          : undefined
+      }
       disabled={disabled}
       isMulti
       label={property.name}
