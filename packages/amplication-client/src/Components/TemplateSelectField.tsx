@@ -4,6 +4,7 @@ import useAvailableServiceTemplates from "../ServiceTemplate/hooks/useAvailableS
 
 type Props = Omit<SelectFieldProps, "options"> & {
   projectId: string;
+  onChange?: (value: string) => void;
 };
 
 const TemplateSelectField = ({ projectId, ...rest }: Props) => {

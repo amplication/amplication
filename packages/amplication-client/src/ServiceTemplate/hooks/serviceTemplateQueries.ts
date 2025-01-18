@@ -79,6 +79,7 @@ export const GET_AVAILABLE_TEMPLATES_FOR_PROJECT = gql`
       codeGeneratorStrategy
       codeGeneratorVersion
       codeGenerator
+      blueprintId
       projectId
       project {
         id
