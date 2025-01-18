@@ -15,6 +15,13 @@ function CustomPropertiesFormFieldText({
   return (
     <TextField
       disabled={disabled}
+      inputToolTip={
+        property.description
+          ? {
+              content: property.description,
+            }
+          : undefined
+      }
       label={property.name}
       name={`${fieldNamePrefix}properties.${property.key}`}
     />

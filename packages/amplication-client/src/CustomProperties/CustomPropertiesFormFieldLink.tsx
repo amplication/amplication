@@ -14,6 +14,13 @@ function CustomPropertiesFormFieldLink({
 }: Props) {
   return (
     <TextField
+      inputToolTip={
+        property.description
+          ? {
+              content: property.description,
+            }
+          : undefined
+      }
       disabled={disabled}
       label={property.name}
       name={`${fieldNamePrefix}properties.${property.key}`}

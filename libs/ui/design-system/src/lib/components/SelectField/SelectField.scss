@@ -56,12 +56,12 @@
 
   &--has-error {
     .select-field__control {
-      border-color: var(--theme-red);
+      border-color: var(--color-negative);
 
       &:active,
       &:hover,
       &:focus {
-        border-color: var(--theme-red);
+        border-color: var(--color-negative);
       }
     }
   }
