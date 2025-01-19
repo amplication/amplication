@@ -76,7 +76,7 @@ SELECT
     '{}'::jsonb AS new_output_params, -- Default outputParams
     ed.old_version_created_at,
     ed.old_version_updated_at,
-	ed.Old_commit_id
+	ed.old_commit_id
 FROM 
     existing_data ed
     JOIN new_blocks nb ON ed."resourceId" = nb."resourceId";
