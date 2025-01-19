@@ -15,7 +15,8 @@ const OPTIONS = Object.keys(resourceThemeMap)
     (type) =>
       type !== EnumResourceType.ProjectConfiguration &&
       type !== EnumResourceType.Component &&
-      type !== EnumResourceType.PluginRepository
+      type !== EnumResourceType.PluginRepository &&
+      type !== EnumResourceType.ServiceTemplate
   )
   .map((key) => {
     const theme = resourceThemeMap[key];

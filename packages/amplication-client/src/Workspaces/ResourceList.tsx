@@ -3,7 +3,6 @@ import CatalogGrid from "../Catalog/CatalogGrid";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import "./ResourceList.scss";
 
 const CLASS_NAME = "resource-list";
@@ -18,7 +17,6 @@ function ResourceList() {
       pageTitle={PAGE_TITLE}
       pageWidth={EnumPageWidth.Full}
     >
-      <NewServiceFromTemplateDialogWithUrlTrigger />
       {currentProject && (
         <CatalogGrid
           fixedFilters={{

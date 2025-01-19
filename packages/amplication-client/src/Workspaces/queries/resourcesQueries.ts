@@ -240,8 +240,8 @@ export const UPDATE_RESOURCE_SETTINGS = gql`
 `;
 
 export const CREATE_SERVICE_FROM_TEMPLATE = gql`
-  mutation createServiceFromTemplate($data: ServiceFromTemplateCreateInput!) {
-    createServiceFromTemplate(data: $data) {
+  mutation createServiceFromTemplate($data: ResourceFromTemplateCreateInput!) {
+    createResourceFromTemplate(data: $data) {
       id
       name
       description

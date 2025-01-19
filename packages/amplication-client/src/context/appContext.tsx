@@ -70,8 +70,8 @@ export interface AppContextInterface {
   loadingUpdateCodeGeneratorVersion: boolean;
   errorUpdateCodeGeneratorVersion: ApolloError | undefined;
   createServiceFromTemplate: (
-    data: models.ServiceFromTemplateCreateInput
-  ) => void;
+    data: models.ResourceFromTemplateCreateInput
+  ) => Promise<models.Resource>;
   loadingCreateServiceFromTemplate: boolean;
   errorCreateServiceFromTemplate: Error | undefined;
   customPropertiesMap: Record<string, models.CustomProperty>;
@@ -142,7 +142,7 @@ const initialContext: AppContextInterface = {
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => {},
   loadingUpdateCodeGeneratorVersion: false,
   errorUpdateCodeGeneratorVersion: undefined,
-  createServiceFromTemplate: () => {},
+  createServiceFromTemplate: () => Promise.resolve({} as models.Resource),
   loadingCreateServiceFromTemplate: false,
   errorCreateServiceFromTemplate: undefined,
   customPropertiesMap: {},

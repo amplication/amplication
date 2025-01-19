@@ -4,7 +4,6 @@ import { EnumButtonStyle } from "../Components/Button";
 import ProjectSelector from "../Components/ProjectSelector";
 import { useAppContext } from "../context/appContext";
 import PageContent, { EnumPageWidth } from "../Layout/PageContent";
-import NewServiceFromTemplateDialogWithUrlTrigger from "../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import CatalogGrid from "./CatalogGrid";
 
 const CLASS_NAME = "catalog-page";
@@ -29,7 +28,6 @@ function Catalog() {
       pageTitle={PAGE_TITLE}
       pageWidth={EnumPageWidth.Full}
     >
-      <NewServiceFromTemplateDialogWithUrlTrigger />
       <CatalogGrid
         fixedFiltersKey="workspace-catalog"
         HeaderActions={

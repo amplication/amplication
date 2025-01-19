@@ -18,7 +18,10 @@ import { useAppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import ResourceRelations from "../../Relation/ResourceRelations";
 import { useResourceBaseUrl } from "../../util/useResourceBaseUrl";
-import ResourceOwner from "../../Workspaces/ResourceOwner";
+import { CreateTemplateFromResourceButton } from "../CreateTemplateFromResourceButton";
+import { EnumResourceType } from "../../models";
+import ResourcePropertiesBlock from "../../CustomProperties/ResourcePropertiesBlock";
+import ResourceGitStatusPanel from "../git/ResourceGitStatusPanel";
 
 const PAGE_TITLE = "Overview";
 
@@ -31,6 +34,7 @@ const ComponentOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
+          <CreateTemplateFromResourceButton resource={currentResource} />
           <Link to={`${baseUrl}/plugins/catalog`}>
             <Button buttonStyle={EnumButtonStyle.Primary}>
               Add functionality
@@ -55,23 +59,19 @@ const ComponentOverview = () => {
             <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              itemsAlign={EnumItemsAlign.Center}
-              gap={EnumGapSize.Default}
-            >
-              {currentResource && (
-                <>
-                  <Text textStyle={EnumTextStyle.Description}>Owner</Text>
-                  <ResourceOwner resource={currentResource} />
-                </>
-              )}
-            </FlexItem>
+            {currentResource?.resourceType === EnumResourceType.Component && (
+              <ResourceGitStatusPanel resource={currentResource} />
+            )}
           </FlexItem.FlexStart>
         </FlexItem>
       </Panel>
 
-      <ResourceRelations />
+      <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <ResourcePropertiesBlock resource={currentResource} />
+      </Panel>
+      {currentResource?.resourceType !== EnumResourceType.ServiceTemplate && (
+        <ResourceRelations />
+      )}
     </PageContent>
   );
 };

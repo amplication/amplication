@@ -16,7 +16,6 @@ import { EmptyState } from "../../Components/EmptyState";
 import { EnumImages } from "../../Components/SvgThemeImage";
 import { useAppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
-import NewServiceFromTemplateDialogWithUrlTrigger from "../../ServiceTemplate/NewServiceFromTemplateDialogWithUrlTrigger";
 import { formatError } from "../../util/error";
 import { pluralize } from "../../util/pluralize";
 import useServiceTemplate from "../hooks/useServiceTemplate";
@@ -55,7 +54,6 @@ function ServiceTemplateServiceList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <NewServiceFromTemplateDialogWithUrlTrigger />
       <FlexItem
         itemsAlign={EnumItemsAlign.Center}
         contentAlign={EnumContentAlign.Start}

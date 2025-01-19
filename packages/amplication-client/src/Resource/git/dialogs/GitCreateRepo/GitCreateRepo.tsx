@@ -42,7 +42,7 @@ export default function GitCreateRepo({
 }: Props) {
   const initialValues: Partial<CreateGitRepositoryInput> = {
     name: "",
-    isPublic: true,
+    isPublic: false,
   };
 
   const { data: gitGroupsData, loading: loadingGroups } = useQuery(GET_GROUPS, {

@@ -44,12 +44,12 @@
   &--has-error {
     input,
     textarea {
-      border-color: var(--theme-red);
+      border-color: var(--color-negative);
 
       &:active:not(:disabled),
       &:hover:not(:disabled),
       &:focus:not(:disabled) {
-        border-color: var(--theme-red);
+        border-color: var(--color-negative);
       }
     }
   }

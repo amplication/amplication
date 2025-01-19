@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import * as models from "../../models";
 import {
   CREATE_SERVICE_TEMPLATE,
+  CREATE_TEMPLATE_FROM_RESOURCE,
   GET_SERVICE_TEMPLATES,
   UPGRADE_SERVICE_TO_LATEST_TEMPLATE_VERSION,
 } from "./serviceTemplateQueries";
@@ -29,8 +30,12 @@ type TUpgradeServiceToLatestTemplateVersion = {
   upgradeServiceToLatestTemplateVersion: models.Resource;
 };
 
+type TCreateTemplateFromExistingResourceData = {
+  createTemplateFromExistingResource: models.Resource;
+};
+
 const useServiceTemplate = (
-  currentProject: models.Project | undefined,
+  currentProject?: models.Project | undefined,
   onServiceTemplateCreated?: (serviceTemplate: models.Resource) => void
 ) => {
   const { addBlock } = useAppContext();
@@ -95,8 +100,37 @@ const useServiceTemplate = (
     createServiceTemplateInternal({ variables: { data: data } })
       .then((result) => {
         reloadServiceTemplates();
+        addBlock(result.data.createServiceTemplate.id);
         onServiceTemplateCreated &&
           onServiceTemplateCreated(result.data.createServiceTemplate);
+      })
+      .catch(console.error);
+  };
+
+  const [
+    createTemplateFromResourceInternal,
+    {
+      data: createTemplateFromResourceData,
+      loading: loadingCreateTemplateFromResource,
+      error: errorCreateTemplateFromResource,
+    },
+  ] = useMutation<TCreateTemplateFromExistingResourceData>(
+    CREATE_TEMPLATE_FROM_RESOURCE
+  );
+
+  const createTemplateFromResource = (resourceId: string) => {
+    createTemplateFromResourceInternal({
+      variables: {
+        resourceId: resourceId,
+      },
+    })
+      .then((result) => {
+        reloadServiceTemplates();
+        addBlock(result.data.createTemplateFromExistingResource.id);
+        onServiceTemplateCreated &&
+          onServiceTemplateCreated(
+            result.data.createTemplateFromExistingResource
+          );
       })
       .catch(console.error);
   };
@@ -148,6 +182,10 @@ const useServiceTemplate = (
     errorUpgradeServiceToLatestTemplateVersion,
     upgradeServiceToLatestTemplateVersionData:
       UpgradeServiceToLatestTemplateVersionData?.upgradeServiceToLatestTemplateVersion,
+    createTemplateFromResource,
+    loadingCreateTemplateFromResource,
+    errorCreateTemplateFromResource,
+    createTemplateFromResourceData,
   };
 };
 

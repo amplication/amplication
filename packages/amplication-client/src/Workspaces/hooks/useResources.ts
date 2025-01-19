@@ -26,7 +26,7 @@ type TCreateService = {
 };
 
 type TCreateServiceFromTemplate = {
-  createServiceFromTemplate: models.Resource;
+  createResourceFromTemplate: models.Resource;
 };
 
 export type TUpdateCodeGeneratorVersion = {
@@ -384,20 +384,28 @@ const useResources = (
   ] = useMutation<TCreateServiceFromTemplate>(CREATE_SERVICE_FROM_TEMPLATE, {});
 
   const createServiceFromTemplate = (
-    data: models.ServiceFromTemplateCreateInput
+    data: models.ResourceFromTemplateCreateInput
   ) => {
-    createServiceFromTemplateInternal({ variables: { data: data } })
-      .then((result) => {
-        result.data?.createServiceFromTemplate.id &&
-          reloadResources().then(() => {
-            resourceRedirect(
-              result.data?.createServiceFromTemplate.id as string
-            );
-            result.data?.createServiceFromTemplate.id &&
-              addBlock(result.data.createServiceFromTemplate.id);
-          });
-      })
-      .catch(console.error);
+    return new Promise<models.Resource>((resolve, reject) => {
+      createServiceFromTemplateInternal({ variables: { data: data } })
+        .then((result) => {
+          if (result.data?.createResourceFromTemplate.id) {
+            reloadResources().then(() => {
+              resourceRedirect(
+                result.data.createResourceFromTemplate.id as string
+              );
+              addBlock(result.data.createResourceFromTemplate.id);
+              resolve(result.data?.createResourceFromTemplate);
+            });
+          } else {
+            resolve(null);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          reject(error);
+        });
+    });
   };
   // ***** end section Create Service From Template *****
 

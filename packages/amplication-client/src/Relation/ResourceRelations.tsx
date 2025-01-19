@@ -2,6 +2,11 @@ import { useMemo } from "react";
 import { useAppContext } from "../context/appContext";
 import ResourceRelationsForm from "./ResourceRelationForm";
 import useResourceRelations from "./hooks/useResourceRelations";
+import {
+  EnumPanelStyle,
+  Panel,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 
 const CLASS_NAME = "resource-relations";
 
@@ -29,14 +34,22 @@ function ResourceRelations() {
   return (
     <div className={CLASS_NAME}>
       {relationsMap &&
-        currentBlueprint?.relations?.map((relationDef) => (
-          <ResourceRelationsForm
-            key={relationDef.key}
-            resourceId={currentResource?.id}
-            relation={relationsMap[relationDef.key]}
-            relationDef={relationDef}
-          />
-        ))}
+        currentBlueprint?.relations &&
+        currentBlueprint?.relations.length && (
+          <>
+            <TabContentTitle title="Related Resources" />
+            <Panel panelStyle={EnumPanelStyle.Bordered}>
+              {currentBlueprint?.relations?.map((relationDef) => (
+                <ResourceRelationsForm
+                  key={relationDef.key}
+                  resourceId={currentResource?.id}
+                  relation={relationsMap[relationDef.key]}
+                  relationDef={relationDef}
+                />
+              ))}
+            </Panel>
+          </>
+        )}
     </div>
   );
 }

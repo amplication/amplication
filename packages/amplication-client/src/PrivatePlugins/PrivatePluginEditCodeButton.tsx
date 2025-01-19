@@ -25,8 +25,7 @@ const PrivatePluginEditCodeButton = ({ privatePlugin }: Props) => {
     return null;
   }
 
-  const url =
-    gitRepositoryDetails.webIdeUrl ?? `${gitRepositoryDetails.repositoryUrl}`;
+  const url = gitRepositoryDetails.repositoryUrl;
 
   return (
     <a href={url} target="webIde" rel="noreferrer">
@@ -34,9 +33,7 @@ const PrivatePluginEditCodeButton = ({ privatePlugin }: Props) => {
         buttonStyle={EnumButtonStyle.Outline}
         buttonState={EnumButtonState.Success}
       >
-        {gitRepositoryDetails.webIdeUrl
-          ? `Edit with ${gitRepositoryDetails.webIdeName}`
-          : "Open Repository"}
+        Open Repository
       </Button>
     </a>
   );

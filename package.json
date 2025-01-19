@@ -101,8 +101,6 @@
     "class-validator": "^0.14.0",
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
-    "cron": "^2.3.0",
-    "cronstrue": "^1.125.0",
     "crypto-js": "^4.2.0",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
@@ -158,7 +156,6 @@
     "prisma-schema-dsl": "^2.2.0",
     "prisma-schema-dsl-types": "^1.1.2",
     "query-string": "^7.1.1",
-    "rc": "^1.2.8",
     "react-animate-height": "^3.0.4",
     "react-beautiful-dnd": "^13.1.1",
     "react-canvas-confetti": "^2.0.5",
@@ -245,7 +242,6 @@
     "@types/adm-zip": "^0.5.0",
     "@types/bcrypt": "^5.0.0",
     "@types/chroma-js": "^2.4.4",
-    "@types/cron": "^2.0.0",
     "@types/dockerode": "^3.3.16",
     "@types/download": "^8.0.2",
     "@types/eventsource": "^1.1.9",
@@ -257,7 +253,7 @@
     "@types/jest": "^29.5.6",
     "@types/json-schema": "^7.0.11",
     "@types/jsonwebtoken": "^9.0.0",
-    "@types/lodash": "^4.14.192",
+    "@types/lodash": "^4.17.14",
     "@types/minimatch": "^3.0.5",
     "@types/node": "18.14.2",
     "@types/node-fetch": "^2.6.2",
@@ -271,7 +267,6 @@
     "@types/pluralize": "^0.0.29",
     "@types/prettier": "^2.7.1",
     "@types/query-string": "^6.3.0",
-    "@types/rc": "^1.2.1",
     "@types/react": "18.0.25",
     "@types/react-color": "^3.0.12",
     "@types/react-dom": "18.0.9",
@@ -347,7 +342,7 @@
     "yup": "^0.32.11"
   },
   "engines": {
-    "node": "^18.12.1",
+    "node": "^22.13.0",
     "npm": "^9.0.0"
   },
   "bugs": {

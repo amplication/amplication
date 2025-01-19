@@ -43,7 +43,9 @@ export const CreateResourceFormResourceSettings = ({
   );
 
   return (
-    blueprint && (
+    blueprint &&
+    blueprint.properties &&
+    blueprint.properties.length > 0 && (
       <div>
         <FlexItem margin={EnumFlexItemMargin.Both}>
           <Text textStyle={EnumTextStyle.H4}>
@@ -51,12 +53,10 @@ export const CreateResourceFormResourceSettings = ({
           </Text>
         </FlexItem>
         <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <FormColumns>
-            <ResourceSettingsFormFields
-              blueprintId={blueprintId}
-              fieldNamePrefix="settings."
-            />
-          </FormColumns>
+          <ResourceSettingsFormFields
+            blueprintId={blueprintId}
+            fieldNamePrefix="settings."
+          />
         </Panel>
       </div>
     )

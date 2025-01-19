@@ -70,7 +70,7 @@ export function TextInput({
       {hasError && helpText && (
         <Text
           textStyle={EnumTextStyle.Description}
-          textColor={EnumTextColor.ThemeRed}
+          textColor={EnumTextColor.error}
         >
           {helpText}
         </Text>

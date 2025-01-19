@@ -683,6 +683,7 @@ enum EnumBlockType {
   CodeEngineVersion
   Relation
   ResourceSettings //generic settings block that can be used for any resource type
+  ResourceTemplateVersion
 }
 
 enum ActionStepStatus {

@@ -1,4 +1,10 @@
-import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  List,
+  Snackbar,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 import React, {
   useCallback,
   useContext,
@@ -6,7 +12,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { match } from "react-router-dom";
+import { Link, match } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -28,6 +34,7 @@ import { AppContext, useAppContext } from "../context/appContext";
 import useResource from "../Resource/hooks/useResource";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
+import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -41,12 +48,14 @@ type TData = {
 };
 
 const TITLE = "Installed Plugins";
-const SUB_TITLE = "Manage your installed plugins";
+const SUB_TITLE = "Manage the plugins installed in your resource";
 
 const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
 
   const { currentResource } = useAppContext();
+
+  const { baseUrl } = useResourceBaseUrl();
 
   const { stigg } = useStiggContext();
 
@@ -280,10 +289,17 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
       </DndProvider>
     </div>
   ) : (
-    <EmptyState
-      image={EnumImages.PluginInstallationEmpty}
-      message="There are no plugins to show"
-    />
+    <>
+      <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
+      <EmptyState
+        image={EnumImages.PluginInstallationEmpty}
+        message="There are no plugins to show"
+      >
+        <Link to={`${baseUrl}/plugins/catalog`}>
+          <Button buttonStyle={EnumButtonStyle.Primary}>Install Plugins</Button>
+        </Link>
+      </EmptyState>
+    </>
   );
 };
 
