@@ -824,6 +824,7 @@ enum EnumActionStepStatus {
 
 enum EnumAssistantFunctions {
   CommitProjectPendingChanges
+  CreateBlueprint
   CreateEntities
   CreateEntityFields
   CreateModule
@@ -841,6 +842,7 @@ enum EnumAssistantFunctions {
   GetServiceEntities
   GetServiceModules
   InstallPlugins
+  ListBlueprints
 }
 
 enum EnumAssistantMessageRole {
@@ -2497,6 +2499,7 @@ type ResourceCreateWithEntitiesResult {
 
 input ResourceFromTemplateCreateInput {
   description: String!
+  gitRepository: ConnectGitRepositoryInput
   name: String!
   project: WhereParentIdInput!
   serviceTemplate: WhereUniqueInput!

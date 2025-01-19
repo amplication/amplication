@@ -16,3 +16,5 @@ export { default as getServiceEntities } from "./getServiceEntities.json";
 export { default as getServiceModules } from "./getServiceModules.json";
 export { default as installPlugins } from "./installPlugins.json";
 export { default as getService } from "./getService.json";
+export { default as createBlueprint } from "./createBlueprint.json";
+export { default as listBlueprints } from "./listBlueprints.json";

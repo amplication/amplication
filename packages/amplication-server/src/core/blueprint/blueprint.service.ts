@@ -3,7 +3,11 @@ import { isEmpty, snakeCase, toUpper } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Blueprint, CustomProperty } from "../../models";
-import { Blueprint as PrismaBlueprint, PrismaService } from "../../prisma";
+import {
+  Blueprint as PrismaBlueprint,
+  CustomProperty as PrismaCustomProperty,
+  PrismaService,
+} from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalyticsEventType.types";
 import { prepareDeletedItemName } from "../../util/softDelete";
@@ -32,6 +36,9 @@ export class BlueprintService {
       where: {
         ...args.where,
         deletedAt: null,
+      },
+      include: {
+        customProperties: true,
       },
     });
 
@@ -118,12 +125,21 @@ export class BlueprintService {
     return this.blueprintRecordToModel(blueprint);
   }
 
-  blueprintRecordToModel(record: PrismaBlueprint): Blueprint {
+  blueprintRecordToModel(
+    record: PrismaBlueprint & {
+      customProperties?: PrismaCustomProperty[];
+    }
+  ): Blueprint {
     if (!record) {
       return null;
     }
     return {
       ...record,
+      properties: record.customProperties
+        ? record.customProperties.map((property) =>
+            this.customPropertyService.customPropertyRecordToModel(property)
+          )
+        : null,
       relations: record.relations
         ? (record.relations as unknown as BlueprintRelation[])
         : null,

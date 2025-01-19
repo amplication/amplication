@@ -1,0 +1,14 @@
+{
+  "name": "createBlueprint",
+  "description": "Create a blueprint.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "the name of the blueprint"
+      }
+    },
+    "required": ["name"]
+  }
+}

@@ -860,6 +860,7 @@ export enum EnumActionStepStatus {
 
 export enum EnumAssistantFunctions {
   CommitProjectPendingChanges = 'CommitProjectPendingChanges',
+  CreateBlueprint = 'CreateBlueprint',
   CreateEntities = 'CreateEntities',
   CreateEntityFields = 'CreateEntityFields',
   CreateModule = 'CreateModule',
@@ -876,7 +877,8 @@ export enum EnumAssistantFunctions {
   GetService = 'GetService',
   GetServiceEntities = 'GetServiceEntities',
   GetServiceModules = 'GetServiceModules',
-  InstallPlugins = 'InstallPlugins'
+  InstallPlugins = 'InstallPlugins',
+  ListBlueprints = 'ListBlueprints'
 }
 
 export enum EnumAssistantMessageRole {
@@ -3737,6 +3739,7 @@ export type ResourceCreateWithEntitiesResult = {
 
 export type ResourceFromTemplateCreateInput = {
   description: Scalars['String']['input'];
+  gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
   project: WhereParentIdInput;
   serviceTemplate: WhereUniqueInput;
