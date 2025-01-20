@@ -6,7 +6,7 @@
     "properties": {
       "name": {
         "type": "string",
-        "description": "the name of the blueprint"
+        "description": "The name of the blueprint"
       }
     },
     "required": ["name"]

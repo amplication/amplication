@@ -1,6 +1,6 @@
 {
   "name": "listBlueprints",
-  "description": "get a list of blueprints",
+  "description": "Get a list of blueprints",
   "parameters": {
     "type": "object",
     "properties": {}
