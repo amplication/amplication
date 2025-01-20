@@ -203,7 +203,7 @@
     "@babel/core": "^7.23.7",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
-    "@graphql-codegen/cli": "4.0.1",
+    "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/typescript": "4.0.1",
     "@lcov-viewer/cli": "^1.3.0",
     "@mui/x-data-grid-generator": "^7.16.0",
