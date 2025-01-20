@@ -34,6 +34,7 @@ import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { BlueprintService } from "../blueprint/blueprint.service";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -117,6 +118,14 @@ const FUNCTION_PERMISSIONS: {
     paramType: AuthorizableOriginParameter.ResourceId,
     paramPath: "serviceId",
   },
+  createBlueprint: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
+  listBlueprints: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
 };
 
 @Injectable()
@@ -134,6 +143,7 @@ export class AssistantFunctionsService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
+    private readonly blueprintService: BlueprintService,
     private readonly permissionsService: PermissionsService,
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
 
@@ -983,6 +993,44 @@ export class AssistantFunctionsService {
           `Failed to create the moduleAction ${name} because of the following error. please fix the error and try again. ${error.message}`
         );
       }
+    },
+    createBlueprint: async (
+      args: functionsArgsTypes.CreateBlueprint,
+      context: AssistantContext
+    ) => {
+      const blueprint = await this.blueprintService.createBlueprint({
+        data: {
+          name: args.name,
+          workspace: {
+            connect: {
+              id: context.workspaceId,
+            },
+          },
+        },
+      });
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/blueprints/${blueprint.id}`,
+        result: {
+          id: blueprint.id,
+          name: blueprint.name,
+        },
+      };
+    },
+    listBlueprints: async (
+      args: functionsArgsTypes.ListBlueprints,
+      context: AssistantContext
+    ) => {
+      const blueprints = await this.blueprintService.blueprints({});
+      return blueprints.map((blueprint) => ({
+        id: blueprint.id,
+        name: blueprint.name,
+        key: blueprint.key,
+        enabled: blueprint.enabled,
+        description: blueprint.description,
+        properties: blueprint.properties,
+        relations: blueprint.relations,
+        link: `${this.clientHost}/${context.workspaceId}/blueprints/${blueprint.id}`,
+      }));
     },
   };
 }

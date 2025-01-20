@@ -1,4 +1,5 @@
 export * from "./commitProjectPendingChanges.types";
+export * from "./createBlueprint.types";
 export * from "./createEntities.types";
 export * from "./createEntityFields.types";
 export * from "./createModule.types";
@@ -16,3 +17,4 @@ export * from "./getService.types";
 export * from "./getServiceEntities.types";
 export * from "./getServiceModules.types";
 export * from "./installPlugins.types";
+export * from "./listBlueprints.types";

@@ -130,6 +130,14 @@ const FUNCTIONS_CACHE_MAP: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
+  [models.EnumAssistantFunctions.CreateBlueprint]: {
+    refreshPendingChanges: false,
+    cacheKey: "blueprints",
+  },
+  [models.EnumAssistantFunctions.ListBlueprints]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
 };
 
 const useAssistant = () => {

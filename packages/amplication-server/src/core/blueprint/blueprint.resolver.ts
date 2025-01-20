@@ -108,6 +108,10 @@ export class BlueprintResolver {
 
   @ResolveField(() => [CustomProperty])
   async properties(@Parent() blueprint: Blueprint): Promise<CustomProperty[]> {
+    if (blueprint.properties) {
+      return blueprint.properties;
+    }
+
     return this.blueprintService.properties({
       where: {
         id: blueprint.id,

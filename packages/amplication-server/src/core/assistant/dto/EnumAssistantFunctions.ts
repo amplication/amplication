@@ -19,6 +19,8 @@ export enum EnumAssistantFunctions {
   CreateModuleEnum = "createModuleEnum",
   GetModuleActions = "getModuleActions",
   CreateModuleAction = "createModuleAction",
+  CreateBlueprint = "createBlueprint",
+  ListBlueprints = "listBlueprints",
 }
 
 registerEnumType(EnumAssistantFunctions, {

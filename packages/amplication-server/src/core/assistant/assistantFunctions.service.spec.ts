@@ -30,6 +30,7 @@ import { USER_ENTITY_NAME } from "../entity/constants";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumResourceType } from "@amplication/code-gen-types";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { BlueprintService } from "../blueprint/blueprint.service";
 
 const EXAMPLE_CHAT_OPENAI_KEY = "EXAMPLE_CHAT_OPENAI_KEY";
 const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
@@ -259,6 +260,10 @@ describe("AssistantFunctionsService", () => {
             commit: projectServiceCommitMock,
             getPendingChanges: projectServiceGetPendingChangesMock,
           },
+        },
+        {
+          provide: BlueprintService,
+          useValue: {},
         },
         {
           provide: PluginCatalogService,

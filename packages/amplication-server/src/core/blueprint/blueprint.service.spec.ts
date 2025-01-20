@@ -27,6 +27,7 @@ const EXAMPLE_BLUEPRINT: Blueprint = {
   updatedAt: new Date(),
   workspace: EXAMPLE_WORKSPACE,
   workspaceId: EXAMPLE_WORKSPACE_ID,
+  properties: null,
   key: EXAMPLE_BLUEPRINT_KEY,
   enabled: true,
   relations: null,
@@ -160,6 +161,9 @@ describe("BlueprintService", () => {
       where: {
         ...args.where,
         deletedAt: null,
+      },
+      include: {
+        customProperties: true,
       },
     });
   });
