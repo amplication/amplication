@@ -131,7 +131,7 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
     "minimatch": "^9.0.3",
-    "nest-access-control": "^2.2.0",
+    "nest-access-control": "^3.1.0",
     "nest-morgan": "^2.0.0",
     "nest-winston": "^1.7.0",
     "nestjs-paginate": "^4.13.0",
