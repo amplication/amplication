@@ -22,6 +22,8 @@ export const BLUEPRINT_FIELDS_FRAGMENT = gql`
     key
     enabled
     color
+    codeGenerator
+    resourceType
     properties {
       ...CustomPropertyFields
     }
@@ -55,6 +57,18 @@ export const UPDATE_BLUEPRINT = gql`
     $where: WhereUniqueInput!
   ) {
     updateBlueprint(data: $data, where: $where) {
+      ...BlueprintFields
+    }
+  }
+`;
+
+export const UPDATE_BLUEPRINT_ENGINE = gql`
+  ${BLUEPRINT_FIELDS_FRAGMENT}
+  mutation updateBlueprintEngine(
+    $data: BlueprintUpdateEngineInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateBlueprintEngine(data: $data, where: $where) {
       ...BlueprintFields
     }
   }

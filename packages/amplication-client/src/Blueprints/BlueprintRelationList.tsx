@@ -17,6 +17,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import React, { useState } from "react";
+import { useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import BlueprintCircleBadge from "./BlueprintCircleBadge";
@@ -26,7 +27,6 @@ import BlueprintRelationForm from "./BlueprintRelationForm";
 import "./BlueprintRelationList.scss";
 import BlueprintGraph from "./BlueprintsGraph/BlueprintGraph";
 import useBlueprints from "./hooks/useBlueprints";
-import { useAppContext } from "../context/appContext";
 
 type Props = {
   blueprint: models.Blueprint;
@@ -123,7 +123,11 @@ const BlueprintRelationList = React.memo(
         </FlexItem>
         <List>
           {(!blueprint?.relations || blueprint?.relations?.length === 0) && (
-            <ListItem>No relations defined</ListItem>
+            <ListItem>
+              <Text textStyle={EnumTextStyle.Description}>
+                No relations defined
+              </Text>
+            </ListItem>
           )}
 
           {blueprint?.relations?.map((relation, index) => (
