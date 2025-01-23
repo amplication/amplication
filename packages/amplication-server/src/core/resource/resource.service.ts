@@ -131,7 +131,7 @@ const RESOURCE_TYPE_TO_EVENT_TYPE: {
 
 type CodeGeneratorName = "NodeJS" | "DotNET" | "Blueprint";
 
-const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
+export const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
   [key in EnumCodeGenerator]: {
     codeGeneratorName: CodeGeneratorName;
     license: BillingFeature;
@@ -141,7 +141,7 @@ const CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE: {
     codeGeneratorName: "DotNET",
     license: BillingFeature.CodeGeneratorDotNet,
   },
-  [EnumCodeGenerator.NodeJs]: { codeGeneratorName: null, license: null },
+  [EnumCodeGenerator.NodeJs]: { codeGeneratorName: "NodeJS", license: null },
   [EnumCodeGenerator.Blueprint]: {
     codeGeneratorName: "Blueprint",
     license: null,

@@ -190,6 +190,7 @@ input BlockWhereInput {
 }
 
 type Blueprint {
+  codeGenerator: EnumCodeGenerator
   color: String
   createdAt: DateTime!
   description: String
@@ -199,6 +200,7 @@ type Blueprint {
   name: String!
   properties: [CustomProperty!]
   relations: [BlueprintRelation!]
+  resourceType: EnumResourceType!
   updatedAt: DateTime!
 }
 
@@ -228,6 +230,11 @@ input BlueprintRelationUpsertInput {
   name: String!
   relatedTo: String!
   required: Boolean!
+}
+
+input BlueprintUpdateEngineInput {
+  codeGenerator: EnumCodeGenerator
+  resourceType: EnumResourceType!
 }
 
 input BlueprintUpdateInput {
@@ -1757,6 +1764,7 @@ type Mutation {
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateBlueprint(data: BlueprintUpdateInput!, where: WhereUniqueInput!): Blueprint!
+  updateBlueprintEngine(data: BlueprintUpdateEngineInput!, where: WhereUniqueInput!): Blueprint!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
   updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
