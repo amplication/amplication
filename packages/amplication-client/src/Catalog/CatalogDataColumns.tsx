@@ -27,7 +27,7 @@ import BlueprintName from "../Blueprints/BlueprintName";
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
     key: "type",
-    name: "",
+    name: "type",
     width: 60,
     filterable: false,
     renderCell: (props) => {
