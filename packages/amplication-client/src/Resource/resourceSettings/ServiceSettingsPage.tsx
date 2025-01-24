@@ -33,7 +33,6 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       >
         Resource Configuration
       </InnerTabLink>
-      {currentResource.blueprint?.resourceType}
       {(currentResource.resourceType === EnumResourceType.Service ||
         (currentResource.resourceType === EnumResourceType.ServiceTemplate &&
           currentResource.blueprint?.resourceType ===

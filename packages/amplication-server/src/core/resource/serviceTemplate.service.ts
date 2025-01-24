@@ -89,7 +89,6 @@ export class ServiceTemplateService {
   /**
    * Create a template from an existing resource
    * The function create the template, and then copies the plugins from the resource to the template
-   * This function does not support resources without a blueprint (tbc: copy service settings and add placeholders)
    */
   async createTemplateFromExistingResource(
     args: CreateTemplateFromResourceArgs,
@@ -133,6 +132,43 @@ export class ServiceTemplateService {
       },
       user
     );
+
+    if (resource.resourceType === EnumResourceType.Service) {
+      const serviceSettings =
+        await this.serviceSettingsService.getServiceSettingsValues(
+          {
+            where: {
+              id: resourceId,
+            },
+          },
+          user
+        );
+
+      //replace the last part of the path with {{SERVICE_NAME}}
+      const adminUIBasePath = serviceSettings.adminUISettings.adminUIPath
+        .split("/")
+        .slice(0, -1)
+        .join("/");
+      serviceSettings.adminUISettings.adminUIPath = `${adminUIBasePath}/{{SERVICE_NAME}}-admin`;
+
+      const serverBasePath = serviceSettings.serverSettings.serverPath
+        .split("/")
+        .slice(0, -1)
+        .join("/");
+      serviceSettings.serverSettings.serverPath = `${serverBasePath}/{{SERVICE_NAME}}`;
+
+      await this.serviceSettingsService.updateServiceSettings(
+        {
+          where: {
+            id: template.id,
+          },
+          data: {
+            ...serviceSettings,
+          },
+        },
+        user
+      );
+    }
 
     //copy the plugins from the resource to the template
     await this.copyPluginInstallations(resourceId, template.id, user);
