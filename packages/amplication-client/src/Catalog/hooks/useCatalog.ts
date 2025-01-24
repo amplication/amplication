@@ -18,9 +18,6 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
   ],
 };
 
-const RESOURCE_TYPE_PREFIX = "resourceType_";
-const BLUEPRINT_PREFIX = "blueprint_";
-
 type Props = {
   initialPageSize?: number;
 };
@@ -135,8 +132,6 @@ const useCatalog = (props?: Props) => {
                 equals: value as models.EnumResourceType,
               },
             };
-          } else if (key === "resourceTypeOrBlueprint" && value) {
-            acc = updateResourceTypeFilter(acc, value as unknown as string[]);
           } else if (key === "ownership" && value) {
             const values = (value as string).split(":"); //ownership filter value is in the format of key:value
             if (values.length !== 2 || !values[0] || !values[1]) {
@@ -181,32 +176,3 @@ const useCatalog = (props?: Props) => {
 };
 
 export default useCatalog;
-
-const updateResourceTypeFilter = (
-  currentFilter: Partial<models.ResourceWhereInputWithPropertiesFilter>,
-  value: string[]
-) => {
-  const [blueprintValues, resourceTypeValues] = value.reduce(
-    (acc, value) => {
-      if (value.startsWith(BLUEPRINT_PREFIX)) {
-        acc[0].push(value.replace(BLUEPRINT_PREFIX, ""));
-      } else {
-        acc[1].push(value.replace(RESOURCE_TYPE_PREFIX, ""));
-      }
-      return acc;
-    },
-    [[], []] as [string[], string[]]
-  );
-
-  return {
-    ...currentFilter,
-    resourceType:
-      resourceTypeValues.length > 0
-        ? {
-            in: resourceTypeValues as models.EnumResourceType[],
-          }
-        : undefined,
-    blueprintId:
-      blueprintValues.length > 0 ? { in: blueprintValues } : undefined,
-  };
-};
