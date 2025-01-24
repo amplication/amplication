@@ -8,6 +8,7 @@ import { Formik } from "formik";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import FormikAutoSave from "../util/formikAutoSave";
+import { useCallback } from "react";
 
 type Props = {
   onSubmit: (values: models.Blueprint) => void;
@@ -54,6 +55,13 @@ const FORM_SCHEMA = {
 };
 
 const BlueprintAdvancedSettingsForm = ({ onSubmit, blueprint }: Props) => {
+  //set a default value to the field to pass the validation
+  const handleResourceTypeChange = useCallback((formik) => {
+    if (formik.values.resourceType !== models.EnumResourceType.Service) {
+      formik.setFieldValue("codeGenerator", models.EnumCodeGenerator.NodeJs);
+    }
+  }, []);
+
   return (
     <>
       <Formik
@@ -73,6 +81,9 @@ const BlueprintAdvancedSettingsForm = ({ onSubmit, blueprint }: Props) => {
               options={RESOURCE_TYPES_OPTIONS}
               label="Resource Type"
               name="resourceType"
+              onChange={() => {
+                handleResourceTypeChange(formik);
+              }}
             />
             {formik.values.resourceType === models.EnumResourceType.Service && (
               <SelectField
