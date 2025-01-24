@@ -1723,7 +1723,6 @@ export type Mutation = {
   createResourceFromTemplate: Resource;
   createResourceRole: ResourceRole;
   createRole: Role;
-  createService: Resource;
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
   createTeam: Team;
@@ -2043,11 +2042,6 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateRoleArgs = {
   data: RoleCreateInput;
-};
-
-
-export type MutationCreateServiceArgs = {
-  data: ResourceCreateInput;
 };
 
 
