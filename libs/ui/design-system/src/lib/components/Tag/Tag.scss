@@ -10,7 +10,7 @@ $tag-border-radius: 2px;
   border-style: solid;
 
   font-size: var(--tag-font-size);
-
+  white-space: nowrap;
   max-width: 100%;
   display: inline-block;
   overflow: hidden;

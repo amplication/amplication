@@ -75,7 +75,7 @@ const BlueprintAdvancedSettingsForm = ({ onSubmit, blueprint }: Props) => {
             <FormikAutoSave debounceMS={1000} />
             <TabContentTitle
               title="Engine Settings"
-              subTitle="Do not change these settings unless you are sure of what you are doing"
+              subTitle="Do not change these settings unless you are sure of what you are doing."
             />
             <SelectField
               options={RESOURCE_TYPES_OPTIONS}
