@@ -313,6 +313,11 @@ export class ServiceTemplateService {
     const newService = await this.resourceService.createService(
       {
         data: {
+          blueprint: {
+            connect: {
+              id: template.blueprintId,
+            },
+          },
           name: args.data.name,
           description: args.data.description,
           gitRepository: args.data.gitRepository,
