@@ -6,7 +6,6 @@ import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import cuid from "cuid";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { QueryMode } from "../../enums/QueryMode";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
@@ -60,12 +59,9 @@ import {
   CodeGeneratorVersionStrategy,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-  ResourceCreateInput,
-  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { PendingChange } from "./dto/PendingChange";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   INVALID_RESOURCE_ID,
@@ -122,16 +118,6 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date(),
   gitOrganization: EXAMPLE_GIT_ORGANISATION,
   groupName: "",
-};
-
-const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
-  description: "Sample Service for task management",
-  name: "My sample service",
-  resourceType: EnumResourceType.Service,
-  project: { connect: { id: EXAMPLE_PROJECT_ID } },
-  serviceSettings: EXAMPLE_SERVICE_SETTINGS,
-  gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
-  codeGenerator: EnumCodeGenerator.NodeJs,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -361,11 +347,6 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   inputParameters: [],
   outputParameters: [],
   authEntityName: USER_ENTITY_NAME,
-};
-
-const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
-  resource: EXAMPLE_RESOURCE,
-  build: EXAMPLE_BUILD,
 };
 
 const EXAMPLE_TOPIC: Topic = {
