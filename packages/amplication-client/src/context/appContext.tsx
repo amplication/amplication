@@ -25,17 +25,11 @@ export interface AppContextInterface {
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
-  setNewService: (
-    data: models.ResourceCreateWithEntitiesInput,
-    eventName: string
-  ) => void;
   projectConfigurationResource: models.Resource | undefined;
   pluginRepositoryResource: models.Resource | undefined;
   loadingResources: boolean;
   reloadResources: () => void;
   errorResources: Error | undefined;
-  loadingCreateService: boolean;
-  errorCreateService: Error | undefined;
   currentResource: models.Resource | undefined;
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
@@ -52,19 +46,12 @@ export interface AppContextInterface {
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
   gitRepositoryOrganizationProvider: models.EnumGitProvider | undefined;
-  createMessageBroker: (
-    data: models.ResourceCreateInput,
-    eventName: string
-  ) => void;
-  loadingCreateMessageBroker: boolean;
-  errorCreateMessageBroker: Error | undefined;
   createPluginRepository: (data: models.ResourceCreateInput) => void;
   loadingCreatePluginRepository: boolean;
   errorCreatePluginRepository: Error | undefined;
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
   openHubSpotChat: () => void;
-  createServiceWithEntitiesResult: models.ResourceCreateWithEntitiesResult;
   commitUtils: CommitUtils;
   updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => void;
   loadingUpdateCodeGeneratorVersion: boolean;
@@ -95,14 +82,11 @@ const initialContext: AppContextInterface = {
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
-  setNewService: () => {},
   projectConfigurationResource: undefined,
   pluginRepositoryResource: undefined,
   loadingResources: true,
   errorResources: undefined,
   reloadResources: () => {},
-  loadingCreateService: true,
-  errorCreateService: undefined,
   currentResource: undefined,
   pendingChanges: [],
   commitRunning: false,
@@ -119,16 +103,12 @@ const initialContext: AppContextInterface = {
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
   gitRepositoryOrganizationProvider: undefined,
-  createMessageBroker: () => {},
-  loadingCreateMessageBroker: false,
-  errorCreateMessageBroker: undefined,
   createPluginRepository: () => {},
   loadingCreatePluginRepository: false,
   errorCreatePluginRepository: undefined,
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
   openHubSpotChat: () => {},
-  createServiceWithEntitiesResult: undefined,
   commitUtils: {
     commits: [],
     lastCommit: null,

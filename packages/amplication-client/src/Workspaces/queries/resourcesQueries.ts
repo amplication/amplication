@@ -136,51 +136,6 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-export const CREATE_SERVICE_WITH_ENTITIES = gql`
-  mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
-    createServiceWithEntities(data: $data) {
-      resource {
-        id
-        name
-        description
-        builds(orderBy: { createdAt: Desc }, take: 1) {
-          id
-        }
-        gitRepository {
-          id
-          name
-          groupName
-          baseBranchName
-          gitOrganization {
-            id
-            name
-            provider
-          }
-        }
-        resourceType
-      }
-      build {
-        id
-        version
-        status
-      }
-    }
-  }
-`;
-
-export const CREATE_MESSAGE_BROKER = gql`
-  mutation createMessageBroker($data: ResourceCreateInput!) {
-    createMessageBroker(data: $data) {
-      id
-      name
-      description
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-      }
-    }
-  }
-`;
-
 export const GET_MESSAGE_BROKER_CONNECTED_SERVICES = gql`
   query getMessageBrokerConnectedServices($where: WhereUniqueInput!) {
     messageBrokerConnectedServices(where: $where) {

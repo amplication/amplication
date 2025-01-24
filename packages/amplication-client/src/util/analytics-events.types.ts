@@ -74,8 +74,6 @@ export enum AnalyticsEventNames {
   // plugin repository
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
   MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
-  MessageBrokerErrorCreate = "messageBrokerErrorCreate",
-  MessageBrokerCreateClick = "createMessageBrokerClick",
   MessagePatternTypeClick = "messagePatternTypeClick",
   BackToProjectsClick = "backToProjectsClick",
 

@@ -39,9 +39,7 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { UserAction } from "../userAction/dto";
 import {
   CreateOneResourceArgs,
-  CreateServiceWithEntitiesArgs,
   FindManyResourceArgs,
-  ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
   UpdateOneResourceArgs,
 } from "./dto";
@@ -141,19 +139,6 @@ export class ResourceResolver {
   @Mutation(() => Resource, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
-    "data.project.connect.id",
-    "resource.createMessageBroker"
-  )
-  async createMessageBroker(
-    @Args() args: CreateOneResourceArgs,
-    @UserEntity() user: User
-  ): Promise<Resource> {
-    return this.resourceService.createMessageBroker(args, user);
-  }
-
-  @Mutation(() => Resource, { nullable: false })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ProjectId,
     "data.project.connect.id"
   )
   async createPluginRepository(
@@ -187,19 +172,6 @@ export class ResourceResolver {
     @UserEntity() user: User
   ): Promise<Resource> {
     return this.resourceService.createService(args, user);
-  }
-
-  @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ProjectId,
-    "data.resource.project.connect.id",
-    "resource.createService"
-  )
-  async createServiceWithEntities(
-    @Args() args: CreateServiceWithEntitiesArgs,
-    @UserEntity() user: User
-  ): Promise<ResourceCreateWithEntitiesResult> {
-    return this.resourceService.createServiceWithEntities(args.data, user);
   }
 
   @Mutation(() => Resource, {
