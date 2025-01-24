@@ -136,6 +136,9 @@ describe("BlueprintService", () => {
   it("should delete a blueprint", async () => {
     const args = { where: { id: EXAMPLE_BLUEPRINT_ID } };
     const dateSpy = jest.spyOn(global, "Date");
+
+    prismaMock.resource.findMany.mockReturnValueOnce([]);
+
     expect(await service.deleteBlueprint(args)).toEqual(EXAMPLE_BLUEPRINT);
 
     expect(prismaMock.blueprint.update).toHaveBeenCalledTimes(1);
