@@ -71,6 +71,7 @@ import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resou
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_BLUEPRINT_ID = "exampleBlueprintId";
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
   "exampleProjectConfigurationResourceId";
 const EXAMPLE_PROJECT_ID = "exampleProjectId";
@@ -705,6 +706,11 @@ describe("ResourceService", () => {
           },
           serviceSettings: EXAMPLE_SERVICE_SETTINGS,
           gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
+          },
         },
       },
       user: EXAMPLE_USER,
@@ -744,6 +750,11 @@ describe("ResourceService", () => {
           gitRepository: {
             ...EXAMPLE_GIT_REPOSITORY_INPUT,
             isOverrideGitRepository: false, //even if isOverride is false, it should create a repo on the project
+          },
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
           },
         },
       },
@@ -799,6 +810,11 @@ describe("ResourceService", () => {
           },
           serviceSettings: EXAMPLE_SERVICE_SETTINGS,
           gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
+          },
         },
       },
       user: EXAMPLE_USER,
@@ -1041,6 +1057,7 @@ describe("ResourceService", () => {
       EXAMPLE_RESOURCE_NAME,
       EXAMPLE_RESOURCE_DESCRIPTION,
       EXAMPLE_PROJECT_ID,
+      EXAMPLE_BLUEPRINT_ID,
       EXAMPLE_USER,
       true
     );
@@ -1054,6 +1071,7 @@ describe("ResourceService", () => {
       EXAMPLE_RESOURCE_NAME,
       EXAMPLE_RESOURCE_DESCRIPTION,
       EXAMPLE_PROJECT_ID,
+      EXAMPLE_BLUEPRINT_ID,
       EXAMPLE_USER,
       false
     );

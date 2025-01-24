@@ -196,6 +196,9 @@ describe("ServiceTemplateService", () => {
               adminUISettings: {},
               serverSettings: {},
             },
+            blueprint: {
+              connect: { id: "blueprintId" },
+            },
           },
           plugins: {
             plugins: [EXAMPLE_PLUGIN],
@@ -212,6 +215,9 @@ describe("ServiceTemplateService", () => {
             name: "Test Service",
             description: "Test Description",
             project: { connect: { id: "projectId" } },
+            blueprint: {
+              connect: { id: "blueprintId" },
+            },
             resourceType: EnumResourceType.ServiceTemplate,
           },
         },
