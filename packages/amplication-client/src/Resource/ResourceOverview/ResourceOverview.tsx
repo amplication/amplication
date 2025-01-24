@@ -96,13 +96,13 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          {currentResource?.resourceType === EnumResourceType.Service ||
-            (currentResource?.resourceType ===
-              EnumResourceType.ServiceTemplate && (
-              <AddResourceFunctionalityButton
-                availableCategories={availableCategories}
-              />
-            ))}
+          {(currentResource?.resourceType === EnumResourceType.Service ||
+            currentResource?.resourceType ===
+              EnumResourceType.ServiceTemplate) && (
+            <AddResourceFunctionalityButton
+              availableCategories={availableCategories}
+            />
+          )}
         </FlexItem.FlexEnd>
       </FlexItem>
 
