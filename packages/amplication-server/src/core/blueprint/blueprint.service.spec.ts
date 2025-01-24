@@ -1,10 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Blueprint, Workspace } from "../../models";
+import { Blueprint, Resource, Workspace } from "../../models";
 import { PrismaService } from "../../prisma/prisma.service";
 import { MockedSegmentAnalyticsProvider } from "../../services/segmentAnalytics/tests";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { BlueprintService } from "./blueprint.service";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 const EXAMPLE_BLUEPRINT_ID = "exampleBlueprintId";
 const EXAMPLE_BLUEPRINT_KEY = "exampleBlueprintKey";
@@ -31,6 +33,21 @@ const EXAMPLE_BLUEPRINT: Blueprint = {
   key: EXAMPLE_BLUEPRINT_KEY,
   enabled: true,
   relations: null,
+  codeGeneratorName: "Blueprint",
+  resourceType: EnumResourceType.Component,
+};
+
+const EXAMPLE_RESOURCE: Resource = {
+  id: "exampleResourceId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleName",
+  codeGeneratorName: "NodeJS",
+  description: "",
+  resourceType: EnumResourceType.Service,
+  gitRepositoryOverride: false,
+  licensed: true,
+  blueprintId: "exampleBlueprintId",
 };
 
 const prismaBlueprintUpdateMock = jest.fn(() => {
@@ -46,12 +63,17 @@ const prismaBlueprintFindManyMock = jest.fn(() => {
   return [EXAMPLE_BLUEPRINT];
 });
 
+const prismaResourceFindManyMock = jest.fn(() => [EXAMPLE_RESOURCE]);
+
 const prismaMock = {
   blueprint: {
     create: prismaBlueprintCreateMock,
     findMany: prismaBlueprintFindManyMock,
     findUnique: prismaBlueprintFindFirstMock,
     update: prismaBlueprintUpdateMock,
+  },
+  resource: {
+    findMany: prismaResourceFindManyMock,
   },
 };
 
@@ -180,5 +202,95 @@ describe("BlueprintService", () => {
     expect(await service.updateBlueprint(args)).toEqual(EXAMPLE_BLUEPRINT);
     expect(prismaMock.blueprint.update).toHaveBeenCalledTimes(1);
     expect(prismaMock.blueprint.update).toHaveBeenCalledWith(args);
+  });
+
+  it("should update blueprint engine", async () => {
+    const args = {
+      where: {
+        id: EXAMPLE_BLUEPRINT_ID,
+      },
+      data: {
+        resourceType: EnumResourceType.Component,
+        codeGenerator: EnumCodeGenerator.Blueprint,
+      },
+    };
+
+    prismaMock.resource.findMany.mockReturnValueOnce([]);
+
+    expect(await service.updateBlueprintEngine(args)).toEqual(
+      EXAMPLE_BLUEPRINT
+    );
+    expect(prismaMock.resource.findMany).toHaveBeenCalledTimes(1);
+    expect(prismaMock.resource.findMany).toHaveBeenCalledWith({
+      where: {
+        blueprintId: args.where.id,
+        deletedAt: null,
+      },
+    });
+    expect(prismaMock.blueprint.update).toHaveBeenCalledTimes(1);
+    expect(prismaMock.blueprint.update).toHaveBeenCalledWith({
+      where: { ...args.where },
+      data: {
+        resourceType: args.data.resourceType,
+        codeGeneratorName: "Blueprint",
+      },
+    });
+  });
+
+  it("should throw error if blueprint engine is already in use", async () => {
+    const args = {
+      where: {
+        id: EXAMPLE_BLUEPRINT_ID,
+      },
+      data: {
+        resourceType: EnumResourceType.Component,
+        codeGenerator: EnumCodeGenerator.Blueprint,
+      },
+    };
+
+    prismaMock.resource.findMany.mockReturnValueOnce([EXAMPLE_RESOURCE]);
+
+    await expect(service.updateBlueprintEngine(args)).rejects.toThrow(
+      `Cannot update engine of blueprint because it is already in use by resources`
+    );
+
+    expect(prismaMock.blueprint.update).not.toHaveBeenCalled();
+  });
+
+  it("should throw error if invalid resource type", async () => {
+    const args = {
+      where: {
+        id: EXAMPLE_BLUEPRINT_ID,
+      },
+      data: {
+        resourceType: EnumResourceType.ProjectConfiguration,
+        codeGenerator: EnumCodeGenerator.Blueprint,
+      },
+    };
+
+    prismaMock.resource.findMany.mockReturnValueOnce([]);
+
+    await expect(service.updateBlueprintEngine(args)).rejects.toThrow(
+      `Invalid resource type: ${args.data.resourceType}`
+    );
+    expect(prismaMock.blueprint.update).not.toHaveBeenCalled();
+  });
+
+  it("should throw error if invalid code generator for resource type", async () => {
+    const args = {
+      where: {
+        id: EXAMPLE_BLUEPRINT_ID,
+      },
+      data: {
+        resourceType: EnumResourceType.Component,
+        codeGenerator: EnumCodeGenerator.DotNet, // invalid code generator for resource type
+      },
+    };
+    prismaMock.resource.findMany.mockReturnValueOnce([]);
+
+    await expect(service.updateBlueprintEngine(args)).rejects.toThrow(
+      `Invalid code generator for resource type: ${args.data.resourceType}`
+    );
+    expect(prismaMock.blueprint.update).not.toHaveBeenCalled();
   });
 });
