@@ -235,8 +235,30 @@ export class ServiceTemplateService {
       throw new AmplicationError(`Template version not found`);
     }
 
+    const blueprint = await this.prisma.blueprint.findUnique({
+      where: {
+        id: template.blueprintId,
+      },
+    });
+
+    if (!blueprint) {
+      throw new AmplicationError(`The template is missing a blueprint`);
+    }
+
+    const resourceType = blueprint.resourceType as EnumResourceType;
+
+    if (
+      ![EnumResourceType.Component, EnumResourceType.Service].includes(
+        resourceType
+      )
+    ) {
+      throw new AmplicationError(
+        `The template is based on a blueprint with an unsupported resource type. Only components and services are supported`
+      );
+    }
+
     let newResource: Resource;
-    if (template.blueprintId) {
+    if (resourceType === EnumResourceType.Component) {
       newResource = await this.internalCreateComponentFromTemplate(
         args,
         template,
