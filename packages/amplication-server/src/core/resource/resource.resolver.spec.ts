@@ -22,10 +22,8 @@ import { EntityService } from "../entity/entity.service";
 import { Environment } from "../environment/dto/Environment";
 import { EnvironmentService } from "../environment/environment.service";
 import { UserService } from "../user/user.service";
-import { ResourceCreateInput } from "./dto";
 import { ResourceResolver } from "./resource.resolver";
 import { ResourceService } from "./resource.service";
-import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
@@ -55,8 +53,6 @@ const EXAMPLE_ADDRESS = "exampleAddress";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 
 const EXAMPLE_ENTITY_ID = "exampleEntityId";
-
-const EXAMPLE_PROJECT_ID = "exampleProjectId";
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
@@ -205,49 +201,6 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
   }
 `;
 
-const CREATE_SERVICE_MUTATION = gql`
-  mutation ($data: ResourceCreateInput!) {
-    createService(data: $data) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      resourceType
-      gitRepositoryOverride
-      licensed
-      entities {
-        id
-        createdAt
-        updatedAt
-        resourceId
-        name
-        displayName
-        pluralDisplayName
-        customAttributes
-      }
-      builds {
-        id
-        userId
-        resourceId
-        version
-        actionId
-        createdAt
-        commitId
-        status
-        gitStatus
-      }
-      environments {
-        id
-        createdAt
-        updatedAt
-        resourceId
-        name
-        address
-      }
-    }
-  }
-`;
 const DELETE_RESOURCE_MUTATION = gql`
   mutation ($id: String!) {
     deleteResource(where: { id: $id }) {
@@ -605,58 +558,6 @@ describe("ResourceResolver", () => {
     expect(findManyEnvironmentsMock).toHaveBeenCalledWith({
       where: { resource: { id: EXAMPLE_RESOURCE_ID } },
     });
-  });
-
-  it("should create a service", async () => {
-    const resourceCreateInput: ResourceCreateInput = {
-      name: EXAMPLE_NAME,
-      description: EXAMPLE_DESCRIPTION,
-      resourceType: EnumResourceType.Service,
-      project: { connect: { id: EXAMPLE_PROJECT_ID } },
-      codeGenerator: EnumCodeGenerator.NodeJs,
-    };
-    const res = await apolloClient.executeOperation({
-      query: CREATE_SERVICE_MUTATION,
-      variables: {
-        data: resourceCreateInput,
-      },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      createService: {
-        ...EXAMPLE_RESOURCE,
-        resourceType: EnumResourceType.Service,
-        createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
-        entities: [
-          {
-            ...EXAMPLE_ENTITY,
-            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
-          },
-        ],
-        builds: [
-          {
-            ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
-          },
-        ],
-        environments: [
-          {
-            ...EXAMPLE_ENVIRONMENT,
-            createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
-          },
-        ],
-      },
-    });
-    expect(createServiceMock).toHaveBeenCalledTimes(1);
-    expect(createServiceMock).toHaveBeenCalledWith(
-      {
-        data: resourceCreateInput,
-      },
-      EXAMPLE_USER
-    );
   });
 
   it("should delete a resource", async () => {

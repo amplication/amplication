@@ -2,27 +2,19 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
+import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { expireCookie } from "../../util/cookie";
-import {
-  CREATE_SERVICE_WITH_ENTITIES,
-  GET_RESOURCES,
-  CREATE_MESSAGE_BROKER,
-  CREATE_SERVICE_FROM_TEMPLATE,
-} from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
-import { GET_PROJECTS } from "../queries/projectQueries";
-import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
-import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
+import { CREATE_PLUGIN_REPOSITORY } from "../queries/pluginRepositoryQueries";
+import {
+  CREATE_SERVICE_FROM_TEMPLATE,
+  GET_RESOURCES,
+} from "../queries/resourcesQueries";
 
 type TGetResources = {
   resources: models.Resource[];
-};
-
-type TCreateService = {
-  createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
 };
 
 type TCreateServiceFromTemplate = {
@@ -35,10 +27,6 @@ export type TUpdateCodeGeneratorVersion = {
     codeGeneratorVersion: string | null;
   };
   resourceId: string;
-};
-
-type TCreateMessageBroker = {
-  createMessageBroker: models.Resource;
 };
 
 type TCreatePluginRepository = {
@@ -104,8 +92,6 @@ const useResources = (
   });
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
-  const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
-    useState<models.ResourceCreateWithEntitiesResult>();
 
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
@@ -151,17 +137,6 @@ const useResources = (
     [projectBaseUrl, history]
   );
 
-  const [
-    createServiceWithEntities,
-    { loading: loadingCreateService, error: errorCreateService },
-  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES, {
-    refetchQueries: [
-      {
-        query: GET_PROJECTS,
-      },
-    ],
-  });
-
   const updateCodeGeneratorVersion = (input: TUpdateCodeGeneratorVersion) => {
     updateCodeGeneratorVersionMutation({
       variables: {
@@ -206,31 +181,6 @@ const useResources = (
     },
   });
 
-  const createService = (
-    data: models.ResourceCreateWithEntitiesInput,
-    eventName: AnalyticsEventNames
-  ) => {
-    trackEvent({
-      eventName: eventName,
-    });
-    createServiceWithEntities({ variables: { data: data } })
-      .then((result) => {
-        if (!result.data?.createServiceWithEntities.resource.id) return;
-
-        setCreateServiceWithEntitiesResult(
-          result.data?.createServiceWithEntities
-        );
-
-        const currentResourceId =
-          result.data?.createServiceWithEntities.resource.id;
-        addEntity(currentResourceId);
-        setCurrentResource(result.data?.createServiceWithEntities.resource);
-        expireCookie("signup");
-        reloadResources();
-      })
-      .catch(console.error);
-  };
-
   const [
     createPluginRepositoryInternal,
     {
@@ -255,28 +205,6 @@ const useResources = (
           });
       }
     );
-  };
-
-  const [
-    createBroker,
-    { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
-  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER, {});
-
-  const createMessageBroker = (
-    data: models.ResourceCreateInput,
-    eventName: AnalyticsEventNames
-  ) => {
-    trackEvent({
-      eventName: eventName,
-    });
-    createBroker({ variables: { data: data } }).then((result) => {
-      result.data?.createMessageBroker.id &&
-        addBlock(result.data.createMessageBroker.id);
-      result.data?.createMessageBroker.id &&
-        reloadResources().then(() => {
-          resourceRedirect(result.data?.createMessageBroker.id as string);
-        });
-    });
   };
 
   useEffect(() => {
@@ -417,19 +345,12 @@ const useResources = (
     errorResources,
     reloadResources,
     currentResource,
-    createService,
-    loadingCreateService,
-    errorCreateService,
-    createMessageBroker,
-    loadingCreateMessageBroker,
-    errorCreateMessageBroker,
     createPluginRepository,
     loadingCreatePluginRepository,
     errorCreatePluginRepository,
     gitRepositoryFullName,
     gitRepositoryUrl,
     gitRepositoryOrganizationProvider,
-    createServiceWithEntitiesResult,
     updateCodeGeneratorVersion,
     loadingUpdateCodeGeneratorVersion,
     errorUpdateCodeGeneratorVersion,

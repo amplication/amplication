@@ -93,20 +93,6 @@ function ServiceTemplateList() {
             </FlexItem>
           </>
         }
-        end={
-          <>
-            <FlexItem
-              itemsAlign={EnumItemsAlign.Center}
-              direction={EnumFlexDirection.Row}
-            >
-              <Link to={`${templatesBaseUrl}/create-service-template`}>
-                <Button buttonStyle={EnumButtonStyle.Primary}>
-                  Create Template
-                </Button>
-              </Link>
-            </FlexItem>
-          </>
-        }
       ></FlexItem>
       <HorizontalRule doubleSpacing />
 

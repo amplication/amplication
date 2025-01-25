@@ -23,6 +23,9 @@ import { UpdateBlueprintArgs } from "./dto/UpdateBlueprintArgs";
 import { BlueprintRelation } from "../../models/BlueprintRelation";
 import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { CODE_GENERATOR_NAME_TO_ENUM } from "../resource/resource.service";
+import { UpdateBlueprintEngineArgs } from "./dto/UpdateBlueprintEngineArgs";
 
 @Resolver(() => Blueprint)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -78,6 +81,18 @@ export class BlueprintResolver {
     return this.blueprintService.updateBlueprint(args);
   }
 
+  @Mutation(() => Blueprint, { nullable: false })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.BlueprintId,
+    "where.id",
+    "blueprint.edit"
+  )
+  async updateBlueprintEngine(
+    @Args() args: UpdateBlueprintEngineArgs
+  ): Promise<Blueprint> {
+    return this.blueprintService.updateBlueprintEngine(args);
+  }
+
   @Mutation(() => BlueprintRelation, {
     nullable: false,
   })
@@ -104,6 +119,20 @@ export class BlueprintResolver {
     @Args() args: DeleteBlueprintRelationArgs
   ): Promise<BlueprintRelation> {
     return this.blueprintService.deleteRelation(args);
+  }
+
+  @ResolveField(() => EnumCodeGenerator, { nullable: true })
+  async codeGenerator(
+    @Parent() blueprint: Blueprint
+  ): Promise<EnumCodeGenerator> {
+    const codeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[blueprint.codeGeneratorName];
+
+    if (!codeGenerator) {
+      return EnumCodeGenerator.Blueprint;
+    }
+
+    return codeGenerator;
   }
 
   @ResolveField(() => [CustomProperty])

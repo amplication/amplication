@@ -74,8 +74,6 @@ export enum AnalyticsEventNames {
   // plugin repository
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
   MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
-  MessageBrokerErrorCreate = "messageBrokerErrorCreate",
-  MessageBrokerCreateClick = "createMessageBrokerClick",
   MessagePatternTypeClick = "messagePatternTypeClick",
   BackToProjectsClick = "backToProjectsClick",
 
@@ -109,11 +107,6 @@ export enum AnalyticsEventNames {
   GithubOpenPullRequest = "openGithubPullRequest",
   GitHubRepositorySync = "selectGitRepository",
   GithubRepoSync = "selectGithubRepo",
-
-  //Create Resource Click
-  CreateService = "CreateResource_ServiceClick",
-  CreateMessageBroker = "CreateResource_MessageBrokerClick",
-  CreateProjectConfiguration = "CreateResource_ProjectConfigurationClick",
 
   StarUsBannerCTAClick = "StarUsBannerCTAClick",
   StarUsBannerClose = "StarUsBannerClose",
