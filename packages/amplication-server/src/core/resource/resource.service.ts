@@ -11,8 +11,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import cuid from "cuid";
 import { isEmpty, kebabCase } from "lodash";
-import { pascalCase } from "pascal-case";
-import pluralize from "pluralize";
 import { JsonObject } from "type-fest";
 import { FindOneArgs } from "../../dto";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -53,13 +51,10 @@ import { TopicService } from "../topic/topic.service";
 import { UserAction } from "../userAction/dto";
 import { EnumUserActionType } from "../userAction/types";
 import { UserActionService } from "../userAction/userAction.service";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import { REDESIGN_PROJECT_INITIAL_STEP_DATA } from "./constants";
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
-  ResourceCreateWithEntitiesInput,
-  ResourceCreateWithEntitiesResult,
   UpdateCodeGeneratorVersionArgs,
   UpdateOneResourceArgs,
 } from "./dto";
@@ -75,7 +70,6 @@ import { OwnershipService } from "../ownership/ownership.service";
 import { RelationService } from "../relation/relation.service";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
-import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
 import { ResourceInclude } from "./dto/ResourceInclude";
 import { Relation } from "../relation/dto/Relation";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
@@ -498,6 +492,7 @@ export class ResourceService {
         data: {
           ...args.data,
           resourceType: EnumResourceType.MessageBroker,
+          codeGenerator: EnumCodeGenerator.Blueprint,
         },
       },
       user
@@ -551,18 +546,40 @@ export class ResourceService {
       throw new AmplicationError("Component must use a blueprint");
     }
 
-    const resource = await this.createResource(
-      {
-        data: {
-          ...args.data,
-          resourceType: EnumResourceType.Component,
-          codeGenerator: EnumCodeGenerator.Blueprint,
-        },
+    const blueprint = await this.prisma.blueprint.findUnique({
+      where: {
+        id: args.data.blueprint.connect.id,
       },
-      user
-    );
+    });
 
-    return resource;
+    if (!blueprint) {
+      throw new AmplicationError("Invalid blueprint");
+    }
+
+    if (blueprint.resourceType === EnumResourceType.MessageBroker) {
+      return this.createMessageBroker(args, user);
+    } else if (blueprint.resourceType === EnumResourceType.Service) {
+      return this.createServiceWithDefaultSettings(
+        args.data.name,
+        args.data.description,
+        args.data.project.connect.id,
+        args.data.blueprint.connect.id,
+        user,
+        true,
+        CODE_GENERATOR_NAME_TO_ENUM[blueprint.codeGeneratorName]
+      );
+    } else {
+      return this.createResource(
+        {
+          data: {
+            ...args.data,
+            resourceType: EnumResourceType.Component,
+            codeGenerator: EnumCodeGenerator.Blueprint,
+          },
+        },
+        user
+      );
+    }
   }
 
   /**
@@ -712,6 +729,7 @@ export class ResourceService {
     serviceName: string,
     serviceDescription: string,
     projectId: string,
+    blueprintId: string,
     user: User,
     installDefaultDbPlugin = true,
     codeGenerator: keyof typeof EnumCodeGenerator | null = null
@@ -726,6 +744,11 @@ export class ResourceService {
 
     const args: CreateOneResourceArgs = {
       data: {
+        blueprint: {
+          connect: {
+            id: blueprintId,
+          },
+        },
         name: serviceName,
         description: serviceDescription || "",
         project: {
@@ -789,6 +812,12 @@ export class ResourceService {
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
+
+    const originalResource = await this.resource({
+      where: {
+        id: resourceId,
+      },
+    });
 
     const userAction =
       await this.userActionService.createUserActionByTypeWithInitialStep(
@@ -906,6 +935,11 @@ export class ResourceService {
 
         const args: CreateOneResourceArgs = {
           data: {
+            blueprint: {
+              connect: {
+                id: originalResource.blueprintId,
+              },
+            },
             name: newService.name,
             description: "",
             project: {
@@ -1316,206 +1350,6 @@ export class ResourceService {
         user
       );
     return serviceSettings.authEntityName;
-  }
-
-  /**
-   * Create a resource of type "Service" with entities and fields in one transaction, based only on entities and fields names
-   * @param user the user to associate the created resource with
-   */
-  async createServiceWithEntities(
-    data: ResourceCreateWithEntitiesInput,
-    user: User
-  ): Promise<ResourceCreateWithEntitiesResult> {
-    if (
-      data.entities.find(
-        (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
-      )
-    ) {
-      throw new ReservedEntityNameError(USER_ENTITY_NAME);
-    }
-
-    const requireAuthenticationEntity =
-      data.plugins?.plugins?.filter((plugin) => {
-        return plugin.configurations["requireAuthenticationEntity"] === "true";
-      }).length > 0;
-
-    const projectId = data.resource.project.connect.id;
-
-    const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
-
-    if (data.connectToDemoRepo) {
-      await this.projectService.createDemoRepo(projectId, user);
-      //do not use any git data when using demo repo
-      data.resource.gitRepository = undefined;
-    }
-
-    const resource = await this.createService(
-      {
-        data: data.resource,
-      },
-      user,
-      isOnboarding, //update project git repository only for onboarding
-      requireAuthenticationEntity
-    );
-
-    const newEntities: {
-      [index: number]: { entityId: string; name: string };
-    } = {};
-
-    for (const { entity, index } of data.entities.map((entity, index) => ({
-      index,
-      entity,
-    }))) {
-      const displayName = entity.name.trim();
-
-      const pluralDisplayName = pluralize(displayName);
-      const singularDisplayName = pluralize.singular(displayName);
-      const name = pascalCase(singularDisplayName);
-
-      const newEntity = await this.entityService.createOneEntity(
-        {
-          data: {
-            resource: {
-              connect: {
-                id: resource.id,
-              },
-            },
-            displayName: displayName,
-            name: name,
-            pluralDisplayName: pluralDisplayName,
-          },
-        },
-        user
-      );
-
-      newEntities[index] = {
-        entityId: newEntity.id,
-        name: newEntity.name,
-      };
-
-      for (const entityField of entity.fields) {
-        await this.entityService.createFieldByDisplayName(
-          {
-            data: {
-              entity: {
-                connect: {
-                  id: newEntity.id,
-                },
-              },
-              displayName: entityField.name,
-              dataType: entityField.dataType,
-            },
-          },
-          user
-        );
-      }
-    }
-
-    //after all entities were created, create the relation fields
-    for (const { entity, index } of data.entities.map((entity, index) => ({
-      index,
-      entity,
-    }))) {
-      if (entity.relationsToEntityIndex) {
-        for (const relationToIndex of entity.relationsToEntityIndex) {
-          await this.entityService.createFieldByDisplayName(
-            {
-              data: {
-                entity: {
-                  connect: {
-                    id: newEntities[index].entityId,
-                  },
-                },
-                displayName: newEntities[relationToIndex].name,
-                dataType: EnumDataType.Lookup,
-              },
-            },
-            user
-          );
-        }
-      }
-    }
-
-    if (data.plugins?.plugins) {
-      await this.installPlugins(resource.id, data.plugins.plugins, user);
-    }
-
-    if (isOnboarding) {
-      try {
-        await this.projectService.commit(
-          {
-            data: {
-              resourceTypeGroup: EnumResourceTypeGroup.Services,
-              message: INITIAL_COMMIT_MESSAGE,
-              project: {
-                connect: {
-                  id: resource.projectId,
-                },
-              },
-              user: {
-                connect: {
-                  id: user.id,
-                },
-              },
-            },
-          },
-          user
-        );
-      } catch (error) {
-        this.logger.error(error.message, error);
-      }
-    }
-
-    const resourceBuilds = await this.prisma.resource.findUnique({
-      where: { id: resource.id },
-      select: {
-        builds: true,
-      },
-    });
-
-    const { gitRepository, serviceSettings } = data.resource;
-
-    const gitOrganization = await this.gitOrganizationByResource({
-      where: {
-        id: resource.id,
-      },
-    });
-
-    const provider = data.connectToDemoRepo
-      ? "demo-repo"
-      : gitRepository && gitOrganization?.provider;
-
-    const totalEntities = data.entities.length;
-    const totalFields = data.entities.reduce((acc, entity) => {
-      return acc + entity.fields.length;
-    }, 0);
-
-    await this.analytics.trackWithContext({
-      event: EnumEventType.ServiceWizardServiceGenerated,
-      properties: {
-        category: "Service Wizard",
-        wizardType: data.wizardType,
-        resourceName: resource.name,
-        gitProvider: provider,
-        gitOrganizationName: gitOrganization?.name,
-        repoName: gitRepository?.name,
-        graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
-        restApi: String(serviceSettings.serverSettings.generateRestApi),
-        adminUI: String(serviceSettings.adminUISettings.generateAdminUI),
-        repoType: data.repoType,
-        dbType: data.dbType,
-        auth: data.authType,
-        projectId,
-        totalEntities,
-        totalFields,
-        gitOrgType: gitOrganization?.type,
-      },
-    });
-
-    return {
-      resource: resource,
-      build: isOnboarding ? resourceBuilds.builds[0] : null,
-    };
   }
 
   async resource(

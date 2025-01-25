@@ -6,7 +6,6 @@ import { MeteredEntitlement } from "@stigg/node-server-sdk";
 import cuid from "cuid";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { QueryMode } from "../../enums/QueryMode";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import {
   Account,
@@ -60,12 +59,9 @@ import {
   CodeGeneratorVersionStrategy,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-  ResourceCreateInput,
-  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { PendingChange } from "./dto/PendingChange";
-import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   INVALID_RESOURCE_ID,
@@ -75,6 +71,7 @@ import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resou
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_BLUEPRINT_ID = "exampleBlueprintId";
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
   "exampleProjectConfigurationResourceId";
 const EXAMPLE_PROJECT_ID = "exampleProjectId";
@@ -122,16 +119,6 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date(),
   gitOrganization: EXAMPLE_GIT_ORGANISATION,
   groupName: "",
-};
-
-const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
-  description: "Sample Service for task management",
-  name: "My sample service",
-  resourceType: EnumResourceType.Service,
-  project: { connect: { id: EXAMPLE_PROJECT_ID } },
-  serviceSettings: EXAMPLE_SERVICE_SETTINGS,
-  gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
-  codeGenerator: EnumCodeGenerator.NodeJs,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -361,11 +348,6 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   inputParameters: [],
   outputParameters: [],
   authEntityName: USER_ENTITY_NAME,
-};
-
-const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
-  resource: EXAMPLE_RESOURCE,
-  build: EXAMPLE_BUILD,
 };
 
 const EXAMPLE_TOPIC: Topic = {
@@ -724,6 +706,11 @@ describe("ResourceService", () => {
           },
           serviceSettings: EXAMPLE_SERVICE_SETTINGS,
           gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
+          },
         },
       },
       user: EXAMPLE_USER,
@@ -763,6 +750,11 @@ describe("ResourceService", () => {
           gitRepository: {
             ...EXAMPLE_GIT_REPOSITORY_INPUT,
             isOverrideGitRepository: false, //even if isOverride is false, it should create a repo on the project
+          },
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
           },
         },
       },
@@ -818,6 +810,11 @@ describe("ResourceService", () => {
           },
           serviceSettings: EXAMPLE_SERVICE_SETTINGS,
           gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
+          blueprint: {
+            connect: {
+              id: EXAMPLE_BLUEPRINT_ID,
+            },
+          },
         },
       },
       user: EXAMPLE_USER,
@@ -843,148 +840,6 @@ describe("ResourceService", () => {
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(0);
     expect(entityServiceCreateDefaultUserEntityMock).toBeCalledTimes(0);
-  });
-
-  it("should fail to create resource with entities with a reserved name", async () => {
-    await expect(
-      service.createServiceWithEntities(
-        {
-          resource: SAMPLE_SERVICE_DATA,
-          commitMessage: "commitMessage",
-          entities: [
-            {
-              name: USER_ENTITY_NAME,
-              fields: [
-                {
-                  name: EXAMPLE_ENTITY_FIELD_NAME,
-                },
-              ],
-            },
-          ],
-          wizardType: "onboarding",
-          dbType: "postgres",
-          repoType: "Mono",
-          authType: "Jwt",
-          plugins: {
-            plugins: [
-              {
-                id: "clb3p3uxx009bjn01zfbim7p1",
-                displayName: "jwtAuth",
-                npm: "@amplication/plugin-auth-jwt",
-                enabled: true,
-                version: "latest",
-                pluginId: "auth-jwt",
-                settings: {},
-                configurations: {},
-                isPrivate: false,
-                resource: { connect: { id: "" } },
-              },
-            ],
-          },
-          connectToDemoRepo: false,
-        },
-
-        EXAMPLE_USER
-      )
-    ).rejects.toThrow(new ReservedEntityNameError(USER_ENTITY_NAME));
-  });
-
-  it("should create resource with entities", async () => {
-    const commitMessage = "CreateWithEntitiesCommitMessage";
-    const createOneEntityArgs = {
-      data: {
-        resource: {
-          connect: {
-            id: EXAMPLE_RESOURCE_ID,
-          },
-        },
-        displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-        name: EXAMPLE_ENTITY_NAME,
-        pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
-      },
-    };
-    const createFieldByDisplayNameArgs = {
-      data: {
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID,
-          },
-        },
-        displayName: EXAMPLE_ENTITY_FIELD_NAME,
-      },
-    };
-    await expect(
-      service.createServiceWithEntities(
-        {
-          resource: SAMPLE_SERVICE_DATA,
-          commitMessage: commitMessage,
-          entities: [
-            {
-              name: EXAMPLE_ENTITY_DISPLAY_NAME,
-              fields: [
-                {
-                  name: EXAMPLE_ENTITY_FIELD_NAME,
-                },
-              ],
-            },
-          ],
-          wizardType: "onboarding",
-          dbType: "postgres",
-          repoType: "Mono",
-          authType: "Jwt",
-          connectToDemoRepo: false,
-        },
-
-        EXAMPLE_USER
-      )
-    ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
-    expect(prismaResourceCreateMock).toBeCalledTimes(1);
-
-    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
-    expect(prismaResourceFindManyMock.mock.calls).toEqual([
-      [
-        {
-          where: {
-            deletedAt: null,
-            archived: {
-              not: true,
-            },
-            project: { id: EXAMPLE_PROJECT_ID },
-            resourceType: { equals: EnumResourceType.Service },
-          },
-        },
-      ],
-      [
-        {
-          where: {
-            deletedAt: null,
-            archived: {
-              not: true,
-            },
-            name: {
-              mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase(),
-            },
-            projectId: EXAMPLE_PROJECT_ID,
-          },
-          select: {
-            name: true,
-          },
-        },
-      ],
-    ]);
-
-    expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
-    expect(entityServiceCreateOneEntityMock).toBeCalledWith(
-      createOneEntityArgs,
-      EXAMPLE_USER
-    );
-
-    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledTimes(1);
-    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledWith(
-      createFieldByDisplayNameArgs,
-      EXAMPLE_USER
-    );
   });
 
   it("should find a resource", async () => {
@@ -1202,6 +1057,7 @@ describe("ResourceService", () => {
       EXAMPLE_RESOURCE_NAME,
       EXAMPLE_RESOURCE_DESCRIPTION,
       EXAMPLE_PROJECT_ID,
+      EXAMPLE_BLUEPRINT_ID,
       EXAMPLE_USER,
       true
     );
@@ -1215,6 +1071,7 @@ describe("ResourceService", () => {
       EXAMPLE_RESOURCE_NAME,
       EXAMPLE_RESOURCE_DESCRIPTION,
       EXAMPLE_PROJECT_ID,
+      EXAMPLE_BLUEPRINT_ID,
       EXAMPLE_USER,
       false
     );

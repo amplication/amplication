@@ -595,6 +595,7 @@ export class AssistantFunctionsService {
           args.serviceName,
           args.serviceDescription || "",
           args.projectId,
+          "Blueprint", //TBC: update jovu to create resources from blueprints
           context.user,
           needDefaultDbPlugin,
           args.codeGenerator

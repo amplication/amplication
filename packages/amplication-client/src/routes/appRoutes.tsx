@@ -278,19 +278,6 @@ export const Routes: RouteDef[] = [
             ],
             routes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-service-template",
-                Component: lazy(
-                  () =>
-                    import("../Resource/create-resource/CreateServiceWizard")
-                ),
-                moduleName: "CreateServiceWizard",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-                routes: [],
-              },
-              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
                 Component: lazy(
                   () =>
@@ -455,17 +442,6 @@ export const Routes: RouteDef[] = [
             ],
             routes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/dotnet-upgrade",
-                Component: lazy(
-                  () => import("../VersionControl/DotNetPromotePage")
-                ),
-                moduleName: "DotnetPromote",
-                moduleClass: "",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
                 Component: lazy(
                   () => import("../Assistant/OnboardingWithJovuPage")
@@ -475,34 +451,6 @@ export const Routes: RouteDef[] = [
                 exactPath: true,
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
-                Component: lazy(
-                  () =>
-                    import("../Resource/create-resource/CreateServiceWizard")
-                ),
-                moduleName: "CreateServiceWizard",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-                routes: [],
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-message-broker/CreateMessageBroker"
-                    )
-                ),
-                moduleName: "CreateMessageBroker",
-                moduleClass: "create-message-broker",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
                 Component: lazy(() => import("../Resource/ResourceHome")),

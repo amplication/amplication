@@ -104,6 +104,19 @@ export class BlueprintService {
       throw new AmplicationError(INVALID_BLUEPRINT_ID);
     }
 
+    const resources = await this.prisma.resource.findMany({
+      where: {
+        blueprintId: args.where.id,
+        deletedAt: null,
+      },
+    });
+
+    if (resources.length > 0) {
+      throw new AmplicationError(
+        `Cannot delete blueprint because it is already in use by resources`
+      );
+    }
+
     const updatedBlueprint = await this.prisma.blueprint.update({
       where: args.where,
       data: {
