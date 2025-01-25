@@ -80,7 +80,7 @@ const FUNCTION_PERMISSIONS: {
   },
   getAvailablePlugins: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "context.resourceID",
+    paramPath: "resourceId",
   },
   installPlugins: {
     paramType: AuthorizableOriginParameter.ResourceId,
@@ -720,8 +720,44 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.GetAvailablePlugins,
       context: AssistantContext
     ) => {
-      //todo: return the list of plugins based on the blueprint
-      return []; //this.pluginCatalogService.getPlugins(args.codeGenerator);
+      const resource = await this.resourceService.resource({
+        where: {
+          id: args.resourceId,
+        },
+      });
+
+      if (!resource) {
+        throw new Error(`Resource with id ${args.resourceId} not found`);
+      }
+
+      let publicPlugins = [];
+
+      if (resource.resourceType === EnumResourceType.Service) {
+        const codeGenerator =
+          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+          EnumCodeGenerator.NodeJs;
+        publicPlugins = await this.pluginCatalogService.getPlugins(
+          codeGenerator
+        );
+      } else {
+        return {
+          message:
+            "To view and install plugins on this resource use the plugins Page to view the list of available plugins",
+          catalogLink: `${this.clientHost}/${context.workspaceId}/${resource.projectId}/${resource.id}/plugins/catalog`,
+        };
+      }
+
+      // const privatePlugins =
+      //   this.privatePluginService.availablePrivatePluginsForResource({
+      //     where: {
+      //       resource: { id: args.resourceId },
+      //     },
+      //   });
+
+      return {
+        plugins: publicPlugins,
+        catalogLink: `${this.clientHost}/${context.workspaceId}/${resource.projectId}/${resource.id}/plugins/catalog`,
+      };
     },
     installPlugins: async (
       args: functionsArgsTypes.InstallPlugins,
