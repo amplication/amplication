@@ -61,7 +61,7 @@ const FUNCTIONS_CACHE_MAP: {
     refreshPendingChanges: true,
     cacheKey: "resources",
   },
-  [models.EnumAssistantFunctions.CreateService]: {
+  [models.EnumAssistantFunctions.CreateResource]: {
     refreshPendingChanges: true,
     cacheKey: "resources",
   },
@@ -106,7 +106,7 @@ const FUNCTIONS_CACHE_MAP: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
-  [models.EnumAssistantFunctions.GetPlugins]: {
+  [models.EnumAssistantFunctions.GetAvailablePlugins]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
@@ -114,19 +114,19 @@ const FUNCTIONS_CACHE_MAP: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
-  [models.EnumAssistantFunctions.GetProjectServices]: {
+  [models.EnumAssistantFunctions.GetProjectResources]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
-  [models.EnumAssistantFunctions.GetServiceEntities]: {
+  [models.EnumAssistantFunctions.GetResourceEntities]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
-  [models.EnumAssistantFunctions.GetServiceModules]: {
+  [models.EnumAssistantFunctions.GetResourceModules]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
-  [models.EnumAssistantFunctions.GetService]: {
+  [models.EnumAssistantFunctions.GetResource]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },
@@ -135,6 +135,10 @@ const FUNCTIONS_CACHE_MAP: {
     cacheKey: "blueprints",
   },
   [models.EnumAssistantFunctions.ListBlueprints]: {
+    refreshPendingChanges: false,
+    cacheKey: "",
+  },
+  [models.EnumAssistantFunctions.GetProjects]: {
     refreshPendingChanges: false,
     cacheKey: "",
   },

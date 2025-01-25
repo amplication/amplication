@@ -1,0 +1,14 @@
+{
+  "name": "getResourceModules",
+  "description": "get a list of modules in a resource",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "resourceId": {
+        "type": "string",
+        "description": "The ID of the resource"
+      }
+    },
+    "required": ["resourceId"]
+  }
+}

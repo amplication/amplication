@@ -5,9 +5,4 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface CreateBlueprint {
-  /**
-   * The name of the blueprint
-   */
-  name: string;
-}
+export interface GetProjects {}

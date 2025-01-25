@@ -872,15 +872,16 @@ export enum EnumAssistantFunctions {
   CreateModuleDto = 'CreateModuleDto',
   CreateModuleEnum = 'CreateModuleEnum',
   CreateProject = 'CreateProject',
-  CreateService = 'CreateService',
+  CreateResource = 'CreateResource',
+  GetAvailablePlugins = 'GetAvailablePlugins',
   GetModuleActions = 'GetModuleActions',
   GetModuleDtosAndEnums = 'GetModuleDtosAndEnums',
-  GetPlugins = 'GetPlugins',
   GetProjectPendingChanges = 'GetProjectPendingChanges',
-  GetProjectServices = 'GetProjectServices',
-  GetService = 'GetService',
-  GetServiceEntities = 'GetServiceEntities',
-  GetServiceModules = 'GetServiceModules',
+  GetProjectResources = 'GetProjectResources',
+  GetProjects = 'GetProjects',
+  GetResource = 'GetResource',
+  GetResourceEntities = 'GetResourceEntities',
+  GetResourceModules = 'GetResourceModules',
   InstallPlugins = 'InstallPlugins',
   ListBlueprints = 'ListBlueprints'
 }
@@ -3692,8 +3693,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  blueprint?: InputMaybe<WhereParentIdInput>;
-  codeGenerator?: InputMaybe<EnumCodeGenerator>;
+  blueprint: WhereParentIdInput;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];

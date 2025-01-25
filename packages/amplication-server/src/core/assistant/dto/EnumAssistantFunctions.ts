@@ -3,16 +3,16 @@ import { registerEnumType } from "@nestjs/graphql";
 export enum EnumAssistantFunctions {
   CreateEntities = "createEntities",
   CreateEntityFields = "createEntityFields",
-  GetProjectServices = "getProjectServices",
-  GetServiceEntities = "getServiceEntities",
-  CreateService = "createService",
+  GetProjectResources = "getProjectResources",
+  GetResourceEntities = "getResourceEntities",
+  CreateResource = "createResource",
   CreateProject = "createProject",
   CommitProjectPendingChanges = "commitProjectPendingChanges",
   GetProjectPendingChanges = "getProjectPendingChanges",
-  GetPlugins = "getPlugins",
+  GetAvailablePlugins = "getAvailablePlugins",
   InstallPlugins = "installPlugins",
-  GetServiceModules = "getServiceModules",
-  GetService = "getService",
+  GetResourceModules = "getResourceModules",
+  GetResource = "getResource",
   CreateModule = "createModule",
   GetModuleDtosAndEnums = "getModuleDtosAndEnums",
   CreateModuleDto = "createModuleDto",
@@ -21,6 +21,11 @@ export enum EnumAssistantFunctions {
   CreateModuleAction = "createModuleAction",
   CreateBlueprint = "createBlueprint",
   ListBlueprints = "listBlueprints",
+  GetProjects = "getProjects",
+
+  //get templates
+  //create resource from template
+  //create template
 }
 
 registerEnumType(EnumAssistantFunctions, {

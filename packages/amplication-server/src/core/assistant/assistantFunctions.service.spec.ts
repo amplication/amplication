@@ -106,7 +106,7 @@ const EXAMPLE_LOGGER_CONTEXT: MessageLoggerContext = {
   messageContext: {
     workspaceId: EXAMPLE_WORKSPACE_ID,
     projectId: EXAMPLE_PROJECT_ID,
-    serviceId: EXAMPLE_RESOURCE_ID,
+    resourceId: EXAMPLE_RESOURCE_ID,
   },
   threadId: EXAMPLE_THREAD_ID,
   userId: EXAMPLE_USER_ID,
@@ -322,7 +322,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.CreateEntities,
       {
         names: ["entity 1", "entity 2"],
-        serviceId: "value2",
+        resourceId: "value2",
       },
       [
         {
@@ -366,7 +366,7 @@ describe("AssistantFunctionsService", () => {
     [
       EnumAssistantFunctions.CreateService,
       {
-        serviceName: "New Service",
+        resourceName: "New Resource",
         projectId: "proj123",
         adminUIPath: "/admin-ui",
         serverPath: "/server",
@@ -383,7 +383,7 @@ describe("AssistantFunctionsService", () => {
       {
         moduleName: "New Module",
         moduleDescription: "Module Description",
-        serviceId: "service123",
+        resourceId: "resource123",
       },
       [
         {
@@ -396,7 +396,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.InstallPlugins,
       {
         pluginIds: ["plugin1", "plugin2"],
-        serviceId: "service123",
+        resourceId: "resource123",
       },
       [
         {
@@ -420,8 +420,8 @@ describe("AssistantFunctionsService", () => {
       ],
     ],
     [
-      EnumAssistantFunctions.GetServiceEntities,
-      { serviceId: "service123" },
+      EnumAssistantFunctions.GetResourceEntities,
+      { resourceId: "resource123" },
       [
         {
           mock: entityServiceEntitiesMock,
@@ -462,8 +462,8 @@ describe("AssistantFunctionsService", () => {
       ],
     ],
     [
-      EnumAssistantFunctions.GetServiceModules,
-      { serviceId: "service123" },
+      EnumAssistantFunctions.GetResourceModules,
+      { resourceId: "resource123" },
       [
         {
           mock: moduleServiceFindManyMock,
@@ -475,7 +475,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.CreateModuleDto,
       {
         moduleId: "module123",
-        serviceId: "service123",
+        resourceId: "resource123",
         dtoName: "NewDTO",
         dtoDescription: "DTO Description",
         properties: [],
@@ -491,7 +491,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.CreateModuleEnum,
       {
         moduleId: "module123",
-        serviceId: "service123",
+        resourceId: "resource123",
         enumName: "NewEnum",
         enumDescription: "Enum Description",
         members: [],
@@ -507,7 +507,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.GetModuleActions,
       {
         moduleId: "module123",
-        serviceId: "service123",
+        resourceId: "resource123",
       },
       [
         {
@@ -520,7 +520,7 @@ describe("AssistantFunctionsService", () => {
       EnumAssistantFunctions.CreateModuleAction,
       {
         moduleId: "module123",
-        serviceId: "service123",
+        resourceId: "resource123",
         actionName: "NewAction",
         actionDescription: "Action Description",
         gqlOperation: "Query",
@@ -566,12 +566,12 @@ describe("AssistantFunctionsService", () => {
   );
 
   it("should validate permissions before executing a function", async () => {
-    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+    const EXAMPLE_SERVICE_ID = "exampleResourceId";
 
     const functionName = EnumAssistantFunctions.CreateEntities;
     const params = {
       names: ["entity 1", "entity 2"],
-      serviceId: EXAMPLE_SERVICE_ID,
+      resourceId: EXAMPLE_SERVICE_ID,
     };
 
     await service.executeFunction(
@@ -592,12 +592,12 @@ describe("AssistantFunctionsService", () => {
   });
 
   it("should not execute the function without the needed permissions", async () => {
-    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+    const EXAMPLE_SERVICE_ID = "exampleResourceId";
 
     const functionName = EnumAssistantFunctions.CreateEntities;
     const params = {
       names: ["entity 1", "entity 2"],
-      serviceId: EXAMPLE_SERVICE_ID,
+      resourceId: EXAMPLE_SERVICE_ID,
     };
 
     permissionsServiceValidateAccessMock.mockReturnValueOnce(false);
@@ -619,13 +619,13 @@ describe("AssistantFunctionsService", () => {
   });
 
   it("should return error for one entity, while creating others successfully ", async () => {
-    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+    const EXAMPLE_SERVICE_ID = "exampleResourceId";
 
     const functionName = EnumAssistantFunctions.CreateEntities;
     const reservedEntityName = "function";
     const params = {
       names: ["entity 1", reservedEntityName, "entity 3"],
-      serviceId: EXAMPLE_SERVICE_ID,
+      resourceId: EXAMPLE_SERVICE_ID,
     };
 
     const entityResults = {
@@ -684,13 +684,13 @@ describe("AssistantFunctionsService", () => {
   });
 
   it("should return an error if module DTO types are invalid", async () => {
-    const EXAMPLE_SERVICE_ID = "exampleServiceId";
+    const EXAMPLE_SERVICE_ID = "exampleResourceId";
 
     const functionName = EnumAssistantFunctions.CreateModuleDto;
 
     const params = {
       moduleId: EXAMPLE_MODULE_ID,
-      serviceId: EXAMPLE_SERVICE_ID,
+      resourceId: EXAMPLE_SERVICE_ID,
       dtoName: "NewDTO",
       dtoDescription: "DTO Description",
       properties: [
@@ -752,7 +752,7 @@ describe("AssistantFunctionsService", () => {
       const functionName = EnumAssistantFunctions.CreateEntities;
       const params = {
         names: [name],
-        serviceId: EXAMPLE_RESOURCE_ID,
+        resourceId: EXAMPLE_RESOURCE_ID,
       };
 
       await service.executeFunction(
@@ -774,7 +774,7 @@ describe("AssistantFunctionsService", () => {
     const functionName = EnumAssistantFunctions.CreateEntities;
     const params = {
       names: ["User"],
-      serviceId: EXAMPLE_RESOURCE_ID,
+      resourceId: EXAMPLE_RESOURCE_ID,
     };
 
     //throw error from createDefaultAuthEntity

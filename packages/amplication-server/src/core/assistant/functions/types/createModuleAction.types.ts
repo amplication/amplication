@@ -7,13 +7,13 @@
 
 export interface CreateModuleAction {
   /**
-   * the ID of the module in which the action is created. The moduleId is different then the serviceID. The moduleId is the ID of the module in which the action is created. The serviceId is the ID of the service in which the module exist. You can use the function get getServiceModules to get a list of available modules in a service.
+   * the ID of the module in which the action is created. The moduleId is different then the resourceID. The moduleId is the ID of the module in which the action is created. The resourceId is the ID of the resource in which the module exist. You can use the function get getResourceModules to get a list of available modules in a resource.
    */
   moduleId: string;
   /**
-   * the ID of the service in which the Action is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead
+   * the ID of the resource in which the Action is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead
    */
-  serviceId: string;
+  resourceId: string;
   /**
    * the name of the action. e.g.: 'Create Customer'
    */

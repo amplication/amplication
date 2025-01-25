@@ -5,9 +5,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface CreateBlueprint {
+export interface GetAvailablePlugins {
   /**
-   * The name of the blueprint
+   * the ID of the resource for which to get the available plugins
    */
-  name: string;
+  resourceId: string;
 }

@@ -1,0 +1,26 @@
+{
+  "name": "createResource",
+  "description": "Create a resource in a project based on a blueprint.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "resourceName": {
+        "type": "string",
+        "description": "the name of the resource"
+      },
+      "resourceDescription": {
+        "type": "string",
+        "description": "the description of the resource"
+      },
+      "projectId": {
+        "type": "string",
+        "description": "the ID of the project in which to create the resource"
+      },
+      "blueprintId": {
+        "type": "string",
+        "description": "the ID of the blueprint to use for the resource"
+      }
+    },
+    "required": ["resourceName", "projectId", "blueprintId"]
+  }
+}

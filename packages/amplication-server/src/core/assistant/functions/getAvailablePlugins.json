@@ -1,0 +1,14 @@
+{
+  "name": "getAvailablePlugins",
+  "description": "Get a list of all available plugins for a code generator, such as Kafka, auth providers, architecture, databases and more",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "resourceId": {
+        "type": "string",
+        "description": "the ID of the resource for which to get the available plugins"
+      }
+    },
+    "required": ["resourceId"]
+  }
+}

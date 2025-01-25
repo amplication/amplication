@@ -43,7 +43,7 @@ export type MessageLoggerContext = {
   messageContext: {
     workspaceId: string;
     projectId: string;
-    serviceId: string;
+    resourceId: string;
   };
   threadId: string;
   userId: string;
@@ -129,7 +129,7 @@ export class AssistantService {
     return {
       workspaceId: context.workspaceId,
       projectId: context.projectId,
-      serviceId: context.resourceId, //@TODO: check type? //we use service id implicitly to help the assistant differentiate between different resources
+      resourceId: context.resourceId, //@TODO: check type? //we use resource id implicitly to help the assistant differentiate between different resources
     };
   }
 

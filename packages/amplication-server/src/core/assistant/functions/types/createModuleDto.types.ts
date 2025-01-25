@@ -7,13 +7,13 @@
 
 export interface CreateModuleDto {
   /**
-   * the ID of the module in which the DTO is created. The moduleID is different then the serviceID. The moduleID is the ID of the module in which the DTO is created. The serviceID is the ID of the service in which the module exist. You can use the function get getServiceModules to get a list of available modules in a service.
+   * the ID of the module in which the DTO is created. The moduleID is different then the resourceID. The moduleID is the ID of the module in which the DTO is created. The resourceID is the ID of the resource in which the module exist. You can use the function get getResourceModules to get a list of available modules in a resource.
    */
   moduleId: string;
   /**
-   * the ID of the service in which the DTO is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead
+   * the ID of the resource in which the DTO is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead
    */
-  serviceId: string;
+  resourceId: string;
   /**
    * the name of the dto. e.g.: 'customerCreateInput'
    */
