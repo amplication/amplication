@@ -73,6 +73,7 @@ export enum EnumEventType {
   //Blueprints
   BlueprintCreate = "BlueprintCreate",
   BlueprintUpdate = "BlueprintUpdate",
+  BlueprintUpdateEngine = "BlueprintUpdateEngine",
   BlueprintDelete = "BlueprintDelete",
 
   //Roles

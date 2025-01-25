@@ -1,6 +1,6 @@
 {
   "name": "installPlugins",
-  "description": "Installs plugins on a service.",
+  "description": "Installs plugins on a resource.",
   "parameters": {
     "type": "object",
     "properties": {
@@ -11,11 +11,11 @@
           "type": "string"
         }
       },
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "the ID of the service in which the plugin is installed. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+        "description": "the ID of the resource in which the plugin is installed. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead"
       }
     },
-    "required": ["pluginIds", "serviceId"]
+    "required": ["pluginIds", "resourceId"]
   }
 }

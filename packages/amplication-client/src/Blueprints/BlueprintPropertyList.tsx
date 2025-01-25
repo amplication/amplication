@@ -88,7 +88,11 @@ const BlueprintPropertyList = React.memo(
         />
         <List>
           {(!blueprint?.properties || blueprint?.properties?.length === 0) && (
-            <ListItem>No Properties defined</ListItem>
+            <ListItem>
+              <Text textStyle={EnumTextStyle.Description}>
+                No Properties defined
+              </Text>
+            </ListItem>
           )}
 
           {blueprint?.properties?.map((property, index) => (

@@ -34,6 +34,7 @@ import * as functionsArgsTypes from "./functions/types";
 import { USER_ENTITY_NAME } from "../entity/constants";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { BlueprintService } from "../blueprint/blueprint.service";
 
 export const MESSAGE_UPDATED_EVENT = "assistantMessageUpdated";
 
@@ -47,21 +48,21 @@ const FUNCTION_PERMISSIONS: {
 } = {
   createEntities: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   createEntityFields: {
     paramType: AuthorizableOriginParameter.EntityId,
     paramPath: "entityId",
   },
-  getProjectServices: {
+  getProjectResources: {
     paramType: AuthorizableOriginParameter.ProjectId,
     paramPath: "projectId",
   },
-  getServiceEntities: {
+  getResourceEntities: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
-  createService: {
+  createResource: {
     paramType: AuthorizableOriginParameter.ProjectId,
     paramPath: "projectId",
   },
@@ -77,45 +78,57 @@ const FUNCTION_PERMISSIONS: {
     paramType: AuthorizableOriginParameter.ProjectId,
     paramPath: "projectId",
   },
-  getPlugins: {
-    paramType: AuthorizableOriginParameter.WorkspaceId,
-    paramPath: "context.workspaceId",
+  getAvailablePlugins: {
+    paramType: AuthorizableOriginParameter.ResourceId,
+    paramPath: "context.resourceID",
   },
   installPlugins: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
-  getService: {
+  getResource: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
-  getServiceModules: {
+  getResourceModules: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   createModule: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   getModuleDtosAndEnums: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   createModuleDto: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   createModuleEnum: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   getModuleActions: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
   },
   createModuleAction: {
     paramType: AuthorizableOriginParameter.ResourceId,
-    paramPath: "serviceId",
+    paramPath: "resourceId",
+  },
+  createBlueprint: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
+  listBlueprints: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
+  },
+  getProjects: {
+    paramType: AuthorizableOriginParameter.WorkspaceId,
+    paramPath: "context.workspaceId",
   },
 };
 
@@ -134,6 +147,7 @@ export class AssistantFunctionsService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly moduleActionService: ModuleActionService,
     private readonly moduleDtoService: ModuleDtoService,
+    private readonly blueprintService: BlueprintService,
     private readonly permissionsService: PermissionsService,
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
 
@@ -285,7 +299,7 @@ export class AssistantFunctionsService {
 
   async installMultiplePlugins(
     pluginIds: string[],
-    serviceId: string,
+    resourceId: string,
     context: AssistantContext
   ): Promise<any> {
     //iterate over the pluginIds and install each plugin synchronously
@@ -293,18 +307,18 @@ export class AssistantFunctionsService {
     const installations = [];
     let authEntityExist = false;
 
-    const service = await this.resourceService.resource({
+    const resource = await this.resourceService.resource({
       where: {
-        id: serviceId,
+        id: resourceId,
       },
     });
 
-    if (!service) {
-      throw new Error(`Service with id ${serviceId} not found`);
+    if (!resource) {
+      throw new Error(`Resource with id ${resourceId} not found`);
     }
 
     const codeGenerator =
-      CODE_GENERATOR_NAME_TO_ENUM[service.codeGeneratorName] ||
+      CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
       EnumCodeGenerator.NodeJs;
 
     for (const pluginId of pluginIds) {
@@ -315,7 +329,7 @@ export class AssistantFunctionsService {
 
       if (plugin.codeGeneratorName !== codeGenerator) {
         installations.push({
-          result: `Plugin not installed. Plugin code generator "${plugin.codeGeneratorName}" is not compatible with the service code generator ${codeGenerator}`,
+          result: `Plugin not installed. Plugin code generator "${plugin.codeGeneratorName}" is not compatible with the resource code generator ${codeGenerator}`,
         });
         continue;
       }
@@ -328,7 +342,7 @@ export class AssistantFunctionsService {
         !authEntityExist
       ) {
         const authEntityName = await this.resourceService.getAuthEntityName(
-          serviceId,
+          resourceId,
           context.user
         );
         if (!isEmpty(authEntityName)) {
@@ -336,7 +350,7 @@ export class AssistantFunctionsService {
         } else {
           //create auth entity
           await this.resourceService.createDefaultAuthEntity(
-            serviceId,
+            resourceId,
             context.user
           );
           authEntityExist = true;
@@ -353,7 +367,7 @@ export class AssistantFunctionsService {
             version: version,
             settings: settings,
             configurations: configurations,
-            resource: { connect: { id: serviceId } },
+            resource: { connect: { id: resourceId } },
             isPrivate: false,
           },
         },
@@ -362,14 +376,14 @@ export class AssistantFunctionsService {
 
       installations.push({
         result: installation,
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/installed/${installation.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${resourceId}/plugins/installed/${installation.id}`,
       });
     }
 
     return {
       installations,
-      pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/catalog`,
-      allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${serviceId}/plugins/installed`,
+      pluginsCatalogLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${resourceId}/plugins/catalog`,
+      allInstalledPluginsLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${resourceId}/plugins/installed`,
     };
   }
 
@@ -385,6 +399,8 @@ export class AssistantFunctionsService {
       context: AssistantContext,
       loggerContext: MessageLoggerContext
     ): Promise<any> => {
+      //todo: check resource type and whether it is a service
+
       const results = await Promise.all(
         args.names.map(async (entityName) => {
           let pluralDisplayName = plural(entityName);
@@ -399,7 +415,7 @@ export class AssistantFunctionsService {
             ) {
               try {
                 entity = await this.resourceService.createDefaultAuthEntity(
-                  args.serviceId,
+                  args.resourceId,
                   context.user
                 );
               } catch (error) {
@@ -420,7 +436,7 @@ export class AssistantFunctionsService {
                     name: pascalCase(entityName),
                     resource: {
                       connect: {
-                        id: args.serviceId,
+                        id: args.resourceId,
                       },
                     },
                   },
@@ -433,14 +449,14 @@ export class AssistantFunctionsService {
 
             const defaultModuleId =
               await this.moduleService.getDefaultModuleIdForEntity(
-                args.serviceId,
+                args.resourceId,
                 entity.id
               );
 
             return {
-              entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities/${entity.id}`,
+              entityLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/entities/${entity.id}`,
 
-              apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${defaultModuleId}`,
+              apisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${defaultModuleId}`,
               result: {
                 entity,
                 fields: fields.map((field) => ({
@@ -467,8 +483,8 @@ export class AssistantFunctionsService {
       );
 
       return {
-        allEntitiesErdViewLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/entities?view=erd`,
-        allApisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/`,
+        allEntitiesErdViewLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/entities?view=erd`,
+        allApisLink: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/`,
         result: results,
       };
     },
@@ -535,33 +551,42 @@ export class AssistantFunctionsService {
         result: newFields,
       };
     },
-    getProjectServices: async (
-      args: functionsArgsTypes.GetProjectServices,
+    getProjectResources: async (
+      args: functionsArgsTypes.GetProjectResources,
       context: AssistantContext
     ) => {
       const resources = await this.resourceService.resources({
         where: {
           project: { id: args.projectId },
-          resourceType: { equals: EnumResourceType.Service },
+          resourceType: {
+            in: [
+              EnumResourceType.Service,
+              EnumResourceType.Component,
+              EnumResourceType.MessageBroker,
+            ],
+          },
         },
       });
       return resources.map((resource) => ({
         id: resource.id,
         name: resource.name,
         description: resource.description,
+        resourceType: resource.resourceType,
+        blueprintId: resource.blueprintId, //todo: fetch blueprint data
         codeGenerator:
           CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
           EnumCodeGenerator.NodeJs,
         link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/${resource.id}`,
       }));
     },
-    getServiceEntities: async (
-      args: functionsArgsTypes.GetServiceEntities,
+    getResourceEntities: async (
+      args: functionsArgsTypes.GetResourceEntities,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
       const entities = await this.entityService.entities({
         where: {
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
       return entities.map((entity) => ({
@@ -571,33 +596,31 @@ export class AssistantFunctionsService {
         link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${context.resourceId}/entities/${entity.id}`,
       }));
     },
-    createService: async (
-      args: functionsArgsTypes.CreateService,
+    createResource: async (
+      args: functionsArgsTypes.CreateResource,
       context: AssistantContext
     ) => {
-      const needDefaultDbPlugin = !(
-        args.pluginIds &&
-        args.pluginIds.find((pluginId) => pluginId.startsWith("db-"))
+      const resource = await this.resourceService.createComponent(
+        {
+          data: {
+            name: args.resourceName,
+            description: args.resourceDescription || "",
+            resourceType: EnumResourceType.Component,
+            project: {
+              connect: {
+                id: args.projectId,
+              },
+            },
+            blueprint: {
+              connect: {
+                id: args.blueprintId,
+              },
+            },
+          },
+        },
+
+        context.user
       );
-
-      const resource =
-        await this.resourceService.createServiceWithDefaultSettings(
-          args.serviceName,
-          args.serviceDescription || "",
-          args.projectId,
-          context.user,
-          needDefaultDbPlugin,
-          args.codeGenerator
-        );
-
-      let pluginsResults = null;
-      if (args.pluginIds && args.pluginIds.length > 0) {
-        pluginsResults = await this.installMultiplePlugins(
-          args.pluginIds,
-          resource.id,
-          context
-        );
-      }
 
       return {
         link: `${this.clientHost}/${context.workspaceId}/${args.projectId}/${resource.id}`,
@@ -605,8 +628,9 @@ export class AssistantFunctionsService {
           id: resource.id,
           name: resource.name,
           description: resource.description,
+          resourceType: resource.resourceType,
+          blueprintId: resource.blueprintId, //todo: fetch blueprint data
         },
-        pluginsResults,
       };
     },
     createProject: async (
@@ -692,61 +716,69 @@ export class AssistantFunctionsService {
             : "Entity",
       }));
     },
-    getPlugins: async (
-      args: functionsArgsTypes.GetPlugins,
+    getAvailablePlugins: async (
+      args: functionsArgsTypes.GetAvailablePlugins,
       context: AssistantContext
     ) => {
-      return this.pluginCatalogService.getPlugins(args.codeGenerator);
+      //todo: return the list of plugins based on the blueprint
+      return []; //this.pluginCatalogService.getPlugins(args.codeGenerator);
     },
     installPlugins: async (
       args: functionsArgsTypes.InstallPlugins,
       context: AssistantContext
     ) => {
+      //todo: install private plugin
       return this.installMultiplePlugins(
         args.pluginIds,
-        args.serviceId,
+        args.resourceId,
         context
       );
     },
-    getService: async (
-      args: functionsArgsTypes.GetService,
+    getResource: async (
+      args: functionsArgsTypes.GetResource,
       context: AssistantContext
     ) => {
       const resource = await this.resourceService.resource({
         where: {
-          id: args.serviceId,
+          id: args.resourceId,
         },
       });
       return {
         id: resource.id,
         name: resource.name,
         description: resource.description,
+        resourceType: resource.resourceType,
+        blueprintId: resource.blueprintId, //todo: fetch blueprint data
         codeGenerator:
           CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
           EnumCodeGenerator.NodeJs,
         link: `${this.clientHost}/${context.workspaceId}/${resource.projectId}/${resource.id}`,
       };
     },
-    getServiceModules: async (
-      args: functionsArgsTypes.GetServiceModules,
+    getResourceModules: async (
+      args: functionsArgsTypes.GetResourceModules,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
+
       const modules = await this.moduleService.findMany({
         where: {
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
       return modules.map((module) => ({
         id: module.id,
         name: module.displayName,
         description: module.description,
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${module.id}`,
       }));
     },
     createModule: async (
       args: functionsArgsTypes.CreateModule,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
+
       const name = pascalCase(args.moduleName);
 
       const module = await this.moduleService.create(
@@ -757,7 +789,7 @@ export class AssistantFunctionsService {
             description: args.moduleDescription,
             resource: {
               connect: {
-                id: args.serviceId,
+                id: args.resourceId,
               },
             },
           },
@@ -765,7 +797,7 @@ export class AssistantFunctionsService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${module.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${module.id}`,
         result: module,
       };
     },
@@ -773,10 +805,11 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.GetModuleDtosAndEnums,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
       const dtos = await this.moduleDtoService.findMany({
         where: {
           parentBlock: { id: args.moduleId },
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
           includeCustomDtos: true,
           includeDefaultDtos: true,
         },
@@ -801,12 +834,13 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.CreateModuleDto,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
       const name = pascalCase(args.dtoName);
 
       const module = await this.moduleService.findMany({
         where: {
           id: { equals: args.moduleId },
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
 
@@ -828,7 +862,7 @@ export class AssistantFunctionsService {
             },
             resource: {
               connect: {
-                id: args.serviceId,
+                id: args.resourceId,
               },
             },
           },
@@ -836,7 +870,7 @@ export class AssistantFunctionsService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -844,12 +878,13 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.CreateModuleEnum,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
       const name = pascalCase(args.enumName);
 
       const module = await this.moduleService.findMany({
         where: {
           id: { equals: args.moduleId },
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
 
@@ -871,7 +906,7 @@ export class AssistantFunctionsService {
             },
             resource: {
               connect: {
-                id: args.serviceId,
+                id: args.resourceId,
               },
             },
           },
@@ -879,7 +914,7 @@ export class AssistantFunctionsService {
         context.user
       );
       return {
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/dtos/${dto.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${args.moduleId}/dtos/${dto.id}`,
         result: dto,
       };
     },
@@ -887,10 +922,11 @@ export class AssistantFunctionsService {
       args: functionsArgsTypes.GetModuleActions,
       context: AssistantContext
     ) => {
+      //todo: check resource type and whether it is a service
       const actions = await this.moduleActionService.findMany({
         where: {
           parentBlock: { id: args.moduleId },
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
       return actions.map((action) => ({
@@ -902,7 +938,7 @@ export class AssistantFunctionsService {
         path: action.path,
         inputType: action.inputType,
         outputType: action.outputType,
-        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+        link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
       }));
     },
     createModuleAction: async (
@@ -910,12 +946,13 @@ export class AssistantFunctionsService {
       context: AssistantContext,
       loggerContext: MessageLoggerContext
     ) => {
+      //todo: check resource type and whether it is a service
       const name = pascalCase(args.actionName);
 
       const module = await this.moduleService.findMany({
         where: {
           id: { equals: args.moduleId },
-          resource: { id: args.serviceId },
+          resource: { id: args.resourceId },
         },
       });
 
@@ -935,7 +972,7 @@ export class AssistantFunctionsService {
             },
             resource: {
               connect: {
-                id: args.serviceId,
+                id: args.resourceId,
               },
             },
           },
@@ -962,7 +999,7 @@ export class AssistantFunctionsService {
           context.user
         );
         return {
-          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.serviceId}/modules/${args.moduleId}/actions/${action.id}`,
+          link: `${this.clientHost}/${context.workspaceId}/${context.projectId}/${args.resourceId}/modules/${args.moduleId}/actions/${action.id}`,
           result: updatedAction,
         };
       } catch (error) {
@@ -983,6 +1020,68 @@ export class AssistantFunctionsService {
           `Failed to create the moduleAction ${name} because of the following error. please fix the error and try again. ${error.message}`
         );
       }
+    },
+    createBlueprint: async (
+      args: functionsArgsTypes.CreateBlueprint,
+      context: AssistantContext
+    ) => {
+      const blueprint = await this.blueprintService.createBlueprint({
+        data: {
+          name: args.name,
+          workspace: {
+            connect: {
+              id: context.workspaceId,
+            },
+          },
+        },
+      });
+      return {
+        link: `${this.clientHost}/${context.workspaceId}/blueprints/${blueprint.id}`,
+        result: {
+          id: blueprint.id,
+          name: blueprint.name,
+        },
+      };
+    },
+    listBlueprints: async (
+      args: functionsArgsTypes.ListBlueprints,
+      context: AssistantContext
+    ) => {
+      const blueprints = await this.blueprintService.blueprints({
+        where: {
+          workspace: {
+            id: context.workspaceId,
+          },
+        },
+      });
+      return blueprints.map((blueprint) => ({
+        id: blueprint.id,
+        name: blueprint.name,
+        key: blueprint.key,
+        enabled: blueprint.enabled,
+        description: blueprint.description,
+        properties: blueprint.properties,
+        relations: blueprint.relations,
+        link: `${this.clientHost}/${context.workspaceId}/blueprints/${blueprint.id}`,
+      }));
+    },
+    getProjects: async (
+      args: functionsArgsTypes.GetProjects,
+      context: AssistantContext
+    ) => {
+      const projects = await this.projectService.findProjects({
+        where: {
+          workspace: {
+            id: context.workspaceId,
+          },
+        },
+      });
+      return projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        link: `${this.clientHost}/${context.workspaceId}/${project.id}`,
+      }));
     },
   };
 }

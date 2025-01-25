@@ -15,7 +15,7 @@ export interface CreateModule {
    */
   moduleDescription: string;
   /**
-   * the ID of the service in which the module is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead
+   * the ID of the resource in which the module is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead
    */
-  serviceId: string;
+  resourceId: string;
 }
