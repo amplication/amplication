@@ -9,7 +9,7 @@ import { isEmpty } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { Env } from "../../env";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { Role, Team, User, Workspace } from "../../models";
+import { User, Workspace } from "../../models";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Prisma, PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
@@ -36,72 +36,9 @@ import { Coupon } from "./dto/Coupon";
 import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Invitation } from "./dto/Invitation";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
+import { DEFAULT_BLUEPRINTS, DEFAULT_TEAMS_AND_ROLES } from "./constants";
 
 const INVITATION_EXPIRATION_DAYS = 7;
-
-type DefaultTeamWithRole = {
-  team: Omit<Team, "id" | "createdAt" | "updatedAt" | "workspaceId">;
-  role: Omit<Role, "id" | "createdAt" | "updatedAt" | "workspaceId">;
-};
-
-const DEFAULT_TEAMS_AND_ROLES: Record<string, DefaultTeamWithRole> = {
-  admins: {
-    team: {
-      name: "Admins",
-      description: "Admins team",
-      color: "#ACD371",
-    },
-    role: {
-      name: "Admins",
-      key: "ADMINS",
-      description: "Can access and manage all resources",
-      permissions: ["*"],
-    },
-  },
-  platform: {
-    team: {
-      name: "Platform Engineers",
-      description: "Platform Engineers team",
-      color: "#20A4F3",
-    },
-    role: {
-      name: "Platform Engineers",
-      key: "PLATFORM_ENGINEERS",
-      description: "Can create and manage Plugins and Templates",
-      permissions: [
-        "project.create",
-        "privatePlugin.create",
-        "privatePlugin.delete",
-        "privatePlugin.edit",
-        "privatePlugin.version.create",
-        "privatePlugin.version.edit",
-        "resource.createTemplate",
-      ],
-    },
-  },
-  developers: {
-    team: {
-      name: "Developers",
-      description: "Developers team",
-      color: "#F6AB50",
-    },
-    role: {
-      name: "Developer",
-      key: "DEVELOPER",
-      description: "Can create and build resources and services",
-      permissions: [
-        "project.create",
-        "resource.*.edit",
-        "resource.delete",
-        "resource.create",
-        "resource.createFromTemplate",
-        "resource.createMessageBroker",
-        "resource.createService",
-        "resource.createTemplate",
-      ],
-    },
-  },
-};
 
 @Injectable()
 export class WorkspaceService {
@@ -202,6 +139,8 @@ export class WorkspaceService {
 
     await this.createDefaultTeams(workspace, user);
 
+    await this.createDefaultBlueprints(workspace);
+
     const newProject = await this.projectService.createProject(
       {
         data: {
@@ -258,6 +197,21 @@ export class WorkspaceService {
         },
       });
     }
+  }
+
+  private async createDefaultBlueprints(workspace: Workspace) {
+    DEFAULT_BLUEPRINTS.forEach(async (blueprint) => {
+      await this.prisma.blueprint.create({
+        data: {
+          ...blueprint,
+          workspace: {
+            connect: {
+              id: workspace.id,
+            },
+          },
+        },
+      });
+    });
   }
 
   private async canInvite(workspaceId: string): Promise<boolean> {
