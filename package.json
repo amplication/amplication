@@ -102,7 +102,7 @@
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
     "crypto-js": "^4.2.0",
-    "cuid": "^2.1.8",
+    "cuid": "^3.0.0",
     "date-fns": "^2.29.3",
     "deepdash": "^5.3.9",
     "deepdash-es": "^5.3.9",
