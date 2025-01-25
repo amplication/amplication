@@ -1,5 +1,6 @@
 import { SelectField } from "@amplication/ui/design-system";
 import { CustomProperty } from "../models";
+import { useMemo } from "react";
 
 type Props = {
   property: CustomProperty;
@@ -12,11 +13,15 @@ function CustomPropertiesFormFieldSelect({
   fieldNamePrefix,
   disabled,
 }: Props) {
-  const options = property.options?.map((option) => ({
-    value: option.value,
-    label: option.value,
-    color: option.color,
-  }));
+  const options = useMemo(() => {
+    const items = property.options?.map((option) => ({
+      value: option.value,
+      label: option.value,
+      color: option.color,
+    }));
+
+    return items;
+  }, [property]);
 
   return (
     <SelectField
