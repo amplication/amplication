@@ -140,6 +140,10 @@ const prismaTeamCreateMock = jest.fn(() => {
   return EXAMPLE_TEAM;
 });
 
+const prismaBlueprintCreateMock = jest.fn(() => {
+  return {};
+});
+
 const billingServiceIsBillingEnabledMock = jest.fn();
 
 const billingServiceMock = {
@@ -233,6 +237,9 @@ describe("WorkspaceService", () => {
             },
             team: {
               create: prismaTeamCreateMock,
+            },
+            blueprint: {
+              create: prismaBlueprintCreateMock,
             },
           })),
         },
@@ -350,6 +357,8 @@ describe("WorkspaceService", () => {
       expect(prismaWorkspaceCreateMock).toHaveBeenCalledTimes(1);
       expect(prismaWorkspaceCreateMock).toHaveBeenCalledWith(prismaArgs);
       expect(createDemoRepoMock).toHaveBeenCalledTimes(0);
+
+      expect(prismaBlueprintCreateMock).toHaveBeenCalledTimes(3);
     });
 
     it("should throw a billing limitation error if the allow workspace creation entitlement is false", async () => {
