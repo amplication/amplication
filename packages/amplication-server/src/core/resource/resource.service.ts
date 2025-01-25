@@ -492,6 +492,7 @@ export class ResourceService {
         data: {
           ...args.data,
           resourceType: EnumResourceType.MessageBroker,
+          codeGenerator: EnumCodeGenerator.Blueprint,
         },
       },
       user
@@ -545,18 +546,40 @@ export class ResourceService {
       throw new AmplicationError("Component must use a blueprint");
     }
 
-    const resource = await this.createResource(
-      {
-        data: {
-          ...args.data,
-          resourceType: EnumResourceType.Component,
-          codeGenerator: EnumCodeGenerator.Blueprint,
-        },
+    const blueprint = await this.prisma.blueprint.findUnique({
+      where: {
+        id: args.data.blueprint.connect.id,
       },
-      user
-    );
+    });
 
-    return resource;
+    if (!blueprint) {
+      throw new AmplicationError("Invalid blueprint");
+    }
+
+    if (blueprint.resourceType === EnumResourceType.MessageBroker) {
+      return this.createMessageBroker(args, user);
+    } else if (blueprint.resourceType === EnumResourceType.Service) {
+      return this.createServiceWithDefaultSettings(
+        args.data.name,
+        args.data.description,
+        args.data.project.connect.id,
+        args.data.blueprint.connect.id,
+        user,
+        true,
+        CODE_GENERATOR_NAME_TO_ENUM[blueprint.codeGeneratorName]
+      );
+    } else {
+      return this.createResource(
+        {
+          data: {
+            ...args.data,
+            resourceType: EnumResourceType.Component,
+            codeGenerator: EnumCodeGenerator.Blueprint,
+          },
+        },
+        user
+      );
+    }
   }
 
   /**
@@ -706,6 +729,7 @@ export class ResourceService {
     serviceName: string,
     serviceDescription: string,
     projectId: string,
+    blueprintId: string,
     user: User,
     installDefaultDbPlugin = true,
     codeGenerator: keyof typeof EnumCodeGenerator | null = null
@@ -720,6 +744,11 @@ export class ResourceService {
 
     const args: CreateOneResourceArgs = {
       data: {
+        blueprint: {
+          connect: {
+            id: blueprintId,
+          },
+        },
         name: serviceName,
         description: serviceDescription || "",
         project: {
@@ -783,6 +812,12 @@ export class ResourceService {
 
     const resourceId =
       movedEntities[0]?.originalResourceId ?? firstResource?.id;
+
+    const originalResource = await this.resource({
+      where: {
+        id: resourceId,
+      },
+    });
 
     const userAction =
       await this.userActionService.createUserActionByTypeWithInitialStep(
@@ -900,6 +935,11 @@ export class ResourceService {
 
         const args: CreateOneResourceArgs = {
           data: {
+            blueprint: {
+              connect: {
+                id: originalResource.blueprintId,
+              },
+            },
             name: newService.name,
             description: "",
             project: {

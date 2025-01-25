@@ -1697,7 +1697,6 @@ type Mutation {
   createResourceFromTemplate(data: ResourceFromTemplateCreateInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createRole(data: RoleCreateInput!): Role!
-  createService(data: ResourceCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   createTeam(data: TeamCreateInput!): Team!

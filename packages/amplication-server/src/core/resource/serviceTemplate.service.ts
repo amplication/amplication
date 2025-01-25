@@ -89,7 +89,6 @@ export class ServiceTemplateService {
   /**
    * Create a template from an existing resource
    * The function create the template, and then copies the plugins from the resource to the template
-   * This function does not support resources without a blueprint (tbc: copy service settings and add placeholders)
    */
   async createTemplateFromExistingResource(
     args: CreateTemplateFromResourceArgs,
@@ -133,6 +132,43 @@ export class ServiceTemplateService {
       },
       user
     );
+
+    if (resource.resourceType === EnumResourceType.Service) {
+      const serviceSettings =
+        await this.serviceSettingsService.getServiceSettingsValues(
+          {
+            where: {
+              id: resourceId,
+            },
+          },
+          user
+        );
+
+      //replace the last part of the path with {{SERVICE_NAME}}
+      const adminUIBasePath = serviceSettings.adminUISettings.adminUIPath
+        .split("/")
+        .slice(0, -1)
+        .join("/");
+      serviceSettings.adminUISettings.adminUIPath = `${adminUIBasePath}/{{SERVICE_NAME}}-admin`;
+
+      const serverBasePath = serviceSettings.serverSettings.serverPath
+        .split("/")
+        .slice(0, -1)
+        .join("/");
+      serviceSettings.serverSettings.serverPath = `${serverBasePath}/{{SERVICE_NAME}}`;
+
+      await this.serviceSettingsService.updateServiceSettings(
+        {
+          where: {
+            id: template.id,
+          },
+          data: {
+            ...serviceSettings,
+          },
+        },
+        user
+      );
+    }
 
     //copy the plugins from the resource to the template
     await this.copyPluginInstallations(resourceId, template.id, user);
@@ -235,8 +271,30 @@ export class ServiceTemplateService {
       throw new AmplicationError(`Template version not found`);
     }
 
+    const blueprint = await this.prisma.blueprint.findUnique({
+      where: {
+        id: template.blueprintId,
+      },
+    });
+
+    if (!blueprint) {
+      throw new AmplicationError(`The template is missing a blueprint`);
+    }
+
+    const resourceType = blueprint.resourceType as EnumResourceType;
+
+    if (
+      ![EnumResourceType.Component, EnumResourceType.Service].includes(
+        resourceType
+      )
+    ) {
+      throw new AmplicationError(
+        `The template is based on a blueprint with an unsupported resource type. Only components and services are supported`
+      );
+    }
+
     let newResource: Resource;
-    if (template.blueprintId) {
+    if (resourceType === EnumResourceType.Component) {
       newResource = await this.internalCreateComponentFromTemplate(
         args,
         template,
@@ -313,6 +371,11 @@ export class ServiceTemplateService {
     const newService = await this.resourceService.createService(
       {
         data: {
+          blueprint: {
+            connect: {
+              id: template.blueprintId,
+            },
+          },
           name: args.data.name,
           description: args.data.description,
           gitRepository: args.data.gitRepository,

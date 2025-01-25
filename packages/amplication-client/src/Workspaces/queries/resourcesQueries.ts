@@ -76,6 +76,8 @@ export const GET_RESOURCES = gql`
         id
         name
         color
+        resourceType
+        codeGenerator
       }
       projectId
       properties
