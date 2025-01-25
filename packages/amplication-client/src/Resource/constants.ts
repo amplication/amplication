@@ -7,7 +7,11 @@ export function preparePluginRepositoryObject(
     name: "Plugin Repository",
     description: "",
     resourceType: models.EnumResourceType.PluginRepository,
-    codeGenerator: models.EnumCodeGenerator.NodeJs,
+    blueprint: {
+      connect: {
+        id: "none",
+      },
+    },
     project: {
       connect: {
         id: projectId,
@@ -24,7 +28,6 @@ export function prepareComponentObject(
     name: `${blueprint.name}-name`,
     description: "",
     resourceType: models.EnumResourceType.Component,
-    codeGenerator: null,
     blueprint: {
       connect: {
         id: blueprint.id,

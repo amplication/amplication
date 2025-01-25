@@ -1,6 +1,6 @@
 {
   "name": "createModule",
-  "description": "creates a new module in a service. ",
+  "description": "creates a new module in a resource. ",
   "parameters": {
     "type": "object",
     "properties": {
@@ -12,11 +12,11 @@
         "type": "string",
         "description": "the description of the module."
       },
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "the ID of the service in which the module is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+        "description": "the ID of the resource in which the module is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead"
       }
     },
-    "required": ["moduleName", "serviceId", "moduleDescription"]
+    "required": ["moduleName", "resourceId", "moduleDescription"]
   }
 }

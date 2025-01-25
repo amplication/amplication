@@ -1,0 +1,14 @@
+{
+  "name": "getResourceEntities",
+  "description": "get a list of entities in a resource",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "resourceId": {
+        "type": "string",
+        "description": "The ID of the resource"
+      }
+    },
+    "required": ["resourceId"]
+  }
+}

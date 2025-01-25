@@ -7,7 +7,7 @@
 
 export interface GetPlugins {
   /**
-   * The type of code generator of the service. When not available, fetch the service details to find the codeGenerator.
+   * The type of code generator of the resource. When not available, fetch the resource details to find the codeGenerator.
    */
   codeGenerator: "DotNet" | "NodeJs";
 }

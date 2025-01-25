@@ -5,9 +5,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface CreateBlueprint {
+export interface GetResourceEntities {
   /**
-   * The name of the blueprint
+   * The ID of the resource
    */
-  name: string;
+  resourceId: string;
 }

@@ -7,9 +7,9 @@
 
 export interface GetModuleActions {
   /**
-   * The ID of the service
+   * The ID of the resource
    */
-  serviceId: string;
+  resourceId: string;
   /**
    * The ID of the module
    */

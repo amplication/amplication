@@ -1,6 +1,6 @@
 {
-  "name": "getProjectServices",
-  "description": "get a list of services in a project",
+  "name": "getProjectResources",
+  "description": "get a list of resources in a project",
   "parameters": {
     "type": "object",
     "properties": {

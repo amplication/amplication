@@ -1,16 +1,16 @@
 {
   "name": "createModuleDto",
-  "description": "creates a new DTO for a module in a service. The DTO is created with a list of properties, which can be created with a type of another DTO. You can use the function getModuleDtosAndEnums to get a list of available DTOs and Enums in the module or other modules.",
+  "description": "creates a new DTO for a module in a resource. The DTO is created with a list of properties, which can be created with a type of another DTO. You can use the function getModuleDtosAndEnums to get a list of available DTOs and Enums in the module or other modules.",
   "parameters": {
     "type": "object",
     "properties": {
       "moduleId": {
         "type": "string",
-        "description": "the ID of the module in which the DTO is created. The moduleID is different then the serviceID. The moduleID is the ID of the module in which the DTO is created. The serviceID is the ID of the service in which the module exist. You can use the function get getServiceModules to get a list of available modules in a service. "
+        "description": "the ID of the module in which the DTO is created. The moduleID is different then the resourceID. The moduleID is the ID of the module in which the DTO is created. The resourceID is the ID of the resource in which the module exist. You can use the function get getResourceModules to get a list of available modules in a resource. "
       },
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "the ID of the service in which the DTO is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+        "description": "the ID of the resource in which the DTO is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead"
       },
       "dtoName": {
         "type": "string",
@@ -76,7 +76,7 @@
     },
     "required": [
       "moduleId",
-      "serviceId",
+      "resourceId",
       "dtoName",
       "dtoDescription",
       "properties"

@@ -839,15 +839,16 @@ enum EnumAssistantFunctions {
   CreateModuleDto
   CreateModuleEnum
   CreateProject
-  CreateService
+  CreateResource
+  GetAvailablePlugins
   GetModuleActions
   GetModuleDtosAndEnums
-  GetPlugins
   GetProjectPendingChanges
-  GetProjectServices
-  GetService
-  GetServiceEntities
-  GetServiceModules
+  GetProjectResources
+  GetProjects
+  GetResource
+  GetResourceEntities
+  GetResourceModules
   InstallPlugins
   ListBlueprints
 }
@@ -2464,8 +2465,7 @@ type Resource {
 }
 
 input ResourceCreateInput {
-  blueprint: WhereParentIdInput
-  codeGenerator: EnumCodeGenerator
+  blueprint: WhereParentIdInput!
   description: String!
   gitRepository: ConnectGitRepositoryInput
   name: String!
