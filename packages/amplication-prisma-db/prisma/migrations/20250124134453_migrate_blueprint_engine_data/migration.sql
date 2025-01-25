@@ -60,8 +60,8 @@ FROM (
     ON rw.workspace_id = bm.workspace_id
     AND rw.resource_type = bm.resource_type 
 	AND (rw.code_generator_name = bm.code_generator_name 
-		OR (rw.resource_type = 'Service' AND bm.code_generator_name = 'NodeJS')
-		OR (rw.resource_type = 'MessageBroker' AND bm.code_generator_name = 'Blueprint')
+		OR (rw.code_generator_name IS NULL AND rw.resource_type = 'Service' AND bm.code_generator_name = 'NodeJS')
+		OR (rw.code_generator_name IS NULL AND rw.resource_type = 'MessageBroker' AND bm.code_generator_name = 'Blueprint')
 		)
 ) AS subquery
 WHERE "Resource"."id" = subquery.resource_id
