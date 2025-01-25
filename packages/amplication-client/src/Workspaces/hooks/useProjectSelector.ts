@@ -116,9 +116,9 @@ const useProjectSelector = (
       });
     }
 
-    !!currentWorkspace?.id &&
-      (isFromSignup || isSignupCookieExist) &&
-      history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
+    // !!currentWorkspace?.id &&
+    //   (isFromSignup || isSignupCookieExist) &&
+    //   history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
   }, [
     currentProject,
     currentWorkspace?.id,
