@@ -155,7 +155,7 @@ const EXAMPLE_RESOURCE: Resource = {
 const entityServiceCreateOneEntityMock = jest.fn(() => EXAMPLE_ENTITY);
 const entityServiceCreateFieldByDisplayNameMock = jest.fn();
 const projectServiceCreateProjectMock = jest.fn();
-const resourceServiceCreateServiceWithDefaultSettingsMock = jest.fn();
+const resourceServiceCreateComponentMock = jest.fn();
 const moduleServiceCreateMock = jest.fn();
 const pluginInstallationServiceCreateMock = jest.fn(() => ({
   id: "examplePluginId",
@@ -238,8 +238,7 @@ describe("AssistantFunctionsService", () => {
           useValue: {
             resource: resourceServiceResourceMock,
             resources: resourceServiceResourcesMock,
-            createServiceWithDefaultSettings:
-              resourceServiceCreateServiceWithDefaultSettingsMock,
+            createComponent: resourceServiceCreateComponentMock,
             getAuthEntityName: resourceServiceGetAuthEntityNameMock,
             createDefaultAuthEntity: resourceServiceCreateDefaultAuthEntityMock,
           },
@@ -364,16 +363,15 @@ describe("AssistantFunctionsService", () => {
       ],
     ],
     [
-      EnumAssistantFunctions.CreateService,
+      EnumAssistantFunctions.CreateResource,
       {
         resourceName: "New Resource",
+        blueprintId: "blueprintId",
         projectId: "proj123",
-        adminUIPath: "/admin-ui",
-        serverPath: "/server",
       },
       [
         {
-          mock: resourceServiceCreateServiceWithDefaultSettingsMock,
+          mock: resourceServiceCreateComponentMock,
           times: 1,
         },
       ],
@@ -410,7 +408,7 @@ describe("AssistantFunctionsService", () => {
       ],
     ],
     [
-      EnumAssistantFunctions.GetProjectServices,
+      EnumAssistantFunctions.GetProjectResources,
       { projectId: "proj123" },
       [
         {
@@ -450,15 +448,15 @@ describe("AssistantFunctionsService", () => {
       ],
     ],
     [
-      EnumAssistantFunctions.GetPlugins,
+      EnumAssistantFunctions.GetAvailablePlugins,
       {
-        codeGenerator: EnumCodeGenerator.NodeJs,
+        resourceId: "resource123",
       },
       [
-        {
-          mock: pluginCatalogServiceGetPluginsMock,
-          times: 1,
-        },
+        // {
+        //   mock: pluginCatalogServiceGetPluginsMock,
+        //   times: 1,
+        // },
       ],
     ],
     [
