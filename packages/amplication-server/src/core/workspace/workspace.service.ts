@@ -37,7 +37,6 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Invitation } from "./dto/Invitation";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { DEFAULT_BLUEPRINTS, DEFAULT_TEAMS_AND_ROLES } from "./constants";
-import { CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE } from "../resource/resource.service";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
