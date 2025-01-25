@@ -1,6 +1,5 @@
 import { Role, Team } from "../../models";
 import { Blueprint } from "../../prisma";
-import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 type NoneInputFields = "id" | "createdAt" | "updatedAt" | "workspaceId";
