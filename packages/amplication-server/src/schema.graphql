@@ -190,6 +190,7 @@ input BlockWhereInput {
 }
 
 type Blueprint {
+  codeGenerator: EnumCodeGenerator
   color: String
   createdAt: DateTime!
   description: String
@@ -199,6 +200,7 @@ type Blueprint {
   name: String!
   properties: [CustomProperty!]
   relations: [BlueprintRelation!]
+  resourceType: EnumResourceType!
   updatedAt: DateTime!
 }
 
@@ -228,6 +230,11 @@ input BlueprintRelationUpsertInput {
   name: String!
   relatedTo: String!
   required: Boolean!
+}
+
+input BlueprintUpdateEngineInput {
+  codeGenerator: EnumCodeGenerator
+  resourceType: EnumResourceType!
 }
 
 input BlueprintUpdateInput {
@@ -1672,7 +1679,6 @@ type Mutation {
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
-  createMessageBroker(data: ResourceCreateInput!): Resource!
   createModule(data: ModuleCreateInput!): Module!
   createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createModuleDto(data: ModuleDtoCreateInput!, members: [ModuleDtoEnumMemberInput!], properties: [ModuleDtoPropertyInput!]): ModuleDto!
@@ -1691,10 +1697,8 @@ type Mutation {
   createResourceFromTemplate(data: ResourceFromTemplateCreateInput!): Resource!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   createRole(data: RoleCreateInput!): Role!
-  createService(data: ResourceCreateInput!): Resource!
   createServiceTemplate(data: ServiceTemplateCreateInput!): Resource!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTeam(data: TeamCreateInput!): Team!
   createTeamAssignments(data: CreateTeamAssignmentsInput!, where: CreateTeamAssignmentsWhereInput!): [TeamAssignment!]!
   createTemplateFromExistingResource(data: CreateTemplateFromResourceInput!): Resource!
@@ -1757,6 +1761,7 @@ type Mutation {
   triggerBreakServiceIntoMicroservices(resourceId: String!): UserAction
   updateAccount(data: UpdateAccountInput!): Account!
   updateBlueprint(data: BlueprintUpdateInput!, where: WhereUniqueInput!): Blueprint!
+  updateBlueprintEngine(data: BlueprintUpdateEngineInput!, where: WhereUniqueInput!): Blueprint!
   updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateCustomProperty(data: CustomPropertyUpdateInput!, where: WhereUniqueInput!): CustomProperty!
   updateCustomPropertyOption(data: CustomPropertyOptionUpdateInput!, where: WhereCustomPropertyOptionUniqueInput!): CustomPropertyOption!
@@ -2467,34 +2472,6 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   resourceType: EnumResourceType!
   serviceSettings: ServiceSettingsUpdateInput
-}
-
-input ResourceCreateWithEntitiesEntityInput {
-  fields: [ResourceCreateWithEntitiesFieldInput!]!
-  name: String!
-  relationsToEntityIndex: [Int!]
-}
-
-input ResourceCreateWithEntitiesFieldInput {
-  dataType: EnumDataType
-  name: String!
-}
-
-input ResourceCreateWithEntitiesInput {
-  authType: String!
-  commitMessage: String!
-  connectToDemoRepo: Boolean!
-  dbType: String!
-  entities: [ResourceCreateWithEntitiesEntityInput!]!
-  plugins: PluginInstallationsCreateInput
-  repoType: String!
-  resource: ResourceCreateInput!
-  wizardType: String!
-}
-
-type ResourceCreateWithEntitiesResult {
-  build: Build
-  resource: Resource!
 }
 
 input ResourceFromTemplateCreateInput {

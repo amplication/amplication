@@ -19,8 +19,23 @@ import { UpsertBlueprintRelationArgs } from "./dto/UpsertBlueprintRelationArgs";
 import { JsonArray } from "type-fest";
 import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
+import { UpdateBlueprintEngineArgs } from "./dto/UpdateBlueprintEngineArgs";
+import { CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE } from "../resource/resource.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
+
+const VALID_TYPES_AND_GENERATORS: Partial<
+  Record<EnumResourceType, (keyof typeof EnumCodeGenerator)[]>
+> = {
+  [EnumResourceType.Component]: [EnumCodeGenerator.Blueprint],
+  [EnumResourceType.Service]: [
+    EnumCodeGenerator.NodeJs,
+    EnumCodeGenerator.DotNet,
+  ],
+  [EnumResourceType.MessageBroker]: [EnumCodeGenerator.Blueprint],
+};
 
 @Injectable()
 export class BlueprintService {
@@ -89,6 +104,19 @@ export class BlueprintService {
       throw new AmplicationError(INVALID_BLUEPRINT_ID);
     }
 
+    const resources = await this.prisma.resource.findMany({
+      where: {
+        blueprintId: args.where.id,
+        deletedAt: null,
+      },
+    });
+
+    if (resources.length > 0) {
+      throw new AmplicationError(
+        `Cannot delete blueprint because it is already in use by resources`
+      );
+    }
+
     const updatedBlueprint = await this.prisma.blueprint.update({
       where: args.where,
       data: {
@@ -119,6 +147,63 @@ export class BlueprintService {
       event: EnumEventType.BlueprintUpdate,
       properties: {
         name: blueprint.name,
+      },
+    });
+
+    return this.blueprintRecordToModel(blueprint);
+  }
+
+  async updateBlueprintEngine(
+    args: UpdateBlueprintEngineArgs
+  ): Promise<Blueprint> {
+    //check if there are already resources that are using the blueprint and throw an error if there are
+    const resources = await this.prisma.resource.findMany({
+      where: {
+        blueprintId: args.where.id,
+        deletedAt: null,
+      },
+    });
+
+    if (resources.length > 0) {
+      throw new AmplicationError(
+        `Cannot update engine of blueprint because it is already in use by resources`
+      );
+    }
+
+    const allowedEngine = VALID_TYPES_AND_GENERATORS[args.data.resourceType];
+
+    if (!allowedEngine) {
+      throw new AmplicationError(
+        `Invalid resource type: ${args.data.resourceType}`
+      );
+    }
+
+    if (!args.data.codeGenerator && allowedEngine.length === 1) {
+      args.data.codeGenerator = allowedEngine[0];
+    }
+
+    if (!allowedEngine?.includes(args.data.codeGenerator)) {
+      throw new AmplicationError(
+        `Invalid code generator for resource type: ${args.data.resourceType}`
+      );
+    }
+
+    const { codeGeneratorName } =
+      CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE[args.data.codeGenerator];
+
+    const blueprint = await this.prisma.blueprint.update({
+      where: { ...args.where },
+      data: {
+        resourceType: args.data.resourceType,
+        codeGeneratorName,
+      },
+    });
+
+    await this.analytics.trackWithContext({
+      event: EnumEventType.BlueprintUpdateEngine,
+      properties: {
+        name: blueprint.name,
+        ...args.data,
       },
     });
 

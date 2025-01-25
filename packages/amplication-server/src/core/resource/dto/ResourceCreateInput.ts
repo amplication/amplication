@@ -25,8 +25,8 @@ export class ResourceCreateInput {
   @Field(() => WhereParentIdInput, { nullable: false })
   project!: WhereParentIdInput;
 
-  @Field(() => WhereParentIdInput, { nullable: true })
-  blueprint?: WhereParentIdInput;
+  @Field(() => WhereParentIdInput, { nullable: false })
+  blueprint: WhereParentIdInput;
 
   @Field(() => ServiceSettingsUpdateInput, { nullable: true })
   serviceSettings?: ServiceSettingsUpdateInput;
@@ -34,8 +34,6 @@ export class ResourceCreateInput {
   @Field(() => ConnectGitRepositoryInput, { nullable: true })
   gitRepository?: ConnectGitRepositoryInput;
 
-  @Field(() => EnumCodeGenerator, {
-    nullable: true,
-  })
+  //do not expose to client - the value is taken from the blueprint
   codeGenerator?: keyof typeof EnumCodeGenerator | null;
 }

@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { Workspace } from "./Workspace";
 import { BlueprintRelation } from "./BlueprintRelation";
 import { CustomProperty } from "./CustomProperty";
+import { EnumResourceType } from "../core/resource/dto/EnumResourceType";
 
 @ObjectType({
   isAbstract: true,
@@ -58,4 +59,10 @@ export class Blueprint {
   workspaceId?: string;
 
   deletedAt?: Date;
+
+  // instead of exposing the value of this field, we expose an enum using resolveField on the blueprintResolver
+  codeGeneratorName?: string;
+
+  @Field(() => EnumResourceType, { nullable: false })
+  resourceType!: keyof typeof EnumResourceType;
 }
