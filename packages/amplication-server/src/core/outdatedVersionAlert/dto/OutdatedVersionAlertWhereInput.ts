@@ -23,7 +23,9 @@ export class OutdatedVersionAlertWhereInput {
   })
   updatedAt?: DateTimeFilter | null | undefined;
 
-  @Field(() => ResourceWhereInput)
+  @Field(() => ResourceWhereInput, {
+    nullable: true,
+  })
   resource?: ResourceWhereInput;
 
   @Field(() => WhereUniqueInput, {
