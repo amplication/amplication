@@ -260,7 +260,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
     () => ({
       ...DEFAULT_VALUES,
       properties: Object.values(customPropertiesMap).reduce((acc, property) => {
-        acc[property.key] = "";
+        acc[property.key] = null;
         return acc;
       }, {}),
       settings: {

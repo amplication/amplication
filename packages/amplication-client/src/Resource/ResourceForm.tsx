@@ -118,11 +118,20 @@ function ResourceForm({ resourceId, disabled }: Props) {
       {}
     );
 
+    //add missing required properties
+    Object.values(customPropertiesMap).forEach((property) => {
+      if (!properties[property.key]) {
+        if (property.required) {
+          properties[property.key] = null;
+        }
+      }
+    }, {});
+
     return {
       ...data?.resource,
       properties,
     };
-  }, [data?.resource, propertiesSchema]);
+  }, [data?.resource, propertiesSchema, customPropertiesMap]);
 
   const errorMessage = formatError(error || updateError);
   return (
