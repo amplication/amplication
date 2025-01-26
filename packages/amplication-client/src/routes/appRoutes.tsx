@@ -164,18 +164,6 @@ export const Routes: RouteDef[] = [
         ],
         routes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
-            Component: lazy(
-              () =>
-                import("../Resource/create-resource-page/CreateResourcePage")
-            ),
-            moduleName: "CreateResourcePage",
-            moduleClass: "create-resource-page",
-            exactPath: true,
-            routes: [],
-          },
-
-          {
             path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Platform/ProjectPlatformPage")),
             moduleName: "ProjectPlatformPage",
@@ -441,6 +429,19 @@ export const Routes: RouteDef[] = [
               },
             ],
             routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-resource-page/CreateResourcePage"
+                    )
+                ),
+                moduleName: "CreateResourcePage",
+                moduleClass: "create-resource-page",
+                exactPath: true,
+                routes: [],
+              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
                 Component: lazy(
