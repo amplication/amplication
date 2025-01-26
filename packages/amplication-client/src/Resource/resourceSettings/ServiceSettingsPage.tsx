@@ -34,32 +34,30 @@ const ServiceSettingsPage: React.FC<{}> = () => {
         Resource Configuration
       </InnerTabLink>
       {(currentResource.resourceType === EnumResourceType.Service ||
-        currentResource.resourceType === EnumResourceType.ServiceTemplate) &&
-        !currentResource.blueprintId && (
-          <>
-            <InnerTabLink
-              to={`${baseUrl}/settings/generationSettings`}
-              icon="api"
-            >
-              APIs & Admin UI
-            </InnerTabLink>
-            <InnerTabLink to={`${baseUrl}/settings/directories`} icon="folder">
-              Base Directories
-            </InnerTabLink>
-            <InnerTabLink
-              to={`${baseUrl}/settings/authentication`}
-              icon="unlock"
-            >
-              Authentication Entity
-            </InnerTabLink>
-            <InnerTabLink
-              to={`${baseUrl}/settings/code-generator-version`}
-              icon="code"
-            >
-              Code Generator Version
-            </InnerTabLink>
-          </>
-        )}
+        (currentResource.resourceType === EnumResourceType.ServiceTemplate &&
+          currentResource.blueprint?.resourceType ===
+            EnumResourceType.Service)) && (
+        <>
+          <InnerTabLink
+            to={`${baseUrl}/settings/generationSettings`}
+            icon="api"
+          >
+            APIs & Admin UI
+          </InnerTabLink>
+          <InnerTabLink to={`${baseUrl}/settings/directories`} icon="folder">
+            Base Directories
+          </InnerTabLink>
+          <InnerTabLink to={`${baseUrl}/settings/authentication`} icon="unlock">
+            Authentication Entity
+          </InnerTabLink>
+          <InnerTabLink
+            to={`${baseUrl}/settings/code-generator-version`}
+            icon="code"
+          >
+            Code Generator Version
+          </InnerTabLink>
+        </>
+      )}
     </div>
   );
 };

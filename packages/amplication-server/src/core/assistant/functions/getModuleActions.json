@@ -1,18 +1,18 @@
 {
   "name": "getModuleActions",
-  "description": "get a list of Actions (APIs) for a module in a service. An action is an API endpoint for either graphQL or REST API or both. With data like path and gql operation, but also holds information about the input type and output type.",
+  "description": "get a list of Actions (APIs) for a module in a resource. An action is an API endpoint for either graphQL or REST API or both. With data like path and gql operation, but also holds information about the input type and output type.",
   "parameters": {
     "type": "object",
     "properties": {
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "The ID of the service"
+        "description": "The ID of the resource"
       },
       "moduleId": {
         "type": "string",
         "description": "The ID of the module"
       }
     },
-    "required": ["serviceId", "moduleId"]
+    "required": ["resourceId", "moduleId"]
   }
 }

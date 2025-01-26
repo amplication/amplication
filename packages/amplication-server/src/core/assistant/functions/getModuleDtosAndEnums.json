@@ -1,18 +1,18 @@
 {
   "name": "getModuleDtosAndEnums",
-  "description": "get a list of DTOs and Enums for a module in a service. the list contains the name of the DTO or Enum, the type, and the properties or members",
+  "description": "get a list of DTOs and Enums for a module in a resource. the list contains the name of the DTO or Enum, the type, and the properties or members",
   "parameters": {
     "type": "object",
     "properties": {
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "The ID of the service"
+        "description": "The ID of the resource"
       },
       "moduleId": {
         "type": "string",
         "description": "The ID of the module"
       }
     },
-    "required": ["serviceId", "moduleId"]
+    "required": ["resourceId", "moduleId"]
   }
 }

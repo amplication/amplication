@@ -1,6 +1,6 @@
 {
   "name": "commitProjectPendingChanges",
-  "description": "Commit all the pending changes, and build the generated code for all services in the project",
+  "description": "Commit all the pending changes, and build the generated code for all resources in the project",
   "parameters": {
     "type": "object",
     "properties": {

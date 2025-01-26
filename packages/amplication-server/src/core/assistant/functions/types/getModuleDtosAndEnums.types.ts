@@ -7,9 +7,9 @@
 
 export interface GetModuleDtosAndEnums {
   /**
-   * The ID of the service
+   * The ID of the resource
    */
-  serviceId: string;
+  resourceId: string;
   /**
    * The ID of the module
    */

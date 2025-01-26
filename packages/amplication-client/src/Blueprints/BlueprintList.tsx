@@ -22,6 +22,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import useBlueprints from "./hooks/useBlueprints";
 import NewBlueprint from "./NewBlueprint";
+import BlueprintName from "./BlueprintName";
 
 const CLASS_NAME = "custom-property-list";
 
@@ -99,16 +100,14 @@ export const BlueprintList = React.memo(({ selectFirst = false }: Props) => {
       >
         {data?.blueprints?.map((blueprint) => (
           <InnerTabLink
-            icon={"blueprint"}
             to={`${baseUrl}/blueprints/${blueprint.id}`}
             key={blueprint.id}
           >
             <FlexItem
-              singeChildWithEllipsis
               itemsAlign={EnumItemsAlign.Center}
               end={<EnabledIndicator enabled={blueprint.enabled} />}
             >
-              <span>{blueprint.name}</span>
+              <BlueprintName blueprint={blueprint} />
             </FlexItem>
           </InnerTabLink>
         ))}

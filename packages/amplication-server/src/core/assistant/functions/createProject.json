@@ -1,6 +1,6 @@
 {
   "name": "createProject",
-  "description": "Create a project. After creating a project, ask the user to connect to a git reposiroty before creating services in the project",
+  "description": "Create a project. After creating a project, ask the user to connect to a git reposiroty before creating resources in the project",
   "parameters": {
     "type": "object",
     "properties": {

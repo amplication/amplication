@@ -10,6 +10,7 @@ import {
   GET_BLUEPRINT,
   GET_BLUEPRINTS_MAP,
   UPDATE_BLUEPRINT,
+  UPDATE_BLUEPRINT_ENGINE,
   UPSERT_BLUEPRINT_RELATION,
 } from "../queries/blueprintsQueries";
 
@@ -147,6 +148,16 @@ const useBlueprints = (blueprintId?: string) => {
   });
 
   const [
+    updateBlueprintEngine,
+    {
+      error: updateBlueprintEngineError,
+      loading: updateBlueprintEngineLoading,
+    },
+  ] = useMutation<TUpdateData>(UPDATE_BLUEPRINT_ENGINE, {
+    refetchQueries: [GET_BLUEPRINTS_MAP],
+  });
+
+  const [
     deleteBlueprintRelation,
     {
       error: deleteBlueprintRelationError,
@@ -192,6 +203,9 @@ const useBlueprints = (blueprintId?: string) => {
     deleteBlueprintRelation,
     deleteBlueprintRelationError,
     deleteBlueprintRelationLoading,
+    updateBlueprintEngine,
+    updateBlueprintEngineError,
+    updateBlueprintEngineLoading,
   };
 };
 

@@ -13,11 +13,13 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { useAppContext } from "../context/appContext";
 import { formatError } from "../util/error";
+import BlueprintAdvancedSettingsForm from "./BlueprintAdvancedSettingsForm";
 import BlueprintForm from "./BlueprintForm";
 import BlueprintPropertyList from "./BlueprintPropertyList";
 import BlueprintRelationList from "./BlueprintRelationList";
 import { DeleteBlueprint } from "./DeleteBlueprint";
 import useBlueprints from "./hooks/useBlueprints";
+import * as models from "../models";
 
 const Blueprint = () => {
   const match = useRouteMatch<{
@@ -36,6 +38,8 @@ const Blueprint = () => {
     getBlueprintLoading: loading,
     updateBlueprint,
     updateBlueprintError: updateError,
+    updateBlueprintEngine,
+    updateBlueprintEngineError: updateEngineError,
     getBlueprintRefetch: refetch,
   } = useBlueprints(blueprintId);
 
@@ -53,6 +57,26 @@ const Blueprint = () => {
     [updateBlueprint, blueprintId]
   );
 
+  const handleSubmitEngine = useCallback(
+    (data: models.Blueprint) => {
+      updateBlueprintEngine({
+        variables: {
+          where: {
+            id: blueprintId,
+          },
+          data: {
+            resourceType: data.resourceType,
+            codeGenerator:
+              data.resourceType === models.EnumResourceType.Service
+                ? data.codeGenerator
+                : undefined,
+          },
+        },
+      }).catch(console.error);
+    },
+    [updateBlueprintEngine, blueprintId]
+  );
+
   const handleDeleteModule = useCallback(() => {
     history.push(`${baseUrl}/blueprints`);
   }, [history, baseUrl]);
@@ -68,8 +92,12 @@ const Blueprint = () => {
     refetch();
   }, [refetch]);
 
-  const hasError = Boolean(error) || Boolean(updateError);
-  const errorMessage = formatError(error) || formatError(updateError);
+  const hasError =
+    Boolean(error) || Boolean(updateError) || Boolean(updateEngineError);
+  const errorMessage =
+    formatError(error) ||
+    formatError(updateError) ||
+    formatError(updateEngineError);
 
   return (
     <>
@@ -97,22 +125,28 @@ const Blueprint = () => {
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {!loading && (
+      {!loading && data?.blueprint && (
         <>
           <BlueprintForm
             onSubmit={handleSubmit}
-            defaultValues={data?.blueprint}
+            defaultValues={data.blueprint}
           />
           <HorizontalRule doubleSpacing />
           <BlueprintPropertyList
-            blueprint={data?.blueprint}
+            blueprint={data.blueprint}
             onPropertyUpdated={handlePropertyAdded}
           />
           <HorizontalRule doubleSpacing />
-          <BlueprintRelationList blueprint={data?.blueprint} />
+          <BlueprintRelationList blueprint={data.blueprint} />
+          <HorizontalRule doubleSpacing />
+          <BlueprintAdvancedSettingsForm
+            onSubmit={handleSubmitEngine}
+            blueprint={data.blueprint}
+          />
         </>
       )}
 
+      <FlexItem margin={EnumFlexItemMargin.Both} />
       <FlexItem margin={EnumFlexItemMargin.Both} />
       <Snackbar open={hasError} message={errorMessage} />
     </>

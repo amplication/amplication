@@ -24,6 +24,8 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "relations",
   "properties",
+  "codeGenerator",
+  "resourceType",
   "__typename",
 ];
 

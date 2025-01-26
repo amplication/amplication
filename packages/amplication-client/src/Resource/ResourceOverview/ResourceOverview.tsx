@@ -33,6 +33,7 @@ import { TopicsTile } from "../TopicsTile";
 import ResourceGitStatusPanel from "../git/ResourceGitStatusPanel";
 import { useResourceSummary } from "../hooks/useResourceSummary";
 import "./ResourceOverview.scss";
+import { CreateTemplateFromResourceButton } from "../CreateTemplateFromResourceButton";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -96,13 +97,17 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <FlexItem>
         <FlexItem.FlexEnd direction={EnumFlexDirection.Row}>
-          {currentResource?.resourceType === EnumResourceType.Service ||
-            (currentResource?.resourceType ===
-              EnumResourceType.ServiceTemplate && (
-              <AddResourceFunctionalityButton
-                availableCategories={availableCategories}
-              />
-            ))}
+          {currentResource?.resourceType === EnumResourceType.Service && (
+            <CreateTemplateFromResourceButton resource={currentResource} />
+          )}
+
+          {(currentResource?.resourceType === EnumResourceType.Service ||
+            currentResource?.resourceType ===
+              EnumResourceType.ServiceTemplate) && (
+            <AddResourceFunctionalityButton
+              availableCategories={availableCategories}
+            />
+          )}
         </FlexItem.FlexEnd>
       </FlexItem>
 

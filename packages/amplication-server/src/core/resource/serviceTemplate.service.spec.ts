@@ -17,6 +17,7 @@ import { EnumResourceType } from "./dto/EnumResourceType";
 import { ResourceService } from "./resource.service";
 import { ServiceTemplateService } from "./serviceTemplate.service";
 import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
@@ -91,6 +92,25 @@ const analyticsServiceMock = {
 const serviceSettingsServiceMock = {
   updateServiceTemplateVersion: jest.fn(),
   getServiceTemplateSettings: jest.fn(),
+  updateServiceSettings: jest.fn(),
+  getServiceSettingsValues: jest.fn(() => {
+    return {
+      blockType: EnumBlockType.ServiceSettings,
+      description: "Default service settings",
+      displayName: "Service Settings",
+      authProvider: EnumAuthProviderType.Jwt,
+      serverSettings: {
+        generateGraphQL: true,
+        generateRestApi: true,
+        generateServer: true,
+        serverPath: "apps/service-name",
+      },
+      adminUISettings: {
+        generateAdminUI: true,
+        adminUIPath: "apps/service-name-admin",
+      },
+    };
+  }),
 };
 
 const resourceSettingsServiceMock = {};
@@ -196,6 +216,9 @@ describe("ServiceTemplateService", () => {
               adminUISettings: {},
               serverSettings: {},
             },
+            blueprint: {
+              connect: { id: "blueprintId" },
+            },
           },
           plugins: {
             plugins: [EXAMPLE_PLUGIN],
@@ -212,6 +235,9 @@ describe("ServiceTemplateService", () => {
             name: "Test Service",
             description: "Test Description",
             project: { connect: { id: "projectId" } },
+            blueprint: {
+              connect: { id: "blueprintId" },
+            },
             resourceType: EnumResourceType.ServiceTemplate,
           },
         },

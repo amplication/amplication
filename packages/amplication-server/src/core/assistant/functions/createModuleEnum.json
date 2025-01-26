@@ -1,6 +1,6 @@
 {
   "name": "createModuleEnum",
-  "description": "creates a new Enum for a module in a service",
+  "description": "creates a new Enum for a module in a resource",
   "parameters": {
     "type": "object",
     "properties": {
@@ -8,9 +8,9 @@
         "type": "string",
         "description": "the ID of the module in which the Enum is created. This is not the module name, but the ID of the module. and will be q unique identifier and not a word like 'customer'. e.g.: 'mod_1234'"
       },
-      "serviceId": {
+      "resourceId": {
         "type": "string",
-        "description": "the ID of the service in which the Enum is created. If there are multiple services available in the context, show the user a list of services to choose from. If there is no service available, do not use projectId instead"
+        "description": "the ID of the resource in which the Enum is created. If there are multiple resources available in the context, show the user a list of resources to choose from. If there is no resource available, do not use projectId instead"
       },
       "enumName": {
         "type": "string",
@@ -41,7 +41,7 @@
     },
     "required": [
       "moduleId",
-      "serviceId",
+      "resourceId",
       "enumName",
       "enumDescription",
       "members"

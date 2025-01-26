@@ -1,0 +1,9 @@
+{
+  "name": "getProjects",
+  "description": "Get a list of all projects the user has access to",
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

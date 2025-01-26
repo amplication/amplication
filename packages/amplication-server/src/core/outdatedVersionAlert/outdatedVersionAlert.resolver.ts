@@ -23,6 +23,8 @@ import { OutdatedVersionAlertService } from "./outdatedVersionAlert.service";
 import { UserEntity } from "../../decorators/user.decorator";
 import { UpdateOutdatedVersionAlertArgs } from "./dto/UpdateOutdatedVersionAlertArgs";
 import { BlockService } from "../block/block.service";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 
 @Resolver(() => OutdatedVersionAlert)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -37,9 +39,9 @@ export class OutdatedVersionAlertResolver {
   ) {}
 
   @Query(() => [OutdatedVersionAlert])
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ProjectId,
-    "where.resource.project.id"
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "where.resource.project.workspace.id"
   )
   async outdatedVersionAlerts(
     @Args() args: FindManyOutdatedVersionAlertArgs
@@ -48,9 +50,9 @@ export class OutdatedVersionAlertResolver {
   }
 
   @Query(() => MetaQueryPayload)
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ProjectId,
-    "where.resource.project.id"
+  @InjectContextValue(
+    InjectableOriginParameter.WorkspaceId,
+    "where.resource.project.workspace.id"
   )
   async _outdatedVersionAlertsMeta(
     @Args() args: FindManyOutdatedVersionAlertArgs

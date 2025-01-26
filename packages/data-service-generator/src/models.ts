@@ -215,6 +215,7 @@ export type BlockWhereInput = {
 };
 
 export type Blueprint = {
+  codeGenerator?: Maybe<EnumCodeGenerator>;
   color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -224,6 +225,7 @@ export type Blueprint = {
   name: Scalars['String']['output'];
   properties?: Maybe<Array<CustomProperty>>;
   relations?: Maybe<Array<BlueprintRelation>>;
+  resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -253,6 +255,11 @@ export type BlueprintRelationUpsertInput = {
   name: Scalars['String']['input'];
   relatedTo: Scalars['String']['input'];
   required: Scalars['Boolean']['input'];
+};
+
+export type BlueprintUpdateEngineInput = {
+  codeGenerator?: InputMaybe<EnumCodeGenerator>;
+  resourceType: EnumResourceType;
 };
 
 export type BlueprintUpdateInput = {
@@ -857,6 +864,7 @@ export enum EnumActionStepStatus {
 
 export enum EnumAssistantFunctions {
   CommitProjectPendingChanges = 'CommitProjectPendingChanges',
+  CreateBlueprint = 'CreateBlueprint',
   CreateEntities = 'CreateEntities',
   CreateEntityFields = 'CreateEntityFields',
   CreateModule = 'CreateModule',
@@ -864,16 +872,18 @@ export enum EnumAssistantFunctions {
   CreateModuleDto = 'CreateModuleDto',
   CreateModuleEnum = 'CreateModuleEnum',
   CreateProject = 'CreateProject',
-  CreateService = 'CreateService',
+  CreateResource = 'CreateResource',
+  GetAvailablePlugins = 'GetAvailablePlugins',
   GetModuleActions = 'GetModuleActions',
   GetModuleDtosAndEnums = 'GetModuleDtosAndEnums',
-  GetPlugins = 'GetPlugins',
   GetProjectPendingChanges = 'GetProjectPendingChanges',
-  GetProjectServices = 'GetProjectServices',
-  GetService = 'GetService',
-  GetServiceEntities = 'GetServiceEntities',
-  GetServiceModules = 'GetServiceModules',
-  InstallPlugins = 'InstallPlugins'
+  GetProjectResources = 'GetProjectResources',
+  GetProjects = 'GetProjects',
+  GetResource = 'GetResource',
+  GetResourceEntities = 'GetResourceEntities',
+  GetResourceModules = 'GetResourceModules',
+  InstallPlugins = 'InstallPlugins',
+  ListBlueprints = 'ListBlueprints'
 }
 
 export enum EnumAssistantMessageRole {
@@ -1693,7 +1703,6 @@ export type Mutation = {
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
-  createMessageBroker: Resource;
   createModule: Module;
   createModuleAction: ModuleAction;
   createModuleDto: ModuleDto;
@@ -1712,10 +1721,8 @@ export type Mutation = {
   createResourceFromTemplate: Resource;
   createResourceRole: ResourceRole;
   createRole: Role;
-  createService: Resource;
   createServiceTemplate: Resource;
   createServiceTopics: ServiceTopics;
-  createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTeam: Team;
   createTeamAssignments: Array<TeamAssignment>;
   createTemplateFromExistingResource: Resource;
@@ -1775,6 +1782,7 @@ export type Mutation = {
   triggerBreakServiceIntoMicroservices?: Maybe<UserAction>;
   updateAccount: Account;
   updateBlueprint: Blueprint;
+  updateBlueprintEngine: Blueprint;
   updateCodeGeneratorVersion?: Maybe<Resource>;
   updateCustomProperty: CustomProperty;
   updateCustomPropertyOption: CustomPropertyOption;
@@ -1941,11 +1949,6 @@ export type MutationCreateEntityFieldByDisplayNameArgs = {
 };
 
 
-export type MutationCreateMessageBrokerArgs = {
-  data: ResourceCreateInput;
-};
-
-
 export type MutationCreateModuleArgs = {
   data: ModuleCreateInput;
 };
@@ -2040,11 +2043,6 @@ export type MutationCreateRoleArgs = {
 };
 
 
-export type MutationCreateServiceArgs = {
-  data: ResourceCreateInput;
-};
-
-
 export type MutationCreateServiceTemplateArgs = {
   data: ServiceTemplateCreateInput;
 };
@@ -2052,11 +2050,6 @@ export type MutationCreateServiceTemplateArgs = {
 
 export type MutationCreateServiceTopicsArgs = {
   data: ServiceTopicsCreateInput;
-};
-
-
-export type MutationCreateServiceWithEntitiesArgs = {
-  data: ResourceCreateWithEntitiesInput;
 };
 
 
@@ -2356,6 +2349,12 @@ export type MutationUpdateAccountArgs = {
 
 export type MutationUpdateBlueprintArgs = {
   data: BlueprintUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateBlueprintEngineArgs = {
+  data: BlueprintUpdateEngineInput;
   where: WhereUniqueInput;
 };
 
@@ -3694,8 +3693,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  blueprint?: InputMaybe<WhereParentIdInput>;
-  codeGenerator?: InputMaybe<EnumCodeGenerator>;
+  blueprint: WhereParentIdInput;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
@@ -3704,36 +3702,9 @@ export type ResourceCreateInput = {
   serviceSettings?: InputMaybe<ServiceSettingsUpdateInput>;
 };
 
-export type ResourceCreateWithEntitiesEntityInput = {
-  fields: Array<ResourceCreateWithEntitiesFieldInput>;
-  name: Scalars['String']['input'];
-  relationsToEntityIndex?: InputMaybe<Array<Scalars['Int']['input']>>;
-};
-
-export type ResourceCreateWithEntitiesFieldInput = {
-  dataType?: InputMaybe<EnumDataType>;
-  name: Scalars['String']['input'];
-};
-
-export type ResourceCreateWithEntitiesInput = {
-  authType: Scalars['String']['input'];
-  commitMessage: Scalars['String']['input'];
-  connectToDemoRepo: Scalars['Boolean']['input'];
-  dbType: Scalars['String']['input'];
-  entities: Array<ResourceCreateWithEntitiesEntityInput>;
-  plugins?: InputMaybe<PluginInstallationsCreateInput>;
-  repoType: Scalars['String']['input'];
-  resource: ResourceCreateInput;
-  wizardType: Scalars['String']['input'];
-};
-
-export type ResourceCreateWithEntitiesResult = {
-  build?: Maybe<Build>;
-  resource: Resource;
-};
-
 export type ResourceFromTemplateCreateInput = {
   description: Scalars['String']['input'];
+  gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];
   project: WhereParentIdInput;
   serviceTemplate: WhereUniqueInput;

@@ -15,21 +15,21 @@ import ResourcePendingChangesCount from "../Workspaces/ResourcePendingChangesCou
 import ResourceOwner from "../Workspaces/ResourceOwner";
 import ProjectNameLink from "../Workspaces/ProjectNameLink";
 import { ProjectFilter } from "./ProjectFilter";
-import { ResourceTypeFilter } from "./ResourceTypeFilter";
+import { BlueprintFilter } from "./BlueprintFilter";
 import { OwnerFilter } from "./OwnerFilter";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import ResourceGitOrg from "../Workspaces/ResourceGitOrg";
 import * as models from "../models";
 import { CustomPropertyFilter } from "../CustomProperties/CustomPropertyFilter";
 import CustomPropertyValue from "../CustomProperties/CustomPropertyValue";
+import BlueprintName from "../Blueprints/BlueprintName";
 
 export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
   {
-    key: "resourceTypeOrBlueprint",
-    name: "Type",
+    key: "type",
+    name: "type",
     width: 60,
-    filterable: true,
-    renderFilter: ResourceTypeFilter,
+    filterable: false,
     renderCell: (props) => {
       return (
         <ResourceTypeBadge showTooltip resource={props.row} size="small" />
@@ -59,6 +59,16 @@ export const RESOURCE_LIST_COLUMNS: DataGridColumn<Resource>[] = [
       return <ProjectNameLink project={props.row.project} />;
     },
     getValue: (row) => row.project?.name ?? "",
+  },
+  {
+    key: "blueprintId",
+    name: "Blueprint",
+    filterable: true,
+    renderFilter: BlueprintFilter,
+    renderCell: (props) => {
+      return <BlueprintName blueprint={props.row.blueprint} />;
+    },
+    getValue: (row) => row.blueprint?.name ?? row.resourceType,
   },
   {
     key: "ownership",

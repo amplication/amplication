@@ -53,4 +53,8 @@
       }
     }
   }
+
+  &__error {
+    color: var(--color-negative);
+  }
 }
