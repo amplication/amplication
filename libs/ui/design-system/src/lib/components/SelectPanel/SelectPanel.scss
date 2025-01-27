@@ -9,6 +9,10 @@ $selected-items-gap: 2px;
     width: auto;
     padding: 0 var(--default-spacing);
     gap: $selected-items-gap;
+
+    &__label {
+      padding-right: var(--icon-spacing);
+    }
   }
 
   label {
@@ -43,7 +47,6 @@ $selected-items-gap: 2px;
         width: 100%;
         box-sizing: border-box;
         padding: var(--default-spacing);
-        min-height: 40px; //2* spacing + min checkbox height
 
         &--selected,
         &[aria-checked="true"] {
@@ -57,6 +60,15 @@ $selected-items-gap: 2px;
     }
     label {
       color: var(--gray-base) !important;
+    }
+  }
+
+  &__item {
+    &__description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
     }
   }
 }
