@@ -281,6 +281,10 @@ export class ServiceTemplateService {
       throw new AmplicationError(`The template is missing a blueprint`);
     }
 
+    if (!blueprint.enabled) {
+      throw new AmplicationError("Invalid blueprint");
+    }
+
     const resourceType = blueprint.resourceType as EnumResourceType;
 
     if (
