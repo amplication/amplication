@@ -3,8 +3,9 @@ import { Button, Props as ButtonProps } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
 import { Popover } from "../Popover/Popover";
 import { Tag } from "../Tag/Tag";
-import { EnumTextStyle, Text } from "../Text/Text";
+import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 import { OptionItem } from "../types";
+import { EnumFlexDirection, EnumGapSize, FlexItem } from "../FlexItem/FlexItem";
 import "./SelectPanel.scss";
 
 const CLASS_NAME = "amp-select-panel";
@@ -16,10 +17,12 @@ export type Props = {
   isMulti?: boolean;
   disabled?: boolean;
   selectedValue: string | string[] | null;
-  onChange: (selectedValue: string | string[]) => void;
+  onChange: (selectedValue: string | string[] | null) => void;
   buttonProps?: ButtonProps;
   openButtonProps?: Omit<ButtonProps, "onClick">;
   showSelectedItemsInButton?: boolean;
+  emptyItemLabel?: string;
+  showEmptyItem?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -32,6 +35,8 @@ export const SelectPanel: React.FC<Props> = ({
   buttonProps,
   openButtonProps,
   showSelectedItemsInButton = true,
+  emptyItemLabel = "All",
+  showEmptyItem = false,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -40,6 +45,9 @@ export const SelectPanel: React.FC<Props> = ({
 
   const selectedItems = useMemo(() => {
     if (!selectedValue) {
+      if (showEmptyItem) {
+        return [{ value: null, label: emptyItemLabel }];
+      }
       return [];
     }
 
@@ -58,18 +66,22 @@ export const SelectPanel: React.FC<Props> = ({
     } else {
       return options.filter((option) => option.value === selectedValue);
     }
-  }, [selectedValue, options, isMulti]);
+  }, [selectedValue, options, isMulti, showEmptyItem, emptyItemLabel]);
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: string | null) => {
     if (!isMulti) {
       setIsOpen(false);
       onChange(value);
     } else {
-      selectedValue = selectedValue || [];
-      const newSelected = selectedValue.includes(value)
-        ? (selectedValue as string[]).filter((item) => item !== value)
-        : [...selectedValue, value];
-      onChange(newSelected);
+      if (value === null) {
+        onChange(null);
+      } else {
+        selectedValue = selectedValue || [];
+        const newSelected = selectedValue.includes(value)
+          ? (selectedValue as string[]).filter((item) => item !== value)
+          : [...selectedValue, value];
+        onChange(newSelected);
+      }
     }
   };
 
@@ -105,6 +117,11 @@ export const SelectPanel: React.FC<Props> = ({
     };
   }, []);
 
+  const optionsWithEmptyItem =
+    showEmptyItem && !isMulti
+      ? [{ value: "", label: emptyItemLabel }, ...options]
+      : options;
+
   return (
     <div className={CLASS_NAME} ref={selectRef}>
       <Popover
@@ -114,7 +131,7 @@ export const SelectPanel: React.FC<Props> = ({
         content={
           <div className={`${CLASS_NAME}__picker`} ref={pickerRef}>
             <ul className={`${CLASS_NAME}__picker__items`} role="listbox">
-              {options.map((item) => {
+              {optionsWithEmptyItem.map((item) => {
                 const selected = isMulti
                   ? selectedValue?.includes(item.value)
                   : selectedValue === item.value;
@@ -133,7 +150,12 @@ export const SelectPanel: React.FC<Props> = ({
                       }
                     }}
                   >
-                    <SelectPanelItemContent item={item} />
+                    <SelectPanelItemContent
+                      item={item}
+                      textMode={true}
+                      includeDescription={true}
+                      isMulti={isMulti}
+                    />
                     {selected && <Icon icon="check" size="xsmall" />}
                   </li>
                 );
@@ -151,15 +173,33 @@ export const SelectPanel: React.FC<Props> = ({
           type="button"
           disabled={disabled}
         >
-          {selectedItems.length > 0 && showSelectedItemsInButton
-            ? selectedItems.map((item) => (
+          <Text
+            textColor={EnumTextColor.Black20}
+            textStyle={EnumTextStyle.Tag}
+            className={`${CLASS_NAME}__button__label`}
+          >
+            {label}
+          </Text>
+          {selectedItems.length > 0 && showSelectedItemsInButton && (
+            <>
+              {selectedItems.slice(0, 2).map((item) => (
                 <SelectPanelItemContent
                   key={item.value}
                   item={item}
                   isMulti={isMulti}
+                  includeDescription={false}
+                  textMode={false}
                 />
-              ))
-            : label}
+              ))}
+              {selectedItems.length > 2 && (
+                <Tag
+                  value={`+${selectedItems.length - 2}`}
+                  color={DEFAULT_COLOR}
+                  textMode={false}
+                />
+              )}
+            </>
+          )}
         </Button>
       </Popover>
     </div>
@@ -169,15 +209,40 @@ export const SelectPanel: React.FC<Props> = ({
 type SelectPanelItemContentProps = {
   item: OptionItem;
   isMulti?: boolean;
+  includeDescription?: boolean;
+  textMode?: boolean;
 };
 
 const SelectPanelItemContent = ({
   item,
   isMulti,
+  includeDescription = true,
+  textMode = false,
 }: SelectPanelItemContentProps) => {
-  return item.color || isMulti ? (
-    <Tag value={item.label} color={item.color || DEFAULT_COLOR} />
+  const content =
+    item.color || isMulti ? (
+      <Tag
+        value={item.label}
+        color={item.color || DEFAULT_COLOR}
+        textMode={textMode}
+      />
+    ) : (
+      <Text textStyle={EnumTextStyle.Description}>{item.label}</Text>
+    );
+
+  return !includeDescription ? (
+    content
   ) : (
-    <Text textStyle={EnumTextStyle.Description}>{item.label}</Text>
+    <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Small}>
+      {content}
+      {item.description && (
+        <Text
+          textStyle={EnumTextStyle.Description}
+          className={`${CLASS_NAME}__item__description`}
+        >
+          {item.description}
+        </Text>
+      )}
+    </FlexItem>
   );
 };
