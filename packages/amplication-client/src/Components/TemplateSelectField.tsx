@@ -11,10 +11,12 @@ const TemplateSelectField = ({ projectId, ...rest }: Props) => {
   const { availableTemplates } = useAvailableServiceTemplates(projectId);
 
   const options = useMemo(() => {
-    return availableTemplates.map((serviceTemplate) => ({
-      value: serviceTemplate.id,
-      label: serviceTemplate.name,
-    }));
+    return availableTemplates
+      .filter((serviceTemplate) => serviceTemplate.blueprint?.enabled || true)
+      .map((serviceTemplate) => ({
+        value: serviceTemplate.id,
+        label: serviceTemplate.name,
+      }));
   }, [availableTemplates]);
 
   return <SelectField options={options} {...rest} />;
