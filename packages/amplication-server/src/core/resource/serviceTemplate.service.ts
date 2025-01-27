@@ -282,7 +282,9 @@ export class ServiceTemplateService {
     }
 
     if (!blueprint.enabled) {
-      throw new AmplicationError("Invalid blueprint");
+      throw new AmplicationError(
+        `The selected template is based on a disabled blueprint.`
+      );
     }
 
     const resourceType = blueprint.resourceType as EnumResourceType;
