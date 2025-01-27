@@ -14,12 +14,15 @@ const BlueprintSelectField = (props: Props) => {
   const { useKeyAsValue, ...rest } = props;
 
   const options = useMemo(() => {
-    return findBlueprintsData?.blueprints.map((blueprint) => ({
-      value: useKeyAsValue ? blueprint.key : blueprint.id,
-      label: blueprint.name,
-      color:
-        blueprint.color || resourceThemeMap[EnumResourceType.Component].color,
-    }));
+    return findBlueprintsData?.blueprints
+      .filter((blueprint) => blueprint.enabled)
+      .map((blueprint) => ({
+        value: useKeyAsValue ? blueprint.key : blueprint.id,
+        label: blueprint.name,
+        enabled: blueprint.enabled,
+        color:
+          blueprint.color || resourceThemeMap[EnumResourceType.Component].color,
+      }));
   }, [findBlueprintsData?.blueprints, useKeyAsValue]);
 
   return <SelectField {...rest} options={options} />;

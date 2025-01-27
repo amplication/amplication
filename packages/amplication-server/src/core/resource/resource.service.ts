@@ -556,6 +556,10 @@ export class ResourceService {
       throw new AmplicationError("Invalid blueprint");
     }
 
+    if (!blueprint.enabled) {
+      throw new AmplicationError("The selected blueprint is disabled.");
+    }
+
     if (blueprint.resourceType === EnumResourceType.MessageBroker) {
       return this.createMessageBroker(args, user);
     } else if (blueprint.resourceType === EnumResourceType.Service) {
