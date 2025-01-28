@@ -24,6 +24,7 @@ export type Props = {
   emptyItemLabel?: string;
   showEmptyItem?: boolean;
   initialOpen?: boolean;
+  showLabelWhenSelected?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -39,8 +40,9 @@ export const SelectPanel: React.FC<Props> = ({
   emptyItemLabel = "All",
   showEmptyItem = false,
   initialOpen = false,
+  showLabelWhenSelected = false,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(initialOpen);
+  const [isOpen, setIsOpen] = React.useState(initialOpen && !disabled);
 
   const selectRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -175,13 +177,15 @@ export const SelectPanel: React.FC<Props> = ({
           type="button"
           disabled={disabled}
         >
-          <Text
-            textColor={EnumTextColor.Black20}
-            textStyle={EnumTextStyle.Tag}
-            className={`${CLASS_NAME}__button__label`}
-          >
-            {label}
-          </Text>
+          {(showLabelWhenSelected || selectedItems.length === 0) && (
+            <Text
+              textColor={EnumTextColor.Black20}
+              textStyle={EnumTextStyle.Tag}
+              className={`${CLASS_NAME}__button__label`}
+            >
+              {label}
+            </Text>
+          )}
           {selectedItems.length > 0 && showSelectedItemsInButton && (
             <>
               {selectedItems.slice(0, 2).map((item) => (
