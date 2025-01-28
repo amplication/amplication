@@ -57,6 +57,7 @@ export const DataGridFilter = ({
         buttonProps={{
           buttonStyle: EnumButtonStyle.Text,
         }}
+        initialOpen={true}
       />
     </div>
   );
