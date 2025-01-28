@@ -23,6 +23,7 @@ export type Props = {
   showSelectedItemsInButton?: boolean;
   emptyItemLabel?: string;
   showEmptyItem?: boolean;
+  initialOpen?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -37,8 +38,9 @@ export const SelectPanel: React.FC<Props> = ({
   showSelectedItemsInButton = true,
   emptyItemLabel = "All",
   showEmptyItem = false,
+  initialOpen = false,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(initialOpen);
 
   const selectRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
