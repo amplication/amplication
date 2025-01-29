@@ -34,7 +34,6 @@ import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
-import { over } from "lodash";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
@@ -44,13 +43,7 @@ type DType = {
 };
 
 export type TEntities = {
-  createDefaultEntities: [
-    {
-      id: string;
-      displayName: string;
-      name: string;
-    }
-  ];
+  createDefaultAuthEntity: models.Entity;
 };
 
 type Props = {
@@ -83,30 +76,39 @@ const keyMap = {
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const history = useHistory();
-  const { addEntity, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
 
   const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const { findModuleRefetch } = useModule();
 
+  const refetchModules = useCallback(() => {
+    findModuleRefetch({
+      where: {
+        resource: { id: resourceId },
+      },
+      orderBy: {
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+      },
+    });
+  }, [resourceId, findModuleRefetch]);
+
+  const onEntityCreated = useCallback(
+    (entity: models.Entity) => {
+      addEntity(entity.id);
+      refetchModules();
+      onSuccess();
+      history.push(`entities/${entity.id}`);
+    },
+    [refetchModules, addEntity, onSuccess, history]
+  );
+
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
-        addEntity(data.createOneEntity.id);
-        //refresh the modules list
-        findModuleRefetch({
-          where: {
-            resource: { id: resourceId },
-          },
-          orderBy: {
-            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-          },
-        });
-        onSuccess();
-        history.push(`entities/${data.createOneEntity.id}`);
+        onEntityCreated(data.createOneEntity);
       },
       update(cache, { data }) {
         if (!data) return;
@@ -138,22 +140,16 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     }
   );
 
-  const [createDefaultEntities, { data: defaultEntityData }] =
+  const [createDefaultAuthEntity, { data: defaultEntityData }] =
     useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
       onCompleted: (data) => {
         if (!data) return;
-        const userEntity = data.createDefaultEntities.find(
-          (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-        );
-        addEntity(userEntity.id);
-        onSuccess();
-        history.push(`entities/${userEntity.id}`);
+        const userEntity = data.createDefaultAuthEntity;
+        onEntityCreated(userEntity);
       },
       update(cache, { data }) {
         if (!data) return;
-        const userEntity = data.createDefaultEntities.find(
-          (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-        );
+        const userEntity = data.createDefaultAuthEntity;
         const newEntity = userEntity;
         cache.modify({
           fields: {
@@ -209,14 +205,14 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   }, [setConfirmInstall]);
 
   const handleConfirmationInstall = useCallback(() => {
-    createDefaultEntities({
+    createDefaultAuthEntity({
       variables: {
         data: {
           resourceId,
         },
       },
     }).catch(console.error);
-  }, [setConfirmInstall, createDefaultEntities, resourceId]);
+  }, [createDefaultAuthEntity, resourceId]);
 
   useEffect(() => {
     if (data) {
@@ -226,9 +222,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   useEffect(() => {
     if (defaultEntityData) {
-      const userEntity = defaultEntityData.createDefaultEntities.find(
-        (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-      );
+      const userEntity = defaultEntityData.createDefaultAuthEntity;
       history.push(`${baseUrl}/entities/${userEntity.id}`);
     }
   }, [history, defaultEntityData, baseUrl]);

@@ -3,6 +3,8 @@
 $vertical-spacing: 0px;
 $tag-border-radius: 2px;
 
+$tag-box-size: 12px;
+
 .amp-tag {
   padding: $vertical-spacing var(--default-spacing);
   border-radius: $tag-border-radius;
@@ -15,4 +17,28 @@ $tag-border-radius: 2px;
   display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &.text-mode {
+    background-color: transparent !important;
+    border: none;
+    padding: 0;
+    position: relative;
+    color: var(--gray-base) !important;
+    font-size: var(--tag-font-size);
+    display: flex;
+    align-items: center;
+    gap: var(--icon-spacing);
+
+    &:before {
+      content: "";
+      width: $tag-box-size;
+      min-width: $tag-box-size;
+      height: $tag-box-size;
+      border-color: var(--tag-color);
+      border-width: 2px;
+      border-style: solid;
+      border-radius: 50px;
+      box-sizing: border-box;
+    }
+  }
 }

@@ -1701,7 +1701,7 @@ export type Mutation = {
   createComponent: Resource;
   createCustomProperty: CustomProperty;
   createCustomPropertyOption: CustomPropertyOption;
-  createDefaultEntities?: Maybe<Array<Entity>>;
+  createDefaultAuthEntity?: Maybe<Entity>;
   createEntitiesFromPredefinedSchema: UserAction;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
@@ -1923,7 +1923,7 @@ export type MutationCreateCustomPropertyOptionArgs = {
 };
 
 
-export type MutationCreateDefaultEntitiesArgs = {
+export type MutationCreateDefaultAuthEntityArgs = {
   data: DefaultEntitiesInput;
 };
 
@@ -2601,7 +2601,7 @@ export type OutdatedVersionAlertWhereInput = {
   id?: InputMaybe<StringFilter>;
   latestVersion?: InputMaybe<StringFilter>;
   outdatedVersion?: InputMaybe<StringFilter>;
-  resource: ResourceWhereInput;
+  resource?: InputMaybe<ResourceWhereInput>;
   status?: InputMaybe<EnumOutdatedVersionAlertStatusFilter>;
   type?: InputMaybe<EnumOutdatedVersionAlertTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;

@@ -17,6 +17,8 @@ type Props = {
   selectedValue: string | string[] | null;
   disabled?: boolean;
   isMulti?: boolean;
+  showEmptyItem?: boolean;
+  emptyItemLabel?: string;
 };
 
 export const DataGridFilter = ({
@@ -28,6 +30,8 @@ export const DataGridFilter = ({
   onRemove,
   disabled,
   isMulti,
+  showEmptyItem,
+  emptyItemLabel,
 }: Props) => {
   return (
     <div className={CLASS_NAME}>
@@ -44,6 +48,8 @@ export const DataGridFilter = ({
       <SelectPanel
         label={filterLabel}
         options={options}
+        showEmptyItem={showEmptyItem}
+        emptyItemLabel={emptyItemLabel}
         selectedValue={selectedValue}
         onChange={(value) => onChange(filterKey, value)}
         disabled={disabled}
@@ -51,6 +57,8 @@ export const DataGridFilter = ({
         buttonProps={{
           buttonStyle: EnumButtonStyle.Text,
         }}
+        initialOpen={true}
+        showLabelWhenSelected={true}
       />
     </div>
   );

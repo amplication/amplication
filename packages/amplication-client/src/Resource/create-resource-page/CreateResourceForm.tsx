@@ -1,40 +1,43 @@
+import { EnumResourceType } from "@amplication/code-gen-types";
 import {
   Button,
   EnumButtonStyle,
+  EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumMessageType,
   EnumPanelStyle,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Form,
-  FormColumns,
   HorizontalRule,
+  Icon,
   Panel,
-  SelectField,
   Snackbar,
   Text,
   TextField,
 } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { useCallback, useMemo, useState } from "react";
+import { useHistory } from "react-router-dom";
 import BlueprintSelectField from "../../Blueprints/BlueprintSelectField";
+import { useCatalogContext } from "../../Catalog/CatalogContext";
 import { DisplayNameField } from "../../Components/DisplayNameField";
 import ProjectSelectField from "../../Components/ProjectSelectField";
+import TemplateSelectField from "../../Components/TemplateSelectField";
+import { useAppContext } from "../../context/appContext";
 import CustomPropertiesFormFields from "../../CustomProperties/CustomPropertiesFormFields";
+import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
+import * as models from "../../models";
+import useAvailableServiceTemplates from "../../ServiceTemplate/hooks/useAvailableServiceTemplates";
+import { formatError } from "../../util/error";
 import { validate } from "../../util/formikValidateJsonSchema";
+import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
 import ResourceGitSettingsWithOverrideWizard from "../git/ResourceGitSettingsWithOverrideWizard";
 import { CreateResourceFormResourceSettings } from "./CreateResourceFormResourceSettings";
-import * as models from "../../models";
-import { EnumResourceType } from "@amplication/code-gen-types";
 import useCreateResource from "./hooks/useCreateResource";
-import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
-import { useHistory } from "react-router-dom";
-import { useCatalogContext } from "../../Catalog/CatalogContext";
-import { useAppContext } from "../../context/appContext";
-import getPropertiesValidationSchemaUtil from "../../CustomProperties/getPropertiesValidationSchemaUtil";
-import { formatError } from "../../util/error";
-import TemplateSelectField from "../../Components/TemplateSelectField";
-import useAvailableServiceTemplates from "../../ServiceTemplate/hooks/useAvailableServiceTemplates";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -285,9 +288,18 @@ const CreateResourceForm = ({ projectId }: Props) => {
 
   const handleProjectChange = useCallback(
     (projectId: string) => {
+      setInitialValueWithSettings({
+        ...initialValue,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        templateId: "",
+      });
       history.push(`/${currentWorkspace?.id}/${projectId}/new-resource`);
     },
-    [currentWorkspace?.id, history]
+    [currentWorkspace?.id, history, initialValue, setInitialValueWithSettings]
   );
 
   //reset the initial value of the form to include the new blueprint properties
@@ -332,6 +344,8 @@ const CreateResourceForm = ({ projectId }: Props) => {
         if (template) {
           handleBlueprintChange(template.blueprintId, templateId);
         }
+      } else {
+        handleBlueprintChange(undefined, undefined);
       }
     },
     [availableTemplates, handleBlueprintChange]
@@ -371,11 +385,39 @@ const CreateResourceForm = ({ projectId }: Props) => {
                   label="Project"
                   onChange={handleProjectChange}
                 />
+                <HorizontalRule />
+
+                <Panel
+                  panelStyle={EnumPanelStyle.Default}
+                  style={{
+                    marginBottom: "var(--default-spacing)",
+                  }}
+                >
+                  <FlexItem
+                    direction={EnumFlexDirection.Row}
+                    gap={EnumGapSize.Small}
+                    itemsAlign={EnumItemsAlign.Center}
+                  >
+                    <Icon
+                      icon="info_circle"
+                      size="small"
+                      color={EnumTextColor.ThemeGreen}
+                    />
+                    <Text
+                      textStyle={EnumTextStyle.Description}
+                      textColor={EnumTextColor.ThemeGreen}
+                    >
+                      Select a template or a blueprint to start creating your
+                      resource
+                    </Text>
+                  </FlexItem>
+                </Panel>
                 <TemplateSelectField
-                  name="template.connect.id"
+                  name="templateId"
                   label="Template"
                   projectId={formik.values.project.connect.id}
                   onChange={handleTemplateChange}
+                  isClearable
                 />
                 {(!formik.values.templateId ||
                   formik.values.blueprint.connect.id) && (
@@ -385,6 +427,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
                     label="Blueprint"
                     isMulti={false}
                     onChange={(value) => handleBlueprintChange(value)}
+                    isClearable
                   />
                 )}
                 <Text textStyle={EnumTextStyle.Description}>
@@ -396,53 +439,58 @@ const CreateResourceForm = ({ projectId }: Props) => {
               </Panel>
             </div>
 
-            <div>
-              <FlexItem margin={EnumFlexItemMargin.Both}>
-                <Text textStyle={EnumTextStyle.H4}>Resource</Text>
-              </FlexItem>
-              <Panel panelStyle={EnumPanelStyle.Bordered}>
-                <DisplayNameField name="name" label="Name" minLength={1} />
-                <HorizontalRule />
+            {(formik.values.blueprint?.connect?.id ||
+              formik.values.templateId) && (
+              <>
+                <div>
+                  <FlexItem margin={EnumFlexItemMargin.Both}>
+                    <Text textStyle={EnumTextStyle.H4}>Resource Details</Text>
+                  </FlexItem>
+                  <Panel panelStyle={EnumPanelStyle.Bordered}>
+                    <DisplayNameField name="name" label="Name" minLength={1} />
+                    <HorizontalRule />
 
-                <SelectField name="Owner" label="owner" options={[]} />
-                <CustomPropertiesFormFields disabled={false} />
-                <TextField
-                  name={"description"}
-                  label={"Description"}
-                  autoComplete="off"
-                  textarea
-                  textareaSize="small"
-                  rows={3}
+                    {/* <SelectField name="Owner" label="owner" options={[]} /> */}
+                    <CustomPropertiesFormFields disabled={false} />
+                    <TextField
+                      name={"description"}
+                      label={"Description"}
+                      autoComplete="off"
+                      textarea
+                      textareaSize="small"
+                      rows={3}
+                    />
+                    {/* <OwnerSelector resource={{}} /> */}
+                  </Panel>
+                </div>
+
+                <CreateResourceFormResourceSettings
+                  blueprintId={formik.values.blueprint.connect.id}
                 />
-                {/* <OwnerSelector resource={{}} /> */}
-              </Panel>
-            </div>
-
-            <CreateResourceFormResourceSettings
-              blueprintId={formik.values.blueprint.connect.id}
-            />
-            <div>
-              <FlexItem margin={EnumFlexItemMargin.Both}>
-                <Text textStyle={EnumTextStyle.H4}>Git Repository</Text>
-              </FlexItem>
-              <Panel panelStyle={EnumPanelStyle.Bordered}>
-                <ResourceGitSettingsWithOverrideWizard formik={formik} />
-              </Panel>
-            </div>
-            <HorizontalRule />
-            <div>
-              <FlexItem
-                end={
-                  <Button
-                    type="submit"
-                    buttonStyle={EnumButtonStyle.Primary}
-                    disabled={!formik.dirty || loadingCreateResource}
-                  >
-                    Create Resource
-                  </Button>
-                }
-              ></FlexItem>
-            </div>
+                <div>
+                  <FlexItem margin={EnumFlexItemMargin.Both}>
+                    <Text textStyle={EnumTextStyle.H4}>Git Repository</Text>
+                  </FlexItem>
+                  <Panel panelStyle={EnumPanelStyle.Bordered}>
+                    <ResourceGitSettingsWithOverrideWizard formik={formik} />
+                  </Panel>
+                </div>
+                <HorizontalRule />
+                <div>
+                  <FlexItem
+                    end={
+                      <Button
+                        type="submit"
+                        buttonStyle={EnumButtonStyle.Primary}
+                        disabled={!formik.dirty || loadingCreateResource}
+                      >
+                        Create Resource
+                      </Button>
+                    }
+                  ></FlexItem>
+                </div>
+              </>
+            )}
           </Form>
         )}
       </Formik>

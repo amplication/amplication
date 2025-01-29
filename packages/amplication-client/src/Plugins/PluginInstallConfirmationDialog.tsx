@@ -5,13 +5,13 @@ import { DIALOG_CLASS_NAME } from "./PluginsCatalog";
 type Props = {
   confirmInstall: boolean;
   handleDismissInstall: () => void;
-  handleCreateDefaultEntitiesConfirmation: () => void;
+  handleCreateDefaultAuthEntityConfirmation: () => void;
 };
 
 const PluginInstallConfirmationDialog: React.FC<Props> = ({
   confirmInstall,
   handleDismissInstall,
-  handleCreateDefaultEntitiesConfirmation,
+  handleCreateDefaultAuthEntityConfirmation,
 }: Props) => {
   return (
     <div>
@@ -29,7 +29,7 @@ const PluginInstallConfirmationDialog: React.FC<Props> = ({
           <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
             buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleCreateDefaultEntitiesConfirmation}
+            onClick={handleCreateDefaultAuthEntityConfirmation}
           >
             Create 'User' entity
           </Button>

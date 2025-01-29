@@ -25,6 +25,7 @@ export const BlueprintFilter = ({
           value: blueprint.id,
           label: blueprint.name,
           color: blueprint.color,
+          description: blueprint.description,
         };
       })
       .sort((a, b) => {
@@ -45,6 +46,8 @@ export const BlueprintFilter = ({
         onRemove={onRemove}
         disabled={disabled}
         isMulti={true}
+        showEmptyItem={true}
+        emptyItemLabel="All"
       />
     </>
   );

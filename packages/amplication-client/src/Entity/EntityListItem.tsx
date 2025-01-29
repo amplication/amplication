@@ -47,7 +47,6 @@ type Props = {
   onDelete?: () => void;
   onError: (error: Error) => void;
   relatedEntities: models.Entity[];
-  isUserEntityMandatory: boolean;
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -58,7 +57,6 @@ export const EntityListItem = ({
   onDelete,
   onError,
   relatedEntities,
-  isUserEntityMandatory,
 }: Props) => {
   const { addEntity } = useContext(AppContext);
   const history = useHistory();
@@ -137,15 +135,17 @@ export const EntityListItem = ({
       variables: {
         entityId: entity.id,
       },
-    }).catch(onError);
-
-    if (authEntity === entity.name) {
-      const updateServiceSettings = {
-        ...serviceSettings?.serviceSettings,
-        authEntityName: null,
-      };
-      handleSubmit(updateServiceSettings);
-    }
+    })
+      .then(() => {
+        if (authEntity === entity.name) {
+          const updateServiceSettings = {
+            ...serviceSettings?.serviceSettings,
+            authEntityName: null,
+          };
+          handleSubmit(updateServiceSettings);
+        }
+      })
+      .catch(onError);
   }, [
     serviceSettings?.serviceSettings,
     deleteEntity,
@@ -163,8 +163,6 @@ export const EntityListItem = ({
   const isAuthEntity = serviceSettings?.serviceSettings?.authEntityName
     ? entity.name === serviceSettings?.serviceSettings?.authEntityName
     : entity.name === USER_ENTITY;
-
-  const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
 
   const deleteMessage = isAuthEntity
     ? "Deleting this entity may impact the authentication functionality of your service"
@@ -222,7 +220,6 @@ export const EntityListItem = ({
                 buttonStyle={EnumButtonStyle.Text}
                 icon="trash_2"
                 onClick={handleDelete}
-                disabled={isDeleteButtonDisable}
               />
             )
           }

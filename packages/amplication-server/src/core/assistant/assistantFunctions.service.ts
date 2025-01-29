@@ -349,7 +349,7 @@ export class AssistantFunctionsService {
           authEntityExist = true;
         } else {
           //create auth entity
-          await this.resourceService.createDefaultAuthEntity(
+          await this.entityService.createDefaultAuthEntity(
             resourceId,
             context.user
           );
@@ -414,7 +414,7 @@ export class AssistantFunctionsService {
               USER_ENTITY_NAME.toLowerCase()
             ) {
               try {
-                entity = await this.resourceService.createDefaultAuthEntity(
+                entity = await this.entityService.createDefaultAuthEntity(
                   args.resourceId,
                   context.user
                 );

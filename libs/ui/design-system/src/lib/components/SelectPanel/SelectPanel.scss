@@ -3,12 +3,71 @@
 $dropdown-box-shadow: 0 36px 34px -24px #15102c70;
 $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 $selected-items-gap: 2px;
+$select-field-arrow-size: 30px;
 
 .amp-select-panel {
   &__button {
     width: auto;
     padding: 0 var(--default-spacing);
     gap: $selected-items-gap;
+
+    &__label {
+      padding-right: var(--icon-spacing);
+    }
+
+    &__clear {
+      .amp-icon {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &--as-select-field {
+    .amp-button.amp-select-panel__button {
+      @include textField;
+      max-width: var(--form-field-long);
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-left: var(--default-spacing) !important;
+      padding-right: calc(
+        var(--default-spacing) + $select-field-arrow-size
+      ) !important;
+      position: relative;
+
+      .amp-button__icon {
+        position: absolute;
+        right: 0;
+        top: var(--icon-spacing);
+        bottom: var(--icon-spacing);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        width: $select-field-arrow-size;
+        border-left: 1px solid var(--gray-base);
+      }
+
+      &:active:not(:disabled),
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
+        @include textField--active;
+      }
+
+      &:disabled {
+        @include textField--disabled;
+      }
+
+      &::placeholder {
+        color: var(--gray-40);
+      }
+
+      .amp-tag {
+        max-width: calc(100% - var(--default-spacing));
+      }
+    }
   }
 
   label {
@@ -43,7 +102,6 @@ $selected-items-gap: 2px;
         width: 100%;
         box-sizing: border-box;
         padding: var(--default-spacing);
-        min-height: 40px; //2* spacing + min checkbox height
 
         &--selected,
         &[aria-checked="true"] {
@@ -57,6 +115,15 @@ $selected-items-gap: 2px;
     }
     label {
       color: var(--gray-base) !important;
+    }
+  }
+
+  &__item {
+    &__description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
     }
   }
 }

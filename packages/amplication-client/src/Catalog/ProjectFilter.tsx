@@ -21,6 +21,8 @@ export const ProjectFilter = ({
       (project): OptionItem => ({
         value: project.id,
         label: project.name,
+        color: "#FFF",
+        description: project.description,
       })
     );
   }, [projectsList]);

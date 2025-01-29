@@ -35,6 +35,7 @@ import useResource from "../Resource/hooks/useResource";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
+import { FIND_MODULES } from "../Modules/queries/modulesQueries";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -134,14 +135,13 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     [createPluginInstallation, resource]
   );
 
-  const [createDefaultEntities] = useMutation<TEntities>(
+  const [createDefaultAuthEntity] = useMutation<TEntities>(
     CREATE_DEFAULT_ENTITIES,
     {
+      refetchQueries: [FIND_MODULES],
       onCompleted: (data) => {
         if (!data) return;
-        const userEntity = data.createDefaultEntities.find(
-          (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-        );
+        const userEntity = data.createDefaultAuthEntity;
         addEntity(userEntity.id);
         refetch();
         setConfirmInstall(false);
@@ -181,15 +181,15 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     }
   );
 
-  const handleCreateDefaultEntitiesConfirmation = useCallback(() => {
-    createDefaultEntities({
+  const handleCreateDefaultAuthEntityConfirmation = useCallback(() => {
+    createDefaultAuthEntity({
       variables: {
         data: {
           resourceId: resource,
         },
       },
     }).catch(console.error);
-  }, [createDefaultEntities, resource]);
+  }, [createDefaultAuthEntity, resource]);
 
   const onOrderChange = useCallback(
     ({ id, order }: { id: string; order: number }) => {
@@ -257,30 +257,35 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
       <PluginInstallConfirmationDialog
         confirmInstall={confirmInstall}
         handleDismissInstall={handleDismissInstall}
-        handleCreateDefaultEntitiesConfirmation={
-          handleCreateDefaultEntitiesConfirmation
+        handleCreateDefaultAuthEntityConfirmation={
+          handleCreateDefaultAuthEntityConfirmation
         }
       ></PluginInstallConfirmationDialog>
       <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <DndProvider backend={HTML5Backend}>
         <List>
           {pluginInstallations.length &&
-            pluginInstallations.map((installation) => (
-              <PluginsCatalogItem
-                key={installation.id}
-                plugin={
-                  pluginCatalog[installation.pluginId] ||
-                  (privatePluginCatalog &&
-                    privatePluginCatalog[installation.pluginId])
-                }
-                pluginInstallation={installation as models.PluginInstallation}
-                onOrderChange={onOrderChange}
-                onInstall={handleInstall}
-                onEnableStateChange={onEnableStateChange}
-                order={pluginOrderObj[installation.pluginId]}
-                isDraggable
-              />
-            ))}
+            pluginInstallations.map(
+              (installation) =>
+                installation && (
+                  <PluginsCatalogItem
+                    key={installation.id}
+                    plugin={
+                      pluginCatalog[installation.pluginId] ||
+                      (privatePluginCatalog &&
+                        privatePluginCatalog[installation.pluginId])
+                    }
+                    pluginInstallation={
+                      installation as models.PluginInstallation
+                    }
+                    onOrderChange={onOrderChange}
+                    onInstall={handleInstall}
+                    onEnableStateChange={onEnableStateChange}
+                    order={pluginOrderObj[installation.pluginId]}
+                    isDraggable
+                  />
+                )
+            )}
         </List>
         <Snackbar
           open={Boolean(updateError || createError)}
