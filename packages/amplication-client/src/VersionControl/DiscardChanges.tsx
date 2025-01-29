@@ -41,12 +41,12 @@ const DiscardChanges = ({
             }),
           });
         } else {
-          /**@todo: handle other types of blocks */
+          const block = change.origin as models.Block;
 
           cache.evict({
             id: cache.identify({
               id: change.originId,
-              __typename: "ServiceSettings",
+              __typename: block.blockType,
             }),
           });
         }
