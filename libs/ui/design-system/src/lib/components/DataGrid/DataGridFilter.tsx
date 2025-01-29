@@ -58,6 +58,7 @@ export const DataGridFilter = ({
           buttonStyle: EnumButtonStyle.Text,
         }}
         initialOpen={true}
+        showLabelWhenSelected={true}
       />
     </div>
   );

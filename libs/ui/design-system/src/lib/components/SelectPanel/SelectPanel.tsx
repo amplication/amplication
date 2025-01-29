@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { Button, Props as ButtonProps } from "../Button/Button";
+import {
+  Button,
+  Props as ButtonProps,
+  EnumButtonStyle,
+  EnumIconPosition,
+} from "../Button/Button";
 import { Icon } from "../Icon/Icon";
 import { Popover } from "../Popover/Popover";
 import { Tag } from "../Tag/Tag";
@@ -7,6 +12,9 @@ import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 import { OptionItem } from "../types";
 import { EnumFlexDirection, EnumGapSize, FlexItem } from "../FlexItem/FlexItem";
 import "./SelectPanel.scss";
+import { Label } from "../Label/Label";
+import classNames from "classnames";
+import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
 
 const CLASS_NAME = "amp-select-panel";
 const DEFAULT_COLOR = "#FFFFFF";
@@ -24,6 +32,9 @@ export type Props = {
   emptyItemLabel?: string;
   showEmptyItem?: boolean;
   initialOpen?: boolean;
+  showLabelWhenSelected?: boolean;
+  showAsSelectField?: boolean;
+  inputToolTip?: InputToolTipProps | undefined;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -39,8 +50,11 @@ export const SelectPanel: React.FC<Props> = ({
   emptyItemLabel = "All",
   showEmptyItem = false,
   initialOpen = false,
+  showLabelWhenSelected = false,
+  showAsSelectField = false,
+  inputToolTip,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(initialOpen);
+  const [isOpen, setIsOpen] = React.useState(initialOpen && !disabled);
 
   const selectRef = useRef<HTMLDivElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -125,7 +139,12 @@ export const SelectPanel: React.FC<Props> = ({
       : options;
 
   return (
-    <div className={CLASS_NAME} ref={selectRef}>
+    <div
+      className={classNames(CLASS_NAME, {
+        [`${CLASS_NAME}--as-select-field`]: showAsSelectField,
+      })}
+      ref={selectRef}
+    >
       <Popover
         arrow
         open={isOpen}
@@ -133,7 +152,7 @@ export const SelectPanel: React.FC<Props> = ({
         content={
           <div className={`${CLASS_NAME}__picker`} ref={pickerRef}>
             <ul className={`${CLASS_NAME}__picker__items`} role="listbox">
-              {optionsWithEmptyItem.map((item) => {
+              {optionsWithEmptyItem?.map((item) => {
                 const selected = isMulti
                   ? selectedValue?.includes(item.value)
                   : selectedValue === item.value;
@@ -162,49 +181,132 @@ export const SelectPanel: React.FC<Props> = ({
                   </li>
                 );
               })}
+              {optionsWithEmptyItem?.length === 0 && (
+                <li className={`${CLASS_NAME}__picker__items__item`}>
+                  <Text
+                    textStyle={EnumTextStyle.Description}
+                    textColor={EnumTextColor.Black20}
+                  >
+                    No items
+                  </Text>
+                </li>
+              )}
             </ul>
           </div>
         }
       >
-        <Button
-          className={`${CLASS_NAME}__button`}
-          buttonStyle={buttonStyle}
-          {...otherButtonProps}
-          {...(isOpen ? openButtonProps : {})}
-          onClick={handleButtonClick}
-          type="button"
-          disabled={disabled}
-        >
-          <Text
-            textColor={EnumTextColor.Black20}
-            textStyle={EnumTextStyle.Tag}
-            className={`${CLASS_NAME}__button__label`}
-          >
-            {label}
-          </Text>
-          {selectedItems.length > 0 && showSelectedItemsInButton && (
-            <>
-              {selectedItems.slice(0, 2).map((item) => (
-                <SelectPanelItemContent
-                  key={item.value}
-                  item={item}
-                  isMulti={isMulti}
-                  includeDescription={false}
-                  textMode={false}
-                />
-              ))}
-              {selectedItems.length > 2 && (
-                <Tag
-                  value={`+${selectedItems.length - 2}`}
-                  color={DEFAULT_COLOR}
-                  textMode={false}
-                />
-              )}
-            </>
-          )}
-        </Button>
+        {showAsSelectField ? (
+          <label className="input-label">
+            {label && <Label text={label} inputToolTip={inputToolTip} />}
+            <div className={`${CLASS_NAME}__button__wrapper-as-textbox`}>
+              <SelectPanelButton
+                label={null}
+                selectedItems={selectedItems}
+                showLabelWhenSelected={showLabelWhenSelected}
+                showSelectedItemsInButton={showSelectedItemsInButton}
+                isMulti={isMulti}
+                buttonStyle={EnumButtonStyle.Text}
+                otherButtonProps={{
+                  icon: "chevron_down",
+                  iconPosition: EnumIconPosition.Right,
+                }}
+                openButtonProps={{
+                  icon: "chevron_up",
+                  iconPosition: EnumIconPosition.Right,
+                }}
+                handleButtonClick={handleButtonClick}
+                disabled={disabled}
+                isOpen={isOpen}
+                showAsSelectField={showAsSelectField}
+              />
+            </div>
+          </label>
+        ) : (
+          <SelectPanelButton
+            label={label}
+            selectedItems={selectedItems}
+            showLabelWhenSelected={showLabelWhenSelected}
+            showSelectedItemsInButton={showSelectedItemsInButton}
+            isMulti={isMulti}
+            buttonStyle={buttonStyle}
+            otherButtonProps={otherButtonProps}
+            openButtonProps={openButtonProps}
+            handleButtonClick={handleButtonClick}
+            disabled={disabled}
+            isOpen={isOpen}
+            showAsSelectField={showAsSelectField}
+          />
+        )}
       </Popover>
     </div>
+  );
+};
+
+type SelectPanelButtonProps = {
+  label: string | null;
+  selectedItems: OptionItem[];
+  showLabelWhenSelected: boolean;
+  showSelectedItemsInButton: boolean;
+  isMulti?: boolean;
+  buttonStyle?: EnumButtonStyle;
+  otherButtonProps?: ButtonProps;
+  openButtonProps?: ButtonProps;
+  handleButtonClick: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
+  disabled?: boolean;
+  isOpen?: boolean;
+  showAsSelectField?: boolean;
+};
+
+const SelectPanelButton = ({
+  label,
+  selectedItems,
+  showLabelWhenSelected,
+  showSelectedItemsInButton,
+  isMulti,
+  buttonStyle,
+  otherButtonProps,
+  openButtonProps,
+  handleButtonClick,
+  disabled,
+  isOpen,
+  showAsSelectField,
+}: SelectPanelButtonProps) => {
+  return (
+    <Button
+      className={`${CLASS_NAME}__button`}
+      buttonStyle={buttonStyle}
+      {...otherButtonProps}
+      {...(isOpen ? openButtonProps : {})}
+      onClick={handleButtonClick}
+      type="button"
+      disabled={disabled}
+    >
+      {label && (showLabelWhenSelected || selectedItems.length === 0) && (
+        <span className={`${CLASS_NAME}__button__label`}>{label}</span>
+      )}
+      {selectedItems.length > 0 && showSelectedItemsInButton && (
+        <>
+          {selectedItems.slice(0, 2).map((item) => (
+            <SelectPanelItemContent
+              key={item.value}
+              item={item}
+              isMulti={isMulti}
+              includeDescription={false}
+              textMode={false}
+            />
+          ))}
+          {selectedItems.length > 2 && (
+            <Tag
+              value={`+${selectedItems.length - 2}`}
+              color={DEFAULT_COLOR}
+              textMode={false}
+            />
+          )}
+        </>
+      )}
+    </Button>
   );
 };
 
