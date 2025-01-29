@@ -190,9 +190,7 @@ const moduleServiceGetDefaultModuleIdForEntityMock = jest.fn(
 
 const permissionsServiceValidateAccessMock = jest.fn(() => true);
 
-const resourceServiceCreateDefaultAuthEntityMock = jest.fn(
-  () => EXAMPLE_ENTITY
-);
+const entityServiceCreateDefaultAuthEntityMock = jest.fn(() => EXAMPLE_ENTITY);
 const resourceServiceGetAuthEntityNameMock = jest.fn(() => USER_ENTITY_NAME);
 
 describe("AssistantFunctionsService", () => {
@@ -231,6 +229,7 @@ describe("AssistantFunctionsService", () => {
             entities: entityServiceEntitiesMock,
             entity: entityServiceEntityMock,
             getFields: jest.fn(() => []),
+            createDefaultAuthEntity: entityServiceCreateDefaultAuthEntityMock,
           },
         },
         {
@@ -240,7 +239,6 @@ describe("AssistantFunctionsService", () => {
             resources: resourceServiceResourcesMock,
             createComponent: resourceServiceCreateComponentMock,
             getAuthEntityName: resourceServiceGetAuthEntityNameMock,
-            createDefaultAuthEntity: resourceServiceCreateDefaultAuthEntityMock,
           },
         },
         {
@@ -741,7 +739,7 @@ describe("AssistantFunctionsService", () => {
     );
 
     expect(resourceServiceGetAuthEntityNameMock).toHaveBeenCalledTimes(1);
-    expect(resourceServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(1);
+    expect(entityServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(1);
   });
 
   it.each(["User", "Users", "user", "users"])(
@@ -761,9 +759,7 @@ describe("AssistantFunctionsService", () => {
         EXAMPLE_LOGGER_CONTEXT
       );
 
-      expect(resourceServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(
-        1
-      );
+      expect(entityServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(1);
       expect(entityServiceCreateOneEntityMock).toHaveBeenCalledTimes(0);
     }
   );
@@ -776,7 +772,7 @@ describe("AssistantFunctionsService", () => {
     };
 
     //throw error from createDefaultAuthEntity
-    resourceServiceCreateDefaultAuthEntityMock.mockImplementationOnce(() => {
+    entityServiceCreateDefaultAuthEntityMock.mockImplementationOnce(() => {
       throw new AmplicationError("Error");
     });
 
@@ -788,7 +784,7 @@ describe("AssistantFunctionsService", () => {
       EXAMPLE_LOGGER_CONTEXT
     );
 
-    expect(resourceServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(1);
+    expect(entityServiceCreateDefaultAuthEntityMock).toHaveBeenCalledTimes(1);
     expect(entityServiceCreateOneEntityMock).toHaveBeenCalledTimes(1);
   });
 });
