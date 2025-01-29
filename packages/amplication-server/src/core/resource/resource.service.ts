@@ -27,10 +27,7 @@ import { prepareDeletedItemName } from "../../util/softDelete";
 import { ActionService } from "../action/action.service";
 import { EnumActionLogLevel } from "../action/dto/EnumActionLogLevel";
 import { BillingService } from "../billing/billing.service";
-import {
-  DATA_TYPE_TO_DEFAULT_PROPERTIES,
-  USER_ENTITY_NAME,
-} from "../entity/constants";
+import { DATA_TYPE_TO_DEFAULT_PROPERTIES } from "../entity/constants";
 import { EnumRelatedFieldStrategy } from "../entity/dto/EnumRelatedFieldStrategy";
 import {
   CreateBulkEntitiesAndFieldsArgs,
@@ -62,20 +59,20 @@ import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
 
 import { PaginatedResourceQueryResult } from "../../dto/PaginatedQueryResult";
+import { TeamAssignment } from "../../models/TeamAssignment";
 import { jsonPathStringFilterToPrismaFilter } from "../../prisma/JsonPathStringFilterToPrismaFilter";
+import { CustomPropertyService } from "../customProperty/customProperty.service";
 import { GitConnectionSettings } from "../git/dto/objects/GitConnectionSettings";
 import { GitProviderService } from "../git/git.provider.service";
 import { EnumOwnershipType, Ownership } from "../ownership/dto/Ownership";
 import { OwnershipService } from "../ownership/ownership.service";
+import { Relation } from "../relation/dto/Relation";
 import { RelationService } from "../relation/relation.service";
+import { ResourceTemplateVersion } from "../resourceTemplateVersion/dto";
+import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { ResourceInclude } from "./dto/ResourceInclude";
-import { Relation } from "../relation/dto/Relation";
-import { CustomPropertyService } from "../customProperty/customProperty.service";
-import { TeamAssignment } from "../../models/TeamAssignment";
-import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
-import { ResourceTemplateVersion } from "../resourceTemplateVersion/dto";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
