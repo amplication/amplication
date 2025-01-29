@@ -1675,7 +1675,7 @@ type Mutation {
   createComponent(data: ResourceCreateInput!): Resource!
   createCustomProperty(data: CustomPropertyCreateInput!): CustomProperty!
   createCustomPropertyOption(data: CustomPropertyOptionCreateInput!): CustomPropertyOption!
-  createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createDefaultAuthEntity(data: DefaultEntitiesInput!): Entity
   createEntitiesFromPredefinedSchema(data: CreateEntitiesFromPredefinedSchemaInput!): UserAction!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
@@ -1835,7 +1835,7 @@ input OutdatedVersionAlertWhereInput {
   id: StringFilter
   latestVersion: StringFilter
   outdatedVersion: StringFilter
-  resource: ResourceWhereInput!
+  resource: ResourceWhereInput
   status: EnumOutdatedVersionAlertStatusFilter
   type: EnumOutdatedVersionAlertTypeFilter
   updatedAt: DateTimeFilter

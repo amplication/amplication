@@ -100,91 +100,86 @@ type EntityData = Omit<
 
 export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
 
-export const DEFAULT_USER_ENTITY: EntityData[] = [
-  {
-    name: USER_ENTITY_NAME,
-    displayName: "User",
-    pluralDisplayName: "Users",
-    customAttributes: "",
-    description:
-      "An automatically created entity to manage users in the service",
-    fields: [
-      ...INITIAL_ENTITY_FIELDS,
-      {
-        dataType: EnumDataType.SingleLineText,
-        name: "firstName",
-        displayName: "First Name",
-        description:
-          "An automatically created field of the first name of the user",
-        required: false,
-        unique: false,
-        searchable: true,
-        properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
-        },
+export const DEFAULT_USER_ENTITY: EntityData = {
+  name: USER_ENTITY_NAME,
+  displayName: "User",
+  pluralDisplayName: "Users",
+  customAttributes: "",
+  description: "An automatically created entity to manage users in the service",
+  fields: [
+    ...INITIAL_ENTITY_FIELDS,
+    {
+      dataType: EnumDataType.SingleLineText,
+      name: "firstName",
+      displayName: "First Name",
+      description:
+        "An automatically created field of the first name of the user",
+      required: false,
+      unique: false,
+      searchable: true,
+      properties: {
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
       },
-      {
-        dataType: EnumDataType.SingleLineText,
-        name: "lastName",
-        displayName: "Last Name",
-        description:
-          "An automatically created field of the last name of the user",
-        unique: false,
-        required: false,
-        searchable: true,
-        properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
-        },
+    },
+    {
+      dataType: EnumDataType.SingleLineText,
+      name: "lastName",
+      displayName: "Last Name",
+      description:
+        "An automatically created field of the last name of the user",
+      unique: false,
+      required: false,
+      searchable: true,
+      properties: {
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
       },
-      {
-        dataType: EnumDataType.Username,
-        name: "username",
-        displayName: "Username",
-        description:
-          "An automatically created field of the username of the user",
-        unique: true,
-        required: true,
-        searchable: true,
-        properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
-        },
+    },
+    {
+      dataType: EnumDataType.Username,
+      name: "username",
+      displayName: "Username",
+      description: "An automatically created field of the username of the user",
+      unique: true,
+      required: true,
+      searchable: true,
+      properties: {
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
       },
-      {
-        dataType: EnumDataType.Email,
-        name: "email",
-        displayName: "Email",
-        description: "An automatically created field of the email of the user",
-        unique: true,
-        required: false,
-        searchable: true,
-        properties: {},
+    },
+    {
+      dataType: EnumDataType.Email,
+      name: "email",
+      displayName: "Email",
+      description: "An automatically created field of the email of the user",
+      unique: true,
+      required: false,
+      searchable: true,
+      properties: {},
+    },
+    {
+      dataType: EnumDataType.Password,
+      name: "password",
+      displayName: "Password",
+      description: "An automatically created field of the password of the user",
+      unique: false,
+      required: true,
+      searchable: false,
+      properties: {
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
       },
-      {
-        dataType: EnumDataType.Password,
-        name: "password",
-        displayName: "Password",
-        description:
-          "An automatically created field of the password of the user",
-        unique: false,
-        required: true,
-        searchable: false,
-        properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
-        },
-      },
-      {
-        dataType: EnumDataType.Roles,
-        name: "roles",
-        displayName: "Roles",
-        description: "An automatically created field of the roles of the user",
-        unique: false,
-        required: true,
-        searchable: false,
-        properties: {},
-      },
-    ],
-  },
-];
+    },
+    {
+      dataType: EnumDataType.Roles,
+      name: "roles",
+      displayName: "Roles",
+      description: "An automatically created field of the roles of the user",
+      unique: false,
+      required: true,
+      searchable: false,
+      properties: {},
+    },
+  ],
+};
 
 export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [key in EnumDataType]: JsonObject;
