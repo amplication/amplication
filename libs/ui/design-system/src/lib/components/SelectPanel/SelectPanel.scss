@@ -14,6 +14,12 @@ $select-field-arrow-size: 30px;
     &__label {
       padding-right: var(--icon-spacing);
     }
+
+    &__clear {
+      .amp-icon {
+        margin-left: 0;
+      }
+    }
   }
 
   &--as-select-field {
