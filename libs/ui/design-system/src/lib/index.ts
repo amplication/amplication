@@ -39,6 +39,9 @@ export type { Props as SelectMenuProps } from "./components/SelectMenu/SelectMen
 export { SelectPanel } from "./components/SelectPanel/SelectPanel";
 export type { Props as SelectPanelProps } from "./components/SelectPanel/SelectPanel";
 
+export { SelectPanelField } from "./components/SelectPanel/SelectPanelField";
+export type { Props as SelectPanelFieldProps } from "./components/SelectPanel/SelectPanelField";
+
 export { SelectField } from "./components/SelectField/SelectField";
 
 export type { Props as SelectFieldProps } from "./components/SelectField/SelectField";
