@@ -53,13 +53,13 @@ const INITIAL_MESSAGE: AssistantMessageWithOptions = {
 const FUNCTIONS_CACHE_MAP: {
   [key in models.EnumAssistantFunctions]: {
     refreshPendingChanges: boolean;
-    cacheKey: string;
+    cacheKey: string | string[];
     queries?: DocumentNode[];
   };
 } = {
   [models.EnumAssistantFunctions.CreateEntities]: {
     refreshPendingChanges: true,
-    cacheKey: "resources",
+    cacheKey: ["resources", "entities", "modules", "moduleDtos", "moduleEnums"],
   },
   [models.EnumAssistantFunctions.CreateResource]: {
     refreshPendingChanges: true,
@@ -95,7 +95,13 @@ const FUNCTIONS_CACHE_MAP: {
   },
   [models.EnumAssistantFunctions.CreateEntityFields]: {
     refreshPendingChanges: true,
-    cacheKey: "fields",
+    cacheKey: [
+      "fields",
+      "entities",
+      "moduleActions",
+      "moduleDtos",
+      "moduleEnums",
+    ],
     queries: [GET_ENTITIES],
   },
   [models.EnumAssistantFunctions.GetModuleActions]: {
@@ -145,14 +151,8 @@ const FUNCTIONS_CACHE_MAP: {
 };
 
 const useAssistant = () => {
-  const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
-    resources,
-    addBlock,
-    commitUtils,
-  } = useAppContext();
+  const { currentProject, currentResource, resources, addBlock, commitUtils } =
+    useAppContext();
   const history = useHistory();
 
   const apolloClient = useApolloClient();
@@ -206,7 +206,13 @@ const useAssistant = () => {
         if (functionExecuted) {
           const cacheKey = FUNCTIONS_CACHE_MAP[functionExecuted].cacheKey;
           if (cacheKey) {
-            updateCache(cacheKey);
+            if (Array.isArray(cacheKey)) {
+              cacheKey.forEach((key) => {
+                updateCache(key);
+              });
+            } else {
+              updateCache(cacheKey);
+            }
           }
           if (FUNCTIONS_CACHE_MAP[functionExecuted].refreshPendingChanges) {
             addBlock("blockId");

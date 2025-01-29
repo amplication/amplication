@@ -27,6 +27,7 @@ import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { PRIVATE_PLUGINS_CATEGORY } from "./PluginTree";
 import PrivatePluginFeature from "./PrivatePluginsFeature";
+import { FIND_MODULES } from "../Modules/queries/modulesQueries";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -216,6 +217,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const [createDefaultAuthEntity] = useMutation<TEntities>(
     CREATE_DEFAULT_ENTITIES,
     {
+      refetchQueries: [FIND_MODULES],
       onCompleted: (data) => {
         if (!data) return;
         const userEntity = data.createDefaultAuthEntity;

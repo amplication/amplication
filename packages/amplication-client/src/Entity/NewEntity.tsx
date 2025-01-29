@@ -83,22 +83,32 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
   const { findModuleRefetch } = useModule();
 
+  const refetchModules = useCallback(() => {
+    findModuleRefetch({
+      where: {
+        resource: { id: resourceId },
+      },
+      orderBy: {
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+      },
+    });
+  }, [resourceId, findModuleRefetch]);
+
+  const onEntityCreated = useCallback(
+    (entity: models.Entity) => {
+      addEntity(entity.id);
+      refetchModules();
+      onSuccess();
+      history.push(`entities/${entity.id}`);
+    },
+    [refetchModules, addEntity, onSuccess, history]
+  );
+
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
-        addEntity(data.createOneEntity.id);
-        //refresh the modules list
-        findModuleRefetch({
-          where: {
-            resource: { id: resourceId },
-          },
-          orderBy: {
-            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-          },
-        });
-        onSuccess();
-        history.push(`entities/${data.createOneEntity.id}`);
+        onEntityCreated(data.createOneEntity);
       },
       update(cache, { data }) {
         if (!data) return;
@@ -135,9 +145,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       onCompleted: (data) => {
         if (!data) return;
         const userEntity = data.createDefaultAuthEntity;
-        addEntity(userEntity.id);
-        onSuccess();
-        history.push(`entities/${userEntity.id}`);
+        onEntityCreated(userEntity);
       },
       update(cache, { data }) {
         if (!data) return;
