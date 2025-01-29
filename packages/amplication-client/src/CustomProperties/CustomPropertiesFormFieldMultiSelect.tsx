@@ -1,4 +1,4 @@
-import { SelectField } from "@amplication/ui/design-system";
+import { SelectPanelField } from "@amplication/ui/design-system";
 import { CustomProperty } from "../models";
 
 type Props = {
@@ -19,7 +19,7 @@ function CustomPropertiesFormFieldMultiSelect({
   }));
 
   return (
-    <SelectField
+    <SelectPanelField
       inputToolTip={
         property.description
           ? {
