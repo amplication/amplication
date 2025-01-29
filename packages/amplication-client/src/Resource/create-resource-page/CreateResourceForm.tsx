@@ -285,9 +285,18 @@ const CreateResourceForm = ({ projectId }: Props) => {
 
   const handleProjectChange = useCallback(
     (projectId: string) => {
+      setInitialValueWithSettings({
+        ...initialValue,
+        project: {
+          connect: {
+            id: projectId,
+          },
+        },
+        templateId: "",
+      });
       history.push(`/${currentWorkspace?.id}/${projectId}/new-resource`);
     },
-    [currentWorkspace?.id, history]
+    [currentWorkspace?.id, history, initialValue, setInitialValueWithSettings]
   );
 
   //reset the initial value of the form to include the new blueprint properties
@@ -372,7 +381,7 @@ const CreateResourceForm = ({ projectId }: Props) => {
                   onChange={handleProjectChange}
                 />
                 <TemplateSelectField
-                  name="template.connect.id"
+                  name="templateId"
                   label="Template"
                   projectId={formik.values.project.connect.id}
                   onChange={handleTemplateChange}
