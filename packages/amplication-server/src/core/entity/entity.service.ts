@@ -842,44 +842,91 @@ export class EntityService {
     return entities;
   }
 
+  async createDefaultAuthEntity(
+    resourceId: string,
+    user: User
+  ): Promise<Entity> {
+    const serviceSettings =
+      await this.serviceSettingsService.getServiceSettingsValues(
+        {
+          where: {
+            id: resourceId,
+          },
+        },
+        user
+      );
+
+    if (!isEmpty(serviceSettings.authEntityName)) {
+      throw new AmplicationError(
+        `Auth entity already exists for resource "${resourceId} `
+      );
+    }
+
+    const existingUserEntity = await this.entities({
+      where: {
+        resourceId: resourceId,
+        name: USER_ENTITY_NAME,
+      },
+    });
+
+    if (!isEmpty(existingUserEntity)) {
+      throw new AmplicationError(
+        `An entity with the default Auth entity name already exists for resource "${resourceId} `
+      );
+    }
+
+    const userEntity = await this.createDefaultUserEntity(resourceId, user);
+
+    await this.serviceSettingsService.updateServiceSettings(
+      {
+        data: {
+          ...serviceSettings,
+          authEntityName: userEntity.displayName,
+        },
+        where: {
+          id: resourceId,
+        },
+      },
+      user
+    );
+
+    return userEntity;
+  }
+
   async createDefaultUserEntity(
     resourceId: string,
     user: User
-  ): Promise<Entity[]> {
-    return await Promise.all(
-      DEFAULT_USER_ENTITY.map(async (entity) => {
-        const { fields, ...rest } = entity;
-        const newEntity = await this.createOneEntity(
-          {
-            data: {
-              ...rest,
-              resource: { connect: { id: resourceId } },
-            },
-          },
-          user,
-          false,
-          false,
-          false
-        );
-
-        await this.prisma.entityVersion.update({
-          where: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-          data: {
-            fields: {
-              create: fields,
-            },
-          },
-        });
-
-        return newEntity;
-      })
+  ): Promise<Entity> {
+    const { fields, ...rest } = DEFAULT_USER_ENTITY;
+    const newEntity = await this.createOneEntity(
+      {
+        data: {
+          ...rest,
+          resource: { connect: { id: resourceId } },
+        },
+      },
+      user,
+      false,
+      false,
+      false
     );
+
+    await this.prisma.entityVersion.update({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        entityId_versionNumber: {
+          entityId: newEntity.id,
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
+      data: {
+        fields: {
+          create: fields,
+        },
+      },
+    });
+
+    return newEntity;
   }
 
   /**

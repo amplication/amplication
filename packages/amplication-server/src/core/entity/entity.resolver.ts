@@ -85,7 +85,7 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args, user);
   }
 
-  @Mutation(() => [Entity], {
+  @Mutation(() => Entity, {
     nullable: true,
   })
   @AuthorizeContext(
@@ -93,11 +93,11 @@ export class EntityResolver {
     "data.resourceId",
     "resource.*.edit"
   )
-  async createDefaultEntities(
+  async createDefaultAuthEntity(
     @UserEntity() user: User,
     @Args() args: CreateDefaultEntitiesArgs
-  ): Promise<Entity[]> {
-    return await this.entityService.createDefaultUserEntity(
+  ): Promise<Entity> {
+    return await this.entityService.createDefaultAuthEntity(
       args.data.resourceId,
       user
     );

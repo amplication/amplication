@@ -637,7 +637,7 @@ export class ResourceService {
     });
 
     if (requireAuthenticationEntity) {
-      const [userEntity] = await this.entityService.createDefaultUserEntity(
+      const userEntity = await this.entityService.createDefaultUserEntity(
         service.id,
         user
       );
@@ -649,60 +649,6 @@ export class ResourceService {
       user,
       serviceSettings
     );
-  }
-
-  async createDefaultAuthEntity(
-    resourceId: string,
-    user: User
-  ): Promise<Entity> {
-    const serviceSettings =
-      await this.serviceSettingsService.getServiceSettingsValues(
-        {
-          where: {
-            id: resourceId,
-          },
-        },
-        user
-      );
-
-    if (!isEmpty(serviceSettings.authEntityName)) {
-      throw new AmplicationError(
-        `Auth entity already exists for resource "${resourceId} `
-      );
-    }
-
-    const existingUserEntity = await this.entityService.entities({
-      where: {
-        resourceId: resourceId,
-        name: USER_ENTITY_NAME,
-      },
-    });
-
-    if (!isEmpty(existingUserEntity)) {
-      throw new AmplicationError(
-        `An entity with the default Auth entity name already exists for resource "${resourceId} `
-      );
-    }
-
-    const [userEntity] = await this.entityService.createDefaultUserEntity(
-      resourceId,
-      user
-    );
-
-    await this.serviceSettingsService.updateServiceSettings(
-      {
-        data: {
-          ...serviceSettings,
-          authEntityName: userEntity.displayName,
-        },
-        where: {
-          id: resourceId,
-        },
-      },
-      user
-    );
-
-    return userEntity;
   }
 
   private createMovedEntitiesByResourceMapping(movedEntities): {
