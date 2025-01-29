@@ -10,7 +10,12 @@ import { Popover } from "../Popover/Popover";
 import { Tag } from "../Tag/Tag";
 import { EnumTextColor, EnumTextStyle, Text } from "../Text/Text";
 import { OptionItem } from "../types";
-import { EnumFlexDirection, EnumGapSize, FlexItem } from "../FlexItem/FlexItem";
+import {
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
+  FlexItem,
+} from "../FlexItem/FlexItem";
 import "./SelectPanel.scss";
 import { Label } from "../Label/Label";
 import classNames from "classnames";
@@ -35,6 +40,7 @@ export type Props = {
   showLabelWhenSelected?: boolean;
   showAsSelectField?: boolean;
   inputToolTip?: InputToolTipProps | undefined;
+  isClearable?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -53,6 +59,7 @@ export const SelectPanel: React.FC<Props> = ({
   showLabelWhenSelected = false,
   showAsSelectField = false,
   inputToolTip,
+  isClearable = false,
 }) => {
   const [isOpen, setIsOpen] = React.useState(initialOpen && !disabled);
 
@@ -83,6 +90,12 @@ export const SelectPanel: React.FC<Props> = ({
       return options.filter((option) => option.value === selectedValue);
     }
   }, [selectedValue, options, isMulti, showEmptyItem, emptyItemLabel]);
+
+  const handleClear = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onChange(null);
+  };
 
   const handleChange = (value: string | null) => {
     if (!isMulti) {
@@ -200,6 +213,8 @@ export const SelectPanel: React.FC<Props> = ({
             {label && <Label text={label} inputToolTip={inputToolTip} />}
             <div className={`${CLASS_NAME}__button__wrapper-as-textbox`}>
               <SelectPanelButton
+                isClearable={isClearable}
+                onClear={handleClear}
                 label={null}
                 selectedItems={selectedItems}
                 showLabelWhenSelected={showLabelWhenSelected}
@@ -223,6 +238,8 @@ export const SelectPanel: React.FC<Props> = ({
           </label>
         ) : (
           <SelectPanelButton
+            isClearable={isClearable}
+            onClear={handleClear}
             label={label}
             selectedItems={selectedItems}
             showLabelWhenSelected={showLabelWhenSelected}
@@ -257,6 +274,8 @@ type SelectPanelButtonProps = {
   disabled?: boolean;
   isOpen?: boolean;
   showAsSelectField?: boolean;
+  isClearable?: boolean;
+  onClear?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
 const SelectPanelButton = ({
@@ -272,41 +291,58 @@ const SelectPanelButton = ({
   disabled,
   isOpen,
   showAsSelectField,
+  isClearable,
+  onClear,
 }: SelectPanelButtonProps) => {
   return (
-    <Button
-      className={`${CLASS_NAME}__button`}
-      buttonStyle={buttonStyle}
-      {...otherButtonProps}
-      {...(isOpen ? openButtonProps : {})}
-      onClick={handleButtonClick}
-      type="button"
-      disabled={disabled}
+    <FlexItem
+      direction={EnumFlexDirection.Row}
+      gap={EnumGapSize.Small}
+      itemsAlign={EnumItemsAlign.Center}
     >
-      {label && (showLabelWhenSelected || selectedItems.length === 0) && (
-        <span className={`${CLASS_NAME}__button__label`}>{label}</span>
+      <Button
+        className={`${CLASS_NAME}__button`}
+        buttonStyle={buttonStyle}
+        {...otherButtonProps}
+        {...(isOpen ? openButtonProps : {})}
+        onClick={handleButtonClick}
+        type="button"
+        disabled={disabled}
+      >
+        {label && (showLabelWhenSelected || selectedItems.length === 0) && (
+          <span className={`${CLASS_NAME}__button__label`}>{label}</span>
+        )}
+        {selectedItems.length > 0 && showSelectedItemsInButton && (
+          <>
+            {selectedItems.slice(0, 2).map((item) => (
+              <SelectPanelItemContent
+                key={item.value}
+                item={item}
+                isMulti={isMulti}
+                includeDescription={false}
+                textMode={false}
+              />
+            ))}
+            {selectedItems.length > 2 && (
+              <Tag
+                value={`+${selectedItems.length - 2}`}
+                color={DEFAULT_COLOR}
+                textMode={false}
+              />
+            )}
+          </>
+        )}
+      </Button>
+      {isClearable && selectedItems.length > 0 && !disabled && (
+        <Button
+          icon="close"
+          iconSize="small"
+          buttonStyle={EnumButtonStyle.Text}
+          className={`${CLASS_NAME}__button__clear`}
+          onClick={onClear}
+        />
       )}
-      {selectedItems.length > 0 && showSelectedItemsInButton && (
-        <>
-          {selectedItems.slice(0, 2).map((item) => (
-            <SelectPanelItemContent
-              key={item.value}
-              item={item}
-              isMulti={isMulti}
-              includeDescription={false}
-              textMode={false}
-            />
-          ))}
-          {selectedItems.length > 2 && (
-            <Tag
-              value={`+${selectedItems.length - 2}`}
-              color={DEFAULT_COLOR}
-              textMode={false}
-            />
-          )}
-        </>
-      )}
-    </Button>
+    </FlexItem>
   );
 };
 
