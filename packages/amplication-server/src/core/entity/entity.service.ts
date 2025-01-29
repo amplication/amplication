@@ -875,13 +875,13 @@ export class EntityService {
       );
     }
 
-    const userEntity = await this.createDefaultUserEntity(resourceId, user);
+    const newUserEntity = await this.createDefaultUserEntity(resourceId, user);
 
     await this.serviceSettingsService.updateServiceSettings(
       {
         data: {
           ...serviceSettings,
-          authEntityName: userEntity.displayName,
+          authEntityName: newUserEntity.displayName,
         },
         where: {
           id: resourceId,
@@ -890,7 +890,7 @@ export class EntityService {
       user
     );
 
-    return userEntity;
+    return newUserEntity;
   }
 
   async createDefaultUserEntity(
