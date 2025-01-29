@@ -23,17 +23,16 @@ $tag-box-size: 12px;
     border: none;
     padding: 0;
     position: relative;
-    padding-left: calc($tag-box-size + var(--icon-spacing));
     color: var(--gray-base) !important;
     font-size: var(--tag-font-size);
+    display: flex;
+    align-items: center;
+    gap: var(--icon-spacing);
 
     &:before {
       content: "";
-      position: absolute;
-      margin-top: 1px;
-      top: 0;
-      left: 0;
       width: $tag-box-size;
+      min-width: $tag-box-size;
       height: $tag-box-size;
       border-color: var(--tag-color);
       border-width: 2px;
