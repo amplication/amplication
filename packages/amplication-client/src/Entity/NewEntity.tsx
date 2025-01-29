@@ -34,7 +34,6 @@ import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
 import useModule from "../Modules/hooks/useModule";
 import CreateWithJovuButton from "../Assistant/CreateWithJovuButton";
-import { over } from "lodash";
 import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
@@ -44,13 +43,7 @@ type DType = {
 };
 
 export type TEntities = {
-  createDefaultEntities: [
-    {
-      id: string;
-      displayName: string;
-      name: string;
-    }
-  ];
+  createDefaultAuthEntity: models.Entity;
 };
 
 type Props = {
@@ -83,8 +76,7 @@ const keyMap = {
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const history = useHistory();
-  const { addEntity, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
 
   const { baseUrl } = useResourceBaseUrl({ overrideResourceId: resourceId });
 
@@ -138,22 +130,18 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     }
   );
 
-  const [createDefaultEntities, { data: defaultEntityData }] =
+  const [createDefaultAuthEntity, { data: defaultEntityData }] =
     useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
       onCompleted: (data) => {
         if (!data) return;
-        const userEntity = data.createDefaultEntities.find(
-          (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-        );
+        const userEntity = data.createDefaultAuthEntity;
         addEntity(userEntity.id);
         onSuccess();
         history.push(`entities/${userEntity.id}`);
       },
       update(cache, { data }) {
         if (!data) return;
-        const userEntity = data.createDefaultEntities.find(
-          (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-        );
+        const userEntity = data.createDefaultAuthEntity;
         const newEntity = userEntity;
         cache.modify({
           fields: {
@@ -209,14 +197,14 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   }, [setConfirmInstall]);
 
   const handleConfirmationInstall = useCallback(() => {
-    createDefaultEntities({
+    createDefaultAuthEntity({
       variables: {
         data: {
           resourceId,
         },
       },
     }).catch(console.error);
-  }, [setConfirmInstall, createDefaultEntities, resourceId]);
+  }, [createDefaultAuthEntity, resourceId]);
 
   useEffect(() => {
     if (data) {
@@ -226,9 +214,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   useEffect(() => {
     if (defaultEntityData) {
-      const userEntity = defaultEntityData.createDefaultEntities.find(
-        (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-      );
+      const userEntity = defaultEntityData.createDefaultAuthEntity;
       history.push(`${baseUrl}/entities/${userEntity.id}`);
     }
   }, [history, defaultEntityData, baseUrl]);

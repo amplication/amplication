@@ -15,8 +15,8 @@ export const CREATE_ENTITY = gql`
 `;
 
 export const CREATE_DEFAULT_ENTITIES = gql`
-  mutation createDefaultEntities($data: DefaultEntitiesInput!) {
-    createDefaultEntities(data: $data) {
+  mutation createDefaultAuthEntity($data: DefaultEntitiesInput!) {
+    createDefaultAuthEntity(data: $data) {
       id
       displayName
       name
