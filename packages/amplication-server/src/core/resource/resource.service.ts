@@ -523,6 +523,7 @@ export class ResourceService {
       {
         data: {
           ...args.data,
+          blueprint: undefined,
           resourceType: EnumResourceType.PluginRepository,
         },
       },

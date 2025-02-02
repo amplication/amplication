@@ -1,7 +1,9 @@
-import { useField } from "formik";
+import { useField, ErrorMessage } from "formik";
 import React, { useCallback } from "react";
 import { Props as SelectPanelProps, SelectPanel } from "./SelectPanel";
 import { EnumButtonStyle } from "../Button/Button";
+import classNames from "classnames";
+import "./SelectPanelField.scss";
 
 export type Props = Omit<SelectPanelProps, "selectedValue" | "onChange"> & {
   name: string;
@@ -15,7 +17,7 @@ export const SelectPanelField: React.FC<Props> = ({
   onChange,
   ...props
 }) => {
-  const [field, , { setValue }] = useField<string | string[] | null>(name);
+  const [field, meta, { setValue }] = useField<string | string[] | null>(name);
 
   const handleChange = useCallback(
     (selectedValue: string | string[] | null) => {
@@ -27,7 +29,9 @@ export const SelectPanelField: React.FC<Props> = ({
 
   return (
     <div
-      className="select-panel-field"
+      className={classNames("select-panel-field", {
+        "select-panel-field--has-error": meta.error && meta.touched,
+      })}
       style={{ width: "100%", marginBottom: "var(--default-spacing-small)" }}
     >
       <SelectPanel
@@ -40,6 +44,7 @@ export const SelectPanelField: React.FC<Props> = ({
           buttonStyle: EnumButtonStyle.Text,
         }}
       />
+      <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
   );
 };

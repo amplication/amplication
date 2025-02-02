@@ -481,6 +481,9 @@ export class GitProviderService {
         },
         data: {
           gitRepositoryOverride: true,
+          gitRepository: {
+            disconnect: true,
+          },
         },
       });
       return resource;
