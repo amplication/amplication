@@ -1,7 +1,10 @@
 import {
+  Button,
+  EnumButtonStyle,
   EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumItemsAlign,
   FlexItem,
   HorizontalRule,
   Snackbar,
@@ -99,6 +102,14 @@ const Blueprint = () => {
     formatError(updateError) ||
     formatError(updateEngineError);
 
+  const handleViewResources = useCallback(() => {
+    history.push(`${baseUrl}`, {
+      filters: {
+        blueprintId: [blueprintId],
+      },
+    });
+  }, [history, baseUrl, blueprintId]);
+
   return (
     <>
       <FlexItem>
@@ -111,17 +122,25 @@ const Blueprint = () => {
           alignSelf={EnumContentAlign.Start}
         >
           {data?.blueprint && (
-            <>
+            <FlexItem itemsAlign={EnumItemsAlign.Center}>
               <Toggle
+                title="Enabled"
                 name={"enabled"}
                 onValueChange={onEnableChanged}
                 checked={data?.blueprint?.enabled}
               ></Toggle>
+              <Button
+                icon="search"
+                buttonStyle={EnumButtonStyle.Text}
+                onClick={handleViewResources}
+              >
+                View Resources
+              </Button>
               <DeleteBlueprint
                 blueprint={data?.blueprint}
                 onDelete={handleDeleteModule}
               />
-            </>
+            </FlexItem>
           )}
         </FlexItem.FlexEnd>
       </FlexItem>

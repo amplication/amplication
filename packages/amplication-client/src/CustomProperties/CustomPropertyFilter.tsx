@@ -11,6 +11,7 @@ export const CustomPropertyFilter = ({
   selectedValue,
   onChange,
   onRemove,
+  initialOpen,
 }: DataGridRenderFilterProps) => {
   const { customPropertiesMap } = useAppContext();
   const customProperty = customPropertiesMap[columnKey];
@@ -36,6 +37,7 @@ export const CustomPropertyFilter = ({
       isMulti={false}
       showEmptyItem={true}
       emptyItemLabel="All"
+      initialOpen={initialOpen}
     />
   );
 };

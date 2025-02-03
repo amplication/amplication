@@ -3,7 +3,6 @@ import {
   DataGridRenderFilterProps,
   EnumButtonStyle,
   EnumFlexDirection,
-  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -25,6 +24,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocation } from "react-router-dom";
 
 const CLASS_NAME = "data-grid-filters";
 
@@ -41,12 +41,16 @@ export function DataGridFilters<T>({
   fixedFilters = {},
   fixedFiltersKey,
 }: Props<T>) {
+  const location = useLocation();
+
   //the selected values for each filter
   const [selectedValues, setSelectedValues] = useState<
     Record<string, string | string[] | null>
   >({});
   //the filters that are currently visible
   const [visibleFilters, setVisibleFilters] = useState<string[]>([]);
+
+  const [initialFilters, setInitialFilters] = useState<string[]>([]);
 
   //set the selected value for a filter, recalculate the filters object, and call the onChange callback
   const setFilter = (propertyKey: string, value: string) => {
@@ -89,6 +93,11 @@ export function DataGridFilters<T>({
       setVisibleFilters((prevFilters) =>
         prevFilters.filter((key) => key !== propertyKey)
       );
+
+      setInitialFilters((prevFilters) =>
+        prevFilters.filter((key) => key !== propertyKey)
+      );
+
       setSelectedValues((prevValues) => {
         const newFilters = { ...prevValues };
         delete newFilters[propertyKey];
@@ -104,15 +113,23 @@ export function DataGridFilters<T>({
   useEffect(() => {
     //reset the filters on first load
 
-    setVisibleFilters(Object.keys(fixedFilters));
-    setSelectedValues(() => {
-      onChange(fixedFilters);
+    const routeState = location.state?.filters;
 
-      return fixedFilters;
+    const filters = {
+      ...routeState,
+      ...fixedFilters,
+    };
+
+    setVisibleFilters(Object.keys(filters));
+    setInitialFilters(Object.keys(routeState));
+    setSelectedValues(() => {
+      onChange(filters);
+
+      return filters;
     });
     //do not other deps to avoid infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fixedFiltersKey]);
+  }, [fixedFiltersKey, location.state?.filters]);
 
   //get the filterable properties that are not currently visible for the "add filter" menu
   const filterableColumns = useMemo(() => {
@@ -156,6 +173,7 @@ export function DataGridFilters<T>({
                 onChange={setFilter}
                 onRemove={onRemoveFilter}
                 disabled={!!fixedFilters[key]}
+                initialOpen={!initialFilters.includes(key)}
               />
             ) : (
               <Text
@@ -220,6 +238,7 @@ const FilterComponent = ({
   onChange,
   onRemove,
   disabled,
+  initialOpen,
 }: FilterComponentProps) => {
   return (
     <Fragment key={key}>
@@ -231,6 +250,7 @@ const FilterComponent = ({
         onChange,
         onRemove,
         disabled,
+        initialOpen,
       })}
     </Fragment>
   );
