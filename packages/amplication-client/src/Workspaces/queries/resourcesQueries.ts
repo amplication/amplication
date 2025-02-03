@@ -150,8 +150,14 @@ export const GET_MESSAGE_BROKER_CONNECTED_SERVICES = gql`
 `;
 
 export const DISCONNECT_GIT_REPOSITORY = gql`
-  mutation disconnectGitRepository($resourceId: String!) {
-    disconnectResourceGitRepository(resourceId: $resourceId) {
+  mutation disconnectGitRepository(
+    $resourceId: String!
+    $overrideProjectSettings: Boolean
+  ) {
+    disconnectResourceGitRepository(
+      resourceId: $resourceId
+      overrideProjectSettings: $overrideProjectSettings
+    ) {
       id
       gitRepository {
         id

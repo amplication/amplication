@@ -327,6 +327,10 @@ export class CustomPropertyService {
 
       if (customProperty.type === EnumCustomPropertyType.Select) {
         schema.enum = customProperty.options.map((option) => option.value);
+        if (!customProperty.required) {
+          schema.enum = [null, ...schema.enum];
+          schema.type = ["string", "null"];
+        }
       }
 
       if (customProperty.type === EnumCustomPropertyType.MultiSelect) {
@@ -335,6 +339,20 @@ export class CustomPropertyService {
           type: "string",
           enum: customProperty.options.map((option) => option.value),
         };
+        if (!customProperty.required) {
+          schema.type = ["array", "null"];
+          schema.items.enum = [null, ...schema.items.enum];
+          schema.items.type = ["string", "null"];
+        }
+      }
+
+      if (
+        customProperty.type === EnumCustomPropertyType.Text ||
+        customProperty.type === EnumCustomPropertyType.Link
+      ) {
+        if (!customProperty.required) {
+          schema.type = ["string", "null"];
+        }
       }
 
       if (customProperty.required) {

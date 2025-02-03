@@ -35,8 +35,18 @@ const getPropertiesValidationSchemaUtil = (
         enum: customProperty.options?.map((option) => option.value) || [],
       };
       if (!customProperty.required) {
+        schema.type = ["array", "null"];
         schema.items.enum = [null, ...schema.items.enum];
         schema.items.type = ["string", "null"];
+      }
+    }
+
+    if (
+      customProperty.type === models.EnumCustomPropertyType.Text ||
+      customProperty.type === models.EnumCustomPropertyType.Link
+    ) {
+      if (!customProperty.required) {
+        schema.type = ["string", "null"];
       }
     }
 
