@@ -1,0 +1,17 @@
+@import "../../style/index.scss";
+
+.select-panel-field {
+  &--has-error {
+    .amp-select-panel--as-select-field {
+      .amp-button.amp-select-panel__button {
+        border-color: var(--color-negative);
+
+        &:active,
+        &:hover,
+        &:focus {
+          border-color: var(--color-negative);
+        }
+      }
+    }
+  }
+}

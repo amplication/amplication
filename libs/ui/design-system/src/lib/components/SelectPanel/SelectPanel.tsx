@@ -80,7 +80,7 @@ export const SelectPanel: React.FC<Props> = ({
       }
       return (selectedValue as string[]).map((value) => {
         return (
-          options.find((option) => option.value === value) || {
+          options?.find((option) => option.value === value) || {
             value,
             label: value,
           }
