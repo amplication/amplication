@@ -121,7 +121,7 @@ export function DataGridFilters<T>({
     };
 
     setVisibleFilters(Object.keys(filters));
-    setInitialFilters(Object.keys(routeState));
+    setInitialFilters(Object.keys(filters));
     setSelectedValues(() => {
       onChange(filters);
 
