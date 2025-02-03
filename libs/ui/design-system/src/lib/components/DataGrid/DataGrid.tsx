@@ -38,6 +38,7 @@ export type DataGridRenderFilterProps = {
   onRemove: (key: string) => void;
   selectedValue: string | string[] | null;
   disabled: boolean;
+  initialOpen?: boolean;
 };
 
 export type DataGridColumn<T> = Column<T> & {

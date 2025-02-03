@@ -19,6 +19,7 @@ type Props = {
   isMulti?: boolean;
   showEmptyItem?: boolean;
   emptyItemLabel?: string;
+  initialOpen?: boolean;
 };
 
 export const DataGridFilter = ({
@@ -32,6 +33,7 @@ export const DataGridFilter = ({
   isMulti,
   showEmptyItem,
   emptyItemLabel,
+  initialOpen = true,
 }: Props) => {
   return (
     <div className={CLASS_NAME}>
@@ -57,7 +59,7 @@ export const DataGridFilter = ({
         buttonProps={{
           buttonStyle: EnumButtonStyle.Text,
         }}
-        initialOpen={true}
+        initialOpen={initialOpen}
         showLabelWhenSelected={true}
       />
     </div>

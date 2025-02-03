@@ -12,6 +12,7 @@ export const BlueprintFilter = ({
   onRemove,
   columnKey,
   disabled,
+  initialOpen,
 }: DataGridRenderFilterProps) => {
   const {
     blueprintsMap: { blueprintsMap },
@@ -48,6 +49,7 @@ export const BlueprintFilter = ({
         isMulti={true}
         showEmptyItem={true}
         emptyItemLabel="All"
+        initialOpen={initialOpen}
       />
     </>
   );
