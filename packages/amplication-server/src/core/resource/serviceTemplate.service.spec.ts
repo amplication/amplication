@@ -1,6 +1,6 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Resource, User } from "../../models";
+import { Blueprint, Resource, User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { OutdatedVersionAlertService } from "../outdatedVersionAlert/outdatedVersionAlert.service";
@@ -18,10 +18,12 @@ import { ResourceService } from "./resource.service";
 import { ServiceTemplateService } from "./serviceTemplate.service";
 import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { EnumCommitStrategy } from "./dto/EnumCommitStrategy";
 
 const EXAMPLE_RESOURCE_ID = "EXAMPLE_RESOURCE_ID";
 const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
-
+const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
   createdAt: new Date(),
@@ -32,6 +34,7 @@ const EXAMPLE_RESOURCE: Resource = {
   resourceType: EnumResourceType.Service,
   gitRepositoryOverride: false,
   licensed: true,
+  projectId: EXAMPLE_PROJECT_ID,
 };
 
 const EXAMPLE_RESOURCE_VERSION: ResourceVersion = {
@@ -58,9 +61,19 @@ const EXAMPLE_PLUGIN = {
 };
 
 const EXAMPLE_USER: User = {
-  id: "userId",
+  id: EXAMPLE_USER_ID,
   workspace: { id: "workspaceId" },
 } as User;
+
+const EXAMPLE_BLUEPRINT: Blueprint = {
+  id: "exampleBlueprintId",
+  enabled: true,
+  resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: "exampleBlueprintName",
+  key: "exampleBlueprintKey",
+};
 
 const prismaServiceMock = {
   resource: {
@@ -76,6 +89,9 @@ const prismaServiceMock = {
   resourceSettings: {},
   pluginInstallation: {},
   outdatedVersionAlert: {},
+  blueprint: {
+    findUnique: jest.fn(async () => EXAMPLE_BLUEPRINT),
+  },
 };
 
 const pluginInstallationServiceMock = {
@@ -121,6 +137,7 @@ const resourceServiceMock = {
   installPlugins: jest.fn(),
   resource: jest.fn(async () => EXAMPLE_RESOURCE),
   getServiceTemplateSettings: jest.fn(),
+  createService: jest.fn(async () => EXAMPLE_RESOURCE),
 };
 
 const resourceVersionServiceMock = {
@@ -134,6 +151,11 @@ const outdatedVersionAlertServiceMock = {
 
 const projectServiceMock = {
   findProjects: jest.fn(async () => [{ id: "publicProjectId" }]),
+  commit: jest.fn(),
+};
+
+const resourceTemplateVersionServiceMock = {
+  updateResourceTemplateVersion: jest.fn(),
 };
 
 const amplicationLoggerMock = {
@@ -186,7 +208,7 @@ describe("ServiceTemplateService", () => {
         },
         {
           provide: ResourceTemplateVersionService,
-          useValue: {},
+          useValue: resourceTemplateVersionServiceMock,
         },
         {
           provide: ProjectService,
@@ -347,6 +369,86 @@ describe("ServiceTemplateService", () => {
       await expect(
         service.createTemplateFromExistingResource(args, EXAMPLE_USER)
       ).rejects.toThrow(`This method only support resources with a blueprint`);
+    });
+  });
+
+  describe("createResourceFromTemplate", () => {
+    it("should create a resource from a template", async () => {
+      const EXAMPLE_TEMPLATE_ID = "exampleTemplateId";
+
+      const args = {
+        data: {
+          name: "New Service",
+          description: "New service description",
+          project: { connect: { id: "projectId" } },
+          serviceTemplate: { id: EXAMPLE_TEMPLATE_ID },
+        },
+      };
+
+      const user = EXAMPLE_USER;
+
+      prismaServiceMock.resource.findMany.mockResolvedValueOnce([
+        {
+          ...EXAMPLE_RESOURCE,
+          id: EXAMPLE_TEMPLATE_ID,
+        },
+      ]);
+
+      const result = await service.createResourceFromTemplate(args, user);
+
+      expect(result).toEqual({
+        ...EXAMPLE_RESOURCE,
+        resourceType: EnumResourceType.Service,
+      });
+
+      //no commit is called unless specified
+      expect(projectServiceMock.commit).toHaveBeenCalledTimes(0);
+    });
+
+    it("should create a resource from a template and commit the project", async () => {
+      const EXAMPLE_TEMPLATE_ID = "exampleTemplateId";
+
+      const args = {
+        data: {
+          name: "New Service",
+          description: "New service description",
+          project: { connect: { id: "projectId" } },
+          serviceTemplate: { id: EXAMPLE_TEMPLATE_ID },
+          buildAfterCreation: true,
+        },
+      };
+
+      const user = EXAMPLE_USER;
+
+      prismaServiceMock.resource.findMany.mockResolvedValueOnce([
+        {
+          ...EXAMPLE_RESOURCE,
+          id: EXAMPLE_TEMPLATE_ID,
+        },
+      ]);
+
+      const result = await service.createResourceFromTemplate(args, user);
+
+      expect(result).toEqual({
+        ...EXAMPLE_RESOURCE,
+        resourceType: EnumResourceType.Service,
+      });
+
+      expect(projectServiceMock.commit).toHaveBeenCalledTimes(1);
+
+      expect(projectServiceMock.commit).toHaveBeenCalledWith(
+        {
+          data: {
+            message: "Create resource from template",
+            project: { connect: { id: EXAMPLE_PROJECT_ID } },
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
+            commitStrategy: EnumCommitStrategy.Specific,
+            resourceIds: [EXAMPLE_RESOURCE_ID],
+            user: { connect: { id: EXAMPLE_USER_ID } },
+          },
+        },
+        user
+      );
     });
   });
 });

@@ -32,6 +32,8 @@ import { CreateTemplateFromResourceArgs } from "./dto/CreateTemplateFromResource
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { FindAvailableTemplatesForProjectArgs } from "./dto/FindAvailableTemplatesForProjectArgs";
 import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
+import { EnumResourceTypeGroup } from "./dto/EnumResourceTypeGroup";
+import { EnumCommitStrategy } from "./dto/EnumCommitStrategy";
 
 @Injectable()
 export class ServiceTemplateService {
@@ -332,6 +334,30 @@ export class ServiceTemplateService {
       newResource.id,
       user
     );
+
+    if (args.data.buildAfterCreation) {
+      await this.projectService.commit(
+        {
+          data: {
+            message: "Create resource from template",
+            project: {
+              connect: {
+                id: newResource.projectId,
+              },
+            },
+            resourceTypeGroup: EnumResourceTypeGroup.Services,
+            commitStrategy: EnumCommitStrategy.Specific,
+            resourceIds: [newResource.id],
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        },
+        user
+      );
+    }
 
     await this.analyticsService.trackWithContext({
       event: EnumEventType.CreateResourceFromTemplate,
