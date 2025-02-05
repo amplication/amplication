@@ -24,4 +24,7 @@ export class ResourceFromTemplateCreateInput {
 
   @Field(() => ConnectGitRepositoryInput, { nullable: true })
   gitRepository?: ConnectGitRepositoryInput;
+
+  @Field(() => Boolean, { nullable: true })
+  buildAfterCreation?: boolean;
 }
