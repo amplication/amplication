@@ -117,6 +117,7 @@ describe("BlueprintService", () => {
         enabled: true,
         key: "EXAMPLE_NAME",
         name: EXAMPLE_NAME,
+        useBusinessDomain: false,
         workspace: {
           connect: {
             id: EXAMPLE_WORKSPACE_ID,
@@ -189,7 +190,11 @@ describe("BlueprintService", () => {
         deletedAt: null,
       },
       include: {
-        customProperties: true,
+        customProperties: {
+          where: {
+            deletedAt: null,
+          },
+        },
       },
     });
   });
