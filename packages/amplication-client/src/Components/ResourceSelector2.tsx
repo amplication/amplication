@@ -35,6 +35,7 @@ const ResourceSelector = ({
       .map((resource) => ({
         value: resource.id,
         label: resource.name,
+        color: resource.blueprint.color,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -60,6 +61,7 @@ const ResourceSelector = ({
         icon: "chevron_down",
         iconPosition: EnumIconPosition.Right,
       }}
+      selectedItemInTextMode={true}
     />
   );
 };

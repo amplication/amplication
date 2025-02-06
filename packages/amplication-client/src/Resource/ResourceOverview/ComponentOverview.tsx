@@ -22,6 +22,7 @@ import { CreateTemplateFromResourceButton } from "../CreateTemplateFromResourceB
 import { EnumResourceType } from "../../models";
 import ResourcePropertiesBlock from "../../CustomProperties/ResourcePropertiesBlock";
 import ResourceGitStatusPanel from "../git/ResourceGitStatusPanel";
+import BlueprintName from "../../Blueprints/BlueprintName";
 
 const PAGE_TITLE = "Overview";
 
@@ -48,12 +49,12 @@ const ComponentOverview = () => {
           <FlexItem.FlexStart direction={EnumFlexDirection.Column}>
             <FlexItem
               direction={EnumFlexDirection.Row}
-              gap={EnumGapSize.Small}
+              gap={EnumGapSize.Large}
               itemsAlign={EnumItemsAlign.Center}
             >
-              <ResourceTypeBadge resource={currentResource} size="large" />
+              <ResourceTypeBadge resource={currentResource} size="small" />
 
-              <CodeGeneratorImage resource={currentResource} size="medium" />
+              <BlueprintName blueprint={currentResource?.blueprint} />
             </FlexItem>
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Description}>

@@ -7,6 +7,7 @@ import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import {
   MenuItemLinks,
+  businessDomainRoutes,
   linksMap,
   resourceMenuLayout,
   setResourceUrlLink,
@@ -52,6 +53,13 @@ const ResourceHome = ({
 
         const toUrl = linksMap[menuItem].to;
 
+        if (
+          !currentResource?.blueprint?.useBusinessDomain &&
+          businessDomainRoutes.includes(menuItem)
+        ) {
+          return null;
+        }
+
         return {
           name: linksMap[menuItem].title,
           to: setResourceUrlLink(
@@ -67,6 +75,7 @@ const ResourceHome = ({
         };
       }
     );
+
     return [
       {
         name: OVERVIEW,

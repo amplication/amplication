@@ -18,15 +18,25 @@ export type MenuItemLinks =
   | "templateResources"
   | "techDebt";
 
+export const businessDomainRoutes = ["entities", "roles", "modules"];
+
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
 } = {
-  [EnumResourceType.Component]: ["plugins", "git", "techDebt", "settings"],
-  [EnumResourceType.Service]: [
+  [EnumResourceType.Component]: [
+    "plugins",
     "modules",
     "entities",
     "roles",
+    "git",
+    "techDebt",
+    "settings",
+  ],
+  [EnumResourceType.Service]: [
     "plugins",
+    "modules",
+    "entities",
+    "roles",
     "git",
     "techDebt",
     "connections",

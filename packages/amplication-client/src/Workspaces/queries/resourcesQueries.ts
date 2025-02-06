@@ -17,6 +17,7 @@ export const RESOURCE_FIELDS_FRAGMENT = gql`
       id
       name
       color
+      useBusinessDomain
     }
     projectId
     properties
@@ -78,6 +79,7 @@ export const GET_RESOURCES = gql`
         color
         resourceType
         codeGenerator
+        useBusinessDomain
       }
       projectId
       properties
