@@ -35,6 +35,7 @@ const EXAMPLE_BLUEPRINT: Blueprint = {
   relations: null,
   codeGeneratorName: "Blueprint",
   resourceType: EnumResourceType.Component,
+  useBusinessDomain: false,
 };
 
 const EXAMPLE_RESOURCE: Resource = {

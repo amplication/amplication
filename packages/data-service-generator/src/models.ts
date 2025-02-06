@@ -227,6 +227,7 @@ export type Blueprint = {
   relations?: Maybe<Array<BlueprintRelation>>;
   resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime']['output'];
+  useBusinessDomain: Scalars['Boolean']['output'];
 };
 
 export type BlueprintCreateInput = {
@@ -268,6 +269,7 @@ export type BlueprintUpdateInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   key?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  useBusinessDomain?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type BlueprintWhereInput = {
@@ -3703,6 +3705,7 @@ export type ResourceCreateInput = {
 };
 
 export type ResourceFromTemplateCreateInput = {
+  buildAfterCreation?: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String']['input'];

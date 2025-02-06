@@ -26,6 +26,7 @@ import { DeleteBlueprintRelationArgs } from "./dto/DeleteBlueprintRelationArgs";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "../resource/resource.service";
 import { UpdateBlueprintEngineArgs } from "./dto/UpdateBlueprintEngineArgs";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Resolver(() => Blueprint)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -133,6 +134,13 @@ export class BlueprintResolver {
     }
 
     return codeGenerator;
+  }
+  //for node and dotnet, always return true, for blueprint, return the useBusinessDomain field
+  @ResolveField(() => Boolean, { nullable: false })
+  async useBusinessDomain(@Parent() blueprint: Blueprint): Promise<boolean> {
+    return blueprint.resourceType === EnumResourceType.Component
+      ? blueprint.useBusinessDomain
+      : true;
   }
 
   @ResolveField(() => [CustomProperty])

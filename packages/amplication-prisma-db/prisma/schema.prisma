@@ -217,6 +217,7 @@ model Blueprint {
   customProperties  CustomProperty[]
   resourceType      EnumResourceType @default(Component)
   codeGeneratorName String           @default("Blueprint")
+  useBusinessDomain Boolean          @default(false)
 
   @@unique([workspaceId, key], map: "Blueprint.workspaceId_key_unique")
   @@unique([workspaceId, name], map: "Blueprint.workspaceId_name_unique")
