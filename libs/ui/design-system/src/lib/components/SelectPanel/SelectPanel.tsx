@@ -41,6 +41,7 @@ export type Props = {
   showAsSelectField?: boolean;
   inputToolTip?: InputToolTipProps | undefined;
   isClearable?: boolean;
+  selectedItemInTextMode?: boolean;
 };
 
 export const SelectPanel: React.FC<Props> = ({
@@ -60,6 +61,7 @@ export const SelectPanel: React.FC<Props> = ({
   showAsSelectField = false,
   inputToolTip,
   isClearable = false,
+  selectedItemInTextMode = false,
 }) => {
   const [isOpen, setIsOpen] = React.useState(initialOpen && !disabled);
 
@@ -233,6 +235,7 @@ export const SelectPanel: React.FC<Props> = ({
                 disabled={disabled}
                 isOpen={isOpen}
                 showAsSelectField={showAsSelectField}
+                selectedItemInTextMode={selectedItemInTextMode}
               />
             </div>
           </label>
@@ -252,6 +255,7 @@ export const SelectPanel: React.FC<Props> = ({
             disabled={disabled}
             isOpen={isOpen}
             showAsSelectField={showAsSelectField}
+            selectedItemInTextMode={selectedItemInTextMode}
           />
         )}
       </Popover>
@@ -276,6 +280,7 @@ type SelectPanelButtonProps = {
   showAsSelectField?: boolean;
   isClearable?: boolean;
   onClear?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  selectedItemInTextMode?: boolean;
 };
 
 const SelectPanelButton = ({
@@ -293,6 +298,7 @@ const SelectPanelButton = ({
   showAsSelectField,
   isClearable,
   onClear,
+  selectedItemInTextMode,
 }: SelectPanelButtonProps) => {
   return (
     <FlexItem
@@ -320,14 +326,14 @@ const SelectPanelButton = ({
                 item={item}
                 isMulti={isMulti}
                 includeDescription={false}
-                textMode={false}
+                textMode={selectedItemInTextMode}
               />
             ))}
             {selectedItems.length > 2 && (
               <Tag
                 value={`+${selectedItems.length - 2}`}
                 color={DEFAULT_COLOR}
-                textMode={false}
+                textMode={selectedItemInTextMode}
               />
             )}
           </>

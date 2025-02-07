@@ -1,7 +1,10 @@
 import {
   ColorPickerField,
   Form,
+  HorizontalRule,
+  TabContentTitle,
   TextField,
+  ToggleField,
 } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import { omit } from "lodash";
@@ -68,6 +71,18 @@ const BlueprintForm = ({ onSubmit, defaultValues }: Props) => {
 
           <OptionalDescriptionField name="description" label="Description" />
           <ColorPickerField name="color" label="Color" />
+
+          <div>
+            <HorizontalRule doubleSpacing />
+            <TabContentTitle
+              title="Business Domain Features"
+              subTitle="Enable structured data models, APIs, and roles for this blueprint"
+            />
+            <ToggleField
+              name="useBusinessDomain"
+              label="Enable Business Domain"
+            />
+          </div>
         </Form>
       </Formik>
     </>

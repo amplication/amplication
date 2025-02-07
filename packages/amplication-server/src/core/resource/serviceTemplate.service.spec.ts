@@ -73,6 +73,7 @@ const EXAMPLE_BLUEPRINT: Blueprint = {
   updatedAt: new Date(),
   name: "exampleBlueprintName",
   key: "exampleBlueprintKey",
+  useBusinessDomain: false,
 };
 
 const prismaServiceMock = {

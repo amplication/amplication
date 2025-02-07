@@ -53,7 +53,11 @@ export class BlueprintService {
         deletedAt: null,
       },
       include: {
-        customProperties: true,
+        customProperties: {
+          where: {
+            deletedAt: null,
+          },
+        },
       },
     });
 
@@ -80,6 +84,7 @@ export class BlueprintService {
         ...args.data,
         enabled: true,
         key,
+        useBusinessDomain: false,
         workspace: {
           connect: {
             id: args.data.workspace.connect.id,
