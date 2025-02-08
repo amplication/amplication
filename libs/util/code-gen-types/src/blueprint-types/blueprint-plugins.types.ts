@@ -83,6 +83,8 @@ export type PluginMap = {
 
 export enum BlueprintEventNames {
   createBlueprint = "createBlueprint",
+  createModules = "createModules",
+  createModule = "createModule",
 }
 
 export interface AmplicationPlugin {
