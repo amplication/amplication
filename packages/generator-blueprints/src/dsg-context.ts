@@ -8,7 +8,12 @@ import {
 } from "@amplication/code-gen-types";
 
 import { EnumResourceType } from "./models";
-import { readPluginStaticFiles } from "./utils/read-static-files";
+import {
+  importStaticFilesWithReplacements,
+  readPluginStaticFiles,
+  replacePlaceholders,
+  replaceText,
+} from "./utils/read-static-files";
 
 import { BuildLogger } from "@amplication/dsg-utils";
 import { AstNode } from "@amplication/csharp-ast";
@@ -36,6 +41,9 @@ class DsgContext implements types.blueprintTypes.DsgContext {
     abort: false,
     abortMessage: "",
     importStaticFiles: readPluginStaticFiles,
+    importStaticFilesWithReplacements: importStaticFilesWithReplacements,
+    replacePlaceholders: replacePlaceholders,
+    replaceText: replaceText,
   };
   public serviceTopics: types.ServiceTopics[] = [];
   public topics: types.Topic[] = [];
