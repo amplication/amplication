@@ -66,6 +66,7 @@ const InviteMember = () => {
     (data: Values) => {
       if (!isEmpty(data.email)) {
         inviteUser({ variables: { email: data.email } }).catch(console.error);
+        data.email = "";
       }
     },
     [inviteUser]
