@@ -48,6 +48,20 @@ export interface ContextUtil {
     source: string,
     basePath: string
   ) => Promise<FileMap<string>>;
+  importStaticFilesWithReplacements: (
+    source: string,
+    basePath: string,
+    placeholders: Record<string, string>,
+    stringReplacements: Record<string, string>
+  ) => Promise<FileMap<string>>;
+  replacePlaceholders: (
+    template: string,
+    replacements: Record<string, string>
+  ) => string;
+  replaceText: (
+    template: string,
+    replacements: Record<string, string>
+  ) => string;
 }
 
 export interface DsgContext extends DSGResourceData {
