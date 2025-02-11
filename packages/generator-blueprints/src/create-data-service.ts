@@ -54,15 +54,13 @@ export async function createDataService(
       buildId: dSGResourceData.buildId,
     });
 
-    const files = new FileMap<AstNode>(context.logger);
-
-    await files.merge(await createBlueprint());
+    await createBlueprint();
 
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(
       "Normalizing modules path to use Unix path separator"
     );
-    await files.replaceFilesPath((path) => normalize(path));
+    await context.files.replaceFilesPath((path) => normalize(path));
 
     const endTime = Date.now();
     internalLogger.info("Application creation time", {
@@ -73,7 +71,7 @@ export async function createDataService(
       "Creating application process finished successfully"
     );
 
-    return files;
+    return context.files;
   } catch (error) {
     await internalLogger.error("Failed to run createDataService", {
       ...error,

@@ -1,4 +1,8 @@
-import { CreateBlueprintParams } from "./blueprint-plugin-events-params.types";
+import {
+  CreateBlueprintParams,
+  CreateModulesParams,
+  CreateModuleParams,
+} from "./blueprint-plugin-events-params.types";
 import {
   BlueprintEventNames,
   PluginEventType,
@@ -6,4 +10,6 @@ import {
 
 export type BlueprintEvents = {
   [BlueprintEventNames.createBlueprint]?: PluginEventType<CreateBlueprintParams>;
+  [BlueprintEventNames.createModules]?: PluginEventType<CreateModulesParams>;
+  [BlueprintEventNames.createModule]?: PluginEventType<CreateModuleParams>;
 };
