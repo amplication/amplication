@@ -26,7 +26,7 @@ export class ServiceSettingsService {
     user: User
   ): Promise<ServiceSettingsValues> {
     const { authProvider, serverSettings, adminUISettings, authEntityName } =
-      await this.getServiceSettingsBlock(args, user);
+      (await this.getServiceSettingsBlock(args, user)) || {};
 
     return {
       resourceId: args.where.id,
