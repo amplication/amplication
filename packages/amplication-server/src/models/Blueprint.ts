@@ -65,4 +65,7 @@ export class Blueprint {
 
   @Field(() => EnumResourceType, { nullable: false })
   resourceType!: keyof typeof EnumResourceType;
+
+  @Field(() => Boolean, { nullable: false })
+  useBusinessDomain!: boolean;
 }

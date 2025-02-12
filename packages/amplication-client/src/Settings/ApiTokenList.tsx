@@ -6,7 +6,7 @@ import {
   CircularProgress,
 } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -53,10 +53,18 @@ const ApiTokenList = React.memo(() => {
     data,
     loading,
     error: errorLoading,
-  } = useQuery<TData>(GET_API_TOKENS);
+  } = useQuery<TData>(GET_API_TOKENS, {
+    fetchPolicy: "network-only",
+  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
+
+  //clear token on re-entry
+  useEffect(() => {
+    setNewToken(null);
+    setTokenCopied(false);
+  }, []);
 
   return (
     <>
@@ -80,10 +88,14 @@ const ApiTokenList = React.memo(() => {
       </div>
       <div className={`${CLASS_NAME}__message`}>
         API tokens are used to authenticate requests to the Amplication API.
-        They are specifically required for Amplication CLI.
+        They are specifically required for Integrations from third party
+        services.
         <br />
         Tokens are valid for 30 days following creation or last use. The 30 day
         expiration period automatically refreshes with each API.
+        <br />
+        Tokens are created with the permissions of the user who creates them,
+        and each user can only see their own tokens.
       </div>
 
       {newToken && (

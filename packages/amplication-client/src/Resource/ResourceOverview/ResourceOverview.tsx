@@ -121,7 +121,7 @@ const ResourceOverview = () => {
               gap={EnumGapSize.Small}
               itemsAlign={EnumItemsAlign.Center}
             >
-              <ResourceTypeBadge resource={currentResource} size="large" />
+              <ResourceTypeBadge resource={currentResource} size="small" />
 
               <CodeGeneratorImage resource={currentResource} size="medium" />
             </FlexItem>

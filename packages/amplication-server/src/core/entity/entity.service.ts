@@ -961,7 +961,7 @@ export class EntityService {
           user
         );
 
-      if (serviceSettings.authEntityName === entity.name) {
+      if (serviceSettings?.authEntityName === entity.name) {
         throw new AmplicationError(
           `The requested entity is required for authentication and cannot be deleted. You can delete the entity by unselecting the entity from the authentication settings.`
         );

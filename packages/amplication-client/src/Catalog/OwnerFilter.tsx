@@ -13,6 +13,7 @@ export const OwnerFilter = ({
   onRemove,
   columnKey,
   disabled,
+  initialOpen,
 }: DataGridRenderFilterProps) => {
   const { findTeamsData, getAvailableWorkspaceUsers, availableWorkspaceUsers } =
     useTeams();
@@ -54,6 +55,7 @@ export const OwnerFilter = ({
       onRemove={onRemove}
       disabled={disabled}
       isMulti={false}
+      initialOpen={initialOpen}
     />
   );
 };

@@ -81,6 +81,7 @@ export const DEFAULT_BLUEPRINTS: DefaultBlueprint[] = [
     relations: [],
     resourceType: EnumResourceType.Service,
     codeGeneratorName: "DotNET",
+    useBusinessDomain: true,
   },
   {
     name: "Node.js Service (Amplication's Standard)",
@@ -92,6 +93,7 @@ export const DEFAULT_BLUEPRINTS: DefaultBlueprint[] = [
     relations: [],
     resourceType: EnumResourceType.Service,
     codeGeneratorName: "NodeJS",
+    useBusinessDomain: true,
   },
   {
     name: "Message Broker (Amplication's Standard)",
@@ -103,5 +105,6 @@ export const DEFAULT_BLUEPRINTS: DefaultBlueprint[] = [
     relations: [],
     resourceType: EnumResourceType.MessageBroker,
     codeGeneratorName: "Blueprint",
+    useBusinessDomain: false,
   },
 ];

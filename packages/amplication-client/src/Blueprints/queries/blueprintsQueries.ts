@@ -24,6 +24,7 @@ export const BLUEPRINT_FIELDS_FRAGMENT = gql`
     color
     codeGenerator
     resourceType
+    useBusinessDomain
     properties {
       ...CustomPropertyFields
     }

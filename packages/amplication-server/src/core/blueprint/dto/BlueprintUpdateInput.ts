@@ -16,4 +16,7 @@ export class BlueprintUpdateInput {
 
   @Field(() => String, { nullable: true })
   color?: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  useBusinessDomain?: boolean | undefined;
 }
