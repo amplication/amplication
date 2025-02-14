@@ -40,7 +40,7 @@ type Props = {
 
 const CLASS_NAME = "git-create-repo";
 
-export default function WizardGitCreateRepo({
+export default function GitCreateRepoDialog({
   gitOrganization,
   repoCreated,
   onCreateGitRepository,

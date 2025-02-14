@@ -1,7 +1,7 @@
 import { Dialog } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
 import { EnumGitProvider } from "../../../models";
-import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
+import GitCreateRepoDialog from "./GitCreateRepo/GitCreateRepoDialog";
 import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
@@ -82,11 +82,11 @@ export default function GitDialogsContainer({
         title="Create new repository"
         onDismiss={onGitCreateRepositoryClose}
       >
-        <WizardGitCreateRepo
+        <GitCreateRepoDialog
           repoCreated={repoCreated}
           onCreateGitRepository={onGitCreateRepository}
           gitOrganization={gitOrganization}
-        ></WizardGitCreateRepo>
+        ></GitCreateRepoDialog>
       </Dialog>
     </div>
   );
