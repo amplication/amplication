@@ -9,7 +9,7 @@ import {
   HorizontalRule,
   Label,
   Text,
-  TextField,
+  TextInput,
   Toggle,
 } from "@amplication/ui/design-system";
 import { ApolloError, useQuery } from "@apollo/client";
@@ -25,7 +25,7 @@ import "./GitCreateRepo.scss";
 import { GIT_REPO_CREATION_MESSAGE, GIT_REPO_NAME_RULES } from "./constants";
 
 type createRepositoryInput = {
-  name: string;
+  repoName: string;
   isPublic: boolean;
   groupName?: string;
 };
@@ -47,7 +47,7 @@ export default function WizardGitCreateRepo({
 }: Props) {
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
-      name: "",
+      repoName: "",
       groupName: "",
       isPublic: false,
     });
@@ -70,7 +70,12 @@ export default function WizardGitCreateRepo({
         groupName: gitGroups[0].name,
       });
     }
-  }, [gitGroups]);
+  }, [
+    gitGroups,
+    createRepositoryInput,
+    setCreateRepositoryInput,
+    repositoryGroup,
+  ]);
 
   const handleSelectGroup = useCallback(
     (gitGroup) => {
@@ -90,7 +95,7 @@ export default function WizardGitCreateRepo({
         .replace(/-{2,}/g, "-"); // Replace consecutive dashes with a single dash
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        name: processedName,
+        repoName: processedName,
       });
       const gitRepositoryUrl = getGitRepositoryDetails({
         organization: gitOrganization,
@@ -99,7 +104,7 @@ export default function WizardGitCreateRepo({
       }).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);
     },
-    [setCreateRepositoryInput, createRepositoryInput]
+    [setCreateRepositoryInput, createRepositoryInput, gitOrganization]
   );
 
   const handleCreation = useCallback(() => {
@@ -107,16 +112,18 @@ export default function WizardGitCreateRepo({
       gitOrganizationId: gitOrganization.id,
       gitOrganizationType: EnumGitOrganizationType.Organization,
       gitProvider: gitOrganization?.provider,
-      name: createRepositoryInput.name,
+      name: createRepositoryInput.repoName,
       groupName: createRepositoryInput.groupName,
       isPublic: createRepositoryInput.isPublic,
       gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,
-    createRepositoryInput.name,
+    createRepositoryInput.repoName,
     createRepositoryInput.groupName,
     createRepositoryInput.isPublic,
+    gitOrganization,
+    gitRepositoryUrl,
   ]);
 
   return (
@@ -156,15 +163,14 @@ export default function WizardGitCreateRepo({
       <div className={`${CLASS_NAME}__label`}>
         <Label text="Repository name" />
       </div>
-      <TextField
+      <TextInput
         autoFocus
-        name="name"
+        name="repoName"
         autoComplete="off"
-        showError={false}
         onChange={handleNameChange}
       />
 
-      {!!createRepositoryInput.name && (
+      {!!createRepositoryInput.repoName && (
         <FlexItem
           direction={EnumFlexDirection.Column}
           gap={EnumGapSize.Default}
@@ -174,7 +180,7 @@ export default function WizardGitCreateRepo({
             textColor={EnumTextColor.ThemeGreen}
           >
             {GIT_REPO_CREATION_MESSAGE}
-            {createRepositoryInput.name}.
+            {createRepositoryInput.repoName}.
           </Text>
 
           <Text textStyle={EnumTextStyle.Label}>{GIT_REPO_NAME_RULES}</Text>
