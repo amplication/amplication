@@ -456,15 +456,10 @@ export class ServiceTemplateService {
     targetResourceId: string,
     user: User
   ) {
-    const plugins = await this.pluginInstallationService.findMany({
-      where: {
-        resource: {
-          id: sourceResourceId,
-        },
-      },
-    });
-
-    //@todo: after merging with next, get the ordered list of plugins
+    const plugins =
+      await this.pluginInstallationService.getOrderedPluginInstallations(
+        sourceResourceId
+      );
 
     for (const plugin of plugins) {
       const createInput: PluginInstallationCreateInput = {

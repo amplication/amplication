@@ -1361,18 +1361,13 @@ export class BuildService {
   ): Promise<CodeGenTypes.DSGResourceData> {
     const resourceId = resource.id;
 
-    const allPlugins = await this.pluginInstallationService.findMany({
-      where: { resource: { id: resourceId } },
-    });
-
-    const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
-    const orderedPlugins =
-      await this.pluginInstallationService.orderInstalledPlugins(
-        resourceId,
-        plugins
-      );
+    const orderedPlugins = (
+      await this.pluginInstallationService.getOrderedPluginInstallations(
+        resourceId
+      )
+    ).filter((plugin) => plugin.enabled);
 
     const moduleActions = await this.moduleActionService.findMany({
       where: { resource: { id: resourceId } },
