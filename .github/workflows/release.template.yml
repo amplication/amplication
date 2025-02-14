@@ -58,7 +58,7 @@ jobs:
   package-container:
     if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
     name: Package
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -129,7 +129,7 @@ jobs:
 
   configure:
     name: Configure deployment target environment
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       environment: ${{ steps.environment-identifier.outputs.environment }}
     steps:

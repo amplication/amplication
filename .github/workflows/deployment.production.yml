@@ -11,7 +11,7 @@ env:
 jobs:
   preparation:
     name: Preparation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       previous-tag: ${{ steps.base.outputs.tag }}
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
@@ -68,7 +68,7 @@ jobs:
 
   package:
     name: Package
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         project: ${{ fromJson(needs.preparation.outputs.affected-package-container) }}
@@ -133,7 +133,7 @@ jobs:
 
   deployment-container:
     name: Deployment container
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: "production"
     needs: [preparation, package]
     steps:
