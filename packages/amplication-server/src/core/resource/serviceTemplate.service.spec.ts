@@ -96,7 +96,7 @@ const prismaServiceMock = {
 };
 
 const pluginInstallationServiceMock = {
-  findMany: jest.fn(async () => [EXAMPLE_PLUGIN] as any),
+  getOrderedPluginInstallations: jest.fn(async () => [EXAMPLE_PLUGIN] as any),
   create: jest.fn(),
 };
 
@@ -339,6 +339,9 @@ describe("ServiceTemplateService", () => {
         },
         user
       );
+      expect(
+        pluginInstallationServiceMock.getOrderedPluginInstallations
+      ).toHaveBeenCalledWith("resourceId");
     });
 
     it("should throw an error if resource not found", async () => {
@@ -401,6 +404,10 @@ describe("ServiceTemplateService", () => {
         ...EXAMPLE_RESOURCE,
         resourceType: EnumResourceType.Service,
       });
+
+      expect(
+        pluginInstallationServiceMock.getOrderedPluginInstallations
+      ).toHaveBeenCalledWith(EXAMPLE_TEMPLATE_ID);
 
       //no commit is called unless specified
       expect(projectServiceMock.commit).toHaveBeenCalledTimes(0);
