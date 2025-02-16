@@ -313,7 +313,7 @@ describe("BuildService", () => {
             findMany: jest.fn(() => []),
             getInstalledPrivatePluginsForBuild:
               pluginInstallationServiceGetInstalledPrivatePluginsForBuildMock,
-            orderInstalledPlugins: jest.fn(() => []),
+            getOrderedPluginInstallations: jest.fn(() => []),
           })),
         },
         {

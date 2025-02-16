@@ -278,20 +278,27 @@ export class PluginInstallationService extends BlockTypeService<
     return plugins.filter((plugin) => plugin.enabled);
   }
 
-  async orderInstalledPlugins(
-    resourceId: string,
-    pluginInstallations: PluginInstallation[]
+  async getOrderedPluginInstallations(
+    resourceId: string
   ): Promise<PluginInstallation[]> {
     const pluginOrder = await this.pluginOrderService.findByResourceId({
       where: { id: resourceId },
     });
 
+    const resourcePluginInstallations = await super.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
     const orderedPluginInstallations: PluginInstallation[] = [];
-    if (!pluginOrder) return pluginInstallations;
+    if (!pluginOrder) return resourcePluginInstallations;
 
     pluginOrder.order.forEach((pluginOrder) => {
-      const current = pluginInstallations.find(
-        (x) => x.pluginId === pluginOrder.pluginId
+      const current = resourcePluginInstallations.find(
+        (plugin) => plugin.pluginId === pluginOrder.pluginId
       );
       current && orderedPluginInstallations.push(current);
     });
