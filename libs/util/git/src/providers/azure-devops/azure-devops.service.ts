@@ -5,7 +5,11 @@ import {
   GitVersionDescriptor,
   GitVersionType,
 } from "azure-devops-node-api/interfaces/GitInterfaces";
-import { VersionControlRecursionType } from "azure-devops-node-api/interfaces/TfvcInterfaces";
+import {
+  ItemContentType,
+  VersionControlChangeType,
+  VersionControlRecursionType,
+} from "azure-devops-node-api/interfaces/TfvcInterfaces";
 import { isEmpty } from "lodash";
 import { GitProvider } from "../../git-provider.interface";
 import {
@@ -415,6 +419,48 @@ export class AzureDevOpsService implements GitProvider {
       name: repositoryName,
     };
     const repo = await gitApi.createRepository(createOptions, groupName);
+
+    if (repo && !repo.defaultBranch) {
+      //@todo: fetch the default branch name from the organization or project settings
+      const defaultBranchName = "main";
+      const refName = `refs/heads/${defaultBranchName}`;
+
+      // Push the initial commit
+      await gitApi.createPush(
+        {
+          refUpdates: [
+            {
+              name: refName,
+              oldObjectId: "0000000000000000000000000000000000000000",
+            },
+          ],
+          commits: [
+            {
+              comment: "Initial commit",
+              changes: [
+                {
+                  changeType: VersionControlChangeType.Add,
+                  item: { path: "/README.md" },
+                  newContent: {
+                    content: "# New Repo\nThis is an auto-generated README.",
+                    contentType: ItemContentType.RawText,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        repo.id || "",
+        groupName
+      );
+
+      // Set the default branch in Azure DevOps
+      await gitApi.updateRepository(
+        { defaultBranch: refName },
+        repo.id || "",
+        groupName
+      );
+    }
 
     return {
       name: repo.name || "",
