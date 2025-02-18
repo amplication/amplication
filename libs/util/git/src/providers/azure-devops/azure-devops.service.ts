@@ -19,7 +19,6 @@ import {
   CloneUrlArgs,
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
-  CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   EnumGitOrganizationType,
@@ -582,13 +581,6 @@ export class AzureDevOpsService implements GitProvider {
           } as GitFolderContentItem)
       );
     return { content };
-  }
-
-  async createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
-    // Implement the logic to create a pull request from files
-    throw new Error("Method not implemented.");
   }
 
   private getPullRequestUrl(

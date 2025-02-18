@@ -1,10 +1,5 @@
 import { GitCli } from "./providers/git-cli";
 
-export enum EnumPullRequestMode {
-  Basic = "Basic",
-  Accumulative = "Accumulative",
-}
-
 export enum EnumGitOrganizationType {
   User = "User",
   Organization = "Organization",
@@ -268,7 +263,6 @@ export interface CreatePullRequestArgs {
   commitMessage: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  pullRequestMode: EnumPullRequestMode;
   gitResourceMeta: GitResourceMeta;
   files: File[];
   cloneDirPath: string;
@@ -276,16 +270,6 @@ export interface CreatePullRequestArgs {
   buildId: string;
   baseBranchName: string;
   overrideCustomizableFilesInGit: boolean;
-}
-
-export interface CreatePullRequestFromFilesArgs {
-  owner: string;
-  repositoryName: string;
-  branchName: string; // head
-  commitMessage: string;
-  pullRequestTitle: string;
-  pullRequestBody: string;
-  files: UpdateFile[];
 }
 
 export interface GitProviderGetPullRequestArgs {

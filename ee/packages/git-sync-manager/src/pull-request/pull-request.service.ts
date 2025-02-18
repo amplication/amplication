@@ -1,5 +1,4 @@
 import {
-  EnumPullRequestMode,
   GitClientService,
   File,
   GitProvidersConfiguration,
@@ -101,7 +100,6 @@ export class PullRequestService {
     gitRepositoryName: repo,
     commit,
     gitResourceMeta,
-    pullRequestMode,
     repositoryGroupName,
     baseBranchName,
     isBranchPerResource,
@@ -116,15 +114,11 @@ export class PullRequestService {
     let head = null,
       pullRequestTitle = null;
 
-    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      if (isBranchPerResource) {
-        head = `amplication-${resourceName}`;
-        pullRequestTitle = `for ${resourceName}`;
-      } else {
-        head = `amplication`;
-      }
+    if (isBranchPerResource) {
+      head = `amplication-${resourceName}`;
+      pullRequestTitle = `for ${resourceName}`;
     } else {
-      head = `amplication-build-${newBuildId}`;
+      head = `amplication`;
     }
 
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -155,7 +149,6 @@ export class PullRequestService {
           resourceId,
           buildId: newBuildId,
           gitProvider,
-          pullRequestMode,
         },
       }
     );
@@ -171,7 +164,6 @@ export class PullRequestService {
         commitMessage: body,
         pullRequestTitle: pullRequestTitle || title,
         pullRequestBody: body,
-        pullRequestMode,
         gitResourceMeta,
         files: PullRequestService.removeFirstSlashFromPath(changedFiles),
         resourceId,

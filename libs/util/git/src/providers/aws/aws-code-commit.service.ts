@@ -294,10 +294,6 @@ export class AwsCodeCommitService implements GitProvider {
     return null;
   }
 
-  async createPullRequestFromFiles(): Promise<string> {
-    throw NotImplementedError;
-  }
-
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<PullRequest | null> {
