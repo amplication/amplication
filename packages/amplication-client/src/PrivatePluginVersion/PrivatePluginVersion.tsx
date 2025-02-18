@@ -10,12 +10,14 @@ type Props = {
   privatePlugin: models.PrivatePlugin;
   privatePluginVersion: models.PrivatePluginVersion;
   onVersionChanged?: (enumMember: models.PrivatePluginVersion) => void;
+  disabled?: boolean;
 };
 
 const PrivatePluginVersion = ({
   privatePlugin,
   privatePluginVersion,
   onVersionChanged,
+  disabled,
 }: Props) => {
   const { addEntity } = useContext(AppContext);
 
@@ -62,6 +64,7 @@ const PrivatePluginVersion = ({
       <>
         <ListItem>
           <PrivatePluginVersionForm
+            disabled={disabled}
             privatePlugin={privatePlugin}
             onSubmit={handleSubmit}
             defaultValues={privatePluginVersion}

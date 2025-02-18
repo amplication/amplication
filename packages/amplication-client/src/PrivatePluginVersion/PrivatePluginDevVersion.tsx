@@ -23,9 +23,14 @@ import { DEV_VERSION_TAG } from "../Plugins/constant";
 type Props = {
   privatePlugin: models.PrivatePlugin;
   onChange?: (privatePlugin: models.PrivatePlugin) => void;
+  disabled?: boolean;
 };
 
-const PrivatePluginDevVersion = ({ privatePlugin, onChange }: Props) => {
+const PrivatePluginDevVersion = ({
+  privatePlugin,
+  onChange,
+  disabled,
+}: Props) => {
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 
   const {
@@ -110,6 +115,7 @@ const PrivatePluginDevVersion = ({ privatePlugin, onChange }: Props) => {
           label="Enable Dev Version"
           onChange={handleEnableDevVersion}
           checked={devVersion?.enabled || false}
+          disabled={disabled}
         />
       </FlexItem>
 
