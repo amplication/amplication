@@ -9,7 +9,7 @@
     "pluralize": "8.0.0",
     "ra-data-graphql-amplication": "0.0.14",
     "react": "16.14.0",
-    "react-admin": "3.19.12",
+    "react-admin": "5.5.4",
     "react-dom": "16.14.0",
     "react-scripts": "5.0.0",
     "sass": "^1.39.0",
