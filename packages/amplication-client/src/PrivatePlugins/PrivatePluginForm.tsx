@@ -24,6 +24,7 @@ import { Plugin } from "../Plugins/hooks/usePluginCatalog";
 type Props = {
   onSubmit: (values: models.PrivatePlugin) => void;
   defaultValues?: models.PrivatePlugin;
+  disabled?: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -71,7 +72,7 @@ const CODE_GENERATORS = [
   },
 ];
 
-const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
+const PrivatePluginForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -93,12 +94,13 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
       {(formik) => {
         return (
           <Form childrenAsBlocks>
-            <FormikAutoSave debounceMS={1000} />
-            <TextField disabled label="Plugin Id" name="pluginId" />
+            {!disabled && <FormikAutoSave debounceMS={1000} />}
+            <TextField disabled={disabled} label="Plugin Id" name="pluginId" />
             <DisplayNameField
               name="displayName"
               label="Display Name"
               required
+              disabled={disabled}
             />
             <div>
               <FlexItem
@@ -106,12 +108,17 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
                 gap={EnumGapSize.Large}
               >
                 <PluginLogoPreview privatePlugin={formik.values} />
-                <IconPickerField name="icon" label="icon" />
-                <ColorPickerField name="color" label="color" />
+                {!disabled && (
+                  <>
+                    <IconPickerField name="icon" label="icon" />
+                    <ColorPickerField name="color" label="color" />
+                  </>
+                )}
               </FlexItem>
             </div>
 
             <SelectField
+              disabled={disabled}
               name="codeGenerator"
               label="Code Generator"
               options={CODE_GENERATORS}
@@ -120,12 +127,17 @@ const PrivatePluginForm = ({ onSubmit, defaultValues }: Props) => {
             {formik.values.codeGenerator ===
               models.EnumCodeGenerator.Blueprint && (
               <BlueprintSelectField
+                disabled={disabled}
                 name="blueprints"
                 label="Available for Blueprints"
                 isMulti
               />
             )}
-            <OptionalDescriptionField name="description" label="Description" />
+            <OptionalDescriptionField
+              disabled={disabled}
+              name="description"
+              label="Description"
+            />
           </Form>
         );
       }}

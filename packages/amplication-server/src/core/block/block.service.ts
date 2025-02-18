@@ -45,6 +45,7 @@ import { JsonFilter } from "../../dto/JsonFilter";
 import { mergeAllSettings } from "./block.util";
 import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
 import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -679,7 +680,7 @@ export class BlockService {
     }
 
     if (block.lockedByUserId) {
-      throw new Error(
+      throw new AmplicationError(
         `Block ${blockId} is already locked by another user - ${block.lockedByUserId} `
       );
     }

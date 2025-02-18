@@ -15,9 +15,10 @@ import PrivatePluginDevVersion from "./PrivatePluginDevVersion";
 type Props = {
   privatePlugin: models.PrivatePlugin;
   onVersionAdd?: (plugin: models.PrivatePlugin) => void;
+  disabled?: boolean;
 };
 const PrivatePluginVersionList = React.memo(
-  ({ privatePlugin, onVersionAdd }: Props) => {
+  ({ privatePlugin, onVersionAdd, disabled }: Props) => {
     const onVersionChanged = useCallback(() => {
       onVersionAdd && onVersionAdd(privatePlugin);
     }, [privatePlugin, onVersionAdd]);
@@ -45,10 +46,12 @@ const PrivatePluginVersionList = React.memo(
           contentAlign={EnumContentAlign.Space}
         >
           <NewPrivatePluginVersion
+            disabled={disabled}
             privatePlugin={privatePlugin}
             onVersionAdd={onVersionAdd}
           />
           <PrivatePluginDevVersion
+            disabled={disabled}
             privatePlugin={privatePlugin}
             onChange={onVersionAdd}
           />
@@ -57,6 +60,7 @@ const PrivatePluginVersionList = React.memo(
         <List>
           {sortedVersions?.map((version, index) => (
             <PrivatePluginVersion
+              disabled={disabled}
               key={version.version}
               privatePlugin={privatePlugin}
               privatePluginVersion={version}

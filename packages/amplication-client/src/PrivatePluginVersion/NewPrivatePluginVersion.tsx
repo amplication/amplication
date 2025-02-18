@@ -23,11 +23,16 @@ import usePrivatePluginVersion from "./hooks/usePrivatePluginVersion";
 type Props = {
   privatePlugin: models.PrivatePlugin;
   onVersionAdd?: (privatePlugin: models.PrivatePlugin) => void;
+  disabled?: boolean;
 };
 const NO_VERSION = "0.0.0";
 const CLASS_NAME = "new-private-plugin-version";
 
-const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
+const NewPrivatePluginVersion = ({
+  privatePlugin,
+  onVersionAdd,
+  disabled,
+}: Props) => {
   const {
     createPrivatePluginVersion,
     createPrivatePluginVersionError: error,
@@ -95,7 +100,7 @@ const NewPrivatePluginVersion = ({ privatePlugin, onVersionAdd }: Props) => {
               <Button
                 buttonStyle={EnumButtonStyle.Outline}
                 onClick={() => handleSubmit()}
-                disabled={loading}
+                disabled={loading || disabled}
               >
                 Add Version
               </Button>

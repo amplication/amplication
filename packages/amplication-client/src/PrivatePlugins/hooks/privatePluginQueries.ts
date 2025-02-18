@@ -11,6 +11,14 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     blueprints
     icon
     color
+    lockedByUserId
+    lockedAt
+    lockedByUser {
+      account {
+        firstName
+        lastName
+      }
+    }
     versions {
       version
       deprecated

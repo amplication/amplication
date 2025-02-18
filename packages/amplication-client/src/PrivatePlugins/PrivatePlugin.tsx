@@ -1,10 +1,12 @@
 import {
   EnumItemsAlign,
+  EnumTextColor,
   FlexItem,
   HorizontalRule,
   Snackbar,
   TabContentTitle,
   Toggle,
+  UserAndTime,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -104,6 +106,8 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     [handleSubmit]
   );
 
+  const isLocked = Boolean(data?.privatePlugin?.lockedByUser);
+
   return (
     <>
       <FlexItem>
@@ -115,6 +119,14 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
             {data?.privatePlugin && (
               <>
+                {data?.privatePlugin?.lockedByUser && (
+                  <UserAndTime
+                    account={data?.privatePlugin?.lockedByUser?.account || {}}
+                    time={data?.privatePlugin?.lockedAt}
+                    label="Locked:"
+                    valueColor={EnumTextColor.ThemeRed}
+                  />
+                )}
                 <PrivatePluginEditCodeButton
                   privatePlugin={data.privatePlugin}
                 />
@@ -141,12 +153,14 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
       <HorizontalRule />
       {!loading && (
         <PrivatePluginForm
+          disabled={isLocked}
           onSubmit={handleSubmit}
           defaultValues={data?.privatePlugin}
         />
       )}
 
       <PrivatePluginVersionList
+        disabled={isLocked}
         privatePlugin={data?.privatePlugin}
         onVersionAdd={onVersionChanged}
       />

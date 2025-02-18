@@ -91,6 +91,7 @@ const PrivatePluginVersionForm = ({
                     <Button
                       buttonStyle={EnumButtonStyle.Text}
                       icon="edit_2"
+                      disabled={disabled}
                       onClick={() => {
                         setShowDetails(!showDetails);
                       }}
@@ -112,6 +113,7 @@ const PrivatePluginVersionForm = ({
                 <ToggleField
                   label="Enabled"
                   name="enabled"
+                  disabled={disabled}
                   onValueChange={() => {
                     handleChange(formik);
                   }}
