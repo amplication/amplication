@@ -30,12 +30,6 @@
     },
     "7000": {
       "label": "amplication-server"
-    },
-    "7020": {
-      "label": "amplication-git-pull-service"
-    },
-    "7015": {
-      "label": "amplication-git-push-webhook-service"
     }
   },
 
