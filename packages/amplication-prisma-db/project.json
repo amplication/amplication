@@ -56,18 +56,6 @@
         "cwd": "packages/amplication-prisma-db"
       }
     },
-    "db:init": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "nx db:migrate:dev amplication-git-pull-service",
-          "nx db:migrate:deploy amplication-git-pull-service",
-          "nx db:seed amplication-git-pull-service"
-        ],
-        "parallel": false,
-        "cwd": "packages/amplication-prisma-db"
-      }
-    },
     "db:seed": {
       "executor": "nx:run-commands",
       "options": {

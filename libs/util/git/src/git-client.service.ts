@@ -15,7 +15,6 @@ import {
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
-  EnumPullRequestMode,
   GetRepositoriesArgs,
   GitProviderArgs,
   PostCommitProcessArgs,
@@ -246,7 +245,6 @@ export class GitClientService {
       commitMessage,
       pullRequestTitle,
       pullRequestBody,
-      pullRequestMode,
       gitResourceMeta,
       files,
       cloneDirPath,
@@ -337,39 +335,20 @@ export class GitClientService {
         overrideCustomizableFilesInGit
       );
 
-      this.logger.info(`Got a ${pullRequestMode} pull request mode`);
-
       let pullRequestUrl: string | null = null;
 
-      switch (pullRequestMode) {
-        case EnumPullRequestMode.Basic:
-          pullRequestUrl = await this.provider.createPullRequestFromFiles({
-            owner,
-            repositoryName,
-            branchName,
-            commitMessage,
-            pullRequestTitle,
-            pullRequestBody,
-            files: preparedFiles,
-          });
-          break;
-        case EnumPullRequestMode.Accumulative:
-          pullRequestUrl = await this.accumulativePullRequest({
-            gitCli,
-            owner,
-            repositoryName,
-            branchName,
-            commitMessage,
-            pullRequestBody,
-            preparedFiles,
-            baseBranch,
-            repositoryGroupName,
-            pullRequestTitle,
-          });
-          break;
-        default:
-          throw new InvalidPullRequestMode();
-      }
+      pullRequestUrl = await this.accumulativePullRequest({
+        gitCli,
+        owner,
+        repositoryName,
+        branchName,
+        commitMessage,
+        pullRequestBody,
+        preparedFiles,
+        baseBranch,
+        repositoryGroupName,
+        pullRequestTitle,
+      });
 
       const diffStat = await gitCli.getShortStat();
 

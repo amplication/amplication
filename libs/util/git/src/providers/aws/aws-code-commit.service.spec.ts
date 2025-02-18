@@ -404,12 +404,6 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling createPullRequestFromFiles()", async () => {
-    await expect(gitProvider.createPullRequestFromFiles()).rejects.toThrowError(
-      "Method not implemented."
-    );
-  });
-
   describe("createPullRequest", () => {
     let createPullRequestArgs: GitProviderCreatePullRequestArgs;
     beforeEach(() => {

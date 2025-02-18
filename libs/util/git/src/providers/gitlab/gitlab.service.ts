@@ -11,7 +11,6 @@ import {
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
   GitProviderCreatePullRequestArgs,
-  CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   GetBranchArgs,
@@ -35,7 +34,7 @@ import {
   Commit,
   EnumGitOrganizationType,
 } from "../../types";
-import { CustomError, NotImplementedError } from "../../utils/custom-error";
+import { CustomError } from "../../utils/custom-error";
 
 export class GitLabService implements GitProvider {
   private clientId: string;
@@ -478,13 +477,6 @@ export class GitLabService implements GitProvider {
       );
       throw error;
     }
-  }
-
-  async createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
-    //this method is not implemented since we only use "smart sync"
-    throw NotImplementedError;
   }
 
   async getPullRequest(

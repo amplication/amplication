@@ -140,7 +140,6 @@
     "node-jose": "^2.2.0",
     "normalize-path": "^3.0.0",
     "octokit": "^1.8.1",
-    "octokit-plugin-create-pull-request": "^3.13.1",
     "openai": "^4.46.0",
     "opentelemetry-instrumentation-kafkajs": "^0.35.0",
     "ora": "5.4.0",
@@ -336,7 +335,6 @@
     "url-loader": "^4.1.1",
     "vite": "^4.5.5",
     "webpack": "5.88.2",
-    "webpack-merge": "^5.8.0",
     "winston-transport": "^4.5.0",
     "yargs": "^17.7.2",
     "yup": "^0.32.11"

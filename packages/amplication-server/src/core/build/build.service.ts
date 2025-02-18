@@ -34,7 +34,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import {
   EnumGitProvider,
-  EnumPullRequestMode,
   GitProviderProperties,
   PluginDownloadItem,
 } from "@amplication/util/git";
@@ -1276,7 +1275,6 @@ export class BuildService {
               adminUIPath: serviceSettings?.adminUISettings?.adminUIPath,
               serverPath: serviceSettings?.serverSettings?.serverPath,
             },
-            pullRequestMode: EnumPullRequestMode.Accumulative,
             isBranchPerResource:
               (branchPerResourceEntitlement &&
                 branchPerResourceEntitlement.hasAccess) ??

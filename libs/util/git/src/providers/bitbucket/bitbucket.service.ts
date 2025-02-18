@@ -4,7 +4,6 @@ import {
   OAuthTokens,
   Branch,
   GitProviderCreatePullRequestArgs,
-  CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   GetFileArgs,
@@ -465,12 +464,6 @@ export class BitBucketService implements GitProvider {
       name: parse(gitFileResponse.path).name,
       path: gitFileResponse.path,
     };
-  }
-
-  createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
-    throw NotImplementedError;
   }
 
   async getPullRequest(
