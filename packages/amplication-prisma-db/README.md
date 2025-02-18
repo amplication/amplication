@@ -1,6 +1,6 @@
 # Amplication-prisma-db
 
-amplication-prisma-db is an essential part of the Amplication project. This package holds the DB schema file (schema.prisma) used by amplication-server and amplication-git-pull-service
+amplication-prisma-db is an essential part of the Amplication project. This package holds the DB schema file (schema.prisma) used by amplication-server.
 
 ## Installation
 
