@@ -37,6 +37,7 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
+    currentUser,
   } = useContext(AppContext);
   const history = useHistory();
 
@@ -106,7 +107,10 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     [handleSubmit]
   );
 
-  const isLocked = Boolean(data?.privatePlugin?.lockedByUser);
+  const lockedByUser = data?.privatePlugin?.lockedByUser;
+
+  const isLocked =
+    Boolean(lockedByUser) && currentUser?.id !== lockedByUser?.id;
 
   return (
     <>
@@ -119,7 +123,7 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
           <FlexItem itemsAlign={EnumItemsAlign.Center}>
             {data?.privatePlugin && (
               <>
-                {data?.privatePlugin?.lockedByUser && (
+                {isLocked && (
                   <UserAndTime
                     account={data?.privatePlugin?.lockedByUser?.account || {}}
                     time={data?.privatePlugin?.lockedAt}
