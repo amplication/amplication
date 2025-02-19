@@ -33,6 +33,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "versions",
   "__typename",
+  "lockedByUser",
+  "lockedAt",
+  "lockedByUserId",
 ];
 
 export const INITIAL_VALUES: Partial<models.PrivatePlugin> = {
@@ -95,7 +98,7 @@ const PrivatePluginForm = ({ onSubmit, defaultValues, disabled }: Props) => {
         return (
           <Form childrenAsBlocks>
             {!disabled && <FormikAutoSave debounceMS={1000} />}
-            <TextField disabled={disabled} label="Plugin Id" name="pluginId" />
+            <TextField disabled label="Plugin Id" name="pluginId" />
             <DisplayNameField
               name="displayName"
               label="Display Name"
