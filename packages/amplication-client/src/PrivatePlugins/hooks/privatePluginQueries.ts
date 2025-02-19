@@ -14,6 +14,7 @@ export const PRIVATE_PLUGINS_FIELDS_FRAGMENT = gql`
     lockedByUserId
     lockedAt
     lockedByUser {
+      id
       account {
         firstName
         lastName

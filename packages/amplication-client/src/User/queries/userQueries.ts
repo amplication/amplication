@@ -10,6 +10,7 @@ export const USER_FIELDS_FRAGMENT = gql`
       email
       firstName
       lastName
+      createdAt
     }
     teams {
       ...TeamFields
@@ -21,6 +22,15 @@ export const GET_USER = gql`
   ${USER_FIELDS_FRAGMENT}
   query user($userId: String!) {
     user(where: { id: $userId }) {
+      ...UserFields
+    }
+  }
+`;
+
+export const GET_CURRENT_USER = gql`
+  ${USER_FIELDS_FRAGMENT}
+  query getCurrentUser {
+    me {
       ...UserFields
     }
   }
