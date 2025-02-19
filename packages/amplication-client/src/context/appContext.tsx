@@ -10,6 +10,7 @@ import { IPermissions } from "../Workspaces/hooks/usePermissions";
 import { RolesPermissions } from "@amplication/util-roles-types";
 
 export interface AppContextInterface {
+  currentUser: models.User | undefined;
   currentWorkspace: models.Workspace | undefined;
   handleSetCurrentWorkspace: (workspaceId: string) => void;
   createWorkspace: (data: CreateWorkspaceType) => void;
@@ -67,6 +68,7 @@ export interface AppContextInterface {
 }
 
 const initialContext: AppContextInterface = {
+  currentUser: undefined,
   currentWorkspace: undefined,
   subscriptionPlan: models.EnumSubscriptionPlan.Free,
   subscriptionStatus: models.EnumSubscriptionStatus.Active,

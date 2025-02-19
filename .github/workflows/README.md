@@ -33,7 +33,7 @@ Example
     "executor": "@nx-tools/nx-package:container",
     "options": {
     "push": false,
-    "tags": ["amplication/git-pull-service"]
+    "tags": ["amplication/git-sync-manager"]
     }
 },
 "deploy:container": { "executor": "nx:run-commands" }

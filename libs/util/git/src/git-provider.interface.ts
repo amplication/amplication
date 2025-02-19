@@ -4,7 +4,6 @@ import {
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
   GitProviderCreatePullRequestArgs,
-  CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   EnumGitProvider,
@@ -50,10 +49,6 @@ export interface GitProvider {
   getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: GetFileArgs): Promise<GitFile | null>;
   getFolderContent(args: getFolderContentArgs): Promise<GitFolderContent>;
-
-  createPullRequestFromFiles: (
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ) => Promise<string>;
   getPullRequest: (
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ) => Promise<PullRequest | null>;

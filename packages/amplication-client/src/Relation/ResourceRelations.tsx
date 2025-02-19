@@ -35,7 +35,7 @@ function ResourceRelations() {
     <div className={CLASS_NAME}>
       {relationsMap &&
         currentBlueprint?.relations &&
-        currentBlueprint?.relations.length && (
+        currentBlueprint?.relations.length > 0 && (
           <>
             <TabContentTitle title="Related Resources" />
             <Panel panelStyle={EnumPanelStyle.Bordered}>

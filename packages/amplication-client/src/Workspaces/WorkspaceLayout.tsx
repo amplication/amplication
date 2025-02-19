@@ -38,6 +38,7 @@ import useCustomPropertiesMap from "../CustomProperties/hooks/useCustomPropertie
 import { CatalogContextProvider } from "../Catalog/CatalogContext";
 import useBlueprintsMap from "../Blueprints/hooks/useBlueprintsMap";
 import usePermissions from "./hooks/usePermissions";
+import useCurrentUser from "../User/hooks/useCurrentUser";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -102,6 +103,8 @@ const WorkspaceLayout: React.FC<Props> = ({
       ? EnumResourceTypeGroup.Platform
       : EnumResourceTypeGroup.Services
   );
+
+  const { currentUserData } = useCurrentUser();
 
   const commitUtils = useCommits(currentProject?.id);
 
@@ -183,6 +186,7 @@ const WorkspaceLayout: React.FC<Props> = ({
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
+        currentUser: currentUserData,
         currentWorkspace,
         subscriptionPlan,
         subscriptionStatus,

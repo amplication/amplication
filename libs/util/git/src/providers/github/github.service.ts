@@ -2,11 +2,6 @@ import { ILogger } from "@amplication/util/logging";
 import { createAppAuth } from "@octokit/auth-app";
 import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-import {
-  Changes,
-  UpdateFunction,
-} from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../../git-provider.interface";
 import {
   Branch,
@@ -14,7 +9,6 @@ import {
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
   GitProviderCreatePullRequestArgs,
-  CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
   EnumGitProvider,
@@ -401,47 +395,6 @@ export class GithubService implements GitProvider {
     return null;
   }
 
-  async createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
-    const {
-      owner,
-      repositoryName,
-      pullRequestTitle,
-      pullRequestBody,
-      branchName,
-      files,
-      commitMessage,
-    } = createPullRequestFromFilesArgs;
-    // We are not using this.octokit, instead we are using a local octokit client because we need the plugin
-    const octokitWithPlugins = Octokit.plugin(createPullRequest);
-    const token = await this.getInstallationAuthToken(this.installationId);
-    const octokit = new octokitWithPlugins({
-      auth: token,
-    });
-
-    const gitHubFiles = this.convertFilesToGitHubFiles(files);
-    const pr = await octokit.createPullRequest({
-      owner,
-      repo: repositoryName,
-      title: pullRequestTitle,
-      body: pullRequestBody,
-      head: branchName,
-      update: true,
-      changes: [
-        {
-          /* optional: if `files` is not passed, an empty commit is created instead */
-          files: gitHubFiles,
-          commit: commitMessage,
-        },
-      ],
-    });
-    if (pr === null) {
-      throw new Error("We had a problem creating the pull request");
-    }
-    return pr.data.html_url;
-  }
-
   async getPullRequest({
     owner,
     repositoryName,
@@ -661,26 +614,6 @@ export class GithubService implements GitProvider {
       },
     } = lastCommitDataRef;
     return { sha: lastCommitNodes[0].oid };
-  }
-
-  private convertFilesToGitHubFiles(
-    files: UpdateFile[]
-  ): Required<Changes["files"]> {
-    return files.reduce((acc, file) => {
-      if (file.skipIfExists) {
-        // do not create the file if it already exist
-        const gitHubUpdateFn: UpdateFunction = ({ exists }) => {
-          if (exists) {
-            return null;
-          }
-          return file.content;
-        };
-        acc[file.path] = gitHubUpdateFn;
-      } else {
-        acc[file.path] = file.content;
-      }
-      return acc;
-    }, {} as Omit<Required<Changes["files"]>, "undefined">);
   }
 
   async createPullRequestComment(
