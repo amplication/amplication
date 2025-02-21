@@ -1,0 +1,15 @@
+@import "../style/index.scss";
+
+.amp-outer-page-layout {
+  display: flex;
+  flex: 1;
+  background: var(--page-content-background);
+  box-sizing: border-box;
+  flex-direction: row;
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; //the scroll is handled on PageContent
+  }
+}
