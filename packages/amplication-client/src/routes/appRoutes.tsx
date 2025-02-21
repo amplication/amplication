@@ -16,6 +16,7 @@ export interface RouteDef {
   permission?: boolean;
   isAnalytics?: boolean;
   iconName?: string;
+  groupName?: string;
 }
 
 export const Routes: RouteDef[] = [
@@ -172,12 +173,25 @@ export const Routes: RouteDef[] = [
         ],
         routes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})",
-            Component: lazy(() => import("../Platform/ProjectPlatformPage")),
+            path: "/:workspace([A-Za-z0-9-]{20,})/:platformPrefix(platform/)?:project([A-Za-z0-9-]{20,})",
+            Component: lazy(() => import("../Project/ProjectLayoutPage")),
             moduleName: "ProjectPlatformPage",
             moduleClass: "project-platform-page",
             exactPath: false,
             tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/templates",
+                Component: lazy(
+                  () => import("../Platform/ServiceTemplatesPage")
+                ),
+                moduleName: "",
+                displayName: "Templates",
+                routeTrackType: "",
+                exactPath: false,
+                iconName: "template",
+                groupName: "platform",
+                routes: [],
+              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins",
                 Component: lazy(
@@ -187,6 +201,8 @@ export const Routes: RouteDef[] = [
                 displayName: "Plugin Repository",
                 routeTrackType: "",
                 exactPath: false,
+                iconName: "plugin",
+                groupName: "platform",
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
@@ -222,18 +238,8 @@ export const Routes: RouteDef[] = [
                 displayName: "Tech Debt",
                 routeTrackType: "",
                 exactPath: false,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
-                Component: lazy(
-                  () => import("../VersionControl/PendingChangesPage")
-                ),
-                moduleName: "PendingChangesPage",
-                moduleClass: "pending-changes-page",
-                displayName: "Pending Changes",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
+                iconName: "tag",
+                groupName: "platform",
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/publish",
@@ -244,19 +250,38 @@ export const Routes: RouteDef[] = [
                 displayName: "Publish",
                 routeTrackType: "",
                 exactPath: false,
+                iconName: "publish",
+                groupName: "platform",
                 routes: [],
               },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                displayName: "Platform Changes",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+                iconName: "pending_changes",
+                groupName: "platform",
+              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(
                   () => import("../Project/ProjectPlatformSettingsPage")
                 ),
                 moduleName: "PlatformSettings",
-                displayName: "Settings",
+                displayName: "Platform Settings",
                 moduleClass: "platform-settings",
                 routeTrackType: "",
                 exactPath: false,
                 isAnalytics: true,
+                iconName: "settings",
+                groupName: "platform",
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/settings/access",
@@ -271,66 +296,18 @@ export const Routes: RouteDef[] = [
                   },
                 ],
               },
-            ],
-            routes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-plugin-repository/CreatePluginRepository"
-                    )
-                ),
-                moduleName: "CreatePluginRepository",
-                moduleClass: "create-plugin-repository",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
-                Component: lazy(() => import("../Resource/ResourceHome")),
-                moduleName: "",
-                routeTrackType: "",
-                exactPath: false,
-                routes: resourceRoutes,
-                tabRoutes: resourceTabRoutes(
-                  "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})"
-                ),
-              },
-            ],
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
-            Component: lazy(() => import("../Project/ProjectPage")),
-            moduleName: "ProjectPage",
-            moduleClass: "project-page",
-            exactPath: false,
-            tabRoutes: [
-              // {
-              //   path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/architecture",
-              //   Component: lazy(
-              //     () =>
-              //       import("../Project/ArchitectureConsole/ArchitectureConsole")
-              //   ),
-              //   moduleName: "ProjectArchitecture",
-              //   displayName: "Architecture",
-              //   moduleClass: "",
-              //   routeTrackType: "",
-              //   exactPath: false,
-              //   isAnalytics: true,
-              // },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
                 Component: lazy(
                   () => import("../Resource/git/ResourceGitSettingsPage")
                 ),
                 moduleName: "ProjectSettingsGit",
-                displayName: "Git Settings",
+                displayName: "Project Git Settings",
                 moduleClass: "",
                 routeTrackType: "",
                 exactPath: false,
                 isAnalytics: true,
+                iconName: "git_pull_request",
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
@@ -340,6 +317,7 @@ export const Routes: RouteDef[] = [
                 displayName: "Commits",
                 routeTrackType: "",
                 exactPath: false,
+                iconName: "history_commit_outline",
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})",
@@ -375,6 +353,7 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
+                iconName: "code",
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
@@ -387,16 +366,18 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
+                iconName: "pending_changes",
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(() => import("../Project/ProjectSettingsPage")),
                 moduleName: "ProjectSettings",
-                displayName: "Settings",
+                displayName: "Project Settings",
                 moduleClass: "project-settings",
                 routeTrackType: "",
                 exactPath: false,
                 isAnalytics: true,
+                iconName: "settings",
                 routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/general",
@@ -437,6 +418,31 @@ export const Routes: RouteDef[] = [
               },
             ],
             routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/create-plugin-repository",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-plugin-repository/CreatePluginRepository"
+                    )
+                ),
+                moduleName: "CreatePluginRepository",
+                moduleClass: "create-plugin-repository",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Resource/ResourceHome")),
+                moduleName: "",
+                routeTrackType: "",
+                exactPath: false,
+                routes: resourceRoutes,
+                tabRoutes: resourceTabRoutes(
+                  "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})"
+                ),
+              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/new-resource",
                 Component: lazy(
