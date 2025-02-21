@@ -6,6 +6,10 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useContext, useMemo } from "react";
+import {
+  CATALOG_COLOR,
+  PLATFORM_COLOR,
+} from "../Assistant/ConsoleNavigationButton";
 import MenuItem from "../Layout/MenuItem";
 import useProjectRoutes from "../Layout/useProjectRoutes";
 import { AppContext } from "../context/appContext";
@@ -116,7 +120,7 @@ const ProjectMenu: React.FC<Props> = ({ routeDefs }) => {
             to={catalogBaseUrl}
             disableHover
           >
-            <CircleBadge color={"#A787FF"}>
+            <CircleBadge color={CATALOG_COLOR}>
               <Icon icon={"services"} />
             </CircleBadge>
           </MenuItem>
@@ -146,7 +150,7 @@ const ProjectMenu: React.FC<Props> = ({ routeDefs }) => {
             to={platformBaseUrl}
             disableHover
           >
-            <CircleBadge color={"#f6aa50"}>
+            <CircleBadge color={PLATFORM_COLOR}>
               <Icon icon={"grid"} />
             </CircleBadge>
           </MenuItem>
