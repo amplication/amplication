@@ -73,6 +73,7 @@ import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resou
 import { TemplateCodeEngineVersionService } from "../templateCodeEngineVersion/templateCodeEngineVersion.service";
 import { EnumCodeGenerator } from "./dto/EnumCodeGenerator";
 import { ResourceInclude } from "./dto/ResourceInclude";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 
 const USER_RESOURCE_ROLE = {
   name: "user",
@@ -568,7 +569,8 @@ export class ResourceService {
         args.data.blueprint.connect.id,
         user,
         true,
-        CODE_GENERATOR_NAME_TO_ENUM[blueprint.codeGeneratorName]
+        CODE_GENERATOR_NAME_TO_ENUM[blueprint.codeGeneratorName],
+        args.data.gitRepository
       );
     } else {
       return this.createResource(
@@ -680,7 +682,8 @@ export class ResourceService {
     blueprintId: string,
     user: User,
     installDefaultDbPlugin = true,
-    codeGenerator: keyof typeof EnumCodeGenerator | null = null
+    codeGenerator: keyof typeof EnumCodeGenerator | null = null,
+    gitRepository: ConnectGitRepositoryInput | null = null
   ): Promise<Resource> {
     const pathBase = `apps/${kebabCase(serviceName)}`;
 
@@ -720,7 +723,7 @@ export class ResourceService {
           authProvider: EnumAuthProviderType.Jwt, //@todo: remove this property
         },
 
-        gitRepository: null,
+        gitRepository: gitRepository,
       },
     };
 
