@@ -15,6 +15,7 @@ $inverted-border-radius: 6px;
   box-sizing: border-box;
   transition: all var(--menu-expand-animation-duration) ease-in;
   height: auto !important;
+  margin-bottom: var(--icon-spacing);
 
   .amp-button {
     justify-content: flex-start;

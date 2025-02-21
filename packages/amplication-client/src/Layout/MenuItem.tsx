@@ -42,7 +42,10 @@ const MenuItem = ({
   disableHover = false,
   onClick,
 }: Props) => {
-  const match = useRouteMatch(to || NON_URL);
+  const match = useRouteMatch({
+    path: to || NON_URL,
+    exact: false,
+  });
 
   const [showTooltip, setShowTooltip] = React.useState(false);
 
