@@ -4,10 +4,9 @@ import {
 } from "@amplication/ui/design-system";
 import { useMemo } from "react";
 import { useAppContext } from "../context/appContext";
+import { PROJECT_SELECTOR_COLOR } from "./ProjectSelector";
 
 type Props = Omit<SelectPanelFieldProps, "options">;
-
-const DEFAULT_COLOR = "#FFFFFF";
 
 const ProjectSelectField = (props: Props) => {
   const { projectsList } = useAppContext();
@@ -16,7 +15,7 @@ const ProjectSelectField = (props: Props) => {
     return projectsList?.map((project) => ({
       value: project.id,
       label: project.name,
-      color: DEFAULT_COLOR,
+      color: PROJECT_SELECTOR_COLOR,
       description: project.description,
     }));
   }, [projectsList]);
