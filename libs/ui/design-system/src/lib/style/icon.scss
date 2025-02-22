@@ -3,6 +3,7 @@ $icon-font-size-small: 19px;
 $icon-font-size-medium: 24px;
 $icon-font-size-large: 28px;
 $icon-font-size-xlarge: 32px;
+$icon-font-size-xxlarge: 40px;
 
 .amp-icon {
   /* use !important to prevent issues with browser extensions that change fonts */
@@ -45,6 +46,9 @@ $icon-font-size-xlarge: 32px;
   }
   &--size-xlarge {
     font-size: $icon-font-size-xlarge;
+  }
+  &--size-xxlarge {
+    font-size: $icon-font-size-xxlarge;
   }
 }
 

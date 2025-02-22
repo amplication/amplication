@@ -48,7 +48,7 @@ const PlatformDashboard = () => {
 
       <HorizontalRule doubleSpacing />
 
-      <Panel panelStyle={EnumPanelStyle.Bordered}>
+      <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart direction={EnumFlexDirection.Column}>
             <FlexItem
@@ -61,10 +61,7 @@ const PlatformDashboard = () => {
               </CircleBadge>
             </FlexItem>
             <Text textStyle={EnumTextStyle.H3}>Platform Console</Text>
-            <Text
-              textStyle={EnumTextStyle.Description}
-              textColor={EnumTextColor.White}
-            >
+            <Text textStyle={EnumTextStyle.Description}>
               The Platform Console lets teams define, manage, and enforce
               development standards at scale. It streamlines service creation
               with Live Templates for consistency and Private Plugins to
