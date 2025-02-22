@@ -180,19 +180,6 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             tabRoutes: [
               {
-                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/templates",
-                Component: lazy(
-                  () => import("../Platform/ServiceTemplatesPage")
-                ),
-                moduleName: "",
-                displayName: "Templates",
-                routeTrackType: "",
-                exactPath: false,
-                iconName: "template",
-                groupName: "platform",
-                routes: [],
-              },
-              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins",
                 Component: lazy(
                   () => import("../PrivatePlugins/PrivatePluginsPage")
@@ -227,6 +214,19 @@ export const Routes: RouteDef[] = [
                     isAnalytics: true,
                   },
                 ],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/templates",
+                Component: lazy(
+                  () => import("../Platform/ServiceTemplatesPage")
+                ),
+                moduleName: "",
+                displayName: "Templates",
+                routeTrackType: "",
+                exactPath: false,
+                iconName: "template",
+                groupName: "platform",
+                routes: [],
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/tech-debt",

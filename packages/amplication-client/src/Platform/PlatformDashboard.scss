@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.platform-dashboard {
+  &__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--default-spacing);
+    margin-bottom: var(--triple-spacing);
+    margin-top: var(--triple-spacing);
+  }
+}
