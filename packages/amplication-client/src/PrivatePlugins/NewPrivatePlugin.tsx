@@ -40,9 +40,7 @@ export const NewPrivatePlugin = React.memo(
         </Dialog>
 
         <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="plus"
-          iconPosition={EnumIconPosition.Left}
+          buttonStyle={EnumButtonStyle.Primary}
           onClick={() => {
             setIsOpen(true);
           }}

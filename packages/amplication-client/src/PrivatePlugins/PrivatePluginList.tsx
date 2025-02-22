@@ -1,14 +1,11 @@
 import {
-  Button,
   CircularProgress,
   CollapsibleListItem,
   EnabledIndicator,
-  EnumButtonStyle,
+  EnumFlexDirection,
   EnumIconFamily,
-  EnumIconPosition,
   EnumItemsAlign,
   FlexItem,
-  NavigationHeader,
   SearchField,
   Snackbar,
   VerticalNavigation,
@@ -101,27 +98,21 @@ export const PrivatePluginList = React.memo(
 
     return (
       <div className={CLASS_NAME}>
-        <NavigationHeader>
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            icon="git_branch"
-            iconPosition={EnumIconPosition.Left}
-            onClick={goToGitSettings}
-          >
-            Git Settings
-          </Button>
-
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          itemsAlign={EnumItemsAlign.Stretch}
+        >
           <NewPrivatePlugin
             onPrivatePluginAdd={handlePrivatePluginChange}
             pluginRepositoryResource={pluginRepositoryResource}
           />
-        </NavigationHeader>
 
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        </FlexItem>
 
         {privatePluginsByCodeGenerator &&
           Object.entries(privatePluginsByCodeGenerator).map(

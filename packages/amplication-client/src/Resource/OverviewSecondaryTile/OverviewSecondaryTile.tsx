@@ -11,7 +11,6 @@ import {
 } from "@amplication/ui/design-system";
 
 import React from "react";
-import { TitleAndIcon } from "../../Components/TitleAndIcon";
 
 interface Props {
   title: string;
