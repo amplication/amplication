@@ -4,6 +4,7 @@ import {
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
+  Icon,
   List,
   ListItem,
   Text,
@@ -42,8 +43,11 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         onClick={onClick}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Default}
+        start={<Icon icon={icon} size={"xxlarge"} />}
       >
-        <TitleAndIcon icon={icon} title={title} />
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          {title}
+        </Text>
 
         <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
         {children}

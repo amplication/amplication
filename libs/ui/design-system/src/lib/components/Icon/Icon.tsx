@@ -5,7 +5,13 @@ import classNames from "classnames";
 import "./Icon.scss";
 import { EnumTextColor } from "../Text/Text";
 
-export type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
+export type IconSize =
+  | "xsmall"
+  | "small"
+  | "medium"
+  | "large"
+  | "xlarge"
+  | "xxlarge";
 
 export enum EnumIconFamily {
   System = "system",
