@@ -4,13 +4,13 @@ import {
   EnumListStyle,
   EnumTextColor,
   EnumTextStyle,
+  Icon,
   List,
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
 
 import React from "react";
-import { TitleAndIcon } from "../../Components/TitleAndIcon";
 
 interface Props {
   title: string;
@@ -19,6 +19,7 @@ interface Props {
   to: string;
   onClick?: (e) => void;
   themeColor?: EnumTextColor;
+  children?: React.ReactNode;
 }
 const OverviewSecondaryTile: React.FC<Props> = ({
   title,
@@ -27,6 +28,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   to,
   themeColor,
   onClick,
+  children,
 }) => {
   return (
     <List
@@ -40,10 +42,14 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         onClick={onClick}
         direction={EnumFlexDirection.Column}
         gap={EnumGapSize.Default}
+        start={<Icon icon={icon} size={"xxlarge"} />}
       >
-        <TitleAndIcon icon={icon} title={title} />
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          {title}
+        </Text>
 
         <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
+        {children}
       </ListItem>
     </List>
   );

@@ -29,45 +29,52 @@ function ResourcePropertiesBlock({ resource }: Props) {
           label={"Owner"}
           content={<ResourceOwner resource={resource} />}
         />
-        <HorizontalRule />
-        {resource.properties &&
-          Object.keys(resource.properties).map((property) => (
-            <>
-              {customPropertiesMap[property] && (
-                <LabelValuePairsBlockItem
-                  label={customPropertiesMap[property].name}
-                  content={
-                    <CustomPropertyValue
-                      key={property}
-                      propertyKey={property}
-                      allValues={resource.properties}
-                    />
-                  }
-                />
-              )}
-            </>
-          ))}
 
-        {resourceSettings && blueprintCustomPropertiesMap && (
+        {resource.properties && (
           <>
             <HorizontalRule />
-            {Object.keys(resourceSettings.properties).map((property) => (
+            {Object.keys(resource.properties).map((property) => (
               <>
-                <LabelValuePairsBlockItem
-                  label={blueprintCustomPropertiesMap[property]?.name}
-                  content={
-                    <CustomPropertyValue
-                      key={property}
-                      propertyKey={property}
-                      allValues={resourceSettings.properties}
-                      propertiesMap={blueprintCustomPropertiesMap}
-                    />
-                  }
-                />
+                {customPropertiesMap[property] && (
+                  <LabelValuePairsBlockItem
+                    label={customPropertiesMap[property].name}
+                    content={
+                      <CustomPropertyValue
+                        key={property}
+                        propertyKey={property}
+                        allValues={resource.properties}
+                      />
+                    }
+                  />
+                )}
               </>
             ))}
           </>
         )}
+
+        {resourceSettings &&
+          blueprintCustomPropertiesMap &&
+          resourceSettings.properties &&
+          Object.keys(resourceSettings.properties).length > 0 && (
+            <>
+              <HorizontalRule />
+              {Object.keys(resourceSettings.properties).map((property) => (
+                <>
+                  <LabelValuePairsBlockItem
+                    label={blueprintCustomPropertiesMap[property]?.name}
+                    content={
+                      <CustomPropertyValue
+                        key={property}
+                        propertyKey={property}
+                        allValues={resourceSettings.properties}
+                        propertiesMap={blueprintCustomPropertiesMap}
+                      />
+                    }
+                  />
+                </>
+              ))}
+            </>
+          )}
       </LabelValuePairsBlock>
     </>
   );

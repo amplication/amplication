@@ -32,7 +32,7 @@ type TGetData = {
 const DATE_CREATED_FIELD = "createdAt";
 const NAME_FIELD = "displayName";
 
-const usePrivatePlugin = (resourceId: string) => {
+const usePrivatePlugin = (resourceId?: string) => {
   const { addBlock } = useContext(AppContext);
 
   const [privatePluginsByCodeGenerator, setPrivatePluginsByCodeGenerator] =

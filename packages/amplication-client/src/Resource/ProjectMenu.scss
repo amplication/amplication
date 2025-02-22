@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.resource-menu {
+.project-menu {
   border-right: $border-dark;
   min-width: var(--menu-width);
   display: flex;
@@ -12,6 +12,19 @@
     overflow-y: auto;
     overflow-x: hidden;
     overflow: visible;
+
+    height: fit-content;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    max-height: 400px;
+
+    &--inner {
+    }
+
+    &--close {
+      max-height: 0;
+      overflow: hidden;
+    }
   }
   .bottom-menu-container {
     overflow: hidden;

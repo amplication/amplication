@@ -21,11 +21,7 @@ import usePrivatePlugin from "./hooks/usePrivatePlugin";
 import PrivatePluginEditCodeButton from "./PrivatePluginEditCodeButton";
 import PrivatePluginForm from "./PrivatePluginForm";
 
-type Props = {
-  pluginRepositoryResourceId: string;
-};
-
-const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
+const PrivatePlugin = () => {
   const match = useRouteMatch<{
     privatePluginId: string;
   }>("/:workspace/platform/:project/private-plugins/:privatePluginId");
@@ -49,7 +45,7 @@ const PrivatePlugin = ({ pluginRepositoryResourceId }: Props) => {
     getPrivatePluginRefetch: refetch,
     updatePrivatePlugin,
     updatePrivatePluginError: updateError,
-  } = usePrivatePlugin(pluginRepositoryResourceId);
+  } = usePrivatePlugin();
 
   const onVersionChanged = useCallback(() => {
     refetch();

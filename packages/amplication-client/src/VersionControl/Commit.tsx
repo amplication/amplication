@@ -6,7 +6,6 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   FlexItem,
-  MultiStateToggle,
   SelectMenu,
   SelectMenuList,
   SelectMenuModal,
@@ -15,7 +14,6 @@ import {
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
-import { useHistory } from "react-router-dom";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { AppContext } from "../context/appContext";
 import {
@@ -23,28 +21,14 @@ import {
   EnumResourceType,
   EnumResourceTypeGroup,
 } from "../models";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-import useAvailableCodeGenerators from "../Workspaces/hooks/useAvailableCodeGenerators";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import "./Commit.scss";
 import CommitButton from "./CommitButton";
 import "./CreateCommitStrategyButton.scss";
 import CreateCommitStrategyButtonItem from "./CreateCommitStrategyButtonItem";
 import useCommits from "./hooks/useCommits";
-
-const OPTIONS = [
-  {
-    label: ".NET",
-    value: "dotnet",
-  },
-  {
-    label: "Node.js",
-    value: "node",
-  },
-];
 
 export type TCommit = {
   message: string;
@@ -104,15 +88,10 @@ const Commit = ({
   commitBtnType,
   showCommitMessage = true,
 }: Props) => {
-  const history = useHistory();
-  const { trackEvent } = useTracking();
   const formikRef = useRef(null);
-  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
+  const { isPlatformConsole } = useProjectBaseUrl();
 
-  const { dotNetGeneratorEnabled } = useAvailableCodeGenerators();
-
-  const { currentWorkspace, currentProject, resources } =
-    useContext(AppContext);
+  const { currentProject, resources } = useContext(AppContext);
 
   const commitableResources = useMemo(() => {
     return resources.filter(
@@ -142,19 +121,6 @@ const Commit = ({
   const handleCommitBtnClicked = useCallback(() => {
     formikRef.current.submitForm();
   }, []);
-
-  const handleOnSelectLanguageChange = useCallback(
-    (selectedValue: string) => {
-      if (selectedValue === "dotnet") {
-        trackEvent({
-          eventName: AnalyticsEventNames.ChangedToDotNet,
-          workspaceId: currentWorkspace.id,
-        });
-        history.push(`${baseUrl}/dotnet-upgrade`);
-      }
-    },
-    [baseUrl, currentWorkspace?.id, history, trackEvent]
-  );
 
   const handleSpecificServiceSelectedDismiss = useCallback(() => {
     setSpecificServiceSelected(false);
@@ -277,17 +243,7 @@ const Commit = ({
                       autoComplete="off"
                     />
                   )}
-                {!dotNetGeneratorEnabled &&
-                  resourceTypeGroup === EnumResourceTypeGroup.Services && (
-                    <MultiStateToggle
-                      className={`${CLASS_NAME}__technology-toggle`}
-                      label=""
-                      name="action_"
-                      options={OPTIONS}
-                      onChange={handleOnSelectLanguageChange}
-                      selectedValue={"node"}
-                    />
-                  )}
+
                 <div>
                   <FlexItem
                     direction={EnumFlexDirection.Row}

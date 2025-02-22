@@ -69,7 +69,7 @@ export const resourceThemeMap: {
     name: "Plugin Repository",
   },
   [models.EnumResourceType.ServiceTemplate]: {
-    icon: "services",
+    icon: "template",
     color: "#f6aa50",
     name: "Template",
   },

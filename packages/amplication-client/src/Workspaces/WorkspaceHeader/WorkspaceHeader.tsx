@@ -4,9 +4,12 @@ import {
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
   FlexItem,
   Icon,
   OptionItem,
+  Text,
   Tooltip,
 } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
@@ -195,41 +198,61 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <ConsoleNavigationButton />
 
-          {currentProject && (
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              gap={EnumGapSize.Large}
-              itemsAlign={EnumItemsAlign.Center}
-            >
-              <hr className={`${CLASS_NAME}__vertical_border`} />
-              <ProjectSelector
-                onChange={handleProjectSelected}
-                selectedValue={currentProject?.id}
-                allProjectsItem={ALL_PROJECTS_ITEM}
-              />
-              <hr className={`${CLASS_NAME}__vertical_border`} />
-              {/* {currentResource && ( */}
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            gap={EnumGapSize.Default}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            <span />
+
+            <Link to={`/${currentWorkspace?.id}`}>
+              <Text
+                textColor={EnumTextColor.White}
+                textStyle={EnumTextStyle.Tag}
+              >
+                {currentWorkspace?.name}
+              </Text>
+            </Link>
+
+            <span className={`${CLASS_NAME}__separator`}>/</span>
+            <ProjectSelector
+              onChange={handleProjectSelected}
+              selectedValue={currentProject?.id || ALL_VALUE}
+              allProjectsItem={ALL_PROJECTS_ITEM}
+            />
+            {currentProject && (
               <>
-                <ResourceSelector
-                  onChange={handleResourceSelected}
-                  selectedValue={currentResource?.id || ALL_VALUE}
-                  allResourcesItem={ALL_RESOURCES_ITEM}
-                  isPlatformConsole={isPlatformConsole}
-                />
-                <hr className={`${CLASS_NAME}__vertical_border`} />
+                <span className={`${CLASS_NAME}__separator`}>/</span>
+                <ConsoleNavigationButton />
+                <span className={`${CLASS_NAME}__separator`}>/</span>
+                {/* {currentResource && ( */}
+                <>
+                  <ResourceSelector
+                    onChange={handleResourceSelected}
+                    selectedValue={currentResource?.id || ALL_VALUE}
+                    allResourcesItem={ALL_RESOURCES_ITEM}
+                    isPlatformConsole={isPlatformConsole}
+                  />
+                </>
+                {/* )} */}
+                {breadcrumbsContext.breadcrumbsItems.length > 0 && (
+                  <>
+                    <span className={`${CLASS_NAME}__separator`}>/</span>
+                    <Breadcrumbs>
+                      {breadcrumbsContext.breadcrumbsItems.map(
+                        (item, index) => (
+                          <Breadcrumbs.Item key={item.url} to={item.url}>
+                            {item.name}
+                          </Breadcrumbs.Item>
+                        )
+                      )}
+                    </Breadcrumbs>
+                  </>
+                )}
               </>
-              {/* )} */}
-              <Breadcrumbs>
-                {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-                  <Breadcrumbs.Item key={item.url} to={item.url}>
-                    {item.name}
-                  </Breadcrumbs.Item>
-                ))}
-              </Breadcrumbs>
-            </FlexItem>
-          )}
+            )}
+          </FlexItem>
         </div>
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>

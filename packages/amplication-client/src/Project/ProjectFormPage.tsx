@@ -1,6 +1,7 @@
 import {
   EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumPanelStyle,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
@@ -11,7 +12,6 @@ import { useContext } from "react";
 import ResourceForm from "../Resource/ResourceForm";
 import { AppContext } from "../context/appContext";
 import { DeleteProject } from "./DeleteProject";
-import "./ProjectPage.scss";
 import useResourcePermissions from "../Resource/hooks/useResourcePermissions";
 
 function ProjectFormPage() {
@@ -34,7 +34,7 @@ function ProjectFormPage() {
             <Text textStyle={EnumTextStyle.H4}>Delete Project</Text>
           </FlexItem>
 
-          <Panel className={`delete__panel`}>
+          <Panel panelStyle={EnumPanelStyle.Error}>
             <FlexItem itemsAlign={EnumItemsAlign.Center}>
               <FlexItem.FlexStart>
                 <Text
