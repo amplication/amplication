@@ -96,7 +96,12 @@ export const DeleteProject = ({ project, onDelete }: Props) => {
         title={`Delete Project?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message={<div>Are you sure you want to delete this project?</div>}
+        message={
+          <div>
+            Are you sure you want to delete this project? <br /> It will delete
+            all the resources, templates, and plugins in the project.
+          </div>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />

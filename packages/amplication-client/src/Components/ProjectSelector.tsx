@@ -15,6 +15,8 @@ type Props = {
   label?: string;
 };
 
+export const PROJECT_SELECTOR_COLOR = "#53dbee";
+
 const ProjectSelector = ({
   onChange,
   selectedValue,
@@ -29,6 +31,7 @@ const ProjectSelector = ({
       ?.map((project) => ({
         value: project.id,
         label: project.name,
+        color: PROJECT_SELECTOR_COLOR,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
 
@@ -46,6 +49,7 @@ const ProjectSelector = ({
       onChange={onChange}
       options={options}
       label={label}
+      selectedItemInTextMode
       openButtonProps={{
         icon: "chevron_up",
       }}

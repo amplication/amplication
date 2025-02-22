@@ -58,7 +58,7 @@ export const FAQ = () => {
                 <a
                   target="_blank"
                   rel="noreferrer"
-                  href="https://meetings-eu1.hubspot.com/paz-yanover/product-overview-vp-product"
+                  href="https://meetings-eu1.hubspot.com/yuval-hazaz"
                 >
                   contact us
                 </a>{" "}
@@ -79,7 +79,7 @@ export const FAQ = () => {
               <a
                 target="_blank"
                 rel="noreferrer"
-                href="https://meetings-eu1.hubspot.com/paz-yanover/product-overview-vp-product"
+                href="https://meetings-eu1.hubspot.com/yuval-hazaz"
               >
                 Contact us
               </a>{" "}
