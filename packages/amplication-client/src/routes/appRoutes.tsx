@@ -190,7 +190,7 @@ export const Routes: RouteDef[] = [
                 exactPath: false,
                 iconName: "plugin",
                 groupName: "platform",
-                routes: [
+                tabRoutes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
                     Component: lazy(
@@ -198,10 +198,13 @@ export const Routes: RouteDef[] = [
                     ),
                     moduleName: "",
                     routeTrackType: "",
+                    displayName: "Git Repository",
                     exactPath: true,
                     routes: [],
                     isAnalytics: true,
                   },
+                ],
+                routes: [
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
                     Component: lazy(
