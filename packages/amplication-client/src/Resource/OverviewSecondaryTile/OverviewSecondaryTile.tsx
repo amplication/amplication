@@ -19,6 +19,7 @@ interface Props {
   to: string;
   onClick?: (e) => void;
   themeColor?: EnumTextColor;
+  children?: React.ReactNode;
 }
 const OverviewSecondaryTile: React.FC<Props> = ({
   title,
@@ -27,6 +28,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   to,
   themeColor,
   onClick,
+  children,
 }) => {
   return (
     <List
@@ -44,6 +46,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         <TitleAndIcon icon={icon} title={title} />
 
         <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
+        {children}
       </ListItem>
     </List>
   );

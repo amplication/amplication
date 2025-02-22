@@ -6,12 +6,12 @@ import {
   ResourceContextProvider,
 } from "../context/resourceContext";
 import OuterPageLayout from "../Layout/OuterPageLayout";
+import PlatformDashboard from "../Platform/PlatformDashboard";
 import useResourcePermissions from "../Resource/hooks/useResourcePermissions";
 import ProjectMenu from "../Resource/ProjectMenu";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import ResourceList from "../Workspaces/ResourceList";
-import ServiceTemplateList from "../Platform/ServiceTemplateList";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -45,7 +45,7 @@ const ProjectPlatformPage: React.FC<Props> = React.memo(
         >
           {match.isExact ? (
             isPlatformConsole ? (
-              <ServiceTemplateList />
+              <PlatformDashboard />
             ) : (
               <ResourceList />
             )
