@@ -9,7 +9,7 @@ type TGetOutdatedVersionAlerts = {
   _outdatedVersionAlertsMeta: { count: number };
 };
 
-const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
+const useOutdatedVersionAlerts = (projectId?: string, resourceId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [orderBy, setOrderBy] =
@@ -42,7 +42,7 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
       where: {
         resource: {
           id: resourceId ?? undefined,
-          project: { id: projectId },
+          project: projectId ? { id: projectId } : undefined,
         },
         status: status ? { equals: status } : undefined,
         type: type ? { equals: type } : undefined,
@@ -52,7 +52,7 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
         //     : undefined,
       },
     },
-    skip: !projectId,
+    // skip: !projectId,
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       setCurrentPageData(data.outdatedVersionAlerts);

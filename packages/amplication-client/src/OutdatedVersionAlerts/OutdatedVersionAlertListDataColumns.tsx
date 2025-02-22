@@ -116,7 +116,12 @@ export const COLUMNS: DataGridColumn<OutdatedVersionAlert>[] = [
     resizable: false,
     sortable: false,
     renderCell: (props) => {
-      return <AlertLink alert={props.row} />;
+      return (
+        <AlertLink
+          alert={props.row}
+          projectId={props.row.resource?.projectId}
+        />
+      );
     },
   },
 ];
