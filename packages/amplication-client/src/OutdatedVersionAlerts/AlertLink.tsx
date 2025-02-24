@@ -7,18 +7,17 @@ import { useResourceBaseUrl } from "../util/useResourceBaseUrl";
 
 type Props = {
   alert: models.OutdatedVersionAlert;
-  projectId?: string;
 };
 
 const CLASS_NAME = "outdated-version-alert-link";
 
-function AlertLink({ alert, projectId }: Props) {
+function AlertLink({ alert }: Props) {
   const { id } = alert;
 
   const { baseUrl } = useResourceBaseUrl({
     overrideIsPlatformConsole: false,
     overrideResourceId: alert.resourceId,
-    overrideProjectId: projectId ?? undefined,
+    overrideProjectId: alert.resource?.projectId ?? undefined,
   }); //always view the alert details in the service
 
   const url = `${baseUrl}/tech-debt/${id}`;
