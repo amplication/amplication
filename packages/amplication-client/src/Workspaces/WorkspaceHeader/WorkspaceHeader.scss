@@ -65,10 +65,6 @@ $select-menu-max-width: 300px;
     @include flexFullRowWithSpacingBothSides;
   }
 
-  &__separator {
-    color: var(--gray-20);
-  }
-
   &__vertical_border {
     width: 1px;
     height: var(--large-spacing);
