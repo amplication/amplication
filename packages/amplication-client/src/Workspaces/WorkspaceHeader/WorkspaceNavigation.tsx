@@ -78,7 +78,11 @@ const WorkspaceNavigation: React.FC = () => {
       <span />
 
       <Link to={`/${currentWorkspace?.id}`}>
-        <Text textColor={EnumTextColor.White} textStyle={EnumTextStyle.Tag}>
+        <Text
+          textColor={EnumTextColor.White}
+          textStyle={EnumTextStyle.Tag}
+          noWrap
+        >
           {currentWorkspace?.name}
         </Text>
       </Link>
