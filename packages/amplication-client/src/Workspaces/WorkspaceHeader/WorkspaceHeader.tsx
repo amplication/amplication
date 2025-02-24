@@ -1,17 +1,4 @@
-import {
-  Breadcrumbs,
-  Dialog,
-  EnumFlexDirection,
-  EnumGapSize,
-  EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
-  FlexItem,
-  Icon,
-  OptionItem,
-  Text,
-  Tooltip,
-} from "@amplication/ui/design-system";
+import { Dialog, Icon, Tooltip } from "@amplication/ui/design-system";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { useApolloClient } from "@apollo/client";
 import {
@@ -23,13 +10,10 @@ import {
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AskJovuButton from "../../Assistant/AskJovuButton";
-import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import ProjectSelector from "../../Components/ProjectSelector";
 import UserBadge from "../../Components/UserBadge";
-import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import { unsetToken } from "../../authentication/authentication";
@@ -46,39 +30,23 @@ import HelpMenu from "./HelpMenu";
 import UpgradeCtaButton from "./UpgradeCtaButton";
 import WorkspaceBanner from "./WorkspaceBanner";
 import "./WorkspaceHeader.scss";
+import WorkspaceNavigation from "./WorkspaceNavigation";
 import styles from "./notificationStyle";
-import ResourceSelector from "../../Components/ResourceSelector2";
 
 const CLASS_NAME = "workspace-header";
 const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
-
-const ALL_VALUE = "-1";
-
-const ALL_PROJECTS_ITEM: OptionItem = {
-  label: "All Projects",
-  value: ALL_VALUE,
-};
-const ALL_RESOURCES_ITEM: OptionItem = {
-  label: "All Resources",
-  value: ALL_VALUE,
-};
 
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
 const WorkspaceHeader: React.FC = () => {
-  const { currentWorkspace, currentProject, currentResource, resources } =
-    useContext(AppContext);
-  const { baseUrl, isPlatformConsole } = useProjectBaseUrl();
-
-  const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { baseUrl } = useProjectBaseUrl();
 
   const apolloClient = useApolloClient();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const stars = useFetchGithubStars();
-
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const [novuCenterState, setNovuCenterState] = useState(false);
   const canShowNotification = stigg.getBooleanEntitlement({
@@ -140,34 +108,6 @@ const WorkspaceHeader: React.FC = () => {
     </div>
   );
 
-  const handleProjectSelected = useCallback(
-    (value: string) => {
-      const platformPath = isPlatformConsole ? "/platform" : "";
-
-      const url =
-        value === ALL_VALUE
-          ? `/${currentWorkspace?.id}`
-          : `/${currentWorkspace?.id}${platformPath}/${value}`;
-
-      history.push(url);
-    },
-    [currentWorkspace?.id, history, isPlatformConsole]
-  );
-
-  const handleResourceSelected = useCallback(
-    (value: string) => {
-      const platformPath = isPlatformConsole ? "/platform" : "";
-
-      const url =
-        value === ALL_VALUE
-          ? `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}`
-          : `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${value}`;
-
-      history.push(url);
-    },
-    [currentProject?.id, currentWorkspace?.id, history, isPlatformConsole]
-  );
-
   return (
     <>
       <Dialog
@@ -199,60 +139,7 @@ const WorkspaceHeader: React.FC = () => {
             </Link>
           </div>
 
-          <FlexItem
-            direction={EnumFlexDirection.Row}
-            gap={EnumGapSize.Default}
-            itemsAlign={EnumItemsAlign.Center}
-          >
-            <span />
-
-            <Link to={`/${currentWorkspace?.id}`}>
-              <Text
-                textColor={EnumTextColor.White}
-                textStyle={EnumTextStyle.Tag}
-              >
-                {currentWorkspace?.name}
-              </Text>
-            </Link>
-
-            <span className={`${CLASS_NAME}__separator`}>/</span>
-            <ProjectSelector
-              onChange={handleProjectSelected}
-              selectedValue={currentProject?.id || ALL_VALUE}
-              allProjectsItem={ALL_PROJECTS_ITEM}
-            />
-            {currentProject && (
-              <>
-                <span className={`${CLASS_NAME}__separator`}>/</span>
-                <ConsoleNavigationButton />
-                <span className={`${CLASS_NAME}__separator`}>/</span>
-                {/* {currentResource && ( */}
-                <>
-                  <ResourceSelector
-                    onChange={handleResourceSelected}
-                    selectedValue={currentResource?.id || ALL_VALUE}
-                    allResourcesItem={ALL_RESOURCES_ITEM}
-                    isPlatformConsole={isPlatformConsole}
-                  />
-                </>
-                {/* )} */}
-                {breadcrumbsContext.breadcrumbsItems.length > 0 && (
-                  <>
-                    <span className={`${CLASS_NAME}__separator`}>/</span>
-                    <Breadcrumbs>
-                      {breadcrumbsContext.breadcrumbsItems.map(
-                        (item, index) => (
-                          <Breadcrumbs.Item key={item.url} to={item.url}>
-                            {item.name}
-                          </Breadcrumbs.Item>
-                        )
-                      )}
-                    </Breadcrumbs>
-                  </>
-                )}
-              </>
-            )}
-          </FlexItem>
+          <WorkspaceNavigation />
         </div>
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>

@@ -9,7 +9,7 @@ type TGetOutdatedVersionAlerts = {
   _outdatedVersionAlertsMeta: { count: number };
 };
 
-const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
+const useOutdatedVersionAlerts = (projectId?: string, resourceId?: string) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [orderBy, setOrderBy] =
@@ -40,10 +40,13 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
       orderBy: orderBy || { createdAt: models.SortOrder.Desc },
       ...queryPaginationParams,
       where: {
-        resource: {
-          id: resourceId ?? undefined,
-          project: { id: projectId },
-        },
+        resource:
+          resourceId || projectId
+            ? {
+                id: resourceId ?? undefined,
+                project: projectId ? { id: projectId } : undefined,
+              }
+            : undefined,
         status: status ? { equals: status } : undefined,
         type: type ? { equals: type } : undefined,
         // message:
@@ -52,7 +55,6 @@ const useOutdatedVersionAlerts = (projectId: string, resourceId?: string) => {
         //     : undefined,
       },
     },
-    skip: !projectId,
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       setCurrentPageData(data.outdatedVersionAlerts);
