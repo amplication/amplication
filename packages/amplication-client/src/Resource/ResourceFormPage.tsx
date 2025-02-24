@@ -14,6 +14,9 @@ import {
 import DeleteResourceButton from "../Workspaces/DeleteResourceButton";
 import { useAppContext } from "../context/appContext";
 import useResourcePermissions from "./hooks/useResourcePermissions";
+import { useQuery } from "@apollo/client";
+import { RESOURCES_FROM_TEMPLATE_WITH_COUNT } from "../Catalog/queries/catalogQueries";
+import * as models from "../models";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -27,6 +30,21 @@ function ResourceFormPage({ match }: Props) {
   const canDeleteResource = permissions.canPerformTask("resource.delete");
   const canEdit = permissions.canPerformTask("resource.*.edit");
 
+  const { data, error, loading } = useQuery<{
+    catalog: {
+      data: models.Resource[];
+      totalCount: number;
+    };
+  }>(RESOURCES_FROM_TEMPLATE_WITH_COUNT, {
+    variables: {
+      templateId: resourceId,
+    },
+  });
+
+  const resourcesCount = data?.catalog.data.length;
+
+  const resources = data?.catalog.data.map((resource) => resource.name) || [];
+
   return (
     <>
       <ResourceForm resourceId={resourceId} disabled={!canEdit} />
@@ -35,20 +53,44 @@ function ResourceFormPage({ match }: Props) {
           <HorizontalRule />
           <TabContentTitle title="Delete Resource" />
           <Panel panelStyle={EnumPanelStyle.Error}>
-            <FlexItem itemsAlign={EnumItemsAlign.Center}>
-              <FlexItem.FlexStart>
-                <Text
-                  textColor={EnumTextColor.White}
-                  textStyle={EnumTextStyle.Description}
-                >
-                  Once you delete a resource, there is no going back. Please be
-                  certain.
-                </Text>
-              </FlexItem.FlexStart>
-              <FlexItem.FlexEnd>
-                <DeleteResourceButton resource={currentResource} />
-              </FlexItem.FlexEnd>
-            </FlexItem>
+            {!loading && (
+              <FlexItem itemsAlign={EnumItemsAlign.Center}>
+                <FlexItem.FlexStart>
+                  {resourcesCount == 0 ? (
+                    <Text
+                      textColor={EnumTextColor.White}
+                      textStyle={EnumTextStyle.Description}
+                    >
+                      Once you delete a resource, there is no going back. Please
+                      be certain.
+                    </Text>
+                  ) : (
+                    <>
+                      <Text
+                        textColor={EnumTextColor.White}
+                        textStyle={EnumTextStyle.Description}
+                      >
+                        Cannot delete a template currently used by services
+                        within the workspace. Please delete the services that
+                        are using this template, then try deleting the template
+                        again.
+                      </Text>
+                      <Text
+                        textColor={EnumTextColor.White}
+                        textStyle={EnumTextStyle.Description}
+                      >
+                        Services using this template: {resources.join(", ")}
+                      </Text>
+                    </>
+                  )}
+                </FlexItem.FlexStart>
+                {resourcesCount == 0 && (
+                  <FlexItem.FlexEnd>
+                    <DeleteResourceButton resource={currentResource} />
+                  </FlexItem.FlexEnd>
+                )}
+              </FlexItem>
+            )}
           </Panel>
         </>
       )}
