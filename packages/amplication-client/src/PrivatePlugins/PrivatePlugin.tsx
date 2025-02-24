@@ -24,7 +24,7 @@ import PrivatePluginForm from "./PrivatePluginForm";
 const PrivatePlugin = () => {
   const match = useRouteMatch<{
     privatePluginId: string;
-  }>("/:workspace/platform/:project/private-plugins/:privatePluginId");
+  }>("/:workspace/platform/:project/private-plugins/list/:privatePluginId");
 
   const { baseUrl } = useProjectBaseUrl();
 
@@ -87,7 +87,7 @@ const PrivatePlugin = () => {
   const errorMessage = formatError(error) || formatError(updateError);
 
   const handleDeletePrivatePlugin = useCallback(() => {
-    history.push(`${baseUrl}/private-plugins`);
+    history.push(`${baseUrl}/private-plugins/list`);
   }, [history, baseUrl]);
 
   useEffect(() => {
@@ -151,19 +151,21 @@ const PrivatePlugin = () => {
       </FlexItem>
 
       <HorizontalRule />
-      {!loading && (
-        <PrivatePluginForm
-          disabled={isLocked}
-          onSubmit={handleSubmit}
-          defaultValues={data?.privatePlugin}
-        />
-      )}
+      {!loading && data?.privatePlugin && (
+        <>
+          <PrivatePluginForm
+            disabled={isLocked}
+            onSubmit={handleSubmit}
+            defaultValues={data?.privatePlugin}
+          />
 
-      <PrivatePluginVersionList
-        disabled={isLocked}
-        privatePlugin={data?.privatePlugin}
-        onVersionAdd={onVersionChanged}
-      />
+          <PrivatePluginVersionList
+            disabled={isLocked}
+            privatePlugin={data?.privatePlugin}
+            onVersionAdd={onVersionChanged}
+          />
+        </>
+      )}
 
       <Snackbar open={hasError} message={errorMessage} />
     </>

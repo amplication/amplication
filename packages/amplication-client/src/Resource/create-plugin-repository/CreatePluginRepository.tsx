@@ -60,7 +60,7 @@ const CreatePluginRepositoryWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleBackToProjectClick = () => {
     trackEvent({ eventName: AnalyticsEventNames.BackToProjectsClick });
-    history.push(`${baseUrl}/`);
+    history.push(`${baseUrl}`);
   };
 
   const handleCreateServiceClick = () => {

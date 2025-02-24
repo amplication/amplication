@@ -202,6 +202,31 @@ export const Routes: RouteDef[] = [
                 groupName: "platform",
                 tabRoutes: [
                   {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/list",
+                    Component: lazy(
+                      () => import("../PrivatePlugins/PrivatePluginsListPage")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    displayName: "Plugins",
+                    routes: [
+                      {
+                        path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/list/:pluginId([A-Za-z0-9-]{20,})",
+                        Component: lazy(
+                          () => import("../PrivatePlugins/PrivatePlugin")
+                        ),
+                        moduleName: "",
+                        routeTrackType: "",
+                        exactPath: true,
+                        routes: [],
+                        isAnalytics: true,
+                      },
+                    ],
+                    isAnalytics: true,
+                  },
+
+                  {
                     path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/git-settings",
                     Component: lazy(
                       () => import("../PrivatePlugins/PrivatePluginGitSettings")
@@ -213,20 +238,20 @@ export const Routes: RouteDef[] = [
                     routes: [],
                     isAnalytics: true,
                   },
-                ],
-                routes: [
                   {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/:pluginId([A-Za-z0-9-]{20,})",
+                    path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/private-plugins/new",
                     Component: lazy(
-                      () => import("../PrivatePlugins/PrivatePlugin")
+                      () => import("../PrivatePlugins/NewPrivatePluginPage")
                     ),
                     moduleName: "",
                     routeTrackType: "",
-                    exactPath: true,
+                    displayName: "Add Plugins",
+                    exactPath: false,
                     routes: [],
                     isAnalytics: true,
                   },
                 ],
+                routes: [],
               },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/platform/:project([A-Za-z0-9-]{20,})/templates",
