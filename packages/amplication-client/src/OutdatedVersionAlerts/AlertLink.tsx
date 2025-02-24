@@ -17,6 +17,7 @@ function AlertLink({ alert }: Props) {
   const { baseUrl } = useResourceBaseUrl({
     overrideIsPlatformConsole: false,
     overrideResourceId: alert.resourceId,
+    overrideProjectId: alert.resource?.projectId ?? undefined,
   }); //always view the alert details in the service
 
   const url = `${baseUrl}/tech-debt/${id}`;

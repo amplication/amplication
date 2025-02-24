@@ -52,6 +52,16 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/tech-debt",
+            Component: lazy(
+              () => import("../OutdatedVersionAlerts/OutdatedVersionAlertsPage")
+            ),
+            moduleName: "",
+            displayName: "Tech Debt",
+            exactPath: false,
+            isAnalytics: true,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/blueprints",
             Component: lazy(() => import("../Blueprints/BlueprintsPage")),
             moduleName: "",

@@ -9,6 +9,7 @@ export const OUTDATED_VERSION_ALERT_FIELDS_FRAGMENT = gql`
       id
       name
       resourceType
+      projectId
     }
     resourceId
     blockId
