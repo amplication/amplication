@@ -160,28 +160,34 @@ export const AvailableRemotePrivatePluginList = React.memo(
             <FlexItem direction={EnumFlexDirection.Column}>
               <div>
                 <Text
-                  textStyle={EnumTextStyle.Description}
+                  textStyle={EnumTextStyle.Normal}
                   textColor={EnumTextColor.White}
                 >
                   To add a plugin, it must be located in the connected git
                   repository, in a folder named "plugins".
                 </Text>
                 <br />
-                <Text textStyle={EnumTextStyle.Description}>
+                <Text
+                  textStyle={EnumTextStyle.Normal}
+                  textColor={EnumTextColor.Black20}
+                >
                   e.g. '{gitRepositoryDetails.repositoryFullName}
                   /plugins/private-aws-terraform/'
                 </Text>
               </div>
               <div>
                 <Text
-                  textStyle={EnumTextStyle.Description}
+                  textStyle={EnumTextStyle.Normal}
                   textColor={EnumTextColor.White}
                 >
                   To avoid conflicts, it is recommended to use a unique prefix
                   for the plugin ID (folder name).
                 </Text>
                 <br />
-                <Text textStyle={EnumTextStyle.Description}>
+                <Text
+                  textStyle={EnumTextStyle.Normal}
+                  textColor={EnumTextColor.Black20}
+                >
                   e.g. 'private-redis', 'internal-redis', 'company-name-redis'
                 </Text>
               </div>

@@ -15,11 +15,10 @@ import { isEmpty } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import * as models from "../models";
 import { formatError } from "../util/error";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import usePrivatePlugin from "./hooks/usePrivatePlugin";
-import { NewPrivatePlugin } from "./NewPrivatePlugin";
+import { NewPrivatePluginButton } from "./NewPrivatePluginButton";
 import "./PrivatePluginList.scss";
 
 const CLASS_NAME = "private-plugin-list";
@@ -54,23 +53,16 @@ export const PrivatePluginList = React.memo(
     const hasError = Boolean(error);
     const errorMessage = formatError(error);
 
-    const handlePrivatePluginChange = useCallback(
-      (privatePlugin: models.PrivatePlugin) => {
-        const fieldUrl = `${baseUrl}/private-plugins/${privatePlugin.id}`;
-        history.push(fieldUrl);
-      },
-      [history, baseUrl]
-    );
-
     useEffect(() => {
       if (selectFirst && privatePluginsByCodeGenerator) {
-        const firstCodeGenerator = privatePluginsByCodeGenerator[0];
+        const firstCodeGenerator = Object.values(
+          privatePluginsByCodeGenerator
+        )[0];
         if (isEmpty(firstCodeGenerator) || firstCodeGenerator.length === 0) {
           return;
         }
-
         const privatePlugin = firstCodeGenerator[0];
-        const fieldUrl = `${baseUrl}/private-plugins/${privatePlugin.id}`;
+        const fieldUrl = `${baseUrl}/private-plugins/list/${privatePlugin.id}`;
         history.push(fieldUrl);
       }
     }, [privatePluginsByCodeGenerator, selectFirst, history, baseUrl]);
@@ -92,20 +84,13 @@ export const PrivatePluginList = React.memo(
       });
     }, [getPluginRepositoryRemotePlugins, pluginRepositoryResource]);
 
-    const goToGitSettings = useCallback(() => {
-      history.push(`${baseUrl}/private-plugins/git-settings`);
-    }, [history, baseUrl]);
-
     return (
       <div className={CLASS_NAME}>
         <FlexItem
           direction={EnumFlexDirection.Column}
           itemsAlign={EnumItemsAlign.Stretch}
         >
-          <NewPrivatePlugin
-            onPrivatePluginAdd={handlePrivatePluginChange}
-            pluginRepositoryResource={pluginRepositoryResource}
-          />
+          <NewPrivatePluginButton />
 
           <SearchField
             label="search"
@@ -134,7 +119,7 @@ export const PrivatePluginList = React.memo(
                               ? EnumIconFamily.Custom
                               : undefined
                           }
-                          to={`${baseUrl}/private-plugins/${privatePlugin.id}`}
+                          to={`${baseUrl}/private-plugins/list/${privatePlugin.id}`}
                         >
                           <FlexItem
                             itemsAlign={EnumItemsAlign.Center}

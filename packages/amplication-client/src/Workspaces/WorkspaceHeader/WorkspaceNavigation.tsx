@@ -105,18 +105,18 @@ const WorkspaceNavigation: React.FC = () => {
                   isPlatformConsole={isPlatformConsole}
                 />
               </>
-              {breadcrumbsContext.breadcrumbsItems.length > 0 && (
-                <>
-                  <span className={`${CLASS_NAME}__separator`}>/</span>
-                  <Breadcrumbs>
-                    {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-                      <Breadcrumbs.Item key={item.url} to={item.url}>
-                        {item.name}
-                      </Breadcrumbs.Item>
-                    ))}
-                  </Breadcrumbs>
-                </>
-              )}
+            </>
+          )}
+          {breadcrumbsContext.breadcrumbsItems.length > 0 && (
+            <>
+              <span className={`${CLASS_NAME}__separator`}>/</span>
+              <Breadcrumbs>
+                {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+                  <Breadcrumbs.Item key={item.url} to={item.url}>
+                    {item.name}
+                  </Breadcrumbs.Item>
+                ))}
+              </Breadcrumbs>
             </>
           )}
         </>
