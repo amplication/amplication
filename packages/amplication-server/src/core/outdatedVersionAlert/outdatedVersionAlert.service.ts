@@ -141,7 +141,17 @@ export class OutdatedVersionAlertService {
   }
 
   async count(args: FindManyOutdatedVersionAlertArgs): Promise<number> {
-    return this.prisma.outdatedVersionAlert.count(args);
+    return this.prisma.outdatedVersionAlert.count({
+      ...args,
+      where: {
+        ...args.where,
+        resource: {
+          ...args.where?.resource,
+          deletedAt: null,
+          archived: { not: true },
+        },
+      },
+    });
   }
 
   async findMany(
