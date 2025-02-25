@@ -5,4 +5,5 @@ export type OptionItem = {
   group?: string;
   color?: string;
   description?: string;
+  separator?: boolean;
 };
