@@ -17,6 +17,7 @@ import useResourcePermissions from "./hooks/useResourcePermissions";
 import { useQuery } from "@apollo/client";
 import { RESOURCES_FROM_TEMPLATE_WITH_COUNT } from "../Catalog/queries/catalogQueries";
 import * as models from "../models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -39,11 +40,13 @@ function ResourceFormPage({ match }: Props) {
     variables: {
       templateId: resourceId,
     },
+    skip: currentResource.resourceType !== EnumResourceType.ServiceTemplate,
   });
 
-  const resourcesCount = data?.catalog.data.length;
+  const dependantResourceCount = data?.catalog.data.length ?? 0;
 
-  const resources = data?.catalog.data.map((resource) => resource.name) || [];
+  const dependantResource =
+    data?.catalog.data.map((resource) => resource.name) || [];
 
   return (
     <>
@@ -56,7 +59,7 @@ function ResourceFormPage({ match }: Props) {
             {!loading && (
               <FlexItem itemsAlign={EnumItemsAlign.Center}>
                 <FlexItem.FlexStart>
-                  {resourcesCount == 0 ? (
+                  {dependantResourceCount == 0 ? (
                     <Text
                       textColor={EnumTextColor.White}
                       textStyle={EnumTextStyle.Description}
@@ -70,25 +73,25 @@ function ResourceFormPage({ match }: Props) {
                         textColor={EnumTextColor.White}
                         textStyle={EnumTextStyle.Description}
                       >
-                        Cannot delete a template currently used by services
-                        within the workspace. Please delete the services that
-                        are using this template, then try deleting the template
-                        again.
+                        This template is used by other resources and cannot be
+                        deleted.
                       </Text>
                       <Text
                         textColor={EnumTextColor.White}
                         textStyle={EnumTextStyle.Description}
                       >
-                        Services using this template: {resources.join(", ")}
+                        Resources using this template:{" "}
+                        {dependantResource.join(", ")}
                       </Text>
                     </>
                   )}
                 </FlexItem.FlexStart>
-                {resourcesCount == 0 && (
-                  <FlexItem.FlexEnd>
-                    <DeleteResourceButton resource={currentResource} />
-                  </FlexItem.FlexEnd>
-                )}
+                <FlexItem.FlexEnd>
+                  <DeleteResourceButton
+                    disabled={dependantResourceCount > 0}
+                    resource={currentResource}
+                  />
+                </FlexItem.FlexEnd>
               </FlexItem>
             )}
           </Panel>

@@ -24,12 +24,13 @@ type TDeleteResourceData = {
 
 type Props = {
   resource: models.Resource;
+  disabled?: boolean;
 };
 
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function DeleteResourceButton({ resource }: Props) {
+function DeleteResourceButton({ resource, disabled }: Props) {
   const { name, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { trackEvent } = useTracking();
@@ -122,6 +123,7 @@ function DeleteResourceButton({ resource }: Props) {
         buttonState={EnumButtonState.Danger}
         icon="trash_2"
         onClick={handleDelete}
+        disabled={disabled}
       >
         Delete
       </Button>
