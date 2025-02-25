@@ -24,12 +24,19 @@ import useOutdatedVersionAlerts from "./hooks/useOutdatedVersionAlerts";
 import { COLUMNS } from "./OutdatedVersionAlertListDataColumns";
 import { AlertStatusFilter } from "./AlertStatusFilter";
 import { AlertTypeFilter } from "./AlertTypeFilter";
+import ProjectNameLink from "../Workspaces/ProjectNameLink";
+import { useLocation } from "react-router-dom";
 
 const CLASS_NAME = "resource-version-list";
 const PAGE_TITLE = "Tech Debt";
 
 function OutdatedVersionAlertList() {
   const { currentProject, currentResource } = useContext(AppContext);
+  const location = useLocation();
+
+  const isWorkspaceTechDebt = /^\/[A-Za-z0-9-]{20,}\/tech-debt/.test(
+    location.pathname
+  );
 
   const {
     outdatedVersionAlerts,
@@ -45,6 +52,23 @@ function OutdatedVersionAlertList() {
   } = useOutdatedVersionAlerts(currentProject?.id, currentResource?.id);
 
   const errorMessage = formatError(errorOutdatedVersionAlerts);
+
+  const columns = [
+    ...COLUMNS,
+    ...(isWorkspaceTechDebt
+      ? [
+          {
+            key: "project",
+            name: "Project",
+            sortable: true,
+            renderCell: (props) => {
+              return <ProjectNameLink project={props.row.resource?.project} />;
+            },
+            getValue: (row) => row.resource?.project?.name ?? "(unavailable)",
+          },
+        ]
+      : []),
+  ];
 
   const onSortColumnsChange = useCallback(
     (sortColumns: DataGridSortColumn[]) => {
@@ -123,7 +147,7 @@ function OutdatedVersionAlertList() {
       ) : (
         <div className={`${CLASS_NAME}__grid-container`}>
           <DataGrid
-            columns={COLUMNS}
+            columns={columns}
             clientSideSort={false}
             onSortColumnsChange={onSortColumnsChange}
             rows={outdatedVersionAlerts}
