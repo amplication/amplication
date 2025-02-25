@@ -12,7 +12,9 @@ import {
 import { formatError } from "../../util/error";
 import ResourceGitSettings from "./ResourceGitSettings";
 import ResourceGitSettingsWithOverride from "./ResourceGitSettingsWithOverride";
-
+import useBreadcrumbs from "../../Layout/useBreadcrumbs";
+import { AppRouteProps } from "../../routes/routesUtil";
+import { match } from "react-router-dom";
 const TITLE = "Sync with Git Provider";
 const SUB_TITLE =
   "Enable sync with Git provider to automatically push the generated code of your application and create a Pull Request in your Git provider repository every time you commit your changes.";
@@ -25,12 +27,20 @@ export type GitOrganizationFromGitRepository = {
   useGroupingForRepositories: boolean;
 };
 
-const ResourceGitSettingsPage: React.FC = () => {
+type Props = AppRouteProps & {
+  match: match<{
+    projectId: string;
+  }>;
+};
+
+const ResourceGitSettingsPage: React.FC<Props> = ({ match }) => {
   const {
     currentProjectConfiguration,
     currentResource,
     refreshCurrentWorkspace,
   } = useContext(AppContext);
+
+  useBreadcrumbs("Git Settings", match.url);
 
   const resourceId = currentResource
     ? currentResource.id

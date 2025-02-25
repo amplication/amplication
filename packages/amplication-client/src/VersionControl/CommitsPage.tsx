@@ -11,6 +11,7 @@ import BuildPage from "./BuildPage";
 import CommitButton from "./CommitButton";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import { EnumCommitStrategy, EnumResourceTypeGroup } from "../models";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -21,8 +22,10 @@ type Props = AppRouteProps & {
 
 const PAGE_TITLE = "Commits";
 
-const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
+const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes, match }) => {
   const history = useHistory();
+
+  useBreadcrumbs("Commits", match.url);
 
   const commitMatch = useRouteMatch<{
     workspace: string;

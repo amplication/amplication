@@ -11,13 +11,12 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import ConsoleNavigationButton from "../../Assistant/ConsoleNavigationButton";
 import ProjectSelector from "../../Components/ProjectSelector";
-import ResourceSelector from "../../Components/ResourceSelector2";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import { AppContext } from "../../context/appContext";
 import { useProjectBaseUrl } from "../../util/useProjectBaseUrl";
-import "./WorkspaceHeader.scss";
+import "./WorkspaceNavigation.scss";
+import ResourceNavigationSelector from "../../Components/ResourceNavigationSelector";
 
 const ALL_VALUE = "-1";
 
@@ -25,11 +24,6 @@ const ALL_PROJECTS_ITEM: OptionItem = {
   label: "All Projects",
   value: ALL_VALUE,
 };
-const ALL_RESOURCES_ITEM: OptionItem = {
-  label: "All Resources",
-  value: ALL_VALUE,
-};
-
 const CLASS_NAME = "workspace-navigation";
 
 const WorkspaceNavigation: React.FC = () => {
@@ -55,20 +49,6 @@ const WorkspaceNavigation: React.FC = () => {
     [currentWorkspace?.id, history, isPlatformConsole]
   );
 
-  const handleResourceSelected = useCallback(
-    (value: string) => {
-      const platformPath = isPlatformConsole ? "/platform" : "";
-
-      const url =
-        value === ALL_VALUE
-          ? `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}`
-          : `/${currentWorkspace?.id}${platformPath}/${currentProject?.id}/${value}`;
-
-      history.push(url);
-    },
-    [currentProject?.id, currentWorkspace?.id, history, isPlatformConsole]
-  );
-
   return (
     <FlexItem
       direction={EnumFlexDirection.Row}
@@ -92,21 +72,7 @@ const WorkspaceNavigation: React.FC = () => {
       {currentProject && (
         <>
           <span className={`${CLASS_NAME}__separator`}>/</span>
-          <ConsoleNavigationButton />
-
-          {!isPlatformConsole && (
-            <>
-              <span className={`${CLASS_NAME}__separator`}>/</span>
-              <>
-                <ResourceSelector
-                  onChange={handleResourceSelected}
-                  selectedValue={currentResource?.id || ALL_VALUE}
-                  allResourcesItem={ALL_RESOURCES_ITEM}
-                  isPlatformConsole={isPlatformConsole}
-                />
-              </>
-            </>
-          )}
+          <ResourceNavigationSelector />
           {breadcrumbsContext.breadcrumbsItems.length > 0 && (
             <>
               <span className={`${CLASS_NAME}__separator`}>/</span>

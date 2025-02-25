@@ -5,14 +5,21 @@ import { useHistory } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { match } from "react-router-dom";
 
 const CLASS_NAME = "project-settings";
 const PAGE_TITLE = "Project Settings";
-type Props = AppRouteProps;
+type Props = AppRouteProps & {
+  match: match<{
+    projectId: string;
+  }>;
+};
 
-const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
+const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes, match }) => {
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: false });
 
+  useBreadcrumbs("Project Settings", match.url);
   const history = useHistory();
   const location = history.location;
 

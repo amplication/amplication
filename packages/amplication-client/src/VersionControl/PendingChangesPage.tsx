@@ -5,7 +5,6 @@ import {
   Snackbar,
 } from "@amplication/ui/design-system";
 import { useContext } from "react";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import { EnumResourceTypeGroup } from "../models";
@@ -17,14 +16,24 @@ import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { AppRouteProps } from "../routes/routesUtil";
+import { match } from "react-router-dom";
 
 const CLASS_NAME = "pending-changes-page";
 
-const PendingChangesPage = () => {
+type Props = AppRouteProps & {
+  match: match<{
+    projectId: string;
+  }>;
+};
+
+const PendingChangesPage = ({ match }: Props) => {
   const pageTitle = "Pending Changes";
   const { currentProject } = useContext(AppContext);
 
   const { isPlatformConsole } = useProjectBaseUrl();
+  useBreadcrumbs("Pending Changes", match.url);
 
   const {
     pendingChangesByResource,
