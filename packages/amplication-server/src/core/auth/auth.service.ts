@@ -20,6 +20,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
+import { AwsMarketplaceService } from "../aws-marketplace/aws-marketplace.service";
 import { Auth0Service } from "../idp/auth0.service";
 import { Auth0User } from "../idp/types";
 import { UserService } from "../user/user.service";
@@ -67,7 +68,8 @@ export class AuthService {
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly auth0Service: Auth0Service
+    private readonly auth0Service: Auth0Service,
+    private readonly awsMarketplaceService: AwsMarketplaceService
   ) {
     this.clientHost = configService.get(Env.CLIENT_HOST);
   }
@@ -563,6 +565,12 @@ export class AuthService {
       user = await this.updateUser(user, { githubId: profile.sub });
       isNew = false;
     }
+
+    await this.awsMarketplaceService.completeAwsMarketplaceIntegration(
+      profile.email,
+      user.account.id,
+      user.workspace.id
+    );
 
     this.trackCompleteEmailSignup(user.account, profile, existingUser);
 
