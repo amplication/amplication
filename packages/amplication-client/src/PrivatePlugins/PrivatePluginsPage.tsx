@@ -9,7 +9,7 @@ import useTabRoutes from "../Layout/useTabRoutes";
 import PrivatePluginFeature from "../Plugins/PrivatePluginsFeature";
 import { AppRouteProps } from "../routes/routesUtil";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
-
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 type Props = AppRouteProps & {
   match: match<{
     resource: string;
@@ -28,6 +28,7 @@ const PrivatePluginsPage: React.FC<Props> = ({
     projectConfigurationResource,
   } = useAppContext();
   const history = useHistory();
+  useBreadcrumbs("Plugin Repository", match.url);
 
   const { baseUrl } = useProjectBaseUrl({ overrideIsPlatformConsole: true });
 

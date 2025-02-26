@@ -17,7 +17,6 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo, useState } from "react";
 import { inc as incrementVersion, ReleaseType, valid } from "semver";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import ResourceTypeBadge from "../Components/ResourceTypeBadge";
 import { useAppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -33,7 +32,8 @@ import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import ResourceNameLink from "../Workspaces/ResourceNameLink";
 import "./PublishChangesPage.scss";
 import PublishTemplatesChangesButton from "./PublishTemplatesChangesButton";
-
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import { match } from "react-router-dom";
 const CLASS_NAME = "publish-changes-page";
 
 type resourceWithVersions = {
@@ -198,13 +198,19 @@ export const SEMVER_OPTIONS: {
   { label: "Patch", value: "patch" },
 ];
 
-type Props = AppRouteProps;
+type Props = AppRouteProps & {
+  match: match<{
+    projectId: string;
+  }>;
+};
 
-const PublishChangesPage: React.FC<Props> = () => {
+const PublishChangesPage: React.FC<Props> = ({ match }) => {
   const [version, setVersion] = useState<ReleaseType>("minor");
   const pageTitle = "Changes";
   const { currentProject } = useAppContext();
   const [commitMessage, setCommitMessage] = useState<string>("");
+
+  useBreadcrumbs("Publish Changes", match.url);
 
   const { pendingChangesByResource } = usePendingChanges(
     currentProject,

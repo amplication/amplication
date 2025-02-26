@@ -3,5 +3,6 @@
 .workspace-navigation {
   &__separator {
     color: var(--gray-20);
+    font-size: var(--tag-font-size);
   }
 }
