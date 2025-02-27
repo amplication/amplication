@@ -1,6 +1,7 @@
 import {
   CircularProgress,
   DataGrid,
+  DataGridColumn,
   DataGridSortColumn,
   EnumContentAlign,
   EnumGapSize,
@@ -13,7 +14,7 @@ import {
   Text,
 } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
@@ -25,18 +26,25 @@ import { COLUMNS } from "./OutdatedVersionAlertListDataColumns";
 import { AlertStatusFilter } from "./AlertStatusFilter";
 import { AlertTypeFilter } from "./AlertTypeFilter";
 import ProjectNameLink from "../Workspaces/ProjectNameLink";
-import { useLocation } from "react-router-dom";
+import { OutdatedVersionAlert } from "../models";
 
 const CLASS_NAME = "resource-version-list";
 const PAGE_TITLE = "Tech Debt";
 
+const projectColumn: DataGridColumn<OutdatedVersionAlert>[] = [
+  {
+    key: "project",
+    name: "Project",
+    sortable: true,
+    renderCell: (props) => {
+      return <ProjectNameLink project={props.row.resource?.project} />;
+    },
+    getValue: (row) => row.resource?.project?.name ?? "(unavailable)",
+  },
+];
+
 function OutdatedVersionAlertList() {
   const { currentProject, currentResource } = useContext(AppContext);
-  const location = useLocation();
-
-  const isWorkspaceTechDebt = /^\/[A-Za-z0-9-]{20,}\/tech-debt/.test(
-    location.pathname
-  );
 
   const {
     outdatedVersionAlerts,
@@ -53,22 +61,10 @@ function OutdatedVersionAlertList() {
 
   const errorMessage = formatError(errorOutdatedVersionAlerts);
 
-  const columns = [
-    ...COLUMNS,
-    ...(isWorkspaceTechDebt
-      ? [
-          {
-            key: "project",
-            name: "Project",
-            sortable: true,
-            renderCell: (props) => {
-              return <ProjectNameLink project={props.row.resource?.project} />;
-            },
-            getValue: (row) => row.resource?.project?.name ?? "(unavailable)",
-          },
-        ]
-      : []),
-  ];
+  const columns = useMemo(
+    () => [...COLUMNS, ...(!currentProject ? projectColumn : [])],
+    [currentProject]
+  );
 
   const onSortColumnsChange = useCallback(
     (sortColumns: DataGridSortColumn[]) => {
