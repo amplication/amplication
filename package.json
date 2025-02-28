@@ -34,7 +34,7 @@
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/util-logging": "0.0.2",
     "@apollo/client": "^3.7.1",
-    "@aws-sdk/client-codecommit": "^3.362.0",
+    "@aws-sdk/client-codecommit": "^3.750.0",
     "@aws-sdk/client-ecr": "^3.405.0",
     "@aws-sdk/client-marketplace-entitlement-service": "^3.598.0",
     "@aws-sdk/client-marketplace-metering": "^3.598.0",
