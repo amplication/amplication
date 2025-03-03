@@ -7,9 +7,16 @@ ARG GIT_SHA
 
 RUN apk add g++ make python3
 
-
 WORKDIR /workspace/packages/generator-blueprints
-
+# CSharpier deps - run first to keep layer in cache for faster builds
+RUN apk add bash icu-libs krb5-libs libgcc libintl libssl3 libstdc++ zlib libgdiplus
+RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+RUN chmod +x ./dotnet-install.sh
+RUN ./dotnet-install.sh
+ENV PATH="$PATH:/root/.dotnet/"
+RUN dotnet tool install -g csharpier
+ENV DOTNET_ROOT=/root/.dotnet
+ENV PATH="$PATH:/root/.dotnet:/root/.dotnet/tools"
 # copy package.json and install dependencies first to cache deps
 COPY ./dist/packages/generator-blueprints/package.json .
 RUN npm i --omit-dev
