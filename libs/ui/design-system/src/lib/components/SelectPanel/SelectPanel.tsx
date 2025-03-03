@@ -172,28 +172,35 @@ export const SelectPanel: React.FC<Props> = ({
                   ? selectedValue?.includes(item.value)
                   : selectedValue === item.value;
                 return (
-                  <li
-                    className={`${CLASS_NAME}__picker__items__item`}
-                    key={item.value}
-                    role="option"
-                    aria-selected={selected}
-                    tabIndex={0}
-                    onClick={() => handleChange(item.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        handleChange(item.value);
-                        e.preventDefault(); // Prevent space key from scrolling
-                      }
-                    }}
-                  >
-                    <SelectPanelItemContent
-                      item={item}
-                      textMode={true}
-                      includeDescription={true}
-                      isMulti={isMulti}
-                    />
-                    {selected && <Icon icon="check" size="xsmall" />}
-                  </li>
+                  <>
+                    <li
+                      className={`${CLASS_NAME}__picker__items__item`}
+                      key={item.value}
+                      role="option"
+                      aria-selected={selected}
+                      tabIndex={0}
+                      onClick={() => handleChange(item.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          handleChange(item.value);
+                          e.preventDefault(); // Prevent space key from scrolling
+                        }
+                      }}
+                    >
+                      <SelectPanelItemContent
+                        item={item}
+                        textMode={true}
+                        includeDescription={true}
+                        isMulti={isMulti}
+                      />
+                      {selected && <Icon icon="check" size="xsmall" />}
+                    </li>
+                    {item.separator && (
+                      <li
+                        className={`${CLASS_NAME}__picker__items__separator`}
+                      />
+                    )}
+                  </>
                 );
               })}
               {optionsWithEmptyItem?.length === 0 && (

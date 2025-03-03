@@ -92,3 +92,15 @@ export const SEARCH_CATALOG = gql`
     }
   }
 `;
+
+export const RESOURCES_FROM_TEMPLATE_WITH_COUNT = gql`
+  query ResourcesFromTemplateWithCount($templateId: String!) {
+    catalog(where: { serviceTemplateId: $templateId }) {
+      data {
+        id
+        name
+      }
+      totalCount
+    }
+  }
+`;

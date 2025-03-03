@@ -5,7 +5,9 @@ import PageContent, { EnumPageWidth } from "../../Layout/PageContent";
 
 import "./CodeViewPage.scss";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
-
+import useBreadcrumbs from "../../Layout/useBreadcrumbs";
+import { AppRouteProps } from "../../routes/routesUtil";
+import { match } from "react-router-dom";
 const CLASS_NAME = "code-view-page";
 
 export type CommitListItem = {
@@ -21,9 +23,17 @@ export type FileDetails = {
   fileName: string;
 };
 
-function CodeViewPage() {
+type Props = AppRouteProps & {
+  match: match<{
+    projectId: string;
+  }>;
+};
+
+function CodeViewPage({ match }: Props) {
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
   const pageTitle = "Code View";
+
+  useBreadcrumbs("Code View", match.url);
 
   return (
     <PageContent

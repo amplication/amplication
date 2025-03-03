@@ -91,6 +91,12 @@ $select-field-arrow-size: 30px;
       margin: 0;
       padding: 0;
 
+      &__separator {
+        width: 100%;
+        height: 0px;
+        border-bottom: 1px solid var(--gray-60);
+      }
+
       &__item {
         cursor: pointer;
         border-bottom: none;

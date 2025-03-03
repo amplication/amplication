@@ -6,10 +6,7 @@ import {
 } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useContext, useMemo } from "react";
-import {
-  CATALOG_COLOR,
-  PLATFORM_COLOR,
-} from "../Assistant/ConsoleNavigationButton";
+
 import MenuItem from "../Layout/MenuItem";
 import useProjectRoutes from "../Layout/useProjectRoutes";
 import { AppContext } from "../context/appContext";
@@ -20,6 +17,9 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useProjectBaseUrl } from "../util/useProjectBaseUrl";
 import "./ProjectMenu.scss";
 const CLASS_NAME = "project-menu";
+
+export const CATALOG_COLOR = "#A787FF";
+export const PLATFORM_COLOR = "#f6aa50";
 
 type Props = {
   routeDefs: RouteDef[];
@@ -64,7 +64,6 @@ const ProjectMenu: React.FC<Props> = ({ routeDefs }) => {
       if (tab.name === "Pending Changes") {
         return {
           ...tab,
-          name: "Platform Changes",
           indicatorValue: pendingChanges?.length
             ? pendingChanges.length
             : undefined,
