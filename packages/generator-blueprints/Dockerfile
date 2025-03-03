@@ -26,7 +26,7 @@ COPY ./dist/packages/generator-blueprints .
 
 
 # Copy unpublished amplication libraries
- COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
+COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}
