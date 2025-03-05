@@ -140,7 +140,7 @@
     "ora": "5.4.0",
     "pacote": "^19.0.0",
     "pascal-case": "^3.1.2",
-    "passport": "^0.5.3",
+    "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.1",
