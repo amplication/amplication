@@ -113,6 +113,7 @@ export class BlueprintService {
       where: {
         blueprintId: args.where.id,
         deletedAt: null,
+        archived: { not: true },
       },
     });
 
