@@ -1575,6 +1575,8 @@ export class ResourceService {
         data: { name: args.data.name },
         where: { id: resource.projectId },
       });
+      //keep the project configuration resource with unique name to avoid conflicts with other resources in the project
+      args.data.name = undefined;
     }
 
     return this.prisma.resource.update(args);

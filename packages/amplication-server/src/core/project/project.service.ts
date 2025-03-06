@@ -103,7 +103,7 @@ export class ProjectService {
 
     await this.resourceService.createProjectConfiguration(
       project.id,
-      project?.name,
+      project.id, //use unique name for the resource to avoid conflicts with other resources in the project
       userId
     );
 
