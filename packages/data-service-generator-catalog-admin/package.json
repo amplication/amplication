@@ -53,7 +53,7 @@
   "devDependencies": {
     "@nrwl/js": "15.4.5",
     "@nrwl/node": "15.4.5",
-    "@nrwl/nx-cloud": "15.0.3",
+    "@nrwl/nx-cloud": "19.1.0",
     "@nrwl/webpack": "15.4.5",
     "@nrwl/workspace": "15.4.5",
     "@nx-tools/nx-container": "^5.0.2",
