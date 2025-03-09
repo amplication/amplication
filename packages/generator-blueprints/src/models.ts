@@ -244,7 +244,9 @@ export type BlueprintRelation = {
   allowMultiple: Scalars['Boolean']['output'];
   description?: Maybe<Scalars['String']['output']>;
   key: Scalars['String']['output'];
+  limitSelectionToProject: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  parentShouldBuildWithChild: Scalars['Boolean']['output'];
   relatedTo: Scalars['String']['output'];
   required: Scalars['Boolean']['output'];
 };
@@ -253,7 +255,9 @@ export type BlueprintRelationUpsertInput = {
   allowMultiple: Scalars['Boolean']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   key: Scalars['String']['input'];
+  limitSelectionToProject: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
+  parentShouldBuildWithChild: Scalars['Boolean']['input'];
   relatedTo: Scalars['String']['input'];
   required: Scalars['Boolean']['input'];
 };

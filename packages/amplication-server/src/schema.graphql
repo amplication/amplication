@@ -219,7 +219,9 @@ type BlueprintRelation {
   allowMultiple: Boolean!
   description: String
   key: String!
+  limitSelectionToProject: Boolean!
   name: String!
+  parentShouldBuildWithChild: Boolean!
   relatedTo: String!
   required: Boolean!
 }
@@ -228,7 +230,9 @@ input BlueprintRelationUpsertInput {
   allowMultiple: Boolean!
   description: String
   key: String!
+  limitSelectionToProject: Boolean!
   name: String!
+  parentShouldBuildWithChild: Boolean!
   relatedTo: String!
   required: Boolean!
 }
