@@ -167,6 +167,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
     const { enabled, id } = pluginInstallation.pluginInstallation;
+    setIsValid(true);
 
     updatePluginInstallation({
       variables: {
