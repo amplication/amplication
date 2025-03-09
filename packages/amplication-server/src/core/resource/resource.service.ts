@@ -1811,7 +1811,7 @@ export class ResourceService {
     });
   }
 
-  async getRelatedResource(resourceId: string): Promise<Resource[]> {
+  async getRelatedResources(resourceId: string): Promise<Resource[]> {
     const relations = await this.relationService.findMany({
       where: {
         resource: {
@@ -1825,6 +1825,55 @@ export class ResourceService {
     );
 
     return this.resourcesByIds(resourceIds);
+  }
+
+  /**
+   * Recursively get all related resources, including the resources that are related to the related resources
+   * Each resource is returned only once, even if it is related to multiple resources
+   * @param resourceId - The ID of the resource to get related resources for
+   * @returns A promise that resolves to an array of related resources
+   */
+  async getRelatedResourcesRecursive(resourceId: string): Promise<Resource[]> {
+    const relatedResourceIds = await this.getRelatedResourceIdsRecursive(
+      resourceId
+    );
+
+    return this.resourcesByIds(relatedResourceIds);
+  }
+
+  /**
+   * Recursively get all related resource IDs
+   * @param resourceId - The ID of the resource to get related resource IDs for
+   * @param relatedResourceIds - An optional array of already collected related resource IDs
+   * @returns A promise that resolves to an array of related resource IDs
+   */
+  async getRelatedResourceIdsRecursive(
+    resourceId: string,
+    relatedResourceIds: string[] = []
+  ): Promise<string[]> {
+    const relations = await this.relationService.findMany({
+      where: {
+        resource: {
+          id: resourceId,
+        },
+      },
+    });
+
+    const resourceIds = Array.from(
+      new Set(relations.flatMap((relation) => relation.relatedResources))
+    );
+
+    for (const resourceId of resourceIds) {
+      if (!relatedResourceIds.includes(resourceId)) {
+        relatedResourceIds.push(resourceId);
+        await this.getRelatedResourceIdsRecursive(
+          resourceId,
+          relatedResourceIds
+        );
+      }
+    }
+
+    return relatedResourceIds;
   }
 
   async getTeamAssignments(resourceId: string): Promise<TeamAssignment[]> {
