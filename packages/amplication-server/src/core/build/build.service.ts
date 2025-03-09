@@ -1432,6 +1432,9 @@ export class BuildService {
         ];
       }
 
+      this.logger.info(
+        `attaching related resources data for resource ${resourceId} with ${resources.length} related resources`
+      );
       otherResources = await Promise.all(
         resources
           .filter(({ id }) => id !== resourceId)
