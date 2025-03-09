@@ -1400,10 +1400,14 @@ export class BuildService {
 
     if (rootGeneration) {
       let resources = [];
-      if (resource.resourceType === EnumResourceType.Component) {
-        resources = await this.resourceService.getRelatedResource(resourceId); // get all resources
-      } else {
-        resources = await this.resourceService.resources({
+
+      resources = await this.resourceService.getRelatedResourcesRecursive(
+        resourceId
+      ); // get all related resources
+
+      //for backward compatibility, we need to add the project resources to the list of related resources
+      if (resource.resourceType === EnumResourceType.Service) {
+        const projectResources = await this.resourceService.resources({
           where: {
             project: { id: resource.projectId },
             resourceType: {
@@ -1416,8 +1420,21 @@ export class BuildService {
             },
           },
         });
+
+        resources = [
+          ...resources,
+          ...projectResources.filter(
+            (projectResource) =>
+              !resources.some(
+                (relatedResource) => relatedResource.id === projectResource.id
+              )
+          ),
+        ];
       }
 
+      this.logger.info(
+        `attaching related resources data for resource ${resourceId} with ${resources.length} related resources`
+      );
       otherResources = await Promise.all(
         resources
           .filter(({ id }) => id !== resourceId)

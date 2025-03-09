@@ -248,6 +248,10 @@ const privatePluginServiceAvailablePrivatePluginsForResourceMock = jest.fn(
   () => [EXAMPLE_PRIVATE_PLUGIN, EXAMPLE_PRIVATE_PLUGIN_2]
 );
 
+const resourceServiceGetRelatedResourcesRecursiveMock = jest.fn(() => [
+  EXAMPLE_RESOURCE,
+]);
+
 describe("BuildService", () => {
   let service: BuildService;
 
@@ -377,6 +381,8 @@ describe("BuildService", () => {
             resource: resourceServiceFindOneMock,
             resources: resourceServiceFindManyMock,
             getRelations: jest.fn(() => []),
+            getRelatedResourcesRecursive:
+              resourceServiceGetRelatedResourcesRecursiveMock,
             getPluginRepositoryGitSettingsByResource:
               resourceServiceGetPluginRepositoryGitSettingsByResourceMock,
           })),
