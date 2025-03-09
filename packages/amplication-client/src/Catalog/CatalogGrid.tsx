@@ -56,8 +56,15 @@ function CatalogGrid({ HeaderActions, fixedFilters, fixedFiltersKey }: Props) {
     columnsWithAllProps,
     `${COLUMNS_LOCAL_STORAGE_KEY}-${currentWorkspace?.id}`
   );
-  const { catalog, loading, error, setFilter, setSearchPhrase, pagination } =
-    useCatalogContext();
+  const {
+    catalog,
+    loading,
+    error,
+    setFilter,
+    setSearchPhrase,
+    pagination,
+    searchPhrase,
+  } = useCatalogContext();
 
   const errorMessage = formatError(error);
 
@@ -90,6 +97,7 @@ function CatalogGrid({ HeaderActions, fixedFilters, fixedFiltersKey }: Props) {
                   label="search"
                   placeholder="search"
                   onChange={setSearchPhrase}
+                  value={searchPhrase}
                 />
                 <DataGridColumnFilter
                   columns={columns}

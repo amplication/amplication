@@ -167,6 +167,7 @@ const useCatalog = (props?: Props) => {
     catalog: currentPageData || [],
     loading,
     error,
+    searchPhrase,
     setSearchPhrase,
     setFilter,
     pagination,
