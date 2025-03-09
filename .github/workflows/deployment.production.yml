@@ -56,7 +56,7 @@ jobs:
       - name: Evaluate affected projects
         id: configure-nx
         env:
-          NX_EXCLUDE: "--exclude=data-service-generator"
+          NX_EXCLUDE: "--exclude=data-service-generator,generator-blueprints"
         run: |
           echo affected-apps=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=app $NX_FORCE_ALL ${NX_EXCLUDE} | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-lib=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=lib $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
