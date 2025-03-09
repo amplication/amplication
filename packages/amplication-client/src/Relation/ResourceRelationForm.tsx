@@ -1,20 +1,12 @@
-import {
-  EnumItemsAlign,
-  EnumPanelStyle,
-  FlexItem,
-  Panel,
-  Snackbar,
-  TabContentTitle,
-} from "@amplication/ui/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import { useCallback } from "react";
-import BlueprintCircleBadge from "../Blueprints/BlueprintCircleBadge";
 import ResourceSelectField from "../Blueprints/ResourceSelectField";
+import { useAppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import useResourceRelations from "./hooks/useResourceRelations";
 import FormikAutoSave from "../util/formikAutoSave";
-import { useAppContext } from "../context/appContext";
+import useResourceRelations from "./hooks/useResourceRelations";
 
 type Props = {
   resourceId: string;
@@ -35,6 +27,7 @@ function ResourceRelationsForm({ resourceId, relationDef, relation }: Props) {
 
   const {
     blueprintsMap: { blueprintsMap },
+    currentProject,
   } = useAppContext();
 
   const errorMessage = formatError(updateRelationError);
@@ -71,23 +64,28 @@ function ResourceRelationsForm({ resourceId, relationDef, relation }: Props) {
   const relatedBlueprint = blueprintsMap[relationDef.relatedTo];
 
   return (
-    <div className={CLASS_NAME}>
+    <div className={CLASS_NAME} key={resourceId}>
       <Formik
         initialValues={initialValue}
         enableReinitialize
         onSubmit={handleSubmit}
       >
-        {() => {
+        {(formik) => {
           return (
             <>
               <Form>
                 <FormikAutoSave debounceMS={100} />
-
+                {formik.values.relatedResources}
                 <ResourceSelectField
                   label={relationDef.name}
                   isMulti={relationDef.allowMultiple}
                   name={"relatedResources"}
                   blueprintId={relatedBlueprint?.id}
+                  projectId={
+                    relationDef.limitSelectionToProject
+                      ? currentProject?.id
+                      : undefined
+                  }
                 />
               </Form>
               <Snackbar
