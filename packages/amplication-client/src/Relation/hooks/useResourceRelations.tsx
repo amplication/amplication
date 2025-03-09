@@ -28,6 +28,12 @@ const useResourceRelations = (resourceId?: string) => {
     onCompleted: (data) => {
       addEntity(data.updateResourceRelation.id);
     },
+    refetchQueries: [
+      {
+        query: GET_RESOURCE_RELATIONS,
+        variables: { resourceId: resourceId },
+      },
+    ],
   });
 
   return {

@@ -4,16 +4,18 @@ import useCatalog from "../Catalog/hooks/useCatalog";
 
 type Props = Omit<SelectFieldProps, "options"> & {
   blueprintId?: string;
+  projectId?: string;
 };
 
 const ResourceSelectField = (props: Props) => {
-  const { blueprintId, ...rest } = props;
+  const { blueprintId, projectId, ...rest } = props;
 
   const { catalog } = useCatalog({
     initialPageSize: 200,
     fetchPolicy: "cache-and-network",
     initialFilters: {
       blueprintId: [blueprintId],
+      projectId: projectId ? projectId : undefined,
     },
   });
 

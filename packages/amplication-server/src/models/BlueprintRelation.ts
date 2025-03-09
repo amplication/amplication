@@ -33,4 +33,14 @@ export class BlueprintRelation {
     nullable: false,
   })
   required: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  limitSelectionToProject: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  parentShouldBuildWithChild: boolean;
 }

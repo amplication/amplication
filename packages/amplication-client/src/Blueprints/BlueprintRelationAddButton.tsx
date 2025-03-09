@@ -22,6 +22,8 @@ const DEFAULT_RELATION_VALUES: models.BlueprintRelation = {
   key: "",
   relatedTo: "",
   required: false,
+  limitSelectionToProject: false,
+  parentShouldBuildWithChild: false,
 };
 
 const BlueprintRelationAddButton = ({
