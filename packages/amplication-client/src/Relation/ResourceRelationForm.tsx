@@ -75,7 +75,6 @@ function ResourceRelationsForm({ resourceId, relationDef, relation }: Props) {
             <>
               <Form>
                 <FormikAutoSave debounceMS={100} />
-                {formik.values.relatedResources}
                 <ResourceSelectField
                   label={relationDef.name}
                   isMulti={relationDef.allowMultiple}

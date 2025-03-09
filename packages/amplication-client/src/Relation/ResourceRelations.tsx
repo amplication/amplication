@@ -39,8 +39,6 @@ function ResourceRelations() {
           <>
             <TabContentTitle title="Related Resources" />
             <Panel panelStyle={EnumPanelStyle.Bordered}>
-              <div>{JSON.stringify(relationsMap)}</div>
-
               {currentBlueprint?.relations?.map((relationDef) => (
                 <ResourceRelationsForm
                   key={relationDef.key}
