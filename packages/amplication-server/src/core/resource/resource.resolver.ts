@@ -47,7 +47,7 @@ import { RedesignProjectArgs } from "./dto/RedesignProjectArgs";
 import { SetResourceOwnerArgs } from "./dto/SetResourceOwnerArgs";
 import { CODE_GENERATOR_NAME_TO_ENUM } from "./resource.service";
 import { TeamAssignment } from "../../models/TeamAssignment";
-
+import { EnumResourceType } from "./dto/EnumResourceType";
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -321,6 +321,25 @@ export class ResourceResolver {
     }
 
     return this.resourceVersionService.getLatest(resource.id);
+  }
+
+  @ResolveField(() => String, { nullable: false })
+  async name(@Parent() resource: Resource): Promise<string> {
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      if (resource.project) {
+        return resource.project.name;
+      } else {
+        const project = await this.projectService.findUnique({
+          where: {
+            id: resource.projectId,
+          },
+        });
+
+        return project?.name || resource.name;
+      }
+    }
+
+    return resource.name;
   }
 
   @ResolveField(() => Owner, { nullable: true })

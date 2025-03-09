@@ -104,16 +104,18 @@ export class PrivatePluginService extends BlockTypeService<
       },
     });
 
+    const codeGenerator: EnumCodeGenerator =
+      CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
+      EnumCodeGenerator.NodeJs;
+
     const filter: JsonFilter[] = [
       {
         path: ["codeGenerator"],
-        equals:
-          CODE_GENERATOR_NAME_TO_ENUM[resource.codeGeneratorName] ||
-          EnumCodeGenerator.NodeJs,
+        equals: codeGenerator,
       },
     ];
 
-    if (resource.blueprintId) {
+    if (codeGenerator === EnumCodeGenerator.Blueprint) {
       filter.push({
         path: ["blueprints"],
         // eslint-disable-next-line @typescript-eslint/naming-convention
