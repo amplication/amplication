@@ -1,8 +1,6 @@
 import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import useCatalog from "../Catalog/hooks/useCatalog";
-import { EnumResourceType } from "../models";
-import { useAppContext } from "../context/appContext";
 
 type Props = Omit<SelectFieldProps, "options"> & {
   blueprintId?: string;
@@ -11,13 +9,13 @@ type Props = Omit<SelectFieldProps, "options"> & {
 const ResourceSelectField = (props: Props) => {
   const { blueprintId, ...rest } = props;
 
-  const { catalog, setFilter } = useCatalog({ initialPageSize: 200 });
-
-  useEffect(() => {
-    setFilter({
+  const { catalog } = useCatalog({
+    initialPageSize: 200,
+    fetchPolicy: "cache-and-network",
+    initialFilters: {
       blueprintId: [blueprintId],
-    });
-  }, [blueprintId, setFilter]);
+    },
+  });
 
   const options = useMemo(() => {
     return catalog?.map((catalog) => ({

@@ -20,10 +20,16 @@ const DEFAULT_PROJECT_TYPE_FILTER: models.EnumResourceTypeFilter = {
 
 type Props = {
   initialPageSize?: number;
+  initialFilters?: Record<string, string | string[]>;
+  fetchPolicy?: "cache-and-network" | "cache-first";
 };
 
 const useCatalog = (props?: Props) => {
-  const { initialPageSize } = props || {};
+  const {
+    initialPageSize,
+    initialFilters,
+    fetchPolicy = "cache-first",
+  } = props || {};
 
   const { customPropertiesMap } = useAppContext();
 
@@ -48,12 +54,16 @@ const useCatalog = (props?: Props) => {
     resourceType: DEFAULT_PROJECT_TYPE_FILTER,
   });
 
+  const [skipQuery, setSkipQuery] = useState(!!initialFilters);
+
   const {
     data: catalogData,
     loading,
     error,
     refetch,
   } = useQuery<CatalogResults>(SEARCH_CATALOG, {
+    fetchPolicy,
+    skip: skipQuery,
     variables: {
       ...queryPaginationParams,
       where: {
@@ -162,6 +172,13 @@ const useCatalog = (props?: Props) => {
     pagination.setPageNumber(1);
     refetch();
   }, [pagination, refetch]);
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilter(initialFilters);
+      setSkipQuery(false);
+    }
+  }, []);
 
   return {
     catalog: currentPageData || [],
