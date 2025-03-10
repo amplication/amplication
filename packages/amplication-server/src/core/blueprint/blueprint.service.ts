@@ -232,7 +232,13 @@ export class BlueprintService {
           )
         : null,
       relations: record.relations
-        ? (record.relations as unknown as BlueprintRelation[])
+        ? (record.relations as unknown as BlueprintRelation[]).map(
+            (relation) => ({
+              limitSelectionToProject: false, //use default value for backward compatibility
+              parentShouldBuildWithChild: false, //use default value for backward compatibility
+              ...relation,
+            })
+          )
         : null,
     };
   }

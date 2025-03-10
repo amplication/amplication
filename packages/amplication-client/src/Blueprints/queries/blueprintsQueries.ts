@@ -9,6 +9,8 @@ export const BLUEPRINT_RELATION_FIELDS_FRAGMENT = gql`
     relatedTo
     allowMultiple
     required
+    limitSelectionToProject
+    parentShouldBuildWithChild
   }
 `;
 

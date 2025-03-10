@@ -68,6 +68,7 @@ import {
   ResourceService,
 } from "./resource.service";
 import { ResourceTemplateVersionService } from "../resourceTemplateVersion/resourceTemplateVersion.service";
+import { Relation } from "../relation/dto/Relation";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -364,6 +365,21 @@ const EXAMPLE_TOPIC: Topic = {
   outputParameters: [],
 };
 
+const EXAMPLE_RELATION: Relation = {
+  displayName: "exampleRelationDisplayName",
+  description: "exampleRelationDescription",
+  id: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  parentBlock: new Block(),
+  blockType: EnumBlockType.Relation,
+  versionNumber: 0,
+  inputParameters: [],
+  outputParameters: [],
+  relationKey: "exampleRelationKey",
+  relatedResources: ["exampleResourceId1", "exampleResourceId2"],
+};
+
 const serviceSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
 });
@@ -488,6 +504,8 @@ const prismaTransactionMock = jest.fn(() => [
   EXAMPLE_RESOURCE,
   EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
 ]);
+
+const relationServiceFindManyMock = jest.fn(() => []);
 
 jest.mock("cuid");
 // eslint-disable-next-line
@@ -661,7 +679,9 @@ describe("ResourceService", () => {
         },
         {
           provide: RelationService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findMany: relationServiceFindManyMock,
+          })),
         },
         {
           provide: UserActionService,
@@ -1112,5 +1132,56 @@ describe("ResourceService", () => {
       strategy,
       EXAMPLE_USER
     );
+  });
+
+  it("should get all related resources recursively", async () => {
+    // Mock the relationService.findMany to simulate related resources
+    const RELATED_RESOURCE_ID_1 = "RELATED_RESOURCE_ID_1";
+    const RELATED_RESOURCE_ID_2 = "RELATED_RESOURCE_ID_2";
+    const RELATED_RESOURCE_ID_3 = "RELATED_RESOURCE_ID_3";
+    const RELATED_RESOURCE_ID_4 = "RELATED_RESOURCE_ID_4";
+
+    // First call returns relations for EXAMPLE_RESOURCE_ID
+    // Second call returns relations for RELATED_RESOURCE_ID_1 and RELATED_RESOURCE_ID_3
+    relationServiceFindManyMock
+      .mockImplementationOnce(() => {
+        return [
+          {
+            ...EXAMPLE_RELATION,
+            relatedResources: [
+              RELATED_RESOURCE_ID_1,
+              RELATED_RESOURCE_ID_2,
+              RELATED_RESOURCE_ID_3,
+            ],
+          },
+        ];
+      })
+      .mockImplementationOnce(() => {
+        return [
+          {
+            ...EXAMPLE_RELATION,
+            relatedResources: [
+              RELATED_RESOURCE_ID_2,
+              RELATED_RESOURCE_ID_3,
+              RELATED_RESOURCE_ID_4,
+            ],
+          },
+        ];
+      });
+
+    const relatedResourceIds = await service.getRelatedResourceIdsRecursive(
+      EXAMPLE_RESOURCE_ID
+    );
+
+    // Verify that the function recursively collected all related resource IDs
+    expect(relatedResourceIds.sort()).toEqual([
+      RELATED_RESOURCE_ID_1,
+      RELATED_RESOURCE_ID_2,
+      RELATED_RESOURCE_ID_3,
+      RELATED_RESOURCE_ID_4,
+    ]);
+
+    // Verify that the relationService.findMany was called for each resource
+    expect(relationServiceFindManyMock).toHaveBeenCalledTimes(5);
   });
 });
