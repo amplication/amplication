@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { isEmpty, snakeCase, toUpper } from "lodash";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -23,7 +23,7 @@ import { UpdateBlueprintEngineArgs } from "./dto/UpdateBlueprintEngineArgs";
 import { CODE_GENERATOR_ENUM_TO_NAME_AND_LICENSE } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
-
+import { RelationService } from "../relation/relation.service";
 export const INVALID_BLUEPRINT_ID = "Invalid blueprintId";
 
 const VALID_TYPES_AND_GENERATORS: Partial<
@@ -42,7 +42,9 @@ export class BlueprintService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly customPropertyService: CustomPropertyService
+    private readonly customPropertyService: CustomPropertyService,
+    @Inject(forwardRef(() => RelationService))
+    private readonly relationService: RelationService
   ) {}
 
   async blueprints(args: BlueprintFindManyArgs): Promise<Blueprint[]> {
@@ -294,7 +296,10 @@ export class BlueprintService {
       );
     }
 
+    let updateCache = false;
+
     if (currentRelationIndex === -1) {
+      //this is a new relation
       newOrUpdatedRelation = {
         ...args.data,
         key: args.where.relationKey,
@@ -302,7 +307,24 @@ export class BlueprintService {
 
       blueprint.relations.push(newOrUpdatedRelation);
     } else {
+      //this is an update to an existing relation
       newOrUpdatedRelation = blueprint.relations[currentRelationIndex];
+
+      //@todo: validate the changes data against the existing relation
+
+      //check if the relation is being updated to a different blueprint
+
+      //check if the relation key had changed
+
+      //check if the value of "limitSelectionToProject" had changed
+
+      //check if the value of "parentShouldBuildWithChild" had changed
+      if (
+        args.data.parentShouldBuildWithChild !==
+        currentRelation.parentShouldBuildWithChild
+      ) {
+        updateCache = true;
+      }
 
       newOrUpdatedRelation = {
         ...newOrUpdatedRelation,
@@ -320,6 +342,12 @@ export class BlueprintService {
         relations: blueprint.relations as unknown as JsonArray,
       },
     });
+
+    if (updateCache) {
+      await this.relationService.updateBlueprintResourceRelationCache(
+        blueprint.id
+      );
+    }
 
     return newOrUpdatedRelation;
   }

@@ -7,6 +7,7 @@ import { BlueprintService } from "./blueprint.service";
 import { CustomPropertyService } from "../customProperty/customProperty.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { EnumCodeGenerator } from "../resource/dto/EnumCodeGenerator";
+import { RelationService } from "../relation/relation.service";
 
 const EXAMPLE_BLUEPRINT_ID = "exampleBlueprintId";
 const EXAMPLE_BLUEPRINT_KEY = "exampleBlueprintKey";
@@ -97,6 +98,12 @@ describe("BlueprintService", () => {
         {
           provide: CustomPropertyService,
           useValue: {},
+        },
+        {
+          provide: RelationService,
+          useValue: {
+            updateBlueprintResourceRelationCache: jest.fn(),
+          },
         },
 
         MockedSegmentAnalyticsProvider(),
