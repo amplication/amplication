@@ -82,12 +82,12 @@ const BlueprintRelationForm = ({
                 label="Limit selection to the same project"
               />
             </div>
-            {/* <div>
+            <div>
               <ToggleField
                 name="parentShouldBuildWithChild"
                 label="Regenerate parent code when building the child"
               />
-            </div> */}
+            </div>
             <div>
               <FlexItem
                 end={

@@ -1,17 +1,17 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { Injectable, forwardRef, Inject } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { User } from "../../models";
+import { Prisma, PrismaService, ResourceRelationCache } from "../../prisma";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { BlueprintService } from "../blueprint/blueprint.service";
 import { CreateRelationArgs } from "./dto/CreateRelationArgs";
 import { DeleteRelationArgs } from "./dto/DeleteRelationArgs";
 import { FindManyRelationArgs } from "./dto/FindManyRelationArgs";
 import { Relation } from "./dto/Relation";
 import { UpdateRelationArgs } from "./dto/UpdateRelationArgs";
 import { UpdateResourceRelationArgs } from "./dto/UpdateResourceRelationArgs";
-import { PrismaService, Prisma } from "../../prisma";
-import { BlueprintService } from "../blueprint/blueprint.service";
-import { User } from "../../models";
 @Injectable()
 export class RelationService extends BlockTypeService<
   Relation,
@@ -209,5 +209,63 @@ export class RelationService extends BlockTypeService<
     await this.prisma.resourceRelationCache.createMany({
       data: createRecords,
     });
+  }
+
+  /**
+   * Get the buildable parents for the list of given resources
+   * @param resourceIds - The IDs of the resources to get the buildable parents for
+   * @returns The buildable parents for the resources
+   */
+  private async getBuildableParents(
+    resourceIds: string[]
+  ): Promise<ResourceRelationCache[]> {
+    return this.prisma.resourceRelationCache.findMany({
+      where: {
+        parentShouldBuildWithChild: true,
+        childResourceId: { in: resourceIds },
+      },
+    });
+  }
+
+  /**
+   * Get the related resources for cascading builds for the list of given resources.
+   * This version processes all IDs in the queue in batches, using a Set to track visited IDs.
+   * @param resourceIds - The IDs of the resources to get the cascading builds for
+   * @returns The cascading builds for the resources
+   */
+  async getCascadingBuildableResourceIds(
+    resourceIds: string[]
+  ): Promise<string[]> {
+    // Set to track all processed buildable parent IDs.
+    const visited = new Set<string>(resourceIds);
+    // Queue for processing new resource IDs.
+    let queue = [...resourceIds];
+
+    while (queue.length > 0) {
+      // Process the entire batch of queued IDs at once.
+      const currentBatch = queue;
+      // Reset queue for the next batch.
+      queue = [];
+      try {
+        // Fetch buildable parents for the current batch.
+        const newParents = await this.getBuildableParents(currentBatch);
+
+        // Process each parent from the batch.
+        for (const parent of newParents) {
+          const parentId = parent.parentResourceId;
+          // Only queue IDs that haven't been processed yet.
+          if (!visited.has(parentId)) {
+            visited.add(parentId);
+            queue.push(parentId);
+          }
+        }
+      } catch (error) {
+        this.logger.error(`Failed to get buildable parents: ${error}`, error);
+        return Array.from(visited); //return the visited ids so far
+      }
+    }
+
+    // Return the accumulated buildable parent IDs.
+    return Array.from(visited);
   }
 }
