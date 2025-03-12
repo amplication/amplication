@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import {
   MarketplaceMeteringClient,
   ResolveCustomerCommand,
@@ -20,6 +20,9 @@ import * as cookie from "cookie";
 import { Env } from "../../env";
 import { PrismaService } from "../../prisma";
 import { AuthService } from "../auth/auth.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingPlan } from "@amplication/util-billing-types";
+import { BillingPeriod } from "@stigg/node-server-sdk";
 
 @Injectable()
 export class AwsMarketplaceService {
@@ -33,7 +36,9 @@ export class AwsMarketplaceService {
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger,
     configService: ConfigService,
     private readonly prismaService: PrismaService,
-    private readonly authService: AuthService
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+    private readonly billingService: BillingService
   ) {
     const config = {
       credentials: {
@@ -214,6 +219,75 @@ export class AwsMarketplaceService {
         error
       );
       return "Failed to register. Please contact Amplication support";
+    }
+  }
+
+  private mapDimensionToPlan(dimension: string): {
+    billingPlan: BillingPlan;
+    billingPeriod: BillingPeriod;
+  } {
+    switch (dimension) {
+      case "essential_plan":
+        return {
+          billingPlan: BillingPlan.Essential,
+          billingPeriod: BillingPeriod.Monthly,
+        };
+      case "Subscription":
+        return {
+          billingPlan: BillingPlan.Pro,
+          billingPeriod: BillingPeriod.Monthly,
+        };
+      case "enterprise_plan":
+        return {
+          billingPlan: BillingPlan.Enterprise,
+          billingPeriod: BillingPeriod.Annually,
+        };
+      default:
+        throw new Error(`Unknown dimension ${dimension}`);
+    }
+  }
+
+  async completeAwsMarketplaceIntegration(
+    email: string,
+    accountId: string,
+    workspaceId: string
+  ) {
+    try {
+      const pendingAwsMarketplaceIntegration =
+        await this.prismaService.awsMarketplaceIntegration.findFirst({
+          where: {
+            email,
+            account: null,
+            workspace: null,
+          },
+        });
+
+      if (pendingAwsMarketplaceIntegration) {
+        await this.prismaService.awsMarketplaceIntegration.update({
+          where: {
+            email,
+          },
+          data: {
+            accountId,
+            workspaceId,
+          },
+        });
+
+        const subscription = this.mapDimensionToPlan(
+          pendingAwsMarketplaceIntegration.dimension
+        );
+
+        await this.billingService.provisionNewSubscriptionForAwsMarketplaceIntegration(
+          workspaceId,
+          subscription.billingPlan,
+          subscription.billingPeriod
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to complete AWS Marketplace integration for ${email}, accountId: ${accountId}, workspaceId: ${workspaceId}`,
+        error
+      );
     }
   }
 }
