@@ -1,39 +1,40 @@
-import { PrismaService, EnumResourceType } from "../../prisma";
+import { BillingFeature } from "@amplication/util-billing-types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Injectable } from "@nestjs/common";
+import dockerNames from "docker-names";
+import { isEmpty } from "lodash";
+import { EntityService, ResourceService } from "../";
 import { FindOneArgs } from "../../dto";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { Commit, Project, Resource, User } from "../../models";
+import { EnumResourceType, PrismaService } from "../../prisma";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
 import { prepareDeletedItemName } from "../../util/softDelete";
-import { ResourceService, EntityService } from "../";
+import { BillingService } from "../billing/billing.service";
 import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
+import { EntityPendingChange } from "../entity/entity.service";
+import { GitProviderService } from "../git/git.provider.service";
+import { RelationService } from "../relation/relation.service";
+import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
+import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
+import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
+import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
+import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectCreateArgs } from "./dto/ProjectCreateArgs";
 import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
-import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "@amplication/util-billing-types";
-import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.types";
-import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import dockerNames from "docker-names";
-import { EntityPendingChange } from "../entity/entity.service";
-import { BillingLimitationError } from "../../errors/BillingLimitationError";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumCommitStrategy } from "../resource/dto/EnumCommitStrategy";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { EnumResourceTypeGroup } from "../resource/dto/EnumResourceTypeGroup";
-import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
-import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 
 @Injectable()
 export class ProjectService {
@@ -48,7 +49,8 @@ export class ProjectService {
     private readonly gitProviderService: GitProviderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly logger: AmplicationLogger,
-    private readonly resourceVersionService: ResourceVersionService
+    private readonly resourceVersionService: ResourceVersionService,
+    private readonly relationService: RelationService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -543,23 +545,31 @@ export class ProjectService {
     }
 
     if (resourceTypeGroup === EnumResourceTypeGroup.Services) {
-      const promises = resourcesToBuild
+      const resourceIds = resourcesToBuild
         .filter(
           //filter out resources that are not services
           (resource) =>
             resource.resourceType === EnumResourceType.Service ||
             resource.resourceType === EnumResourceType.Component
         )
-        .map((resource: Resource) => {
+        .map((resource) => resource.id);
+
+      const cascadingBuildableResourceIds =
+        await this.relationService.getCascadingBuildableResourceIds(
+          resourceIds
+        );
+
+      const promises = cascadingBuildableResourceIds.map(
+        (resourceId: string) => {
           this.logger.debug("Creating build for resource", {
-            resourceId: resource.id,
+            resourceId: resourceId,
             commitStrategy: args.data.commitStrategy,
             commitId: commit.id,
           });
           return this.buildService.create({
             data: {
               resource: {
-                connect: { id: resource.id },
+                connect: { id: resourceId },
               },
               commit: {
                 connect: {
@@ -574,7 +584,8 @@ export class ProjectService {
               message: args.data.message,
             },
           });
-        });
+        }
+      );
 
       await Promise.all(promises);
 

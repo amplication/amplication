@@ -42,6 +42,7 @@ import { RESOURCE_TYPE_GROUP_TO_RESOURCE_TYPE } from "../resource/constants";
 import { ResourceVersionService } from "../resourceVersion/resourceVersion.service";
 import { EnumBuildStatus } from "../build/dto/EnumBuildStatus";
 import { EnumBuildGitStatus } from "../build/dto/EnumBuildGitStatus";
+import { RelationService } from "../relation/relation.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -304,6 +305,9 @@ const createProjectConfigurationMock = jest.fn(() => {
 const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 const mockedUpdateProjectLicensed = jest.fn();
 const mockedUpdateServiceLicensed = jest.fn();
+const relationServiceGetCascadingBuildableResourceIdsMock = jest.fn(
+  (resourceIds: string[]) => Promise.resolve(resourceIds)
+);
 
 describe("ProjectService", () => {
   let service: ProjectService;
@@ -382,6 +386,13 @@ describe("ProjectService", () => {
           useClass: jest.fn(() => ({
             createProjectConfiguration: createProjectConfigurationMock,
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
+          })),
+        },
+        {
+          provide: RelationService,
+          useClass: jest.fn(() => ({
+            getCascadingBuildableResourceIds:
+              relationServiceGetCascadingBuildableResourceIdsMock,
           })),
         },
         {
