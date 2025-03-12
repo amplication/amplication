@@ -11,7 +11,7 @@ import { ProjectService } from "./project.service";
 import { GitProviderModule } from "../git/git.provider.module";
 import { SubscriptionModule } from "../subscription/subscription.module";
 import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module";
-
+import { RelationModule } from "../relation/relation.module";
 @Module({
   imports: [
     PrismaModule,
@@ -24,6 +24,7 @@ import { ResourceVersionModule } from "../resourceVersion/resourceVersion.module
     GitProviderModule,
     SubscriptionModule,
     ResourceVersionModule,
+    RelationModule,
   ],
   providers: [ProjectResolver, ProjectService],
   exports: [ProjectResolver, ProjectService],
