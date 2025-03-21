@@ -1,5 +1,5 @@
 import { DSGResourceData, FileMap } from "@amplication/code-gen-types";
-import { AstNode, Writer } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
 import {
   BuildManagerNotifier,
   getFileEncoding,
@@ -18,8 +18,7 @@ async function readInputJson(filePath: string): Promise<DSGResourceData> {
 }
 
 async function writeModules(
-  files: FileMap<AstNode>,
-
+  files: FileMap<IAstNode>,
   destination: string
 ): Promise<void> {
   internalLogger.info("Creating base directory");
@@ -29,11 +28,11 @@ async function writeModules(
   for await (const file of files.getAll()) {
     const filePath = join(destination, file.path);
     await mkdir(dirname(filePath), { recursive: true });
-    const writer = new Writer({ namespace: "" });
-    file.code.write(writer);
+
     try {
       const encoding = getFileEncoding(filePath);
-      await writeFile(filePath, writer.toString(), {
+      // we use the code.toString() so each AstNode is using the correct writer
+      await writeFile(filePath, file.code.toString(), {
         encoding: encoding,
         flag: "wx",
       });
