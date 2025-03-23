@@ -1,4 +1,4 @@
-import { AstNode, CodeBlock } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
 import type { Promisable } from "type-fest";
 import { BuildLogger } from "../build-logger";
 import {
@@ -19,7 +19,7 @@ export type PluginBeforeEvent<T extends EventParams> = (
   eventParams: T
 ) => Promisable<T>;
 
-export type PluginAfterEvent<T extends EventParams, F extends AstNode> = (
+export type PluginAfterEvent<T extends EventParams, F extends IAstNode> = (
   dsgContext: DsgContext,
   eventParams: T,
   files: FileMap<F>
@@ -27,7 +27,7 @@ export type PluginAfterEvent<T extends EventParams, F extends AstNode> = (
 
 export interface PluginEventType<
   T extends EventParams,
-  F extends AstNode = CodeBlock
+  F extends IAstNode = IAstNode
 > {
   before?: PluginBeforeEvent<T>;
   after?: PluginAfterEvent<T, F>;
@@ -68,7 +68,7 @@ export interface DsgContext extends DSGResourceData {
   /**
    * List of generated files.
    */
-  files: FileMap<AstNode>;
+  files: FileMap<IAstNode>;
   DTOs: DTOs;
   plugins: PluginMap;
   /**
@@ -91,7 +91,7 @@ export type PluginWrapper = (args: EventParams, func: () => void) => any;
 export type PluginMap = {
   [K in BlueprintEventNames]?: {
     before?: PluginBeforeEvent<EventParams>[];
-    after?: PluginAfterEvent<EventParams, AstNode>[];
+    after?: PluginAfterEvent<EventParams, IAstNode>[];
   };
 };
 

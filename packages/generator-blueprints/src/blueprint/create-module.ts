@@ -2,7 +2,8 @@ import {
   FileMap,
   blueprintPluginEventsParams,
 } from "@amplication/code-gen-types";
-import { AstNode } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
+
 import {
   blueprintTypes,
   ModuleActionsAndDtos,
@@ -12,7 +13,7 @@ import DsgContext from "../dsg-context";
 
 export async function createModuleFiles(
   moduleActionsAndDto: ModuleActionsAndDtos
-): Promise<FileMap<AstNode>> {
+): Promise<FileMap<IAstNode>> {
   return pluginWrapper(
     createModuleInternal,
     blueprintTypes.BlueprintEventNames.createModule,
@@ -25,11 +26,11 @@ export async function createModuleFiles(
 
 async function createModuleInternal(
   eventParams: blueprintPluginEventsParams.CreateModuleParams
-): Promise<FileMap<AstNode>> {
+): Promise<FileMap<IAstNode>> {
   const context = DsgContext.getInstance;
 
   await context.logger.info(`Creating module ${eventParams.moduleName}...`);
-  const fileMap = new FileMap<AstNode>(context.logger);
+  const fileMap = new FileMap<IAstNode>(context.logger);
   //do nothing - the event is handled by the blueprint plugin
   await context.logger.info(`Module ${eventParams.moduleName} created`);
   return fileMap;

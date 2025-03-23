@@ -8,13 +8,13 @@ import { createBlueprint } from "./blueprint/create-blueprint";
 import { ILogger } from "@amplication/util-logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "@amplication/dsg-utils";
-import { AstNode } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
   internalLogger: ILogger,
   pluginInstallationPath?: string
-): Promise<FileMap<AstNode>> {
+): Promise<FileMap<IAstNode>> {
   const context = DsgContext.getInstance;
 
   const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;

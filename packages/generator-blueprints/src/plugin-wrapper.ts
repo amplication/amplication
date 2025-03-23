@@ -1,10 +1,10 @@
 import { FileMap, blueprintTypes } from "@amplication/code-gen-types";
 import util from "node:util";
 import DsgContext from "./dsg-context";
-import { AstNode } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
 
 export type PluginWrapper = (
-  func: (...args: any) => FileMap<AstNode> | Promise<FileMap<AstNode>>,
+  func: (...args: any) => FileMap<IAstNode> | Promise<FileMap<IAstNode>>,
   event: blueprintTypes.BlueprintEventNames,
   ...args: any
 ) => any;
@@ -21,13 +21,13 @@ const afterEventsPipe =
   (
     ...fns: blueprintTypes.PluginAfterEvent<
       blueprintTypes.EventParams,
-      AstNode
+      IAstNode
     >[]
   ) =>
   (
     context: DsgContext,
     eventParams: blueprintTypes.EventParams,
-    files: FileMap<AstNode>
+    files: FileMap<IAstNode>
   ) =>
     fns.reduce(
       async (res, fn) => fn(context, eventParams, await res),
@@ -45,9 +45,9 @@ const defaultBehavior = async (
   context: DsgContext,
   func: (...args: any) => any,
   beforeFuncResults: any
-): Promise<FileMap<AstNode>> => {
+): Promise<FileMap<IAstNode>> => {
   if (context.utils.skipDefaultBehavior)
-    return new FileMap<AstNode>(DsgContext.getInstance.logger);
+    return new FileMap<IAstNode>(DsgContext.getInstance.logger);
 
   return util.types.isAsyncFunction(func)
     ? await func(beforeFuncResults)
@@ -64,7 +64,7 @@ const pluginWrapper: PluginWrapper = async (
   func,
   event,
   args
-): Promise<FileMap<AstNode>> => {
+): Promise<FileMap<IAstNode>> => {
   const context = DsgContext.getInstance;
 
   try {
