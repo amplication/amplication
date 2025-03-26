@@ -39,7 +39,7 @@ jobs:
 
       - name: Fetch kubeconfig File
         run: |
-          aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name amplication-${{ inputs.environment-name }}
+          aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name amplication-sandbox
 
       # Based on the project matrix we do a rolling update of certain components of the application
       # first the 'amplication-' prefix is stripped to match the application component names expected
@@ -55,7 +55,7 @@ jobs:
 
           if [[ "$project" == "build-manager" ]];
           then
-            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}-dsg"
+            kubectl rollout restart deployments/$project -n sandbox-dsg"
           else
-            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}"
+            kubectl rollout restart deployments/$project -n "sandbox"
           fi;

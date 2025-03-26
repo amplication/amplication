@@ -112,7 +112,7 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=${{ env.BRANCH }}
+            type=raw,value=sandbox
             type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
             type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
             type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
@@ -135,12 +135,10 @@ jobs:
     steps:
       - id: environment-identifier
         run: |
-          if [[ "${{ env.BRANCH }}" == "next" ]];
-          then
             echo environment="sandbox" >> $GITHUB_OUTPUT
           elif [[ "${{ env.BRANCH }}" == ${{ inputs.default-branch }} ]];
           then
-            echo environment="staging" >> $GITHUB_OUTPUT
+            echo environment="sandbox" >> $GITHUB_OUTPUT
           fi;
 
   deploy-container:
