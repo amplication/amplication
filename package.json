@@ -87,7 +87,7 @@
     "ast-types": "^0.14.2",
     "auth0": "^4.2.0",
     "aws-rum-web": "^1.17.1",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "azure-devops-node-api": "^14.1.0",
     "bcrypt": "^5.0.0",
     "chalk": "^5.1.2",
