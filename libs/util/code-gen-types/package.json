@@ -16,6 +16,7 @@
     "type-fest": "^3.11.0"
   },
   "peerDependencies": {
-    "@amplication/csharp-ast": "*"
+    "@amplication/csharp-ast": "*",
+    "@amplication/ast-types": "*"
   }
 }

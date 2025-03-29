@@ -55,7 +55,7 @@ jobs:
 
           if [[ "$project" == "build-manager" ]];
           then
-            kubectl rollout restart deployments/$project -n sandbox-dsg"
+            kubectl rollout restart deployments/$project -n "sandbox-dsg"
           else
             kubectl rollout restart deployments/$project -n "sandbox"
           fi;
