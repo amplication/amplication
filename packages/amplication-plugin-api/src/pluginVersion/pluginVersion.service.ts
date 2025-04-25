@@ -149,11 +149,6 @@ export class PluginVersionService extends PluginVersionServiceBase {
                   isLatest: versionData.isLatest,
                 },
               });
-            } else {
-              this.logger.debug(
-                "Skipping existing version",
-                existingVersion.pluginIdVersion
-              );
             }
           } else {
             const {
