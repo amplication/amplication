@@ -8,6 +8,7 @@
     "@amplication/util-logging": "0.0.2",
     "@amplication/code-gen-types": "*",
     "@amplication/code-gen-utils": "*",
+    "@amplication/ast-types": "*",
     "@amplication/dsg-utils": "*",
     "@apollo/client": "^3.7.1",
     "@babel/parser": "7.25.7",
