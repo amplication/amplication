@@ -29,6 +29,7 @@
     ]
   },
   "dependencies": {
+    "@amplication/ast-types": "^0.0.2",
     "@amplication/csharp-ast": "^0.0.4",
     "@amplication/opentelemetry-nestjs": "^5.0.3",
     "@amplication/react-compound-timer": "^2.1.0",

@@ -16,14 +16,14 @@ import {
 } from "./utils/read-static-files";
 
 import { BuildLogger } from "@amplication/dsg-utils";
-import { AstNode } from "@amplication/csharp-ast";
+import { IAstNode } from "@amplication/ast-types";
 
 class DsgContext implements types.blueprintTypes.DsgContext {
   public appInfo!: types.AppInfo;
   public entities: types.Entity[] = [];
   public buildId: string;
   public roles: types.Role[] = [];
-  public files: FileMap<AstNode>;
+  public files: FileMap<IAstNode>;
   public generateGrpc: boolean;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
@@ -68,7 +68,7 @@ class DsgContext implements types.blueprintTypes.DsgContext {
   private constructor() {
     //prevent external code from creating instances of the context
     this.logger = new BuildLogger();
-    this.files = new FileMap<AstNode>(this.logger);
+    this.files = new FileMap<IAstNode>(this.logger);
   }
 
   public get resourceInfo(): types.AppInfo {
