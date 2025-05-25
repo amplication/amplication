@@ -13,7 +13,7 @@ jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: build and deploy job
     permissions:
       id-token: write
       contents: read
@@ -26,7 +26,7 @@ jobs:
         run: |
           npm ci 
           npm install @actions/core@1.6.0 @actions/http-client
-      - name: install dependencies
+      - name: build application
         run: npx nx build amplication-client --configuration=sandbox
       - name: configure dependencies
         uses: actions/github-script@v6
