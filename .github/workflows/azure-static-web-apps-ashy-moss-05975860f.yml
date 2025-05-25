@@ -46,13 +46,3 @@ jobs:
           skip_api_build: true
           app_location: "/dist/packages/amplication-client"
           github_id_token: ${{ steps.idtoken.outputs.result }}
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: close pull request job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          action: "close"
