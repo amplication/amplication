@@ -43,8 +43,7 @@ jobs:
           action: "upload"
           skip_app_build: true
           skip_api_build: true
-          app_location: "/packages/amplication-client"
-          output_location: "/dist/packages/amplication-client"
+          app_location: "/dist/packages/amplication-client"
           github_id_token: ${{ steps.idtoken.outputs.result }}
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
