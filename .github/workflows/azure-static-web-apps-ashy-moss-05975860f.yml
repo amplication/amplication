@@ -1,4 +1,4 @@
-name: Azure Static Web Apps CI/CD
+name: azure-static-webapp-deployment
 
 on:
   push:
