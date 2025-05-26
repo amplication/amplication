@@ -1,0 +1,114 @@
+name: _Reusable Release template
+
+on:
+  workflow_call:
+    inputs:
+      default-branch:
+        type: string
+        description: Default branch of the repository. i.e github.event.repository.default_branch
+        required: true
+        default: main
+      branch:
+        type: string
+        description: Name of the git branch
+        required: true
+      affected-apps:
+        type: string
+        description: Nx applications affected by the changes
+        required: true
+      affected-lib:
+        type: string
+        description: Nx libraries affected by the changes
+        required: true
+      affected-package-container:
+        type: string
+        description: Nx projects configured with package:container affected by the changes
+        required: true
+      affected-deploy-static:
+        type: string
+        description: Nx projects configured with deploy:static affected by the changes
+        required: true
+      affected-deploy-container:
+        type: string
+        description: Nx projects configured with deploy affected by the changes
+        required: true
+      enable-custom-tags:
+        type: boolean
+        description: Enable custom tags for docker images
+        required: false
+        default: false
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+      AZURE_CREDENTIALS:
+        required: true
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
+  BRANCH: ${{ inputs.branch }}
+  ENABLE_CUSTOM_TAGS: ${{ inputs.enable-custom-tags }}
+
+jobs:
+  package-container:
+    if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
+    name: Package
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(inputs.affected-package-container) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: amplication.azurecr.io
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "amplication.azurecr.io/${{ matrix.project }}"
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag,prefix=tag-
+            type=raw,value=${{ github.run_id }},prefix=gh-
+            type=raw,value=sandbox
+            type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
+            type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
+            type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
+
+      # https://www.npmjs.com/package/@nx-tools/nx-docker
+      - name: Dockerize
+        run: npx nx package:container ${{ matrix.project }} --prod
+        env:
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_PUSH: true
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
