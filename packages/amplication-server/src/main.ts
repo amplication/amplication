@@ -22,11 +22,8 @@ import {
 
 async function bootstrap() {
   /**
-   * Send server load notification:
-   * sending runtime environment details.
-   *
+   * Send server load notification: sending runtime environment details.
    * To disable event tracking set DISABLE_EVENT_TRACKING to 1
-   *
    * To find more information regarding this feature visit https://docs.amplication.com/
    */
   if (
