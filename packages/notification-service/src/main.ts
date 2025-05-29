@@ -36,5 +36,6 @@ bootstrap().catch((error) => {
     error.message,
     error
   );
+
   process.exit(1);
 });
