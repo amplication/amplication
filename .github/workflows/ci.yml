@@ -135,4 +135,5 @@ jobs:
       affected-deploy-container: ${{ needs.nx.outputs.affected-deploy-container }}
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_CR_USERNAME: ${{ secrets.AZURE_CR_USERNAME }}
+      AZURE_CR_PASSWORD: ${{ secrets.AZURE_CR_PASSWORD }}
