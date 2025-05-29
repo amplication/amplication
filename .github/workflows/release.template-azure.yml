@@ -86,8 +86,8 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: amplication.azurecr.io
-          username: ${{ secrets.AZURE_CLIENT_ID }}
-          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+          username: ${{ secrets.AZURE_CR_USERNAME }}
+          password: ${{ secrets.AZURE_CR_PASSWORD }}
 
       - name: Docker Metadata
         uses: docker/metadata-action@v4
