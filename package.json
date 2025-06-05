@@ -219,7 +219,7 @@
     "@nx/storybook": "16.9.1",
     "@nx/vite": "16.9.1",
     "@nx/web": "16.9.1",
-    "@nx/webpack": "16.9.1",
+    "@nx/webpack": "21.1.2",
     "@nx/workspace": "16.9.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@storybook/addon-controls": "7.4.6",
