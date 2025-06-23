@@ -281,13 +281,15 @@ export class TeamService {
   }
 
   async members(teamId: string): Promise<User[]> {
-    return this.prisma.team
-      .findUnique({
-        where: {
-          id: teamId,
-        },
-      })
-      .members();
+    const team = await this.prisma.team.findUnique({
+      where: {
+        id: teamId,
+      },
+      include: {
+        members: true,
+      },
+    });
+    return team?.members || [];
   }
 
   async addRolesToTeam(args: AddRolesToTeamArgs): Promise<Team> {
@@ -444,13 +446,15 @@ export class TeamService {
   }
 
   async roles(teamId: string): Promise<Role[]> {
-    return this.prisma.team
-      .findUnique({
-        where: {
-          id: teamId,
-        },
-      })
-      .roles();
+    const team = await this.prisma.team.findUnique({
+      where: {
+        id: teamId,
+      },
+      include: {
+        roles: true,
+      },
+    });
+    return team?.roles || [];
   }
 
   async addRolesToTeamAssignment(
@@ -651,16 +655,18 @@ export class TeamService {
   }
 
   async getTeamAssignmentRoles(args: WhereTeamAssignmentInput) {
-    return this.prisma.teamAssignment
-      .findUnique({
-        where: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          teamId_resourceId: {
-            teamId: args.teamId,
-            resourceId: args.resourceId,
-          },
+    const teamAssignment = await this.prisma.teamAssignment.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        teamId_resourceId: {
+          teamId: args.teamId,
+          resourceId: args.resourceId,
         },
-      })
-      .roles();
+      },
+      include: {
+        roles: true,
+      },
+    });
+    return teamAssignment?.roles || [];
   }
 }
