@@ -6328,6 +6328,7 @@ export class CustomerResolverBase {
     action: "read",
     possession: "any",
   })
+  @graphql.Query(() => MetaQueryPayload)
   async _customersMeta(
     @graphql.Args() args: CustomerCountArgs
   ): Promise<MetaQueryPayload> {
@@ -7613,6 +7614,7 @@ export class EmptyResolverBase {
     action: "read",
     possession: "any",
   })
+  @graphql.Query(() => MetaQueryPayload)
   async _emptiesMeta(
     @graphql.Args() args: EmptyCountArgs
   ): Promise<MetaQueryPayload> {
@@ -9758,6 +9760,7 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Query(() => MetaQueryPayload)
+  @graphql.Query(() => MetaQueryPayload)
   async _ordersMeta(
     @graphql.Args() args: OrderCountArgs
   ): Promise<MetaQueryPayload> {
@@ -11645,6 +11648,7 @@ export class OrganizationResolverBase {
     action: "read",
     possession: "any",
   })
+  @graphql.Query(() => MetaQueryPayload)
   async _organizationsMeta(
     @graphql.Args() args: OrganizationCountArgs
   ): Promise<MetaQueryPayload> {
@@ -13284,6 +13288,7 @@ export class ProfileResolverBase {
     action: "read",
     possession: "any",
   })
+  @graphql.Query(() => MetaQueryPayload)
   async _profilesMeta(
     @graphql.Args() args: ProfileCountArgs
   ): Promise<MetaQueryPayload> {
@@ -16278,6 +16283,7 @@ export class UserResolverBase {
     action: "read",
     possession: "any",
   })
+  @graphql.Query(() => MetaQueryPayload)
   async _usersMeta(
     @graphql.Args() args: UserCountArgs
   ): Promise<MetaQueryPayload> {

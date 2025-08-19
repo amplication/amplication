@@ -54,6 +54,7 @@ declare const ENTITY_NAME: string;
 export class RESOLVER_BASE {
   constructor(protected readonly service: SERVICE) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async META_QUERY(
     @graphql.Args() args: COUNT_ARGS
   ): Promise<MetaQueryPayload> {

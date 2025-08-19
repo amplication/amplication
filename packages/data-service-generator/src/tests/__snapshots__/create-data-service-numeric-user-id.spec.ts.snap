@@ -5472,6 +5472,7 @@ import { CustomerService } from "../customer.service";
 export class CustomerResolverBase {
   constructor(protected readonly service: CustomerService) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async _customersMeta(
     @graphql.Args() args: CustomerCountArgs
   ): Promise<MetaQueryPayload> {
@@ -6633,6 +6634,7 @@ import { EmptyService } from "../empty.service";
 export class EmptyResolverBase {
   constructor(protected readonly service: EmptyService) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async _emptiesMeta(
     @graphql.Args() args: EmptyCountArgs
   ): Promise<MetaQueryPayload> {
@@ -8163,6 +8165,8 @@ import { OrderService } from "../order.service";
 export class OrderResolverBase {
   constructor(protected readonly service: OrderService) {}
 
+  @Public()
+  @graphql.Query(() => MetaQueryPayload)
   async _ordersMeta(
     @graphql.Args() args: OrderCountArgs
   ): Promise<MetaQueryPayload> {
@@ -9897,6 +9901,7 @@ import { OrganizationService } from "../organization.service";
 export class OrganizationResolverBase {
   constructor(protected readonly service: OrganizationService) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async _organizationsMeta(
     @graphql.Args() args: OrganizationCountArgs
   ): Promise<MetaQueryPayload> {
@@ -11405,6 +11410,7 @@ import { ProfileService } from "../profile.service";
 export class ProfileResolverBase {
   constructor(protected readonly service: ProfileService) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async _profilesMeta(
     @graphql.Args() args: ProfileCountArgs
   ): Promise<MetaQueryPayload> {
@@ -14160,6 +14166,7 @@ import { UserService } from "../user.service";
 export class UserResolverBase {
   constructor(protected readonly service: UserService) {}
 
+  @graphql.Query(() => MetaQueryPayload)
   async _usersMeta(
     @graphql.Args() args: UserCountArgs
   ): Promise<MetaQueryPayload> {
