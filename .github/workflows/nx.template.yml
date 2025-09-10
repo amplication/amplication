@@ -96,10 +96,19 @@ jobs:
       - name: Evaluate affected projects
         id: configure-nx
         run: |
-          echo affected-apps=$(bunx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-lib=$(bunx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-e2e=$(bunx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-package-container=$(bunx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-static=$(bunx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-container=$(bunx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          if [ "$NX_FORCE_ALL" = "--all" ]; then
+            echo affected-apps=$(bunx nx show projects --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-lib=$(bunx nx show projects --type=lib --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-e2e=$(bunx nx show projects --with-target=e2e --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-package-container=$(bunx nx show projects --with-target=package:container --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-deploy-static=$(bunx nx show projects --with-target=deploy:static --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-deploy-container=$(bunx nx show projects --with-target=deploy:container --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+          else
+            echo affected-apps=$(bunx nx show projects --affected --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-lib=$(bunx nx show projects --affected --type=lib --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-e2e=$(bunx nx show projects --affected --with-target=e2e --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-package-container=$(bunx nx show projects --affected --with-target=package:container --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-deploy-static=$(bunx nx show projects --affected --with-target=deploy:static --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+            echo affected-deploy-container=$(bunx nx show projects --affected --with-target=deploy:container --type=app --json | jq -c '. // []') >> $GITHUB_OUTPUT
+          fi
           cat $GITHUB_OUTPUT | grep affected
