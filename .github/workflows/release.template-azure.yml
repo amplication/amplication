@@ -53,7 +53,7 @@ env:
 
 jobs:
   package-container:
-    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'staging' || '' }}
+    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'sandbox' || '' }}
     name: Package
     runs-on: ubuntu-22.04
     strategy:
