@@ -85,27 +85,6 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
-      - name: Cache Prisma engines
-        id: cache-prisma-engines
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/prisma
-          key: prisma-${{ runner.os }}-${{ hashFiles('packages/**/prisma/schema.prisma','**/package-lock.json') }}
-
-      - name: Rebuild Prisma binaries after cache restore
-        if: steps.cache-prisma-engines.outputs.cache-hit == 'true'
-        run: npm rebuild prisma @prisma/engines
-
-      - name: Warm Prisma engines (fetch foreign musl binaries)
-        run: npx prisma --version
-
-      - name: Pre-generate Prisma clients (sequential)
-        run: |
-          (cd packages/workflow-dispatcher && npx prisma generate --no-hints)
-          (cd packages/workflow-manager && npx prisma generate --no-hints)
-          (cd packages/billing && npx prisma generate --no-hints)
-          (cd packages/prisma-db && npx prisma generate --no-hints)
-
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
         with:
