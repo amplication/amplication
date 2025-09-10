@@ -104,6 +104,7 @@ jobs:
     name: Release
     needs: nx
     uses: ./.github/workflows/release.template-azure.yml
+    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
     with:
       default-branch: ${{ github.event.repository.default_branch }}
       branch: ${{ github.ref_name }}
