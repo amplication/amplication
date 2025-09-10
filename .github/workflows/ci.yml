@@ -100,31 +100,10 @@ jobs:
       nx-skip-cache: ${{ inputs.nx-skip-cache || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
       nx-force-all: ${{ inputs.nx-force-all || false }}
 
-  release-production:
-    name: Release production
-    needs: nx
-    uses: ./.github/workflows/release.template.yml
-    if: ${{ github.ref_name == 'master' }}
-    with:
-      default-branch: ${{ github.event.repository.default_branch }}
-      branch: ${{ github.ref_name }}
-      affected-apps: ${{ needs.nx.outputs.affected-apps }}
-      affected-lib: ${{ needs.nx.outputs.affected-lib }}
-      affected-package-container: ${{ needs.nx.outputs.affected-package-container }}
-      affected-deploy-static: ${{ needs.nx.outputs.affected-deploy-static }}
-      affected-deploy-container: ${{ needs.nx.outputs.affected-deploy-container }}
-    secrets:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  release-sandbox:
-    name: Release sandbox
+  release:
+    name: Release
     needs: nx
     uses: ./.github/workflows/release.template-azure.yml
-    if: ${{ github.ref_name == 'next' }}
     with:
       default-branch: ${{ github.event.repository.default_branch }}
       branch: ${{ github.ref_name }}
@@ -135,5 +114,6 @@ jobs:
       affected-deploy-container: ${{ needs.nx.outputs.affected-deploy-container }}
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      AZURE_CR_REPOSITORY: ${{ secrets.AZURE_CR_REPOSITORY }}
       AZURE_CR_USERNAME: ${{ secrets.AZURE_CR_USERNAME }}
       AZURE_CR_PASSWORD: ${{ secrets.AZURE_CR_PASSWORD }}

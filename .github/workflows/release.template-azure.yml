@@ -40,19 +40,20 @@ on:
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         required: true
+      AZURE_CR_REPOSITORY:
+        required: true
       AZURE_CR_USERNAME:
         required: true
       AZURE_CR_PASSWORD:
         required: true
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   BRANCH: ${{ inputs.branch }}
   ENABLE_CUSTOM_TAGS: ${{ inputs.enable-custom-tags }}
 
 jobs:
   package-container:
-    if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
+    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'staging' || '' }}
     name: Package
     runs-on: ubuntu-22.04
     strategy:
@@ -84,10 +85,31 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
+      - name: Cache Prisma engines
+        id: cache-prisma-engines
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/prisma
+          key: prisma-${{ runner.os }}-${{ hashFiles('packages/**/prisma/schema.prisma','**/package-lock.json') }}
+
+      - name: Rebuild Prisma binaries after cache restore
+        if: steps.cache-prisma-engines.outputs.cache-hit == 'true'
+        run: npm rebuild prisma @prisma/engines
+
+      - name: Warm Prisma engines (fetch foreign musl binaries)
+        run: npx prisma --version
+
+      - name: Pre-generate Prisma clients (sequential)
+        run: |
+          (cd packages/workflow-dispatcher && npx prisma generate --no-hints)
+          (cd packages/workflow-manager && npx prisma generate --no-hints)
+          (cd packages/billing && npx prisma generate --no-hints)
+          (cd packages/prisma-db && npx prisma generate --no-hints)
+
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
         with:
-          login-server: amplication.azurecr.io
+          login-server: ${{ secrets.AZURE_CR_REPOSITORY }}.azurecr.io
           username: ${{ secrets.AZURE_CR_USERNAME }}
           password: ${{ secrets.AZURE_CR_PASSWORD }}
 
@@ -95,16 +117,15 @@ jobs:
         uses: docker/metadata-action@v4
         id: meta
         with:
-          images: "amplication.azurecr.io/${{ matrix.project }}"
+          images: "${{ secrets.AZURE_CR_REPOSITORY }}.azurecr.io/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=sandbox
-            type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
-            type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
-            type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
+            type=raw,value=latest
+            type=raw,value=next,enable=${{ inputs.branch == 'next' }}
+            type=raw,value=main,enable=${{ inputs.branch == 'main' }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
