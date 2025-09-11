@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_and_deploy_job:
-    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'sandbox' || '' }}
+    environment: ${{ github.ref_name == 'master' && 'production' || github.ref_name == 'next' && 'sandbox' || '' }}
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
