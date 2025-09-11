@@ -19,12 +19,20 @@ jobs:
         with:
           submodules: true
           lfs: false
+
       - name: Install dependencies
         run: |
           npm ci 
           npm install @actions/core@1.6.0 @actions/http-client
+
       - name: Build Application
-        run: npx nx build amplication-client --configuration=sandbox
+        run: |
+          if [ "${{ github.ref_name }}" == "master" ]; then
+            npx nx build amplication-client --configuration=production
+          else
+            npx nx build amplication-client --configuration=sandbox
+          fi
+
       - name: Get Id Token
         uses: actions/github-script@v6
         id: idtoken
@@ -33,6 +41,7 @@ jobs:
             const coredemo = require('@actions/core')
             return await coredemo.getIDToken()
           result-encoding: string
+
       - name: Build and Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
