@@ -51,4 +51,4 @@ jobs:
           skip_app_build: true
           skip_api_build: true
           app_location: "/dist/packages/amplication-client"
-          github_id_token: ${{ steps.idtoken.outputs.result }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
