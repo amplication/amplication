@@ -7,6 +7,8 @@ import {
   KAFKA_CLIENT_CONSUMER_SESSION_TIMEOUT,
   KAFKA_CLIENT_ID,
   KAFKA_GROUP_ID,
+  KAFKA_SASL_USERNAME,
+  KAFKA_SASL_PASSWORD,
 } from "./constants";
 
 export class KafkaEnvironmentVariables {
@@ -75,5 +77,31 @@ export class KafkaEnvironmentVariables {
 
   getConsumerMaxBytesPerPartition(): number {
     return 10485760;
+  }
+
+  /**
+   * Returns SASL configuration for KafkaJS when both username and password are provided.
+   * If either is missing, returns undefined (local Kafka scenario).
+   */
+  getSaslConfig():
+    | { mechanism: "plain"; username: string; password: string }
+    | undefined {
+    const username = EnvironmentVariables.instance.get(
+      `${KAFKA_SASL_USERNAME}${this.envSuffix}`,
+      false
+    );
+    const password = EnvironmentVariables.instance.get(
+      `${KAFKA_SASL_PASSWORD}${this.envSuffix}`,
+      false
+    );
+
+    if (username && password) {
+      return {
+        mechanism: "plain",
+        username,
+        password,
+      } as const;
+    }
+    return undefined;
   }
 }
