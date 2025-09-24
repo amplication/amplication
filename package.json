@@ -283,7 +283,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "docker-compose": "^0.24.2",
-    "dockerode": "^3.3.5",
+    "dockerode": "^4.0.8",
     "eslint": "8.46.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-lerna": "^2.0.0",
