@@ -175,20 +175,3 @@ jobs:
             Releases: https://github.com/amplication/amplication/releases
           labels: "release"
           reviewers: "${{ github.actor }}"
-
-  deployment-static:
-    name: Deployment static
-    needs: preparation
-    if: ${{ needs.preparation.outputs.affected-deploy-static != '[]' && needs.preparation.outputs.affected-deploy-static != ''}}
-    strategy:
-      matrix:
-        project: ${{ fromJson(needs.preparation.outputs.affected-deploy-static) }}
-    uses: ./.github/workflows/deployment.static.template.yml
-    with:
-      environment-name: "production"
-      project-name: ${{ matrix.project }}
-      deploy-type: "static"
-    secrets:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
