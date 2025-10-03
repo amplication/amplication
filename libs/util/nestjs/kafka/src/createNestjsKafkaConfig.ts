@@ -7,6 +7,7 @@ export const KAFKA_CLIENT = "KAFKA_CLIENT";
 
 export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {
   const kafkaEnv = new KafkaEnvironmentVariables(envSuffix);
+  const sasl = kafkaEnv.getSaslConfig();
   const groupId = kafkaEnv.getGroupId();
   let consumer: ConsumerConfig | undefined;
   if (groupId) {
@@ -26,6 +27,7 @@ export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {
         brokers: kafkaEnv.getBrokers(),
         clientId: kafkaEnv.getClientId() + `-${randomUUID()}`,
         ssl: kafkaEnv.getClientSslConfig(),
+        ...(sasl ? { sasl } : {}),
       },
       consumer,
     },

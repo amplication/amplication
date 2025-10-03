@@ -40,23 +40,20 @@ on:
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         required: true
-      ECR_AWS_ACCESS_KEY_ID:
+      AZURE_CR_REPOSITORY:
         required: true
-      ECR_AWS_SECRET_ACCESS_KEY:
+      AZURE_CR_USERNAME:
         required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
+      AZURE_CR_PASSWORD:
         required: true
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
   BRANCH: ${{ inputs.branch }}
   ENABLE_CUSTOM_TAGS: ${{ inputs.enable-custom-tags }}
 
 jobs:
   package-container:
-    if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
+    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'sandbox' || '' }}
     name: Package
     runs-on: ubuntu-22.04
     strategy:
@@ -88,34 +85,26 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
-      - name: Configure AWS Credentials (operations account)
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
         with:
-          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          login-server: ${{ secrets.AZURE_CR_REPOSITORY }}.azurecr.io
+          username: ${{ secrets.AZURE_CR_USERNAME }}
+          password: ${{ secrets.AZURE_CR_PASSWORD }}
 
-      - name: Login to Amazon ECR (operations account)
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          mask-password: "true"
-          registries: "439403303254"
-
-      # https://github.com/docker/metadata-action
       - name: Docker Metadata
         uses: docker/metadata-action@v4
         id: meta
         with:
-          images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          images: "${{ secrets.AZURE_CR_REPOSITORY }}.azurecr.io/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=sandbox
-            type=raw,value=latest,enable=${{ env.BRANCH == inputs.default-branch }}
-            type=raw,value=next,enable=${{ env.ENABLE_CUSTOM_TAGS }}
-            type=raw,value=master,enable=${{ env.ENABLE_CUSTOM_TAGS }}
+            type=raw,value=latest
+            type=raw,value=next,enable=${{ inputs.branch == 'next' }}
+            type=raw,value=main,enable=${{ inputs.branch == 'main' }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
@@ -123,6 +112,5 @@ jobs:
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
-          # env variables substituted in the project.json docker target build-args
           GIT_REF_NAME: ${{ github.ref_name }}
           GIT_SHA: ${{ github.sha }}

@@ -1,0 +1,55 @@
+name: Azure Static Web Apps CI/CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - next
+      - master
+
+jobs:
+  build_and_deploy_job:
+    environment: ${{ github.ref_name == 'master' && 'production' || github.ref_name == 'next' && 'sandbox' || '' }}
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Install dependencies
+        run: |
+          npm ci 
+          npm install @actions/core@1.6.0 @actions/http-client
+
+      - name: Build Application
+        run: |
+          if [ "${{ github.ref_name }}" == "master" ]; then
+            npx nx build amplication-client --configuration=production
+          else
+            npx nx build amplication-client --configuration=sandbox
+          fi
+
+      - name: Get Id Token
+        uses: actions/github-script@v6
+        id: idtoken
+        with:
+          script: |
+            const coredemo = require('@actions/core')
+            return await coredemo.getIDToken()
+          result-encoding: string
+
+      - name: Build and Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          skip_app_build: true
+          skip_api_build: true
+          app_location: "/dist/packages/amplication-client"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
