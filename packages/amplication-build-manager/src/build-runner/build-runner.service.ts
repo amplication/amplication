@@ -106,11 +106,11 @@ export class BuildRunnerService {
     );
   }
 
-  async runBuild(
-    resourceId: string,
-    buildId: string,
-    dsgResourceData: DSGResourceData
-  ) {
+  async runBuild(resourceId: string, buildId: string) {
+    // Read DSGResourceData from shared storage instead of parameter
+    const dsgResourceData = await this.readDsgResourceDataFromSharedStorage(
+      buildId
+    );
     let codeGeneratorVersion: string;
     const codeGeneratorFullName =
       await this.codeGeneratorNameToContainerImageName(
@@ -393,6 +393,25 @@ export class BuildRunnerService {
       this.logger.error(error.message, error);
       throw error;
     }
+  }
+
+  /**
+   * Reads DSGResourceData from shared storage that server saved
+   * @param buildId the build ID
+   * @returns DSGResourceData object
+   */
+  async readDsgResourceDataFromSharedStorage(
+    buildId: string
+  ): Promise<DSGResourceData> {
+    const filePath = join(
+      this.configService.get(Env.DSG_RESOURCE_DATA_BASE_FOLDER) ||
+        "/build-artifacts/dsg-resource-data",
+      buildId,
+      this.configService.get(Env.DSG_RESOURCE_DATA_FILE) || "resource-data.json"
+    );
+
+    const data = await fs.readFile(filePath);
+    return JSON.parse(data.toString()) as DSGResourceData;
   }
 
   /**

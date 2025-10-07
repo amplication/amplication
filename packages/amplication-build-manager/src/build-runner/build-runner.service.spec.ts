@@ -320,7 +320,12 @@ describe("BuildRunnerService", () => {
       });
 
       // Act
-      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
+      // Mock the readDsgResourceDataFromSharedStorage method to return our mock data
+      jest
+        .spyOn(service, "readDsgResourceDataFromSharedStorage")
+        .mockResolvedValue(dsgResourceDataMock);
+
+      await service.runBuild(resourceId, buildId);
 
       // Assert
       expect(spyOnSaveDsgResourceData).toBeCalledTimes(2);
@@ -419,7 +424,12 @@ describe("BuildRunnerService", () => {
       });
 
       // Act
-      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
+      // Mock the readDsgResourceDataFromSharedStorage method to return our mock data
+      jest
+        .spyOn(service, "readDsgResourceDataFromSharedStorage")
+        .mockResolvedValue(dsgResourceDataMock);
+
+      await service.runBuild(resourceId, buildId);
 
       // Assert
       expect(spyOnSaveDsgResourceData).toBeCalledTimes(2);
@@ -519,7 +529,12 @@ describe("BuildRunnerService", () => {
       } as unknown as CodeGenerationFailure.KafkaEvent;
 
       // Act
-      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
+      // Mock the readDsgResourceDataFromSharedStorage method to return our mock data
+      jest
+        .spyOn(service, "readDsgResourceDataFromSharedStorage")
+        .mockResolvedValue(dsgResourceDataMock);
+
+      await service.runBuild(resourceId, buildId);
 
       // Assert
       expect(mockKafkaServiceEmitMessage).toHaveBeenNthCalledWith(
