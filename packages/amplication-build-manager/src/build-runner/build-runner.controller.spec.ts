@@ -1,13 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGenerationRequest } from "@amplication/schema-registry";
-import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
-import { AppInfo } from "@amplication/code-gen-types";
 
 const onCodeGenerationSuccessMock = jest.fn();
 const onCodeGenerationFailureMock = jest.fn();
