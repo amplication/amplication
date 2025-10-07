@@ -74,10 +74,6 @@ export class BuildRunnerController {
       resourceId: message.resourceId,
     });
 
-    await this.buildRunnerService.runBuild(
-      message.resourceId,
-      message.buildId,
-      message.dsgResourceData
-    );
+    await this.buildRunnerService.runBuild(message.resourceId, message.buildId);
   }
 }

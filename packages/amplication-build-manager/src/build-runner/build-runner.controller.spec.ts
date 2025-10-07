@@ -72,24 +72,12 @@ describe("BuildRunnerController", () => {
       const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
         resourceId: "resourceId",
         buildId: "buildId",
-        dsgResourceData: {
-          resourceType: "Service",
-          buildId: "12345",
-          pluginInstallations: [],
-          resourceInfo: {
-            codeGeneratorVersionOptions: {
-              version: "2.0.0",
-              selectionStrategy: CodeGeneratorVersionStrategy.Specific,
-            },
-          } as unknown as AppInfo,
-        },
       };
       const spyOnRunBuild = jest.spyOn(buildRunnerService, "runBuild");
       await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
       expect(spyOnRunBuild).toHaveBeenCalledWith(
         codeGenerationRequestDTOMock.resourceId,
-        codeGenerationRequestDTOMock.buildId,
-        codeGenerationRequestDTOMock.dsgResourceData
+        codeGenerationRequestDTOMock.buildId
       );
     });
   });
