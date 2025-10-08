@@ -8,6 +8,8 @@ import { Build } from "./dto/Build";
 import { CreateBuildArgs } from "./dto/CreateBuildArgs";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { promises as fs } from "fs";
+import { join, dirname } from "path";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EntityService } from "../entity/entity.service";
 import { ResourceRoleService } from "../resourceRole/resourceRole.service";
@@ -532,6 +534,28 @@ export class BuildService {
   }
 
   /**
+   * Saves DSGResourceData to shared storage for build-manager to read
+   * @param buildId the build ID
+   * @param dsgResourceData the DSG resource data to save
+   */
+  async saveDsgResourceDataToSharedStorage(
+    buildId: string,
+    dsgResourceData: CodeGenTypes.DSGResourceData
+  ): Promise<void> {
+    const savePath = join(
+      this.configService.get(Env.DSG_RESOURCE_DATA_BASE_FOLDER) ||
+        "/amplication-data/dsg-resource-data",
+      buildId,
+      this.configService.get(Env.DSG_RESOURCE_DATA_FILE) || "resource-data.json"
+    );
+
+    const saveDir = dirname(savePath);
+    await fs.mkdir(saveDir, { recursive: true });
+
+    await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
+  }
+
+  /**
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
@@ -562,14 +586,17 @@ export class BuildService {
           user
         );
 
-        logger.info("Writing build generation message to queue");
+        // Save DSGResourceData to shared storage instead of sending in message
+        logger.info("Saving DSG resource data to shared storage");
+        await this.saveDsgResourceDataToSharedStorage(buildId, dsgResourceData);
+
+        logger.info("Writing lightweight build generation message to queue");
 
         const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
           key: null,
           value: {
             resourceId,
             buildId,
-            dsgResourceData,
           },
         };
 

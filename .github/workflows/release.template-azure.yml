@@ -53,7 +53,7 @@ env:
 
 jobs:
   package-container:
-    environment: ${{ inputs.branch == 'main' && 'production' || inputs.branch == 'next' && 'sandbox' || '' }}
+    environment: ${{ inputs.branch == 'master' && 'production' || inputs.branch == 'next' && 'sandbox' || '' }}
     name: Package
     runs-on: ubuntu-22.04
     strategy:
@@ -104,7 +104,7 @@ jobs:
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=latest
             type=raw,value=next,enable=${{ inputs.branch == 'next' }}
-            type=raw,value=main,enable=${{ inputs.branch == 'main' }}
+            type=raw,value=master,enable=${{ inputs.branch == 'master' }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize

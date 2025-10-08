@@ -26,4 +26,8 @@ export class Env {
 
   static readonly SERVICE_NAME = "amplication-build-manager";
   static readonly ENABLE_PACKAGE_MANAGER = "ENABLE_PACKAGE_MANAGER";
+
+  static readonly DSG_RESOURCE_DATA_BASE_FOLDER =
+    "DSG_RESOURCE_DATA_BASE_FOLDER";
+  static readonly DSG_RESOURCE_DATA_FILE = "DSG_RESOURCE_DATA_FILE";
 }
