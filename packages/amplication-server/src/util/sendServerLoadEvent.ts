@@ -5,8 +5,8 @@ import { v4 as uuid } from "uuid";
 import { name as APP_NAME } from "../../../../package.json";
 import { version as APP_VERSION } from "../util/version";
 
-const getOSVersion = () =>
-  os["version"] instanceof Function ? os["version"]() : "UNKNOWN";
+const getOSVersion = (): string =>
+  typeof os.version === "function" ? os.version() : "UNKNOWN";
 
 const POSTHOG_ID = "phc_XYKT2bD5pjwUAOphl3BBxQnqGxTDPGTvu2BnG4tSeSF";
 const NODE_VERSION = process.version;
