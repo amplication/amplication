@@ -30,6 +30,8 @@ import { GitHubAuthGuard } from "./github.guard";
 import { OpenIDConnectAuthMiddleware } from "./oidc.middleware";
 import { SegmentAnalyticsModule } from "../../services/segmentAnalytics/segmentAnalytics.module";
 import { IdpModule } from "../idp/idp.module";
+import { AwsMarketplaceModule } from "../aws-marketplace/aws-marketplace.module";
+
 
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { IdpModule } from "../idp/idp.module";
     forwardRef(() => WorkspaceModule),
     forwardRef(() => UserModule),
     IdpModule,
+    AwsMarketplaceModule,
   ],
   providers: [
     AuthService,
