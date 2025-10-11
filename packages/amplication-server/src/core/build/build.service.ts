@@ -552,6 +552,10 @@ export class BuildService {
     const saveDir = dirname(savePath);
     await fs.mkdir(saveDir, { recursive: true });
 
+    this.logger.info("Saving DSG resource data to shared storage", {
+      buildId,
+    });
+
     await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
   }
 
