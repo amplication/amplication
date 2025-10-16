@@ -26,7 +26,7 @@ import { types } from "@amplication/code-gen-types";
 import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { BillingFeature } from "@amplication/util-billing-types";
 import { EnumResourceType } from "./dto/EnumResourceType";
-import { v4 } from "uuid";
+import { randomUUID } from "crypto";
 import { BREAK_THE_MONOLITH_AI_ERROR_MESSAGE } from "./constants";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
@@ -240,7 +240,7 @@ export class ResourceBtmService {
       const isDuplicated = service.name === serviceName;
 
       if (isDuplicated) {
-        const suffix = v4().split("-")[0];
+        const suffix = randomUUID().split("-")[0];
         validServiceName = `${serviceName}_${suffix}`;
       }
     });

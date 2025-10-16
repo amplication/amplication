@@ -1,7 +1,7 @@
 import { ILogger } from "@amplication/util/logging";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join, normalize, resolve } from "path";
-import { v4 } from "uuid";
+import { randomUUID } from "crypto";
 import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
@@ -478,7 +478,7 @@ export class GitClientService {
           this.provider.name,
           owner,
           repositoryName,
-          v4()
+          randomUUID()
         )
       );
       await this.postCommitProcess({

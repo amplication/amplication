@@ -1,7 +1,7 @@
 import os from "os";
 import fetch from "node-fetch";
 import { JsonHelper } from "./jsonHelper";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { name as APP_NAME } from "../../../../package.json";
 import { version as APP_VERSION } from "../util/version";
 
@@ -52,7 +52,7 @@ const getServerId: () => Promise<string> = async (): Promise<string> => {
   const RUNTIME_ID = "runtime_id";
   const packageJsonHelper = JsonHelper.getInstance(SERVER_ID_FILE_NAME);
   if (!(await packageJsonHelper.exists())) {
-    await packageJsonHelper.updateValue(RUNTIME_ID, uuid());
+    await packageJsonHelper.updateValue(RUNTIME_ID, randomUUID());
   }
 
   return await packageJsonHelper.getStringValue(RUNTIME_ID);
