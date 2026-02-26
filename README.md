@@ -21,6 +21,9 @@
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license" style="height: 20px;">
   </a>
+  <a href="https://gurubase.io/g/amplication">
+    <img src="https://img.shields.io/badge/Gurubase-Ask%20Amplication%20Guru-006BFF?style=flat-square" alt="Gurubase" style="height: 20px;">
+  </a>
   <br>
   <a href="https://amplication.com/discord">
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square&logo=discord" alt="discord" style="height: 20px;">
