@@ -19,7 +19,7 @@ export class SERVICE_BASE {
   async FIND_ONE_ENTITY_FUNCTION(
     args: Prisma.FIND_ONE_ARGS
   ): Promise<PRISMA_ENTITY | null> {
-    return this.prisma.DELEGATE.findUnique(args);
+    return await this.prisma.DELEGATE.findUnique(args);
   }
   async CREATE_ENTITY_FUNCTION(
     args: Prisma.CREATE_ARGS
