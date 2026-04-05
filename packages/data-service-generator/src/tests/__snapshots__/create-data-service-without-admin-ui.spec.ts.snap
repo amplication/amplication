@@ -2691,7 +2691,7 @@ export class CustomerServiceBase {
   async customer(
     args: Prisma.CustomerFindUniqueArgs
   ): Promise<PrismaCustomer | null> {
-    return this.prisma.customer.findUnique(args);
+    return await this.prisma.customer.findUnique(args);
   }
   async createCustomer(
     args: Prisma.CustomerCreateArgs
@@ -3738,7 +3738,7 @@ export class EmptyServiceBase {
     return this.prisma.empty.findMany(args);
   }
   async empty(args: Prisma.EmptyFindUniqueArgs): Promise<PrismaEmpty | null> {
-    return this.prisma.empty.findUnique(args);
+    return await this.prisma.empty.findUnique(args);
   }
   async createEmpty(args: Prisma.EmptyCreateArgs): Promise<PrismaEmpty> {
     return this.prisma.empty.create(args);
@@ -5329,7 +5329,7 @@ export class OrderServiceBase {
     return this.prisma.order.findMany(args);
   }
   async order(args: Prisma.OrderFindUniqueArgs): Promise<PrismaOrder | null> {
-    return this.prisma.order.findUnique(args);
+    return await this.prisma.order.findUnique(args);
   }
   async createOrder(args: Prisma.OrderCreateArgs): Promise<PrismaOrder> {
     return this.prisma.order.create(args);
@@ -7087,7 +7087,7 @@ export class OrganizationServiceBase {
   async organization(
     args: Prisma.OrganizationFindUniqueArgs
   ): Promise<PrismaOrganization | null> {
-    return this.prisma.organization.findUnique(args);
+    return await this.prisma.organization.findUnique(args);
   }
   async createOrganization(
     args: Prisma.OrganizationCreateArgs
@@ -8576,7 +8576,7 @@ export class ProfileServiceBase {
   async profile(
     args: Prisma.ProfileFindUniqueArgs
   ): Promise<PrismaProfile | null> {
-    return this.prisma.profile.findUnique(args);
+    return await this.prisma.profile.findUnique(args);
   }
   async createProfile(args: Prisma.ProfileCreateArgs): Promise<PrismaProfile> {
     return this.prisma.profile.create(args);
@@ -11386,7 +11386,7 @@ export class UserServiceBase {
     return this.prisma.user.findMany(args);
   }
   async user(args: Prisma.UserFindUniqueArgs): Promise<PrismaUser | null> {
-    return this.prisma.user.findUnique(args);
+    return await this.prisma.user.findUnique(args);
   }
   async createUser(args: Prisma.UserCreateArgs): Promise<PrismaUser> {
     return this.prisma.user.create(args);
