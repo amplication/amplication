@@ -83,7 +83,7 @@
     "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
     "apollo-server-express": "^3.10.2",
-    "apollo-upload-client": "^17.0.0",
+    "apollo-upload-client": "^18.0.1",
     "assert": "^2.0.0",
     "ast-types": "^0.14.2",
     "auth0": "^4.2.0",

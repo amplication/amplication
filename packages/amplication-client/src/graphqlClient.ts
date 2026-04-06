@@ -7,7 +7,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { createUploadLink } from "apollo-upload-client";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { createClient } from "graphql-ws";
 import { getToken } from "./authentication/authentication";
 import {
