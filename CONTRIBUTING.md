@@ -4,7 +4,7 @@ We would ❤️ it if you contributed to the project and helped make Amplication
 
 ## Got a question?
 
-You can ask questions, consult with more experienced Amplication users, and discuss Amplication-related topics in the our [Discord channel](https://amplication.com/discord).
+You can ask questions, consult with more experienced Amplication users, and discuss Amplication-related topics in our [Discord channel](https://amplication.com/discord).
 
 ## Found a bug?
 
