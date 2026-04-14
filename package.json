@@ -57,7 +57,7 @@
     "@nestjs/core": "^9.3.12",
     "@nestjs/graphql": "^10.0.0",
     "@nestjs/jwt": "^10.0.3",
-    "@nestjs/microservices": "^9.3.9",
+    "@nestjs/microservices": "^11.1.19",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.3.9",
     "@nestjs/serve-static": "^3.0.1",
