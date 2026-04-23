@@ -189,7 +189,7 @@
     "tslib": "^2.6.2",
     "type-fest": "^3.13.0",
     "use-debounce": "^3.4.3",
-    "uuid": "^8.3.2",
+    "uuid": "^14.0.0",
     "winston": "3.8.2",
     "winston-cloud-logging": "^1.0.2",
     "yaml": "2.7.0"
