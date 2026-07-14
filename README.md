@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license" style="height: 20px;">
   </a>
   <br>
-  <a href="https://amplication.com/discord">
+  <a href="https://discord.com/invite/amplication-757179260417867879">
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square&logo=discord" alt="discord" style="height: 20px;">
   </a>
   <a href="https://twitter.com/amplication">
@@ -196,7 +196,7 @@ The majority of Amplication code is open-source. We are committed to a transpare
 
 Not sure where to start? Join our discord and we will help you get started!
 
-<a href="https://amplication.com/discord"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.com/invite/amplication-757179260417867879"><img src="https://img.shields.io/badge/DISCORD-JOIN%20SERVER-5663F7?style=for-the-badge&logo=discord&logoColor=white" alt="discord"></a>
 
 ## Contributors
 
