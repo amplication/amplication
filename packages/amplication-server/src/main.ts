@@ -38,7 +38,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 
-  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig(), {
+    inheritAppConfig: true,
+  });
   app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }));
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
