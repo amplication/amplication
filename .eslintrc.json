@@ -1,12 +1,17 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["perfectionist", "@nx"],
+  "plugins": ["perfectionist", "@nx", "nestjs-security"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
         "no-console": "warn",
+        // One rule, not the recommended preset. connectMicroservice() without
+        // inheritAppConfig gives the transport none of the global pipes and
+        // guards registered on the HTTP app, so @EventPattern handlers run
+        // unvalidated while the HTTP routes beside them are fine.
+        "nestjs-security/no-hybrid-app-config-loss": "error",
         "@nx/enforce-module-boundaries": [
           "error",
           {

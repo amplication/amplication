@@ -20,9 +20,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 
-  app.connectMicroservice<MicroserviceOptions>({
-    strategy: new KafkaCustomTransport(createNestjsKafkaConfig().options),
-  });
+  app.connectMicroservice<MicroserviceOptions>(
+    {
+      strategy: new KafkaCustomTransport(createNestjsKafkaConfig().options),
+    },
+    { inheritAppConfig: true }
+  );
 
   await app.startAllMicroservices();
 
